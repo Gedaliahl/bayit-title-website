@@ -1,0 +1,742 @@
+/* Design tokens. Grounded in the firm's own office — warm neutrals, wood,
+   plants, the yellow-green wall. Deliberately not the default cream/serif/
+   terracotta look of most title agency sites. See HANDOFF.md. */
+
+:root {
+  --ink: #14231b;          /* deep forest, body text */
+  --paper: #faf9f5;        /* warm white */
+  --sage: #e4e8d2;         /* the office wall; section grounds, answer panel */
+  --sage-deep: #c3cba4;
+  --moss: #3f5940;         /* links */
+  --oxblood: #6f1d2b;      /* primary actions, threshold rule. Sparingly. */
+
+  --ink-muted: #4c5c53;
+  --rule: #d9d8ce;
+  --rule-strong: #b9b8ab;
+
+  --font-prose: var(--font-newsreader), Georgia, 'Times New Roman', serif;
+  --font-ui: var(--font-archivo), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --measure: 34rem;        /* reading column */
+  --wide: 72rem;           /* page frame */
+  --gutter: 1.5rem;
+
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: 1.5rem;
+  --step-3: 1.9375rem;
+  --step-4: 2.5rem;
+  --step-5: clamp(2.25rem, 1.4rem + 3.6vw, 3.5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-prose);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-prose);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.011em;
+  text-wrap: balance;
+  margin: 0 0 0.5em;
+}
+
+h1 { font-size: var(--step-5); }
+h2 { font-size: var(--step-3); margin-top: 2.4em; }
+h3 { font-size: var(--step-1); margin-top: 2em; }
+
+p, ul, ol {
+  margin: 0 0 1.1em;
+}
+
+p { text-wrap: pretty; }
+
+a {
+  color: var(--moss);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--oxblood);
+}
+
+strong { font-weight: 600; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2.5rem 0;
+}
+
+blockquote {
+  margin: 1.6em 0;
+  padding-left: 1.1rem;
+  border-left: 2px solid var(--sage-deep);
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+code {
+  font-size: 0.9em;
+  background: var(--sage);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  margin: 1.6em 0;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+th {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- layout primitives ---------- */
+
+.frame {
+  width: 100%;
+  max-width: var(--wide);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+.stack > * + * {
+  margin-top: var(--stack-gap, 1.1rem);
+}
+
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 0.75rem;
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+.ui {
+  font-family: var(--font-ui);
+}
+
+.section {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.section--sage {
+  background: var(--sage);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-ui);
+  padding: 0.6rem 1rem;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--oxblood);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.7rem 1.35rem;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.btn--primary {
+  background: var(--oxblood);
+  color: var(--paper);
+}
+
+.btn--primary:hover {
+  background: #58161f;
+  color: var(--paper);
+}
+
+.btn--quiet {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule-strong);
+}
+
+.btn--quiet:hover {
+  background: var(--sage);
+  color: var(--ink);
+}
+
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- site chrome ---------- */
+
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 4.75rem;
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-family: var(--font-prose);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.wordmark__meaning {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+}
+
+.nav a {
+  color: var(--ink);
+  text-decoration: none;
+  padding-block: 0.25rem;
+  border-bottom: 1px solid transparent;
+}
+
+.nav a:hover {
+  border-bottom-color: var(--oxblood);
+  color: var(--ink);
+}
+
+.sitefoot {
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+  padding-block: 3rem 2.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+}
+
+.sitefoot__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 2rem 2.5rem;
+}
+
+.sitefoot h2 {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0 0 0.85rem;
+}
+
+.sitefoot ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sitefoot li + li {
+  margin-top: 0.4rem;
+}
+
+.sitefoot a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.sitefoot a:hover {
+  color: var(--oxblood);
+  text-decoration: underline;
+}
+
+/* The credential line. Required disclosure, and the specificity that
+   demonstrates authority without asserting it. */
+.credential-line {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+/* ---------- the answer panel ---------- */
+/* The one bold element on a library page: this is the block an AI assistant
+   lifts, so it is visually and structurally isolated. */
+
+.answer-panel {
+  background: var(--sage);
+  border-left: 3px solid var(--oxblood);
+  padding: 1.5rem 1.75rem;
+  margin: 2rem 0 2.5rem;
+}
+
+.answer-panel__label {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin: 0 0 0.6rem;
+}
+
+.answer-panel p:last-child {
+  margin-bottom: 0;
+}
+
+.answer-panel__text {
+  font-size: var(--step-1);
+  line-height: 1.55;
+}
+
+/* ---------- quick facts ---------- */
+
+.quick-facts {
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--sage-deep);
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+}
+
+.quick-facts dl {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: 0.55rem 1.25rem;
+  margin: 0;
+}
+
+.quick-facts dt {
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.quick-facts dd {
+  margin: 0;
+}
+
+@media (max-width: 34rem) {
+  .quick-facts dl {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+  .quick-facts dd {
+    margin-bottom: 0.6rem;
+  }
+}
+
+/* ---------- verify flags ---------- */
+/* Deliberately visible. An unresolved fact must be obvious to the licensed
+   reviewer and must never be quietly filled in. */
+
+.verify-banner {
+  border: 1px solid var(--oxblood);
+  border-left-width: 3px;
+  background: #fdf6f2;
+  padding: 1rem 1.25rem;
+  margin: 2rem 0;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.verify-banner strong {
+  display: block;
+  color: var(--oxblood);
+  margin-bottom: 0.35rem;
+}
+
+.verify-banner ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+}
+
+/* ---------- prose body from Markdown ---------- */
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose h2 {
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--rule);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.2rem;
+}
+
+.prose li + li {
+  margin-top: 0.35rem;
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* An inline [VERIFY: ...] flag inside body copy, marked up by the renderer. */
+.verify-inline {
+  background: #fdf0e8;
+  border-bottom: 1px dotted var(--oxblood);
+  color: var(--oxblood);
+  font-family: var(--font-ui);
+  font-size: 0.875em;
+  padding: 0.05em 0.3em;
+}
+
+/* ---------- cards and lists ---------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  padding: 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.card h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.card h3 a:hover {
+  color: var(--oxblood);
+  text-decoration: underline;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+
+.card__meta {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.linklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.linklist li {
+  border-bottom: 1px solid var(--rule);
+}
+
+.linklist a {
+  display: block;
+  padding: 0.85rem 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.linklist a:hover {
+  color: var(--oxblood);
+}
+
+.linklist__sub {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  margin-top: 0.15rem;
+}
+
+/* ---------- reviews ---------- */
+
+.review {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.review__body {
+  margin: 0 0 0.6rem;
+}
+
+.review__attribution {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.review__stars {
+  color: var(--moss);
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+}
+
+.review--pull {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: none;
+  border-left: 3px solid var(--sage-deep);
+  padding: 1.1rem 1.35rem;
+  margin: 2rem 0;
+}
+
+/* ---------- byline ---------- */
+
+.byline {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.byline strong {
+  color: var(--ink);
+}
+
+/* ---------- quiet CTA ---------- */
+
+.cta {
+  margin-top: 2.5rem;
+  padding: 1.5rem 1.75rem;
+  background: var(--sage);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cta p {
+  margin: 0;
+  max-width: 32ch;
+}
+
+/* ---------- forms ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.1rem;
+}
+
+.field label {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+
+.field__hint {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+.field input,
+.field select,
+.field textarea {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  padding: 0.6rem 0.7rem;
+  width: 100%;
+}
+
+.field textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.field--error input,
+.field--error select,
+.field--error textarea {
+  border-color: var(--oxblood);
+}
+
+.field__error {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--oxblood);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0 1.25rem;
+}
+
+.form-note {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  line-height: 1.6;
+}
+
+.form-status {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--rule-strong);
+}
+
+.form-status--error {
+  border-color: var(--oxblood);
+  color: var(--oxblood);
+}
+
+.form-status--ok {
+  background: var(--sage);
+  border-color: var(--sage-deep);
+}
+
+/* Honeypot. Off-screen rather than display:none so bots that check
+   computed style still fill it in. */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+legend {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: 0;
+  margin-bottom: 0.85rem;
+}
