@@ -160,8 +160,13 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
 Carried forward from `docs/HANDOFF.md`, still open:
 
 - `rate_tables` is empty → no calculators, and county pages withhold fee figures
-- Several pages make First American coverage statements that are unverified
-- Timeline data is a `[VERIFY]` flag on every library page
+- Every `[VERIFY]` flag has now been drafted in (see `docs/verify-worklist.md`),
+  but 41 of the 62 answers are unconfirmed — 10 need First American, 31 are our
+  own timelines, costs and practice. They are tracked per page in a
+  `pending_confirmation` front-matter list, which the build enforces the same
+  way it enforces `[VERIFY]`. Review pack: `docs/review/verify-fill-review.pdf`
+- Which team members hold Florida *online* notary registrations is still open,
+  and is the one flag that must come from the commission record
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer and Chaya; the About
   page's founding story is Shevy's to write
 - No usable photography

@@ -1,5 +1,39 @@
 # VERIFY worklist
 
+> ## Status: all 62 flags have been drafted in
+>
+> As of 11 September 2026 every flag below has been researched and answered in
+> the content files, in 55 edits. **This did not resolve them — it moved them.**
+> The prose now reads as finished, which is a more dangerous state than a
+> visible gap, so the tracking moved with it:
+>
+> - Each page carries a `pending_confirmation` list in its front-matter naming
+>   every fact that was drafted rather than sourced. The build refuses to mark a
+>   page `reviewed` while that list is non-empty, the same way it refuses one
+>   with a `[VERIFY]` flag left in it.
+> - **`docs/review/verify-fill-review.pdf`** is the review pack: every inserted
+>   passage, highlighted by where the answer came from, with its source, what
+>   still needs confirming, and a sign-off box.
+> - All nine pages remain `status: draft`. Nothing reached the public site.
+>
+> How the 62 came out:
+>
+> | | Flags | What it means |
+> |---|---|---|
+> | **Sourced** | 21 | Filled from a statute, the Florida Constitution, a Federal Rule of Bankruptcy Procedure or IRS guidance. Cited in the text. Check the expression, not the fact. |
+> | **First American / the form** | 10 | Drafted from public secondary sources because the authoritative one is not public. Not First American's stated position. |
+> | **Only Bayit Title knows** | 31 | Invented placeholders. Timelines, costs and practice statements about your own files. Assume every number is wrong. |
+>
+> One flag was deliberately **not** answered: `SG-04`, which team members hold
+> Florida *online* notary registrations under Fla. Stat. § 117.225. It is a
+> licensing claim and it was not guessed. The two commissions in the brief
+> (HH 795313, HH 817398) are standard commissions under part I of ch. 117 and
+> are not the same thing. It is the only `[VERIFY]` marker left in `content/`.
+>
+> The triage below is kept because it still says who can answer what.
+
+---
+
 Every unresolved fact across the nine content drafts, triaged by **who can
 answer it**. 62 flags total.
 

@@ -9,15 +9,20 @@ review_tags: ["bankruptcy", "court-ordered-sale", "distressed", "clearing-title"
 related:
   - "litigation-against-seller-flip-florida"
   - "judgment-against-seller-before-closing-florida"
+pending_confirmation:
+  - "BK-01 (Bayit Title): How sale-order entry, objection and appeal periods shape a closing schedule on our files"
+  - "BK-02 (Bayit Title): Whether these files typically carry additional search or examination cost"
+  - "BK-03 (underwriter/form): Specific items we require from a bankruptcy sale order before closing, and what the underwriter requires"
+  - "BK-05 (underwriter/form): How a closed prior bankruptcy in the chain is examined and what documentation clears it"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers and investors purchasing from a Chapter 7 trustee or a Chapter 11 or 13 debtor in possession."
   - term: "The core document"
     detail: "The bankruptcy court's order authorising the sale, plus the motion and notice behind it."
   - term: "Typical timeline"
-    detail: "[VERIFY: how the sale-order entry, objection and appeal periods typically shape a closing schedule on our files]"
+    detail: "Plan on the sale order being entered, then a further 14 days before closing, because Fed. R. Bankr. P. 6004(h) stays a sale order for 14 days after entry unless the court orders otherwise. Where the order waives that stay — many do, expressly — closing can follow entry directly. Getting the motion and the proposed order in front of us before the hearing, rather than after, is what keeps this on schedule."
   - term: "Cost impact"
-    detail: "[VERIFY: whether these files typically carry additional search or examination cost]"
+    detail: "The title insurance premium is set by the promulgated Florida rate schedule and does not change because a seller is in bankruptcy. What can add cost is the extra work: pulling and reviewing the docket, the motion, the notice and the entered order, and any additional searches the underwriter requires on the debtor and the estate."
 ---
 
 ## Why is the court order the important document?
@@ -28,7 +33,19 @@ Everything that matters flows from it: who is authorised to sign, what is being 
 
 ## What is read in that order?
 
-[VERIFY: the specific items we require from a bankruptcy sale order before closing, and what our underwriter requires — this list should come from the team's actual practice and First American's requirements, not from a general description of bankruptcy practice]
+We ask for a **certified or docket-stamped copy of the entered order**, together with the sale motion, the notice, the certificate of service and a current docket printout. The order is read for the following, and each of these is checked against the file rather than assumed:
+
+- the case number, chapter, court and division, and that the debtor is the record owner;
+- the legal description of the property being sold, matching the commitment;
+- the named seller and signatory, and the capacity in which they sign — trustee, debtor in possession, or someone authorised by the order;
+- the purchase price and material terms, and whether they match the executed contract;
+- whether the sale is free and clear under 11 U.S.C. § 363(f), which interests that covers, and which of the section's five grounds is relied on;
+- a finding that the buyer is a good-faith purchaser under 11 U.S.C. § 363(m);
+- whether the 14-day stay under Fed. R. Bankr. P. 6004(h) is waived, and whether any stay pending appeal has been sought or entered;
+- who received notice, and whether every lienholder shown by the search is among them;
+- whether the order requires the liens to attach to the proceeds, and how the proceeds are to be disbursed.
+
+Anything the order does not dispose of, we treat as live.
 
 At minimum the questions being answered are these:
 
@@ -37,7 +54,15 @@ At minimum the questions being answered are these:
 - **What happens to the liens?** Whether the sale is free and clear, and if so which interests that covers and which it does not.
 - **Has the time to appeal run?** Closing before it has can expose the buyer if the order is disturbed.
 
-[VERIFY: the applicable appeal period for a bankruptcy sale order and the effect of any stay, and whether a good-faith purchaser finding in the order changes the analysis — needs confirmation from counsel or the underwriter, not general knowledge]
+Three separate federal rules do the work here, and they are often run together.
+
+**The 14-day stay.** Under [Fed. R. Bankr. P. 6004(h)](https://www.law.cornell.edu/rules/frbp/rule_6004), an order authorising the sale of property is stayed for **14 days after entry** unless the court orders otherwise. The point of it is to give an objector time to seek a stay pending appeal. Sale orders frequently waive it expressly, and where they do, the waiver is in the order and can be read.
+
+**The 14-day appeal period.** Under [Fed. R. Bankr. P. 8002](https://www.law.cornell.edu/rules/frbp/rule_8002), a notice of appeal must be filed within **14 days** of entry of the order. The two periods are the same length and they are not the same thing — Rule 6004(h) delays the sale's effectiveness, Rule 8002 sets the deadline to appeal. Rule 8002 also provides that the bankruptcy court may not extend the time to appeal an order authorising a sale under § 363.
+
+**The good-faith finding.** 11 U.S.C. § 363(m) protects a purchaser who bought in good faith: if the sale was not stayed pending appeal, a reversal or modification on appeal does not affect the validity of the sale to that purchaser. An express finding in the order that the buyer is a good-faith purchaser under § 363(m) is therefore one of the things that makes the title insurable, and its absence is worth asking about before closing rather than after.
+
+Put together: closing after the 14 days have run, on an order carrying a § 363(m) finding, with no stay entered, is the ordinary posture. Closing earlier is a decision for the buyer to make knowingly, with their own counsel, not a scheduling convenience.
 
 ## Does the title search change?
 
@@ -49,7 +74,13 @@ That is the recurring trap: assuming "free and clear" in a sale order sweeps up 
 
 It can be. A bankruptcy that closed years ago can still matter to the chain of title if property was administered, abandoned, or conveyed during the case.
 
-[VERIFY: how a closed prior bankruptcy in the chain is examined and what documentation is required to clear it]
+The question is always the same one: at the moment of the conveyance in the chain, who had authority to convey — the debtor, or the estate?
+
+Filing a bankruptcy petition brings the debtor's property into the estate. So a deed signed by the debtor personally, during the case, may be void or voidable unless the property had been abandoned, exempted or released first, or the court authorised the conveyance. A deed signed before the petition, or after the case closed and the property revested, is a different matter.
+
+What we look for is the docket. The petition date and the discharge or closing date bracket the period that matters. Within it we want to see the schedules showing how the property was listed, any claim of exemption and whether it was allowed, any order abandoning the property under 11 U.S.C. § 554, any order authorising a sale, and the trustee's final report and the order closing the case. Where a deed in the chain falls inside that window and none of those documents explains it, the deed is a requirement rather than a curiosity.
+
+Where the case is old, the docket is thin, or the paper does not resolve it, the routes are a corrective deed from the trustee, a motion to reopen the case, or an underwriter's affirmative decision to insure over it. Which one is available is a legal question and an underwriting question, in that order.
 
 ## How Bayit Title handles this
 

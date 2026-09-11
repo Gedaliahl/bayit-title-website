@@ -58,6 +58,15 @@ export interface DocFrontMatter {
   related: string[];
   /** Optional one-line summary for index cards and meta descriptions. */
   summary?: string;
+  /**
+   * Facts that were drafted rather than sourced — an underwriting position, a
+   * licensed form's wording, or one of our own timelines, costs or practices.
+   * A `[VERIFY]` flag keeps its question visible in the rendered page; this
+   * keeps the question attached to the file once the prose reads as finished,
+   * which is the more dangerous state. A page cannot be marked `reviewed`
+   * while this list is non-empty.
+   */
+  pending_confirmation?: string[];
   /** Quick-facts box: who this affects, typical timeline, documents, cost impact. */
   quick_facts?: { term: string; detail: string }[];
 }
@@ -146,6 +155,17 @@ function assertFrontMatter(
           `${unresolved.join('; ')}. Resolve them or set status: draft.`,
       );
     }
+
+    // Prose that reads as finished but was never sourced is the failure mode a
+    // VERIFY flag cannot catch, because there is no flag left in the text.
+    const pending = (data.pending_confirmation as string[] | undefined) ?? [];
+    if (pending.length > 0) {
+      throw new Error(
+        `${file}: status is "reviewed" but ${pending.length} drafted fact(s) are still ` +
+          `unconfirmed: ${pending.join('; ')}. Confirm them and empty ` +
+          `pending_confirmation, or set status: draft.`,
+      );
+    }
   }
 
   const cluster = data.cluster as Cluster;
@@ -165,6 +185,7 @@ function assertFrontMatter(
   return {
     ...(data as unknown as DocFrontMatter),
     counties: (data.counties as string[]) ?? [],
+    pending_confirmation: (data.pending_confirmation as string[]) ?? [],
     quick_facts: (data.quick_facts as DocFrontMatter['quick_facts']) ?? [],
     review_tags: (data.review_tags as string[]) ?? [],
     related: (data.related as string[]) ?? [],
