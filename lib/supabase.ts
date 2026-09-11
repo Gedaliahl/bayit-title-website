@@ -41,12 +41,48 @@ let client: Db | null = null;
  * build time so the site still renders without Supabase configured; only the
  * form Route Handlers treat a null client as a hard failure.
  */
+let warnedUnconfigured = false;
+
 export function getServiceClient(): Db | null {
   if (client) return client;
 
+  // Falsy, not `?? undefined`: a variable set to an empty string in a hosting
+  // dashboard is "not configured", not a value.
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
+
+  if (!url || !key) {
+    // Say so once, loudly. Returning null silently made a misconfigured deploy
+    // indistinguishable from a working one: pages fell back to canonical data
+    // and rendered normally, with nothing in the build log to explain why.
+    // Never log the values themselves — only whether each one arrived.
+    if (!warnedUnconfigured) {
+      warnedUnconfigured = true;
+      console.warn(
+        '[supabase] NOT CONFIGURED — falling back to static data. ' +
+          `SUPABASE_URL: ${url ? 'set' : 'MISSING/EMPTY'}, ` +
+          `SUPABASE_SERVICE_ROLE_KEY: ${key ? 'set' : 'MISSING/EMPTY'}. ` +
+          'Reviews will be empty and county pages will show no local custom.',
+      );
+    }
+    return null;
+  }
+
+  // A host pasted without a scheme ("ajaux....supabase.co") is a realistic
+  // mistake, and both `new URL` and createClient throw on it. Catch it here and
+  // degrade to the fallback rather than failing the build.
+  let hostname: string;
+  try {
+    hostname = new URL(url).hostname;
+  } catch {
+    console.warn(
+      '[supabase] SUPABASE_URL is not a valid absolute URL — it needs the https:// scheme. ' +
+        'Falling back to static data.',
+    );
+    return null;
+  }
+
+  console.info(`[supabase] configured (${hostname}) — reading live data.`);
 
   assertWebsiteProject(url);
 
