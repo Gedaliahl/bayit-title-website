@@ -62,6 +62,20 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     return fallbackCounties();
   }
 
+  // An empty array is truthy, so it would otherwise sail past the check above
+  // and return no counties at all — generateStaticParams would emit no routes
+  // and every county URL would 404. The table is seeded, so empty means the
+  // rows were filtered out rather than absent: almost always the anon key in
+  // place of the service role key, where RLS returns zero rows and no error.
+  if (data.length === 0) {
+    console.warn(
+      '[locations] query returned zero rows, using canonical fallback. The table is seeded, ' +
+        'so this usually means SUPABASE_SERVICE_ROLE_KEY holds the anon key: RLS then filters ' +
+        'every row and reports no error.',
+    );
+    return fallbackCounties();
+  }
+
   return data.map((row) => ({
     slug: row.slug,
     kind: row.kind,
