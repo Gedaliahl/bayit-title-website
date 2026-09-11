@@ -1,6 +1,39 @@
 import { site } from './site';
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? site.url).replace(/\/$/, '');
+/**
+ * The absolute base for canonical URLs, JSON-LD and the sitemap.
+ *
+ * Environment variables are strings, so an unset variable and one set to an
+ * empty string mean the same thing here. `??` does not: it accepts `''` and
+ * hands `new URL()` a value that throws at module scope, which fails the whole
+ * build rather than one request. Hence the falsy check and the try/catch.
+ */
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  // On a preview deployment the canonical domain is not serving this build, so
+  // the deployment's own hostname is the correct base for absolute URLs.
+  const previewUrl =
+    process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL?.trim()
+      ? `https://${process.env.VERCEL_URL.trim()}`
+      : undefined;
+
+  const candidate = explicit || previewUrl || site.url;
+
+  try {
+    // Parsing validates and normalises; a bare host or a typo throws here
+    // rather than at first render.
+    return new URL(candidate).toString().replace(/\/$/, '');
+  } catch {
+    console.warn(
+      `[seo] NEXT_PUBLIC_SITE_URL is not a valid absolute URL (${JSON.stringify(candidate)}). ` +
+        `Falling back to ${site.url}.`,
+    );
+    return site.url;
+  }
+}
+
+export const SITE_URL = resolveSiteUrl();
 
 export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${pathname.startsWith('/') ? pathname : `/${pathname}`}`;

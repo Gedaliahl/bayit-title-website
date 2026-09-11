@@ -18,7 +18,8 @@ export function hashIp(request: Request): string | null {
   const ip = forwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip');
   if (!ip) return null;
 
-  const salt = process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'unsalted';
+  // Falsy check, not `??`: an empty env var would otherwise become an empty salt.
+  const salt = process.env.SUPABASE_SERVICE_ROLE_KEY || 'unsalted';
   return createHash('sha256').update(`${salt}:${ip}`).digest('hex').slice(0, 32);
 }
 
@@ -73,7 +74,7 @@ export async function notify(subject: string, lines: string[]): Promise<void> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: process.env.NOTIFY_FROM_EMAIL ?? 'website@bayittitle.com',
+        from: process.env.NOTIFY_FROM_EMAIL || 'website@bayittitle.com',
         to: [site.ordersEmail],
         subject,
         text: body,
