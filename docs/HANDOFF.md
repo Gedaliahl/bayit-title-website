@@ -86,7 +86,7 @@ Nine tables in `public`, all with RLS enabled:
 | Table | Purpose |
 |---|---|
 | `locations` | counties/cities; 3 priority counties seeded |
-| `rate_tables` | promulgated premiums, doc stamps, recording fees — **empty, blocks calculators** |
+| `rate_tables` | promulgated premiums — **empty, blocks calculators**. Doc stamps and recording charges are statutory and live in `lib/statutory-rates.ts` instead |
 | `google_reviews` | **92 reviews loaded**, full text, topic-tagged |
 | `review_snapshot` | 5.0 / 92 for the homepage |
 | `leads` | quote/contact forms |
@@ -168,7 +168,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 ## What to build next, in order
 
 1. **Order and quote forms** — Route Handlers writing to Supabase `leads`/`orders`, email notification to shevy@bayittitle.com, encrypted upload to the private bucket. This exercises the security design; get it right.
-2. **Three county pages** — Broward, Palm Beach, Miami-Dade. Who-pays custom (seller in Broward/PB, buyer in Miami-Dade), doc stamps and Miami-Dade surtax, clerk quirks, recording fees. Needs verified data first.
+2. **Three county pages** — Broward, Palm Beach, Miami-Dade. **Built.** Doc stamps, the Miami-Dade surtax, mortgage stamps, intangible tax and recording charges are published and cited to the statute (`lib/statutory-rates.ts`, read from Online Sunshine 2026-09-14). Still open per county: who-pays custom, and recording turnaround where the clerk publishes one.
 3. **Homepage, About, Team pages** — copy drafted in the voice guide; team bios have placeholders awaiting three team members' own sentences.
 4. **Calculators** — premium and closing cost. **Blocked** until `rate_tables` is populated with verified figures.
 5. **Reviews sync** — Google Business Profile API access was rejected once (likely the gmail.com contact address). Reviews are seeded manually and work fine; the sync is an optimization, not a blocker.
@@ -178,7 +178,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 
 ## Known blockers
 
-- `rate_tables` empty → no calculators
+- `rate_tables` empty → no calculators, and the promulgated premium schedule is unpublished
 - Six pages make First American coverage statements that are unverified
 - Timeline data is placeholder on every library page
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer, Chaya

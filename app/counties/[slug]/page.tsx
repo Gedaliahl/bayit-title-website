@@ -5,9 +5,27 @@ import { notFound } from 'next/navigation';
 import { getCounties, getLocation } from '@/lib/locations';
 import { getAllDocs } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
+import { formatLongDate } from '@/lib/seo';
 import { site } from '@/lib/site';
+import {
+  CHECKED_ON,
+  DOR_DOC_STAMP_GUIDANCE,
+  EXAMPLE_LOAN,
+  EXAMPLE_PRICE,
+  MORTGAGE_CHARGES,
+  RECORDING_CHARGES,
+  deedStampTax,
+  deedStampTaxDue,
+  discretionarySurtax,
+  discretionarySurtaxDue,
+  formatMoney,
+  intangibleTaxDue,
+  mortgageStampTaxDue,
+  recordingChargeDue,
+} from '@/lib/statutory-rates';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel, VerifyBanner } from '@/components/Prose';
+import { StatutoryCharges } from '@/components/StatutoryCharges';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
 
@@ -46,12 +64,15 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
   const payer = county.customaryOwnerPolicyPayer;
 
-  // Fees, doc stamps and surtax are held back until rate_tables carries figures
-  // with a source URL. A closing cost figure invented for a web page is the
-  // exact failure this project is built to avoid.
+  // Transfer taxes and recording charges are set by statute, so they are stated
+  // below and cited to the section that sets them rather than withheld. What is
+  // genuinely not on this page is the promulgated premium schedule, and this
+  // clerk's own turnaround where the office publishes none.
+  const deedStamps = deedStampTax(county.slug);
+  const surtax = discretionarySurtax(county.slug);
+
   const openItems = [
-    'Recording fees and the current clerk fee schedule for this county',
-    'Documentary stamp tax and, where it applies, county surtax figures',
+    'The promulgated premium schedule for an owner’s policy',
     // Cleared only where the recording office publishes a statement of its own.
     // Most Florida counties publish nothing, and for those the flag stands.
     ...(county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk']),
@@ -103,8 +124,42 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           Florida title insurance rates are promulgated — set by the Florida Office of Insurance
           Regulation and identical across agencies for the same coverage amount. An agency does not
           discount the premium, and a quote that is lower than another quote is a difference in the
-          other line items, not the premium. We publish figures once each one is tied to its source;
-          the open items are listed above.
+          other line items, not the premium. We have not published the premium schedule itself yet;
+          ask us for the figure on a specific price and we will give it to you.
+        </p>
+
+        <h2>Documentary stamp tax on a {county.name} sale</h2>
+        <p>
+          The deed is taxed by the state, not by the county.{' '}
+          {surtax
+            ? `${county.name} is the one county that does not pay the statewide rate: the 10-cent ` +
+              'increase the Legislature added in 1992 was never applied here, and the county levies ' +
+              'a surtax the other 66 do not.'
+            : 'The rate below is the rate in 66 of the 67 counties — Miami-Dade is the exception.'}{' '}
+          The tax is charged on each part of $100, so it rounds up.
+        </p>
+
+        <StatutoryCharges charges={surtax ? [deedStamps, surtax] : [deedStamps]} />
+
+        <p>
+          On a {formatMoney(EXAMPLE_PRICE)} sale that is{' '}
+          <strong>{formatMoney(deedStampTaxDue(EXAMPLE_PRICE, county.slug))}</strong> in deed
+          stamps
+          {surtax
+            ? `, plus ${formatMoney(discretionarySurtaxDue(EXAMPLE_PRICE, county.slug))} in ` +
+              'surtax if what is being conveyed is anything other than a single-family residence'
+            : ''}
+          . Which side pays it is decided by the purchase contract, not by the statute.
+        </p>
+
+        <p>A mortgage is taxed separately, so a cash closing carries neither of these:</p>
+
+        <StatutoryCharges charges={MORTGAGE_CHARGES} />
+
+        <p>
+          On a {formatMoney(EXAMPLE_LOAN)} loan that is{' '}
+          <strong>{formatMoney(mortgageStampTaxDue(EXAMPLE_LOAN))}</strong> in mortgage stamps
+          and <strong>{formatMoney(intangibleTaxDue(EXAMPLE_LOAN))}</strong> in intangible tax.
         </p>
 
         <h2>Recording</h2>
@@ -116,6 +171,33 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             : ''}{' '}
           Recording turnaround affects when a policy can issue, so it is worth knowing on a file
           with a tight timeline.
+        </p>
+
+        <p>
+          What recording costs is set by statute and is charged by the page, so it is the same at
+          every clerk in Florida — a {county.name} deed and a Levy County deed of the same length
+          record for the same money:
+        </p>
+
+        <StatutoryCharges charges={RECORDING_CHARGES} />
+
+        <p>
+          A two-page deed is {formatMoney(recordingChargeDue(2))} and a twelve-page mortgage is{' '}
+          {formatMoney(recordingChargeDue(12))}. The clerk&rsquo;s own fee schedule covers the
+          other things the office does — certified copies, searches, its own e-recording
+          arrangements — and a third-party e-recording vendor may add a fee of its own, which is
+          not the clerk&rsquo;s charge and not this.
+        </p>
+
+        <p className="muted">
+          Every figure in the two sections above was read from the statute that sets it on{' '}
+          {formatLongDate(CHECKED_ON)} and is linked to that section. The one point not settled by
+          the statute&rsquo;s own words is which county ch. 83-220 describes; that comes from the{' '}
+          <a href={DOR_DOC_STAMP_GUIDANCE} rel="nofollow">
+            Department of Revenue&rsquo;s documentary stamp tax guidance
+          </a>
+          . Rates change by act of the Legislature — if one of these no longer matches what you are
+          being charged, tell us and we will correct it.
         </p>
 
         {county.recordingTurnaround ? (
