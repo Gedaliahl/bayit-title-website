@@ -95,10 +95,11 @@ export function VerifyBanner({
           <strong>
             {flags.length} item{plural} we have not published for this county
           </strong>
-          These are not stated anywhere on this page. We publish a figure once it is tied to a
-          source we are willing to stand behind, and none of these is there yet — an invented
-          closing cost is worse than a missing one. Ask us on a specific file and we will tell you
-          what we are seeing.
+          {flags.length === 1 ? 'It is not stated' : 'These are not stated'} anywhere on this page.
+          We publish a figure once it is tied to a source we are willing to stand behind, and{' '}
+          {flags.length === 1 ? 'this one is not there yet' : 'none of these is there yet'} — an
+          invented closing cost is worse than a missing one. Ask us on a specific file and we will
+          tell you what we are seeing.
         </>
       )}
       <ul>

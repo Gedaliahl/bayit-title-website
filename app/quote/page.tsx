@@ -33,8 +33,9 @@ export default async function QuotePage() {
           text={
             'Florida title insurance rates are promulgated by the Office of Insurance Regulation, ' +
             'so the premium for a given coverage amount is the same at every agency in the state. ' +
-            'A quote is therefore about the other lines: search, examination, settlement fee, ' +
-            'endorsements, recording, and documentary stamps, which vary by county and by deal.'
+            'Recording charges and documentary stamp tax are set by statute and are the same ' +
+            'statewide, Miami-Dade aside. A quote is therefore about the lines that do move: ' +
+            'search, examination, our settlement fee, endorsements, and what the file turns up.'
           }
         />
 
