@@ -19,6 +19,15 @@ export interface Location {
   /** Who customarily pays for the owner's policy. Null until verified. */
   customaryOwnerPolicyPayer: string | null;
   eRecordingAvailable: boolean | null;
+  /**
+   * What this county's recording office publishes about how long recording
+   * takes, in its own words. Null where the office publishes nothing — which is
+   * 42 of the 67 counties. Never fill this from an industry average or a
+   * recorder-directory site; see docs/county-recording-turnaround.md.
+   */
+  recordingTurnaround: string | null;
+  recordingTurnaroundSourceUrl: string | null;
+  recordingTurnaroundCheckedOn: string | null;
   notes: string | null;
 }
 
@@ -40,6 +49,9 @@ function fallbackCounties(): Location[] {
     taxCollectorUrl: null,
     customaryOwnerPolicyPayer: null,
     eRecordingAvailable: null,
+    recordingTurnaround: null,
+    recordingTurnaroundSourceUrl: null,
+    recordingTurnaroundCheckedOn: null,
     notes: null,
   }));
 }
@@ -52,7 +64,7 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     .from('locations')
     // Single string literal on purpose — see the note in lib/reviews.ts.
     .select(
-      'slug, kind, name, parent_county_slug, is_priority, clerk_name, clerk_url, property_appraiser_url, tax_collector_url, customary_owner_policy_payer, e_recording_available, notes',
+      'slug, kind, name, parent_county_slug, is_priority, clerk_name, clerk_url, property_appraiser_url, tax_collector_url, customary_owner_policy_payer, e_recording_available, recording_turnaround, recording_turnaround_source_url, recording_turnaround_checked_on, notes',
     )
     .order('is_priority', { ascending: false })
     .order('name');
@@ -88,6 +100,9 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     taxCollectorUrl: row.tax_collector_url,
     customaryOwnerPolicyPayer: row.customary_owner_policy_payer,
     eRecordingAvailable: row.e_recording_available,
+    recordingTurnaround: row.recording_turnaround,
+    recordingTurnaroundSourceUrl: row.recording_turnaround_source_url,
+    recordingTurnaroundCheckedOn: row.recording_turnaround_checked_on,
     notes: row.notes,
   }));
 });

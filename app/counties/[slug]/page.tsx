@@ -52,7 +52,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
   const openItems = [
     'Recording fees and the current clerk fee schedule for this county',
     'Documentary stamp tax and, where it applies, county surtax figures',
-    'Typical recording turnaround at this clerk',
+    // Cleared only where the recording office publishes a statement of its own.
+    // Most Florida counties publish nothing, and for those the flag stands.
+    ...(county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk']),
   ];
 
   return (
@@ -115,6 +117,32 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           Recording turnaround affects when a policy can issue, so it is worth knowing on a file
           with a tight timeline.
         </p>
+
+        {county.recordingTurnaround ? (
+          <>
+            <p>
+              On turnaround, the{' '}
+              {county.clerkName ?? `${county.name} Clerk of Court`} publishes this:
+            </p>
+            <blockquote>
+              {county.recordingTurnaround}
+              <footer>
+                <a href={county.recordingTurnaroundSourceUrl!} rel="nofollow">
+                  Read from the office&rsquo;s own page
+                </a>
+                {county.recordingTurnaroundCheckedOn
+                  ? ` on ${county.recordingTurnaroundCheckedOn}`
+                  : ''}
+              </footer>
+            </blockquote>
+            <p>
+              That is the office&rsquo;s own published statement, not a commitment it makes to us or
+              a time we can promise you. Offices change these pages without notice. On a file where
+              the recording date matters, ask us and we will check what the office is actually doing
+              that week.
+            </p>
+          </>
+        ) : null}
 
         <h2>How Bayit Title handles a {county.name} file</h2>
         <p>

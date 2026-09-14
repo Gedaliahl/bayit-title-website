@@ -147,6 +147,9 @@ export type Database = {
           notes: string | null;
           parent_county_slug: string | null;
           property_appraiser_url: string | null;
+          recording_turnaround: string | null;
+          recording_turnaround_checked_on: string | null;
+          recording_turnaround_source_url: string | null;
           slug: string;
           tax_collector_url: string | null;
           updated_at: string;
@@ -164,6 +167,9 @@ export type Database = {
           notes?: string | null;
           parent_county_slug?: string | null;
           property_appraiser_url?: string | null;
+          recording_turnaround?: string | null;
+          recording_turnaround_checked_on?: string | null;
+          recording_turnaround_source_url?: string | null;
           slug: string;
           tax_collector_url?: string | null;
           updated_at?: string;

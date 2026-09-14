@@ -98,6 +98,16 @@ blockquote {
   font-style: italic;
 }
 
+/* Attribution under a quoted source. Upright and smaller, so the reader can see
+   where the quote stops and who said it — on this site a quoted figure is only
+   as good as the office it came from. */
+blockquote footer {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85em;
+  font-style: normal;
+}
+
 code {
   font-size: 0.9em;
   background: var(--sage);
