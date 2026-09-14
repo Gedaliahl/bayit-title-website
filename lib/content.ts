@@ -67,7 +67,7 @@ export interface Doc extends DocFrontMatter {
   html: string;
   /** Raw Markdown body, used to detect unresolved [VERIFY] flags. */
   raw: string;
-  /** Every `[VERIFY: ...]` flag found in the body and the direct answer. */
+  /** Every `[VERIFY: ...]` flag on the page — answer, quick facts and body. */
   verifyFlags: string[];
   collection: Collection;
   wordCount: number;
@@ -114,6 +114,28 @@ export function findVerifyFlags(text: string): string[] {
   return found;
 }
 
+/**
+ * Every part of a page a flag can be written into and a reader can see: the
+ * direct answer, the quick-facts box and the body. The banner counts flags
+ * from this, so its count matches the number of VERIFY marks on the page —
+ * a banner that says six while the page shows eight teaches the reader to
+ * distrust both.
+ */
+function flaggableText(
+  data: { direct_answer?: unknown; quick_facts?: unknown },
+  body: string,
+): string {
+  const facts = Array.isArray(data.quick_facts)
+    ? (data.quick_facts as { term?: string; detail?: string }[])
+    : [];
+
+  return [
+    String(data.direct_answer ?? ''),
+    ...facts.map((fact) => `${fact.term ?? ''} ${fact.detail ?? ''}`),
+    body,
+  ].join('\n');
+}
+
 function assertFrontMatter(
   data: Record<string, unknown>,
   body: string,
@@ -139,7 +161,7 @@ function assertFrontMatter(
 
     // A page cannot claim a licensed review while it still contains unresolved
     // facts. Resolving them is the review.
-    const unresolved = findVerifyFlags(`${data.direct_answer}\n${body}`);
+    const unresolved = findVerifyFlags(flaggableText(data, body));
     if (unresolved.length > 0) {
       throw new Error(
         `${file}: status is "reviewed" but ${unresolved.length} VERIFY flag(s) remain: ` +
@@ -230,7 +252,7 @@ export async function getDoc(collection: Collection, slug: string): Promise<Doc 
     ...frontMatter,
     html: await toHtml(content),
     raw: content,
-    verifyFlags: findVerifyFlags(`${frontMatter.direct_answer}\n${content}`),
+    verifyFlags: findVerifyFlags(flaggableText(frontMatter, content)),
     collection,
     wordCount: countWords(content),
   };

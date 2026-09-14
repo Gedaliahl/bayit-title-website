@@ -1,3 +1,5 @@
+import { VerifyText } from '@/components/Prose';
+
 export interface QuickFact {
   term: string;
   detail: string;
@@ -13,7 +15,9 @@ export function QuickFacts({ facts }: { facts: QuickFact[] }) {
         {facts.map((fact) => (
           <div key={fact.term} style={{ display: 'contents' }}>
             <dt>{fact.term}</dt>
-            <dd>{fact.detail}</dd>
+            <dd>
+              <VerifyText text={fact.detail} />
+            </dd>
           </div>
         ))}
       </dl>
