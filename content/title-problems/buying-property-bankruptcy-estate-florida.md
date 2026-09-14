@@ -37,7 +37,15 @@ At minimum the questions being answered are these:
 - **What happens to the liens?** Whether the sale is free and clear, and if so which interests that covers and which it does not.
 - **Has the time to appeal run?** Closing before it has can expose the buyer if the order is disturbed.
 
-[VERIFY: the applicable appeal period for a bankruptcy sale order and the effect of any stay, and whether a good-faith purchaser finding in the order changes the analysis — needs confirmation from counsel or the underwriter, not general knowledge]
+Three federal provisions set the shape of this, and they are worth reading in order.
+
+**The order is stayed for 14 days.** [Fed. R. Bankr. P. 6004(h)](https://www.law.cornell.edu/rules/frbp/rule_6004): "Unless the court orders otherwise, an order authorizing the use, sale, or lease of property (other than cash collateral) is stayed for 14 days after the order is entered." Sale orders frequently waive that stay in terms — which is why the order has to be read rather than assumed.
+
+**The appeal period is also 14 days.** [Fed. R. Bankr. P. 8002(a)(1)](https://www.law.cornell.edu/rules/frbp/rule_8002): a notice of appeal must be filed within 14 days after the order is entered. Those two periods run together but they are not the same thing, and a waived stay does not shorten the time to appeal.
+
+**A good faith finding matters a great deal.** [11 U.S.C. § 363(m)](https://www.law.cornell.edu/uscode/text/11/363) provides that reversal or modification on appeal of an authorization to sell "does not affect the validity of a sale... to an entity that purchased... in good faith, whether or not such entity knew of the pendency of the appeal, unless such authorization and such sale... were stayed pending appeal." So a buyer who is found to have purchased in good faith, and who closes without a stay in place, keeps the property even if the order is later reversed. That protection is the reason the finding is asked for, and the reason its absence changes the risk.
+
+This is federal bankruptcy law, not Florida title practice, and the words of a particular order govern over any general description of it. On a real file these questions belong to bankruptcy counsel and to the underwriter, and this page is not a substitute for either.
 
 ## Does the title search change?
 
