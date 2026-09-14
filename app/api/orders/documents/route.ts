@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { confirmDocumentsSchema, fieldErrors } from '@/lib/schemas';
 import { requireServiceClient } from '@/lib/supabase';
 import { notify } from '@/lib/submissions';
-import { isPathForOrder, RETENTION_DAYS } from '@/lib/documents';
+import { isPathForOrder } from '@/lib/documents';
 import { isWithinConfirmWindow, registerUploadedDocuments } from '@/lib/document-storage';
 import { site } from '@/lib/site';
 
@@ -71,8 +71,8 @@ export async function POST(request: Request) {
             '',
           ].join('\n'),
         ),
-        `These links expire in a week. The files themselves are purged after ${RETENTION_DAYS} days,`,
-        'so move anything you need into the title file.',
+        'These links expire in a week. Move anything you need into the title file —',
+        'the website bucket is a drop box, not a system of record.',
       ]);
     }
 

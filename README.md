@@ -182,8 +182,12 @@ browser holds permission to write exactly one object at exactly one path.
   bucket, and the size cap mirrors its `file_size_limit`. The bucket is the real
   gate — adding a type in code alone buys a picker that accepts a file and an
   upload that fails.
-- Documents carry a 90-day `purge_after`. The office is told so in the
-  notification.
+- Documents carry a `purge_after` date marking when they become eligible for
+  deletion. **Nothing acts on it.** There is no purge job and no retention
+  policy — how long the agency must keep a contract or a payoff letter is a
+  decision for the firm and its counsel, not a schema default. Neither the form
+  nor the notification claims anything about deletion, and neither should until
+  that decision is made.
 
 ## Known blockers
 

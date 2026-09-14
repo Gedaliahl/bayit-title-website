@@ -39,7 +39,14 @@ const ACCEPTED: Record<string, string> = {
 export const ACCEPT_ATTRIBUTE = Object.keys(ACCEPTED).join(',');
 export const ACCEPTED_LABEL = 'PDF, JPG, PNG, HEIC or Word (.docx)';
 
-/** Documents are purged on this schedule unless the office moves them into the file. */
+/**
+ * Stamped on each row as `purge_after` to mark when a document becomes eligible
+ * for deletion. Nothing acts on it: there is no purge job, and there is no
+ * retention policy either — how long a title agency must keep a contract or a
+ * payoff letter is a question for the firm and its counsel, not a default
+ * inherited from a schema sketch. Until that decision exists, this is a marker
+ * and the site promises nothing about it.
+ */
 export const RETENTION_DAYS = 90;
 
 export function extensionOf(filename: string): string {

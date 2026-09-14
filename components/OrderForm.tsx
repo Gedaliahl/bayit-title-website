@@ -10,7 +10,6 @@ import {
   MAX_FILES,
   MAX_FILE_BYTES,
   MAX_TOTAL_BYTES,
-  RETENTION_DAYS,
   contentTypeFor,
   formatBytes,
 } from '@/lib/documents';
@@ -363,10 +362,7 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
           disabled={busy}
           error={errors.documents || undefined}
         />
-        <p className="form-note">
-          Attachments go to private storage, not to email. They are purged after {RETENTION_DAYS}{' '}
-          days unless we have moved them into the title file by then.
-        </p>
+        <p className="form-note">Attachments go to private storage, not to email.</p>
       </fieldset>
 
       <TextArea
