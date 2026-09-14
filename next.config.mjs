@@ -16,6 +16,10 @@ const nextConfig = {
       { source: '/pennsylvania', destination: '/', permanent: true },
       { source: '/pa-closings', destination: '/', permanent: true },
       { source: '/pennsylvania-title-insurance', destination: '/', permanent: true },
+
+      // The icon is app/icon.svg, linked from the document head. Agents that
+      // still guess at /favicon.ico get sent there rather than a 404.
+      { source: '/favicon.ico', destination: '/icon.svg', permanent: false },
     ];
   },
 

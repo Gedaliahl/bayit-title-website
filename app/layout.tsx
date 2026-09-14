@@ -42,6 +42,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: SITE_URL,
   },
+  // Without a twitter:image of its own, X falls back to og:image — which the
+  // opengraph-image files generate for every route. This only picks the layout.
+  twitter: { card: 'summary_large_image' },
   robots: {
     index: true,
     follow: true,
