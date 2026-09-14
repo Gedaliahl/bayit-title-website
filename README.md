@@ -351,17 +351,44 @@ makes claims the code has to keep true.
 
 Carried forward from `docs/HANDOFF.md`, still open:
 
-- `rate_tables` is empty → no calculators, and county pages withhold fee figures
+**Waiting on the firm**
+
+- All nine content files are still `status: draft`, so production publishes zero
+  library pages. See `docs/verify-worklist.md` — 62 flags, triaged by who can
+  answer them.
 - Several pages make First American coverage statements that are unverified
 - Timeline data is a `[VERIFY]` flag on every library page
-- Team bios need 2–3 sentences each from Gedaliah, Jennifer and Chaya; the About
-  page's founding story is Shevy's to write
+- `rate_tables` is empty → no calculators, and county pages withhold fee figures
+- Bios for Shevy and Gedaliah; the About page's founding story is Shevy's to
+  write. Jennifer's and Chaya's are in.
 - No usable photography
+- No retention schedule for form submissions, orders or uploaded documents. It
+  blocks a definite §7 in the privacy policy and any purge of `purge_after`.
+- The privacy policy is live but has not been through a lawyer; the
+  Gramm-Leach-Bliley question for the closing side is open.
+
+**Engineering, unblocked**
+
+- The document upload's storage round-trip has never been exercised: minting a
+  signed URL, the browser PUT, and the bucket listing on confirm all need a
+  service-role key and one real submission.
+- No form collects SMS consent, while the privacy policy carries SMS terms for an
+  A2P registration. If that registration relies on web-form opt-in, the mechanism
+  does not exist here.
+- `review_requests` and `ai_audit_log` are schema with no code — the review-ask
+  flow and the quarterly AI-visibility audit are both unbuilt.
 - Google Business Profile API access was rejected; reapply from a bayittitle.com
   address. Reviews are seeded manually and work fine — the sync is an
   optimisation, not a blocker.
-- No privacy policy page, while `/privacy` and `/privacy-policy` are live on the
-  Wix site and the order form now accepts uploaded documents
+
+**Launch mechanics, none started**
+
+- Domain cutover, with `www.bayittitle.com` set as the primary domain in Vercel
+- `RESEND_API_KEY` unset, so form notifications silently no-op; plus SPF/DKIM for
+  the sending domain
+- Supabase environment variables confirmed in Vercel before cutover, not after
+- Search Console and Bing properties created on the real domain, and the redirect
+  map re-checked against Search Console's Pages report for stale indexed URLs
 
 ## Docs
 
