@@ -171,7 +171,11 @@ This sequence is fixed and is the core of the site:
    no radius, no shadow.
 5. **Draft banner** (`.verify-banner`, 2px) — only on unreviewed drafts
 6. **VERIFY banner** (`.verify-banner`) — oxblood border, 3px left, `#fdf6f2`
-   ground, Archivo 0.875rem, with a bulleted list of unresolved facts
+   ground, Archivo 0.875rem, with a bulleted list of unresolved facts. Two
+   variants: `flagged` on a library page, where every listed item also carries
+   a `VERIFY` mark in the copy below, and `withheld` on a county page, where
+   the items are facts deliberately absent from the page and there is no mark
+   to point at
 7. **Quick facts** (`.quick-facts`) — 1px box with a 2px `--sage-deep` top rule.
    Two-column `dl` (label column `8rem` min) that stacks below `34rem`
 8. **Prose** (`.prose`) — H2s carry a top hairline and generous space above

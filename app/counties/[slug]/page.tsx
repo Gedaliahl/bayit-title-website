@@ -81,7 +81,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           }
         />
 
-        <VerifyBanner flags={openItems} />
+        <VerifyBanner flags={openItems} variant="withheld" />
 
         <h2>Who pays for the owner&rsquo;s policy in {county.name}?</h2>
         {payer ? (
