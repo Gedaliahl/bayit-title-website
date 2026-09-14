@@ -124,10 +124,11 @@ const nextConfig = {
       { source: '/pa-closings', destination: '/', permanent: true },
       { source: '/pennsylvania-title-insurance', destination: '/', permanent: true },
 
-      // TODO: /privacy and /privacy-policy are live on Wix and have nowhere to
-      // go — this site has no privacy page. Both will 404 at cutover. That is a
-      // page to write, not a redirect to add, and it matters more now that the
-      // order form accepts uploaded documents.
+      // Wix published the policy at two paths, which is its usual duplication.
+      // /privacy is the page here; /privacy-policy folds into it. Both depend on
+      // app/privacy/page.tsx being reviewed — until then it is a draft and does
+      // not render in production, so review it before the cutover.
+      { source: '/privacy-policy', destination: '/privacy', permanent: true },
 
       // The icon is app/icon.svg, linked from the document head. Agents that
       // still guess at /favicon.ico get sent there rather than a 404.

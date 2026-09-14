@@ -33,7 +33,7 @@ function find(all: Redirect[], source: string): Redirect | undefined {
 /** Paths this site actually serves, so no redirect can point into thin air. */
 const ROUTES = new Set([
   '/', '/about', '/team', '/services', '/counties', '/title-problems',
-  '/reviews', '/contact', '/order', '/quote', '/icon.svg',
+  '/reviews', '/contact', '/order', '/quote', '/privacy', '/icon.svg',
 ]);
 
 describe('pages live on Wix today', () => {
@@ -57,6 +57,16 @@ describe('pages live on Wix today', () => {
     expect(entry!.destination).toBe(destination);
     // A 302 tells Google to keep the old URL. Only a 301 moves the signal.
     expect(entry!.permanent).toBe(true);
+  });
+
+  it('folds Wix\u2019s duplicate privacy path into the one page', async () => {
+    // Wix published the policy at /privacy and /privacy-policy both. Only the
+    // first is a page here.
+    const entry = find(await redirects(), '/privacy-policy');
+
+    expect(entry).toBeDefined();
+    expect(entry!.destination).toBe('/privacy');
+    expect(find(await redirects(), '/privacy')).toBeUndefined();
   });
 
   it('leaves /about alone, because the path did not change', async () => {

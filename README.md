@@ -301,15 +301,44 @@ the same for passing ranking signal.
 
 Two things are still open:
 
-- **`/privacy` and `/privacy-policy` are live on Wix and will 404 at cutover.**
-  This site has no privacy page. That is a page to write, not a redirect to add,
-  and it matters more now that the order form accepts uploaded documents.
+- **The privacy policy is drafted but unreviewed**, so `/privacy` still 404s in
+  production and `/privacy-policy` redirects into it. See below — reviewing it
+  is a cutover blocker.
 - The Wix sitemap lists what Wix *publishes*, which is a floor rather than a
   ceiling — a URL deleted years ago can still sit in Google's index with links
   pointing at it. Re-check the map against Search Console's Pages report on the
   Wix property before the cutover. The Pennsylvania entries are exactly that
   case: they 404 on Wix already and are kept because the firm is Florida-only
   and a stale page must neither resurface nor land on a 404.
+
+## The privacy policy
+
+`app/privacy/page.tsx`, gated on `lib/privacy.ts` the same way content is: a
+policy is a binding representation by a licensed financial institution, so an
+unreviewed one is not served, not linked in the footer, and not listed in the
+sitemap. It renders on a preview build, `noindex`, with the draft banner and its
+open items shown.
+
+Everything on it describing the website is written from the code and is
+checkable — the exact fields each form posts, the salted fingerprint that
+replaces the caller's IP, the absence of any cookie or browser storage
+(verified in a browser, including with analytics active), and the vendors that
+actually receive data. Nothing about the firm's *practice* is invented. Five
+things only the firm and its counsel can answer are flagged on the page:
+
+1. Retention — how long submissions, orders and uploaded documents are kept.
+   No schedule has ever been set; this is the same question that got a purge
+   promise removed from the order form.
+2. Whether this page is the agency's Gramm-Leach-Bliley notice, or whether a
+   separate notice is delivered at closing. A title agency is a financial
+   institution under GLBA, and this is a question for counsel.
+3. How someone asks what is held about them, and who handles that.
+4. What is shared with First American as underwriter, and on what basis.
+5. The effective date, and how changes get communicated.
+
+Resolve those, delete the `Verify` markers, and set `PRIVACY_STATUS` to
+`'reviewed'` in `lib/privacy.ts`. That one change publishes the page, restores
+the footer link, and adds it to the sitemap.
 
 ## Known blockers
 

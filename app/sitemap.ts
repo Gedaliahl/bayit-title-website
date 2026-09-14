@@ -4,6 +4,7 @@ import { getAllDocs } from '@/lib/content';
 import { getCounties } from '@/lib/locations';
 import { team } from '@/lib/team';
 import { absoluteUrl } from '@/lib/seo';
+import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [allProblems, allServices, counties] = await Promise.all([
@@ -29,6 +30,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/contact'), lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
     { url: absoluteUrl('/order'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/quote'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
+    // Same rule as a draft content page: nothing unreviewed is listed for crawlers.
+    ...(PRIVACY_PUBLISHED
+      ? [
+          {
+            url: absoluteUrl('/privacy'),
+            lastModified: now,
+            changeFrequency: 'yearly' as const,
+            priority: 0.3,
+          },
+        ]
+      : []),
   ];
 
   return [
