@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { TextField, TextArea, SelectField, FileField, Honeypot } from './Field';
+import { useErrorFocus } from './useErrorFocus';
 import {
   ACCEPT_ATTRIBUTE,
   ACCEPTED_LABEL,
@@ -64,6 +65,7 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<File[]>([]);
+  const { formRef, reportFailure } = useErrorFocus();
 
   const busy = status.kind === 'sending' || status.kind === 'uploading';
 
@@ -139,11 +141,13 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
       if (response.status === 422 && body.errors) {
         setErrors(body.errors);
         setStatus({ kind: 'failed', message: 'Some details need another look.' });
+        reportFailure();
         return;
       }
 
       if (!response.ok) {
         setStatus({ kind: 'failed', message: body.error ?? 'Something went wrong.' });
+        reportFailure();
         return;
       }
     } catch {
@@ -151,6 +155,7 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
         kind: 'failed',
         message: `We could not reach the server. Email ${site.ordersEmail} or call ${site.phoneDisplay}.`,
       });
+      reportFailure();
       return;
     }
 
@@ -222,9 +227,10 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} onSubmit={handleSubmit} noValidate>
       {status.kind === 'failed' ? (
-        <p className="form-status form-status--error" role="alert">
+        // tabIndex so focus can land here when no single field is at fault.
+        <p className="form-status form-status--error" role="alert" tabIndex={-1}>
           {status.message}
         </p>
       ) : null}

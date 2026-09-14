@@ -294,14 +294,21 @@ th {
   font-size: 0.9375rem;
 }
 
-.nav a {
+/* `:not(.btn)` is load-bearing, not tidiness. `.nav a` outranks `.btn--primary`
+   on specificity — a class plus an element beats a class — so without it this
+   rule repainted the header's "Open an order" button ink-on-oxblood at a
+   contrast ratio of 1.46:1, and overrode its padding besides. A button that
+   happens to sit in the nav is not a nav link. Same guard on the other two
+   container rules below, which have the same shape and would fail the same way
+   the moment a call to action lands in them. */
+.nav a:not(.btn) {
   color: var(--ink);
   text-decoration: none;
   padding-block: 0.25rem;
   border-bottom: 1px solid transparent;
 }
 
-.nav a:hover {
+.nav a:not(.btn):hover {
   border-bottom-color: var(--oxblood);
   color: var(--ink);
 }
@@ -340,12 +347,12 @@ th {
   margin-top: 0.4rem;
 }
 
-.sitefoot a {
+.sitefoot a:not(.btn) {
   color: var(--ink);
   text-decoration: none;
 }
 
-.sitefoot a:hover {
+.sitefoot a:not(.btn):hover {
   color: var(--oxblood);
   text-decoration: underline;
 }
@@ -553,14 +560,14 @@ th {
   border-bottom: 1px solid var(--rule);
 }
 
-.linklist a {
+.linklist a:not(.btn) {
   display: block;
   padding: 0.85rem 0;
   color: var(--ink);
   text-decoration: none;
 }
 
-.linklist a:hover {
+.linklist a:not(.btn):hover {
   color: var(--oxblood);
 }
 

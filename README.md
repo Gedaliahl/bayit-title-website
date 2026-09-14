@@ -128,6 +128,31 @@ availability — reviews may describe it, the firm must not promise it.
 Banned: seamless, stress-free, concierge (as a tier), trusted, hassle-free, peace
 of mind, dream home, hero, rescue.
 
+## Accessibility
+
+Audited with axe-core (WCAG 2.0/2.1/2.2 A and AA, plus best practice) across
+every page type at 375px and 1280px, and by hand for the things a scanner
+cannot see. Current state: **no axe violations, no horizontal overflow at any
+width down to 320px, every focusable element carries a visible focus ring, and
+the text-spacing override of SC 1.4.12 clips nothing.**
+
+Two findings, both fixed:
+
+- `.nav a` outranked `.btn--primary` on specificity, which repainted the
+  header's "Open an order" button ink-on-oxblood — a contrast ratio of **1.46:1**
+  on the primary call to action, on every page. The container link rules now
+  exclude `.btn`.
+- A failed submit was silent on a phone. The button sits at the bottom of a long
+  form and the errors render above the fold, so four errors rendered with none
+  on screen, while the disabling button dropped focus onto `<body>`.
+  `components/useErrorFocus.ts` moves focus to the first rejected field, which
+  scrolls it into view, puts the caret where the fix gets typed, and reads the
+  label and error together.
+
+Undersized tap targets were checked against SC 2.5.8 properly rather than by
+size alone: every one is either inline in text or clears the 24px spacing
+exception, so none is a failure.
+
 ## Security headers
 
 `next.config.mjs` sets HSTS, `nosniff`, a referrer policy, `X-Frame-Options`
