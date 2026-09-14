@@ -5,8 +5,9 @@ import './globals.css';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { OrganizationSchema } from '@/components/Schema';
+import { Analytics } from '@/components/Analytics';
 import { site } from '@/lib/site';
-import { SITE_URL } from '@/lib/seo';
+import { SITE_URL, siteVerification } from '@/lib/seo';
 
 // Newsreader for prose — this is a reading-heavy site.
 const newsreader = Newsreader({
@@ -45,6 +46,9 @@ export const metadata: Metadata = {
   // Without a twitter:image of its own, X falls back to og:image — which the
   // opengraph-image files generate for every route. This only picks the layout.
   twitter: { card: 'summary_large_image' },
+  // Search Console and Bing Webmaster Tools. Absent until the tokens are set,
+  // which should be on the real domain rather than the Vercel one.
+  verification: siteVerification(),
   robots: {
     index: true,
     follow: true,
@@ -63,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <main id="main">{children}</main>
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );

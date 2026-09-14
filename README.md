@@ -128,6 +128,34 @@ availability — reviews may describe it, the firm must not promise it.
 Banned: seamless, stress-free, concierge (as a tier), trusted, hassle-free, peace
 of mind, dream home, hero, rescue.
 
+## Measurement
+
+Vercel Web Analytics and Speed Insights, mounted in `components/Analytics.tsx`
+and **rendered only when `VERCEL_ENV` is `production`**. Preview deployments are
+the team reading its own drafts, which on a site starting from this much traffic
+would be most of the data rather than a rounding error.
+
+Both scripts are served from this origin under `/_vercel/`. Nothing calls a
+third party and nothing sets a cookie, so the site needs no consent banner to
+count a pageview and a future CSP has no outside host to name.
+
+### Search Console and Bing
+
+`GOOGLE_SITE_VERIFICATION` and `BING_SITE_VERIFICATION` emit the ownership meta
+tags. Neither is a secret — both are published in the page head. They are env
+vars so verifying a property is a dashboard change rather than a deploy, and
+with neither set no tag is emitted at all rather than an empty one.
+
+**Set them on production only.** A Search Console property is per-origin;
+verifying the Vercel preview hostname would report on a site nobody is meant to
+find. If you are already in the domain's DNS for the cutover, prefer Google's
+DNS TXT method and leave `GOOGLE_SITE_VERIFICATION` unset — it verifies the
+whole domain including subdomains. Bing can import an already-verified Search
+Console property, which skips its token too.
+
+`robots.txt` already points at `sitemap.xml`, so submission is the only step
+left once a property exists.
+
 ## Structured data
 
 `components/Schema.tsx` emits Organization, Person, Article, FAQPage and

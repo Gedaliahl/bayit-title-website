@@ -2,9 +2,9 @@
  * Meta descriptions come from the direct answer, which is already written to
  * stand alone. Trimming it must not invent anything or cut mid-thought.
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { metaDescription, formatLongDate, formatReviewDate } from '@/lib/seo';
+import { metaDescription, formatLongDate, formatReviewDate, siteVerification } from '@/lib/seo';
 
 describe('meta descriptions', () => {
   it('leaves a short answer alone', () => {
@@ -52,5 +52,55 @@ describe('dates', () => {
 
   it('gives a review a month and year, never a day', () => {
     expect(formatReviewDate('2026-03-01')).toBe('March 2026');
+  });
+});
+
+describe('proving we own the domain', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('emits no tag at all when nothing is verified', () => {
+    // An empty content attribute is worse than no tag: it looks configured.
+    expect(siteVerification()).toBeUndefined();
+  });
+
+  it('carries a Google token', () => {
+    vi.stubEnv('GOOGLE_SITE_VERIFICATION', 'abc123');
+    expect(siteVerification()).toEqual({ google: 'abc123' });
+  });
+
+  it('puts a Bing token under its own meta name', () => {
+    vi.stubEnv('BING_SITE_VERIFICATION', 'bing456');
+    expect(siteVerification()).toEqual({ other: { 'msvalidate.01': 'bing456' } });
+  });
+
+  it('carries both when both are set', () => {
+    vi.stubEnv('GOOGLE_SITE_VERIFICATION', 'abc123');
+    vi.stubEnv('BING_SITE_VERIFICATION', 'bing456');
+    expect(siteVerification()).toEqual({
+      google: 'abc123',
+      other: { 'msvalidate.01': 'bing456' },
+    });
+  });
+
+  it('takes the token out of a whole meta tag pasted by mistake', () => {
+    // Both dashboards hand the token over inside a ready-made tag, so this is
+    // the obvious thing to paste into an env var.
+    vi.stubEnv(
+      'GOOGLE_SITE_VERIFICATION',
+      '<meta name="google-site-verification" content="abc123" />',
+    );
+    expect(siteVerification()).toEqual({ google: 'abc123' });
+  });
+
+  it('handles single quotes in a pasted tag', () => {
+    vi.stubEnv('BING_SITE_VERIFICATION', "<meta name='msvalidate.01' content='bing456' />");
+    expect(siteVerification()).toEqual({ other: { 'msvalidate.01': 'bing456' } });
+  });
+
+  it('treats a variable set to whitespace as unset', () => {
+    vi.stubEnv('GOOGLE_SITE_VERIFICATION', '   ');
+    expect(siteVerification()).toBeUndefined();
   });
 });

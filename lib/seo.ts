@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { site } from './site';
 
 /**
@@ -34,6 +36,46 @@ function resolveSiteUrl(): string {
 }
 
 export const SITE_URL = resolveSiteUrl();
+
+/**
+ * A verification token as the dashboards hand it over.
+ *
+ * Google and Bing both present the token inside a ready-made `<meta>` tag, and
+ * pasting the whole tag into an env var is the obvious mistake. Take the
+ * content out rather than rendering a tag inside a tag.
+ */
+function readVerificationToken(raw: string | undefined): string | undefined {
+  const value = raw?.trim();
+  if (!value) return undefined;
+
+  const fromTag = /content=["']([^"']+)["']/.exec(value);
+  return (fromTag ? fromTag[1] : value).trim() || undefined;
+}
+
+/**
+ * Proves ownership of the domain to Search Console and Bing Webmaster Tools.
+ *
+ * Neither token is a secret — both are published in the page head. They live in
+ * environment variables so that verifying a property is a dashboard change
+ * rather than a deploy, and so the preview domain is never verified by
+ * accident: a property is per-origin, and verifying the Vercel hostname would
+ * report on a site nobody is meant to find.
+ *
+ * Returns undefined when neither is set, so an unverified deploy emits no tag
+ * at all rather than an empty one.
+ */
+export function siteVerification(): Metadata['verification'] | undefined {
+  const google = readVerificationToken(process.env.GOOGLE_SITE_VERIFICATION);
+  const bing = readVerificationToken(process.env.BING_SITE_VERIFICATION);
+
+  if (!google && !bing) return undefined;
+
+  return {
+    ...(google ? { google } : {}),
+    // Bing has no dedicated field in Next's metadata; its tag is msvalidate.01.
+    ...(bing ? { other: { 'msvalidate.01': bing } } : {}),
+  };
+}
 
 export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${pathname.startsWith('/') ? pathname : `/${pathname}`}`;
