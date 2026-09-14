@@ -128,6 +128,34 @@ availability — reviews may describe it, the firm must not promise it.
 Banned: seamless, stress-free, concierge (as a tier), trusted, hassle-free, peace
 of mind, dream home, hero, rescue.
 
+## Security headers
+
+`next.config.mjs` sets HSTS, `nosniff`, a referrer policy, `X-Frame-Options`
+and a **Content-Security-Policy**. The policy is static rather than
+nonce-based, and that is the one trade worth understanding.
+
+`script-src` carries `'unsafe-inline'` deliberately. Next emits two inline
+bootstrap scripts per page, and the JSON-LD this site exists to publish is
+inline by definition. Removing it means a per-request nonce, which needs
+middleware and opts every page out of static rendering — a real cost on a site
+whose whole shape is statically generated content served from the edge.
+
+What the policy still buys, verified in a browser against the exact header the
+app serves: an injected `<script src>` pointing at another host is refused, so
+is an injected form posting elsewhere, so is a rewritten `<base>`, an `<object>`,
+an outside image, an `<iframe>`, and any `fetch` to an origin not named below.
+Markdown is rendered with `sanitize: false`, so that backstop is not theoretical.
+
+`connect-src` names the Supabase origin because **the browser uploads order
+documents straight to the storage bucket**. The origin is read from
+`SUPABASE_URL`, the same variable the server client uses, so the policy cannot
+drift from the project the app points at. With that variable unset the build
+warns and uploads will be blocked by the browser — loudly, rather than
+mysteriously at the worst moment.
+
+`tests/csp.test.ts` asserts the properties rather than the string, because a
+weakened CSP breaks nothing and is therefore invisible.
+
 ## Measurement
 
 Vercel Web Analytics and Speed Insights, mounted in `components/Analytics.tsx`
