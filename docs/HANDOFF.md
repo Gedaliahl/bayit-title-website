@@ -86,7 +86,7 @@ Nine tables in `public`, all with RLS enabled:
 | Table | Purpose |
 |---|---|
 | `locations` | counties/cities; 3 priority counties seeded |
-| `rate_tables` | promulgated premiums — **empty, blocks calculators**. Doc stamps and recording charges are statutory and live in `lib/statutory-rates.ts` instead |
+| `rate_tables` | **empty.** Superseded for rendering: the promulgated premium is in `lib/promulgated-premium.ts` (OIR rule 69O-186.003) and doc stamps and recording charges in `lib/statutory-rates.ts` |
 | `google_reviews` | **92 reviews loaded**, full text, topic-tagged |
 | `review_snapshot` | 5.0 / 92 for the homepage |
 | `leads` | quote/contact forms |
@@ -168,9 +168,9 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 ## What to build next, in order
 
 1. **Order and quote forms** — Route Handlers writing to Supabase `leads`/`orders`, email notification to shevy@bayittitle.com, encrypted upload to the private bucket. This exercises the security design; get it right.
-2. **Three county pages** — Broward, Palm Beach, Miami-Dade. **Built.** Doc stamps, the Miami-Dade surtax, mortgage stamps, intangible tax and recording charges are published and cited to the statute (`lib/statutory-rates.ts`, read from Online Sunshine 2026-09-14). Still open per county: who-pays custom, and recording turnaround where the clerk publishes one.
+2. **Three county pages** — Broward, Palm Beach, Miami-Dade. **Built.** The promulgated premium schedule, doc stamps, the Miami-Dade surtax, mortgage stamps, intangible tax and recording charges are all published and cited (`lib/promulgated-premium.ts` and `lib/statutory-rates.ts`, read from the rule and the statutes on 2026-09-14). Still open per county: who-pays custom, and recording turnaround where the clerk publishes one.
 3. **Homepage, About, Team pages** — copy drafted in the voice guide; team bios have placeholders awaiting three team members' own sentences.
-4. **Calculators** — premium and closing cost. **Blocked** until `rate_tables` is populated with verified figures.
+4. **Calculators** — premium and closing cost. **Unblocked.** `lib/promulgated-premium.ts` computes the promulgated premium (original, reissue, simultaneous issue) and `lib/statutory-rates.ts` the taxes and recording charges; a calculator is now a UI on top of those, not a data problem.
 5. **Reviews sync** — Google Business Profile API access was rejected once (likely the gmail.com contact address). Reviews are seeded manually and work fine; the sync is an optimization, not a blocker.
 6. **Redirects** — map every legacy Wix URL in `next.config.mjs`, including the Pennsylvania pages.
 
@@ -178,7 +178,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 
 ## Known blockers
 
-- `rate_tables` empty → no calculators, and the promulgated premium schedule is unpublished
+- `rate_tables` empty → no calculators yet, though the figures they need are now in `lib/`
 - Six pages make First American coverage statements that are unverified
 - Timeline data is placeholder on every library page
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer, Chaya

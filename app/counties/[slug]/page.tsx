@@ -23,9 +23,20 @@ import {
   mortgageStampTaxDue,
   recordingChargeDue,
 } from '@/lib/statutory-rates';
+import {
+  CHECKED_ON as PREMIUM_CHECKED_ON,
+  MINIMUM_PREMIUM,
+  NEW_HOME_MINIMUM_PREMIUM,
+  ORIGINAL_SCHEDULE,
+  PREMIUM_RULE,
+  REISSUE_SCHEDULE,
+  SIMULTANEOUS_LOAN_PREMIUM,
+  originalPremium,
+  reissuePremium,
+} from '@/lib/promulgated-premium';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel, VerifyBanner } from '@/components/Prose';
-import { StatutoryCharges } from '@/components/StatutoryCharges';
+import { CitedFigures } from '@/components/CitedFigures';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
 
@@ -64,19 +75,18 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
   const payer = county.customaryOwnerPolicyPayer;
 
-  // Transfer taxes and recording charges are set by statute, so they are stated
-  // below and cited to the section that sets them rather than withheld. What is
-  // genuinely not on this page is the promulgated premium schedule, and this
-  // clerk's own turnaround where the office publishes none.
+  // Premium, transfer taxes and recording charges are all set by an authority
+  // outside this office — an OIR rule and three chapters of the statutes — so
+  // they are stated below and cited, not withheld. The only thing a county page
+  // still has to hold back is this clerk's own turnaround, where the office
+  // publishes none.
   const deedStamps = deedStampTax(county.slug);
   const surtax = discretionarySurtax(county.slug);
 
-  const openItems = [
-    'The promulgated premium schedule for an owner’s policy',
+  const openItems =
     // Cleared only where the recording office publishes a statement of its own.
     // Most Florida counties publish nothing, and for those the flag stands.
-    ...(county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk']),
-  ];
+    county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk'];
 
   return (
     <div className="frame section">
@@ -121,11 +131,63 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <h2>What does the premium cost?</h2>
         <p>
-          Florida title insurance rates are promulgated — set by the Florida Office of Insurance
-          Regulation and identical across agencies for the same coverage amount. An agency does not
-          discount the premium, and a quote that is lower than another quote is a difference in the
-          other line items, not the premium. We have not published the premium schedule itself yet;
-          ask us for the figure on a specific price and we will give it to you.
+          Florida title insurance premiums are promulgated: the Office of Insurance Regulation sets
+          them by rule under{' '}
+          <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
+            {PREMIUM_RULE.authorityCite}
+          </a>
+          , and every agency in the state charges the same premium for the same coverage. We cannot
+          discount it and neither can anyone else. A quote that comes in under another quote is
+          lower on some other line, not on this one — which is why the schedule is printed here
+          rather than kept behind a form.
+        </p>
+        <p>
+          The rate runs per $1,000 of liability, and an owner&rsquo;s policy is written for the full
+          insurable value of the property:
+        </p>
+
+        <CitedFigures figures={ORIGINAL_SCHEDULE} />
+
+        <p>
+          So a {formatMoney(EXAMPLE_PRICE)} purchase in {county.name} is{' '}
+          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong> — the first{' '}
+          {formatMoney(100_000)} at $5.75 per thousand and the rest at $5.00. The minimum premium on
+          a conveyance is {formatMoney(MINIMUM_PREMIUM)}, and a fraction of $100 counts as a full
+          $100 before the arithmetic starts.
+        </p>
+        <p>Three things in the same rule move that figure, and each is worth asking about:</p>
+        <ul>
+          <li>
+            <strong>The reissue rate</strong>, where the seller&rsquo;s own title was insured and
+            both we and the underwriter hold a copy of that policy. The common case is a new policy
+            dated less than three years after the one that insured the seller. It is a different
+            schedule, not a discount on this one:{' '}
+            {formatMoney(reissuePremium(EXAMPLE_PRICE))} on the same{' '}
+            {formatMoney(EXAMPLE_PRICE)} purchase, or{' '}
+            {formatMoney(originalPremium(EXAMPLE_PRICE) - reissuePremium(EXAMPLE_PRICE))} less.
+          </li>
+          <li>
+            <strong>Simultaneous issue.</strong> Where a lender&rsquo;s policy is issued at the same
+            time as the owner&rsquo;s policy on the same land, the lender&rsquo;s policy is{' '}
+            {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} for coverage up to the owner&rsquo;s amount.
+            Anything above that amount is charged at the regular rate.
+          </li>
+          <li>
+            <strong>The new home purchase discount</strong>, on the first sale of a newly built one-
+            to four-family home the seller has neither leased nor occupied: the premium is reduced
+            by what was paid for the builder&rsquo;s loan policy, with a floor of{' '}
+            {formatMoney(NEW_HOME_MINIMUM_PREMIUM)}. It cannot be combined with the reissue rate.
+          </li>
+        </ul>
+
+        <p>The reissue schedule, in full:</p>
+
+        <CitedFigures figures={REISSUE_SCHEDULE} />
+
+        <p className="muted">
+          Read from {PREMIUM_RULE.cite} on {formatLongDate(PREMIUM_CHECKED_ON)}. The rule was last
+          amended {formatLongDate(PREMIUM_RULE.lastAmended)}. Tell us if a figure here does not
+          match what you are quoted and we will check it against the rule again.
         </p>
 
         <h2>Documentary stamp tax on a {county.name} sale</h2>
@@ -139,7 +201,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           The tax is charged on each part of $100, so it rounds up.
         </p>
 
-        <StatutoryCharges charges={surtax ? [deedStamps, surtax] : [deedStamps]} />
+        <CitedFigures figures={surtax ? [deedStamps, surtax] : [deedStamps]} />
 
         <p>
           On a {formatMoney(EXAMPLE_PRICE)} sale that is{' '}
@@ -154,7 +216,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <p>A mortgage is taxed separately, so a cash closing carries neither of these:</p>
 
-        <StatutoryCharges charges={MORTGAGE_CHARGES} />
+        <CitedFigures figures={MORTGAGE_CHARGES} />
 
         <p>
           On a {formatMoney(EXAMPLE_LOAN)} loan that is{' '}
@@ -179,7 +241,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           record for the same money:
         </p>
 
-        <StatutoryCharges charges={RECORDING_CHARGES} />
+        <CitedFigures figures={RECORDING_CHARGES} />
 
         <p>
           A two-page deed is {formatMoney(recordingChargeDue(2))} and a twelve-page mortgage is{' '}

@@ -10,20 +10,10 @@
 // Nothing here is a Bayit Title price. The promulgated premium schedule is a
 // different thing and is not in this file — see README, known blockers.
 
+import type { CitedFigure } from './cited-figures';
+
 /** The date each figure below was last read from the statute itself. */
 export const CHECKED_ON = '2026-09-14';
-
-export interface StatutoryCharge {
-  /** What is being charged, in the reader's terms. */
-  label: string;
-  /** The figure, written the way the statute writes it. */
-  amount: string;
-  /** Cited so a reader can open the section and check it. */
-  cite: string;
-  sourceUrl: string;
-  /** Anything a reader would get wrong from the amount alone. */
-  note?: string;
-}
 
 const SUNSHINE = 'https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=';
 
@@ -52,7 +42,7 @@ export const DOR_DOC_STAMP_GUIDANCE =
   'https://floridarevenue.com/taxes/taxesfees/Pages/doc_stamp.aspx';
 
 /** Documentary stamp tax on the deed, which is the one figure that varies. */
-export function deedStampTax(countySlug: string): StatutoryCharge {
+export function deedStampTax(countySlug: string): CitedFigure {
   if (CH_83_220_COUNTIES.has(countySlug)) {
     return {
       label: 'Documentary stamp tax on the deed',
@@ -73,7 +63,7 @@ export function deedStampTax(countySlug: string): StatutoryCharge {
 }
 
 /** Levied only by a county defined in s. 125.011(1) — in practice, Miami-Dade. */
-export function discretionarySurtax(countySlug: string): StatutoryCharge | null {
+export function discretionarySurtax(countySlug: string): CitedFigure | null {
   if (!CH_83_220_COUNTIES.has(countySlug)) return null;
 
   return {
@@ -86,7 +76,7 @@ export function discretionarySurtax(countySlug: string): StatutoryCharge | null 
 }
 
 /** Charged on the loan, not the sale, so it is absent from a cash closing. */
-export const MORTGAGE_CHARGES: StatutoryCharge[] = [
+export const MORTGAGE_CHARGES: CitedFigure[] = [
   {
     label: 'Documentary stamp tax on the mortgage',
     amount: '35¢ per $100 of the amount secured, or part of $100',
@@ -108,7 +98,7 @@ export const MORTGAGE_CHARGES: StatutoryCharge[] = [
  * adds them up the same: (a) $5.00 + (d)1. $1.00 + (e) $4.00 for the first
  * page, and (b) $4.00 + (d)2. $0.50 + (e) $4.00 for each one after it.
  */
-export const RECORDING_CHARGES: StatutoryCharge[] = [
+export const RECORDING_CHARGES: CitedFigure[] = [
   {
     label: 'Recording, first page',
     amount: '$10.00',
