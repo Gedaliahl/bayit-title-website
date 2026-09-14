@@ -155,6 +155,36 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
 - The submission is persisted before the notification email is attempted, so a
   mail outage loses a notification, never a lead.
 
+### Order documents
+
+Files never pass through the application. `/api/orders` stores the order, then
+mints one short-lived signed upload URL per declared document; the browser PUTs
+the bytes straight to the private `order-documents` bucket and calls
+`/api/orders/documents` to confirm.
+
+That shape is partly a platform limit — a serverless function body caps out
+around 4.5 MB and a survey PDF clears that alone — and partly the safer design:
+the bucket stays private, the service-role key stays on the server, and the
+browser holds permission to write exactly one object at exactly one path.
+
+- **The order is saved and notified before any file moves.** A closed tab costs
+  the office an attachment, never an order. Documents arrive in their own
+  notification, with signed links that expire in a week.
+- **A row is written only once the object is seen in the bucket.** An upload
+  ticket is permission, not evidence, so `order_documents` never lists a
+  document nobody sent. That also makes confirmation safe to expose: holding an
+  order id is not enough, because registering a document requires having
+  uploaded it first.
+- **Storage paths are generated, never derived from the filename.** The sender's
+  name is a label in `original_name`; size and type are read back off the stored
+  object.
+- The accepted types in `lib/documents.ts` mirror `allowed_mime_types` on the
+  bucket, and the size cap mirrors its `file_size_limit`. The bucket is the real
+  gate — adding a type in code alone buys a picker that accepts a file and an
+  upload that fails.
+- Documents carry a 90-day `purge_after`. The office is told so in the
+  notification.
+
 ## Known blockers
 
 Carried forward from `docs/HANDOFF.md`, still open:

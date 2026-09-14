@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { orderSchema, fieldErrors } from '@/lib/schemas';
 import { requireServiceClient } from '@/lib/supabase';
 import { hashIp, isRateLimited, notify, describeSubmission } from '@/lib/submissions';
+import { contentTypeFor, MAX_FILES, MAX_FILE_BYTES, MAX_TOTAL_BYTES } from '@/lib/documents';
+import { mintUploadTickets } from '@/lib/document-storage';
 import { site } from '@/lib/site';
 
 export const runtime = 'nodejs';
@@ -31,8 +33,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: fieldErrors(parsed.error) }, { status: 422 });
   }
 
-  const { company, ...order } = parsed.data;
+  const { company, documents, ...order } = parsed.data;
   if (company) return NextResponse.json({ ok: true });
+
+  // The browser checks these too, for an immediate message. This is the gate.
+  const declared = (documents ?? [])
+    .filter((doc) => contentTypeFor(doc.name) !== null && doc.size <= MAX_FILE_BYTES)
+    .slice(0, MAX_FILES);
+
+  let running = 0;
+  const accepted = declared.filter((doc) => {
+    running += doc.size;
+    return running <= MAX_TOTAL_BYTES;
+  });
 
   const ipHash = hashIp(request);
 
@@ -53,12 +66,26 @@ export async function POST(request: Request) {
 
     if (error) throw new Error(error.message);
 
-    await notify(
-      `New title order ${data.reference}: ${order.property_address}`,
-      [...describeSubmission(order), '', `Reference: ${data.reference}`, `Order id: ${data.id}`],
-    );
+    // Minted after the order is safely stored, never before. If issuing them
+    // fails the order still stands and the office still hears about it.
+    const uploads = accepted.length > 0 ? await mintUploadTickets(data.id, accepted) : [];
 
-    return NextResponse.json({ ok: true, reference: data.reference }, { status: 201 });
+    // Sent now rather than after the uploads finish: a closed tab must never
+    // cost the office an order. The documents follow in their own notification.
+    await notify(`New title order ${data.reference}: ${order.property_address}`, [
+      ...describeSubmission(order),
+      '',
+      `Reference: ${data.reference}`,
+      `Order id: ${data.id}`,
+      uploads.length > 0
+        ? `Documents: ${uploads.length} being uploaded — a second email follows with the links.`
+        : 'Documents: none attached.',
+    ]);
+
+    return NextResponse.json(
+      { ok: true, reference: data.reference, order_id: data.id, uploads },
+      { status: 201 },
+    );
   } catch (error) {
     console.error('[api/orders] failed:', error);
     return NextResponse.json(
