@@ -159,7 +159,10 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
 
 Carried forward from `docs/HANDOFF.md`, still open:
 
-- `rate_tables` is empty → no calculators, and county pages withhold fee figures
+- `rate_tables` is empty → no calculators, and no promulgated premium schedule.
+  Transfer taxes and recording charges are no longer blocked on it: they are set
+  by statute, so they live in `lib/statutory-rates.ts` with the section that sets
+  each one, and county pages state and cite them
 - Several pages make First American coverage statements that are unverified
 - Timeline data is a `[VERIFY]` flag on every library page
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer and Chaya; the About
