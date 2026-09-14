@@ -24,7 +24,9 @@ quick_facts:
 
 A money judgment is entered against a person, not a parcel. But once it is recorded in the county's official records, Florida law can give it a lien on real property the debtor owns in that county.
 
-[VERIFY: the statutory mechanism and citation for how a recorded judgment becomes a lien on real property in Florida, and the duration and re-recording rules — needs a confirmed statute cite, not a paraphrase]
+Under [Fla. Stat. § 55.10](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0055/Sections/0055.10.html), a judgment, order or decree becomes a lien on real property in a county when a **certified copy** is recorded in that county’s official records. Two details in that sentence do the work: it has to be a certified copy, and the recorded copy has to carry the address of the person who holds the lien — or be recorded together with an affidavit supplying it. A plain copy, or one with no address, does not create the lien.
+
+The lien runs for an initial 10 years from the date of recording, and can be extended once for a further 10 by re-recording a certified copy, with a current address affidavit, before the first period expires. Behind both sits [Fla. Stat. § 55.081](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0055/Sections/0055.081.html), which caps the whole thing: no judgment is a lien on real property in Florida after 20 years from the date the judgment was entered, however many times it has been re-recorded.
 
 The practical consequence is that the judgment has to be addressed before the property can be conveyed free of it.
 
@@ -42,7 +44,11 @@ Until those three are answered in writing, "don't worry about it" is not informa
 
 Florida's constitutional homestead protection can shield a homestead property from a judgment lien, but it is narrower and more technical than it sounds in conversation, and it does not resolve itself simply because someone lives there.
 
-[VERIFY: the homestead exemption's effect on judgment liens in Florida, its constitutional and statutory basis, and the exceptions — this needs a confirmed cite and a reviewed statement of scope. Do not summarise from general knowledge.]
+The protection is constitutional, not statutory. [Article X, section 4(a)](https://www.flsenate.gov/Laws/Constitution#A10S04) of the Florida Constitution exempts a homestead from forced sale and says that "no judgment, decree or execution shall be a lien thereon" — then writes three exceptions into the same sentence: taxes and assessments on the property, obligations contracted for its purchase, improvement or repair, and obligations contracted for house, field or other labor performed on the realty. A judgment for one of those is not stopped by homestead.
+
+The limit is size, not value: 160 contiguous acres outside a municipality, or half an acre inside one, where the exemption is limited to the residence of the owner or the owner’s family. A very expensive house on a small lot is as protected as a modest one.
+
+What homestead does not do is clear the record. The judgment is still recorded, still returns on a search, and still has to be dealt with as a requirement on the commitment. Whether this property qualified when the judgment was recorded, and still qualifies now, is a question of fact about how it has been owned and occupied.
 
 If homestead is the reason a judgment is not being paid at closing, that position needs to be documented and accepted by the underwriter before closing, not asserted afterwards.
 
@@ -70,15 +76,13 @@ They can agree to almost anything, but they would be buying the lien along with 
 
 ### The judgment is old. Does it expire?
 
-Judgment liens in Florida have a limited life and can be extended by re-recording.
-
-[VERIFY: the duration of a Florida judgment lien and the re-recording rules, with a confirmed statute cite]
+Eventually, yes. A recorded judgment is a lien for 10 years from the date of recording, extendable once by re-recording for another 10, and never a lien on real property more than 20 years after the judgment was entered ([Fla. Stat. §§ 55.10](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0055/Sections/0055.10.html), [55.081](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0055/Sections/0055.081.html)). But "old" is not the same as expired, and the arithmetic runs from the recording and the entry date, not from the date on the letter somebody was sent. We check it against the record.
 
 ### Does a judgment against only one spouse attach?
 
 It depends on how title is held and whether tenancy by the entireties applies.
 
-[VERIFY: how a judgment against one spouse interacts with property held as tenants by the entireties in Florida, with a confirmed cite]
+[VERIFY: how a judgment against one spouse interacts with property held as tenants by the entireties. This one is deliberately still open: it turns on Florida case law rather than on a statute we can cite, so it needs a Florida real estate attorney’s statement rather than a summary assembled from public sources.]
 
 ### Will the title policy insure over it?
 

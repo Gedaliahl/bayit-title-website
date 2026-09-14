@@ -46,7 +46,15 @@ The clean route is a recorded easement: the owner of the land being crossed gran
 
 Where the neighbour will not cooperate, the routes are legal rather than clerical.
 
-[VERIFY: what Florida remedies exist for a landlocked parcel — statutory way of necessity, common-law easement by necessity, prescriptive easement — with confirmed statutory cites. Do not describe these from general knowledge; each has specific elements and this page should not imply any of them is straightforward.]
+Florida writes two of them into [Fla. Stat. § 704.01](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0704/Sections/0704.01.html), and they are not the same thing.
+
+**The implied grant of a way of necessity**, in § 704.01(1), is the common-law rule: where land was once part of a larger holding and the part conveyed has no other reasonable and practicable way in or out, a right of way is presumed to have been granted or reserved over the land it was split from. It depends on a common owner at some point in the chain, which is a question the search has to answer.
+
+**The statutory way of necessity**, in § 704.01(2), does not need that shared history — but it is narrower than it first sounds. It reaches land "being used or is desired to be used for a dwelling or dwellings or for agricultural or for timber raising or cutting or stockraising purposes" that is "shut off or hemmed in" so that no practicable route of egress or ingress is available to the nearest practicable public or private road. It covers utilities as well as people and vehicles, and it runs by the nearest practical route.
+
+Neither is free and neither is quick. Where the parties cannot agree, [Fla. Stat. § 704.04](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0704/Sections/0704.04.html) sends it to the circuit court, compensation is paid to the owner of the land crossed — by a jury if either side asked for one in its original pleadings — and the easement dates from the time the award is paid. That is litigation, with a neighbour, before anybody closes.
+
+A prescriptive easement — use that has been open, continuous and adverse for long enough — is a third route, but it is judge-made rather than statutory and its elements are proved with evidence rather than found in a section. None of these three is a form to file. Each is a case to make.
 
 Those are lawsuits or statutory proceedings, not title clearance. They take time and they have uncertain outcomes.
 

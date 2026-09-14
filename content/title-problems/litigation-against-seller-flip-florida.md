@@ -26,7 +26,9 @@ quick_facts:
 
 A suit against a person is not automatically a cloud on title. Something has to tie it to the parcel. The usual mechanism is a recorded lis pendens — a notice recorded in the official records that litigation is pending which could affect title to the property.
 
-[VERIFY: the statutory basis and effect of a lis pendens in Florida, including its duration and the process for discharging it, with a confirmed cite]
+[Fla. Stat. § 48.23](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0048/Sections/0048.23.html) is the section. A notice of lis pendens has to name the parties, give the date the action was begun, name the court, describe the property and state the relief sought as to it. Once it is recorded, someone who buys or lends against the property takes subject to whatever the litigation decides — which is the whole point of it, and why it stops a closing even though it decides nothing itself.
+
+Two things about it are worth knowing before anyone panics. Where the action is **not** founded on a duly recorded instrument or on a construction lien, the notice "is not effectual for any purpose beyond 1 year from the commencement of the action" unless the court extends it for good cause. And in that same situation the court may control and discharge the notice as it would grant and dissolve an injunction — including on a bond. A lis pendens on a claim that has nothing to do with a recorded instrument is not a permanent fixture.
 
 Where nothing has been recorded, a pending lawsuit may not surface in a title search at all. That is worth stating plainly, because a search is a search of the records, not an investigation of the seller.
 
@@ -57,9 +59,9 @@ Whenever litigation touches the property. A buyer purchasing from a seller in ac
 
 ### Can a lis pendens be removed before closing?
 
-There is a process for discharging one, but it is a court matter.
+Yes, but only a judge can do it. Where the action is not founded on a duly recorded instrument or a construction lien, [§ 48.23](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0048/Sections/0048.23.html) lets the court control and discharge the notice the way it would dissolve an injunction, and it can require a bond as the price of leaving it in place or taking it off. That is a motion in the pending case, brought by the party whose property is tied up — not something a title agent does, and not something that happens on a closing timetable.
 
-[VERIFY: the procedure and typical timeline for discharging a lis pendens in Florida]
+[VERIFY: how long a discharge motion has actually taken to be heard on files we have seen, which is a scheduling question for the circuit in question rather than a statutory one.]
 
 ### Will an underwriter insure over pending litigation?
 

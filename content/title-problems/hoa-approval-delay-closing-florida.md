@@ -17,7 +17,7 @@ quick_facts:
   - term: "Typical timeline"
     detail: "[VERIFY: the range we actually see from complete application to approval, and the fastest turnaround we have documented]"
   - term: "Cost impact"
-    detail: "[VERIFY: typical association application and transfer fees, and estoppel certificate fee caps]"
+    detail: "Estoppel certificate capped by statute at $250, plus $150 if delinquent and $100 to expedite. [VERIFY: what we typically see charged for the association’s own application and transfer fees]"
 ---
 
 ## Is association approval a title problem?
@@ -32,7 +32,11 @@ Because the documents usually give it a window that long, and quoting the maximu
 
 That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorisation, or the interview that has not been scheduled.
 
-[VERIFY: whether Florida law caps the time an association may take to approve a transfer for condominiums under ch. 718 or HOAs under ch. 720, and the consequences if it lapses — this needs a confirmed statutory answer, not an inference]
+It does not, and that is the answer people find hardest to believe. Neither chapter 718 for condominiums nor chapter 720 for homeowners’ associations puts a deadline on approving a transfer, and neither says what happens if the association simply takes its time. The window in your contract comes from the declaration and the bylaws, not from the Legislature — so read those, because they are the only deadline there is.
+
+What the statutes do cap is the **fee**. For a condominium, an association may not charge anything for a transfer unless it is required to approve the transfer and a fee is provided for in the declaration, articles or bylaws, and then it "may not exceed $150 per applicant" ([Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html)) — with spouses, or a parent and dependent children, counting as one applicant. Chapter 720 sets no equivalent cap for homeowners’ associations, which is worth knowing before a fee is assumed to be improper.
+
+The estoppel certificate is the one place Florida does impose a deadline, and it is a different document. See below.
 
 ## What actually shortens it?
 
@@ -52,7 +56,12 @@ A package that goes in complete and is chased by someone who knows which item is
 
 Separate document, separate purpose. The estoppel certificate is the association's written statement of what is owed on the unit — regular assessments, special assessments, transfer fees, anything in arrears. It is ordered so the closing statement is right and so the buyer does not inherit a balance.
 
-[VERIFY: Florida's statutory deadline for an association to deliver an estoppel certificate, the fee caps, and how long the certificate is binding — needs a confirmed cite]
+Here the Legislature is specific, and it says the same thing for both kinds of association — [Fla. Stat. § 718.116(8)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.116.html) for condominiums and [§ 720.30851](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0720/Sections/0720.30851.html) for homeowners’ associations:
+
+- **10 business days** from a written or electronic request to issue the certificate.
+- It is **binding for 30 days** if hand delivered or sent electronically, **35 days** by regular mail. That is a closing date constraint: a certificate that expires before you close has to be reordered.
+- The fee may **not exceed $250** where the account is not delinquent, with **$150** more where it is, and **$100** more for delivery within 3 business days. For multiple units there are aggregate caps — $750 for 25 or fewer, rising to $2,500 above 100.
+- Miss the 10 business days and the association **may not charge a fee at all** for that certificate.
 
 Order it early. An estoppel that arrives late, or that arrives showing a balance nobody expected, moves closings.
 
@@ -78,7 +87,7 @@ The contract decides. It is negotiable and it varies by community.
 
 Escalate in writing to the management company and the board, and document each attempt. If a statutory deadline applies, that documentation is what makes it enforceable.
 
-[VERIFY: what remedy exists when an association fails to respond within a statutory window]
+For the estoppel certificate there is one, and it has teeth in two places: the association loses its fee entirely if it misses the 10 business days, and [§ 720.30851](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0720/Sections/0720.30851.html) lets the requesting party bring a summary proceeding to compel delivery and recover attorney fees if it succeeds. For approval of the transfer there is no statutory window to miss, so the leverage is the contract and the declaration rather than the statute — which is exactly why the documented chase matters.
 
 ### Does this apply to a refinance?
 

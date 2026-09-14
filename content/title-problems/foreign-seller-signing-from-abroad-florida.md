@@ -24,7 +24,9 @@ quick_facts:
 
 Because the document has to be recordable in a Florida county. A deed that was validly signed somewhere else is worth nothing to the transaction if the clerk will not record it or the underwriter will not insure over it.
 
-[VERIFY: Florida's execution requirements for a deed — witnesses and acknowledgment — with a confirmed statutory cite from ch. 689 and ch. 695]
+Two separate requirements, in two separate chapters. [Fla. Stat. § 689.01(1)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0689/Sections/0689.01.html) governs the signing: an instrument conveying an interest in Florida land must be in writing and **signed in the presence of two subscribing witnesses**, by the party conveying or by that party’s lawfully authorised agent. No seal is needed. [Fla. Stat. § 695.03](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0695/Sections/0695.03.html) governs recording: to be entitled to record, the execution must be acknowledged by the party who executed it, proved by a subscribing witness, or legalised or authenticated in one of the forms that section lists.
+
+Those are cumulative. A deed with a perfect acknowledgment and one witness has an execution problem; a deed with two witnesses and no acknowledgment cannot be recorded. Both have to be right before the document leaves the signer.
 
 So the question is never just "can they sign?" It is "will this signature, notarized this way, be accepted here?"
 
@@ -32,7 +34,11 @@ So the question is never just "can they sign?" It is "will this signature, notar
 
 Florida authorises remote online notarization, which lets a signer appear before a Florida-commissioned online notary by audio-video link rather than in person. For a signer abroad, this is often the cleanest route: no consulate appointment, no courier, and the signing can be scheduled around the time difference.
 
-[VERIFY: whether Florida's RON statute in ch. 117 places any restriction on the signer's physical location being outside the United States, and any restrictions on RON for specific document types — this must be answered from the statute, not assumed]
+The statute answers this directly, and the answer is no. Under [Fla. Stat. § 117.209(3)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html), an online notary public **physically located in Florida** may perform an online notarization "regardless of whether the principal or any witnesses are physically located in this state at the time of the online notarization", and § 117.209(4) provides that the validity of the act is determined by Florida law regardless of where the principal was. The notary has to be in Florida. The seller does not have to be anywhere in particular.
+
+The chapter contemplates the overseas signer expressly: [§ 117.201(6)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.201.html) provides that for an online notarization of a principal **not located within the United States**, a passport issued by a foreign government without a US immigration stamp may be used to verify identity — which is the identification a seller abroad is most likely to hold.
+
+On document types, the only act part II carves out is solemnising the rites of matrimony (§ 117.209(1)). There is no statutory exclusion for a deed, a mortgage or a closing document.
 
 Two practical limits apply regardless of what the statute permits. The lender has to accept a remotely notarized document, and so does the underwriter. Both positions should be confirmed in writing before the signing is scheduled.
 
@@ -48,13 +54,21 @@ The cost is scheduling. Appointment availability varies enormously by post, and 
 
 A signer can appear before a notary where they are, but a foreign notarial certificate is not automatically in a form Florida accepts. Depending on the country, an apostille or a chain of authentication may be needed, and civil-law notaries produce a different instrument than a US notary does.
 
-[VERIFY: what form of foreign acknowledgment Florida accepts for recording, the role of the Hague apostille, and what our underwriter requires — needs confirmation before this route is described as available]
+[Fla. Stat. § 695.03(3)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0695/Sections/0695.03.html) is the list, and it is wider than people expect. An acknowledgment taken outside the United States may be made before a commissioner of deeds appointed by the Secretary of State to act in that country; before **a notary public of that foreign country, or a civil-law notary, who has an official seal**; or before a US ambassador, minister, consul general, consul, vice consul or other diplomatic or consular officer posted there.
+
+Note what is not in that list: an apostille. The Hague apostille authenticates the foreign official’s signature for use abroad — it is not what § 695.03 requires, and the statute does not mention it. In practice it is often asked for anyway, by a clerk or by an underwriter, because it is the simplest way to show the foreign notary was who they said they were.
+
+[VERIFY: whether First American requires an apostille on a foreign acknowledgment, and on which countries — an underwriting position rather than a statutory one, and the one part of this route to confirm before relying on it.]
 
 ## What about FIRPTA?
 
 A foreign seller raises a separate question with its own consequences: federal withholding on the disposition of a US real property interest by a foreign person. It is a tax matter, not a title matter, and it is administered by the IRS.
 
-[VERIFY: the current FIRPTA withholding rate and thresholds, what exemptions apply, what forms are used, and what role the settlement agent plays as withholding agent — cite IRS guidance, and have this reviewed by the team's tax counsel rather than stated from memory]
+The mechanics are federal and public. Under [26 U.S.C. § 1445](https://www.law.cornell.edu/uscode/text/26/1445), the **transferee** — the buyer, not the seller — must deduct and withhold **15 percent of the amount realised** on the disposition of a US real property interest by a foreign person. Two thresholds sit under that, and both depend on the buyer acquiring the property for use as a residence: no withholding where the amount realised does not exceed **$300,000**, and **10 percent** rather than 15 where it does not exceed **$1,000,000**. The tax is reported and paid on **Forms 8288 and 8288-A**, and a seller who believes the withholding exceeds the tax actually due applies for a withholding certificate on **Form 8288-B** ([IRS, FIRPTA withholding](https://www.irs.gov/individuals/international-taxpayers/firpta-withholding)).
+
+Two warnings belong with those numbers. The withholding is on the **amount realised**, not on the gain or the proceeds, so a seller can owe withholding on a sale they lost money on. And whether a particular seller is a "foreign person", and whether an exception applies, is a tax question with tax consequences — it belongs to the seller’s tax adviser, not to the closing agent and not to this page.
+
+[VERIFY: what role we take on FIRPTA files — whether we act as withholding agent, what we require in writing from the buyer, and at what point we refer the seller out to tax counsel. Our practice, not the law.]
 
 A foreign seller should be talking to a CPA or a tax attorney about FIRPTA early. The withholding affects the seller's net proceeds, and discovering it at the closing table is a bad day for everyone.
 
@@ -72,7 +86,9 @@ Where FIRPTA applies, where the seller is an entity organised abroad, where the 
 
 Sometimes, but a POA used in a real estate closing has its own requirements, and lenders and underwriters often want to approve the form in advance. It also has to be executed validly — which puts you back in the same question about how the principal signs.
 
-[VERIFY: Florida's requirements for a power of attorney used to convey real property, with a confirmed cite]
+The rule is a mirror: a power of attorney used to convey Florida real estate has to be executed the way a deed is. [Fla. Stat. § 689.111](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0689/Sections/0689.111.html) says so for homestead — a deed or mortgage of homestead realty may be executed under a power of attorney "executed in the same manner as a deed" — which means the same two subscribing witnesses and acknowledgment that [§ 689.01](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0689/Sections/0689.01.html) and [§ 695.03](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0695/Sections/0695.03.html) require of the deed itself. Section 689.111 also makes clear what the power of attorney does not do: it does not dispense with the requirement that both spouses join in conveying homestead. It only lets that joinder happen through the attorney-in-fact.
+
+The practical trap is sequence. A power of attorney signed abroad has the same execution and acknowledgment problem the deed has, one step earlier — and it usually has to be recorded before or with the deed. Getting it right late is the expensive version.
 
 ### Does the buyer have to do anything differently?
 

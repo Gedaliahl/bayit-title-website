@@ -1,7 +1,23 @@
 # VERIFY worklist
 
 Every unresolved fact across the nine content drafts, triaged by **who can
-answer it**. 62 flags total.
+answer it**. 62 flags at the start; **49 now**.
+
+**Category A is done** (2026-09-14). The public-record questions were answered
+from the statute, the rule or the federal source itself, and every figure or
+deadline on those pages is now linked to the section it came from. Two were
+deliberately left open and are marked as such in the content: tenancy by the
+entireties, which turns on case law rather than a statute and needs an
+attorney's statement; and the FAR/BAR contract's treatment of open permits,
+which needs the licensed form rather than a summary of it. Three narrower flags
+were added where a resolved flag had an underwriting or practice question inside
+it — an apostille requirement, a FIRPTA role, a discharge timeline.
+
+What is left is what was always going to need a person: Category B (First
+American) and Category C (only Bayit Title knows). **No page reaches zero
+without Category C**, because every one of the nine carries a "Typical timeline"
+and a "Cost impact" quick fact that only someone who works the files can
+answer.
 
 The point of this document is to stop treating the flags as one undifferentiated
 blocker. Most of them are not research problems at all — they are questions only
@@ -27,10 +43,29 @@ flag, so step 4 cannot be taken early by accident.
 
 ---
 
-## Category A — Public record (~18 flags)
+## Category A — Public record (~18 flags) — **cleared 2026-09-14**
 
 Answerable from primary sources by anyone willing to read them. **Nobody should
 write these from memory or from a search-engine summary**; open the statute.
+
+Each was answered from the primary source and cited in the page. What they
+turned out to say, in short:
+
+| Question | Answer now on the page |
+|---|---|
+| Judgment lien mechanism and duration | Certified copy recorded, with the lienholder's address; 10 years, extendable once by 10; never past 20 from entry (§§ 55.10, 55.081) |
+| Homestead vs. judgment liens | Fla. Const. art. X, § 4(a) — no judgment is a lien, except taxes, purchase/improvement/repair, and labor on the realty; limit is 160 acres / half an acre, not value |
+| Lis pendens | § 48.23 — contents and effect; 1 year where the action is not on a recorded instrument or construction lien; court may control, discharge or bond it |
+| Landlocked access | § 704.01(1) implied grant; § 704.01(2) statutory way of necessity, limited to dwelling, agricultural, timber or stockraising use; § 704.04 sends a contested one to circuit court with compensation |
+| Association approval deadline | **There isn't one.** Neither ch. 718 nor ch. 720 caps it; the declaration does. Condo approval fee capped at $150 per applicant (§ 718.112(2)(k)); ch. 720 sets no equivalent cap |
+| Estoppel certificate | 10 business days; binding 30 days (hand/electronic) or 35 (mail); $250, plus $150 delinquent and $100 expedited, with aggregate caps; no fee at all if late (§ 718.116(8), § 720.30851) |
+| Remedy when an association is late | Loses the fee, and § 720.30851 allows a summary proceeding with attorney fees |
+| Deed execution | Two subscribing witnesses (§ 689.01(1)) **and** acknowledgment for recording (§ 695.03) — cumulative, not alternative |
+| RON for a signer abroad | Allowed. The notary must be in Florida, the signer need not be (§ 117.209(3), (4)); a foreign passport is acceptable ID for a principal outside the US (§ 117.201(6)); only matrimony is excluded |
+| Foreign acknowledgment | § 695.03(3) accepts a foreign notary with an official seal, a civil-law notary, a commissioner of deeds, or a US consular officer. **The apostille is not in the statute** — it is an underwriter/clerk practice |
+| Power of attorney | Executed in the same manner as a deed; does not dispense with spousal joinder on homestead (§ 689.111) |
+| FIRPTA | 15% of the amount realised; no withholding at $300,000 or less and 10% to $1,000,000 where the buyer takes it as a residence; Forms 8288, 8288-A, 8288-B (26 U.S.C. § 1445) |
+| Bankruptcy sale order | 14-day stay (FRBP 6004(h)), 14 days to appeal (FRBP 8002(a)(1)), and a good faith purchaser is protected on reversal unless the sale was stayed (11 U.S.C. § 363(m)) |
 
 | Page | Question | Where the brief says to look |
 |---|---|---|
@@ -154,8 +189,8 @@ commission records, and nowhere else.
    the files. Clears over half the flags and adds the specificity that makes
    these pages worth reading.
 2. **One email to the First American rep** — clears Category B.
-3. **Category A with counsel or a careful reader** — extend the source list
-   first, then work the statutes.
+3. ~~**Category A**~~ — done. What remains of it is the entireties question
+   (an attorney's, not a citation's) and the FAR/BAR form.
 4. **Recover the two incomplete files** or drop those pages.
 
 Pages closest to publishable once C is done: `open-permits`,
