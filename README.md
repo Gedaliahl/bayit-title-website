@@ -159,11 +159,12 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
 
 Carried forward from `docs/HANDOFF.md`, still open:
 
-- `rate_tables` is empty → no calculators. The figures a calculator would need
-  are not blocked on it and are no longer unpublished: the promulgated premium
+- `rate_tables` is empty and nothing is waiting on it. The promulgated premium
   is in `lib/promulgated-premium.ts` from OIR rule 69O-186.003, and transfer
-  taxes and recording charges are in `lib/statutory-rates.ts` from the statutes
-  that set them. County pages state and cite both
+  taxes and recording charges in `lib/statutory-rates.ts` from the statutes that
+  set them; `/calculator` and the county pages read those and cite every line.
+  What is still unpriced anywhere on the site is our own fee, the search and
+  examination, and endorsements — the calculator lists them as not counted
 - Several pages make First American coverage statements that are unverified
 - Timeline data is a `[VERIFY]` flag on every library page
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer and Chaya; the About

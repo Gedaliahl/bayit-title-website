@@ -170,7 +170,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 1. **Order and quote forms** — Route Handlers writing to Supabase `leads`/`orders`, email notification to shevy@bayittitle.com, encrypted upload to the private bucket. This exercises the security design; get it right.
 2. **Three county pages** — Broward, Palm Beach, Miami-Dade. **Built.** The promulgated premium schedule, doc stamps, the Miami-Dade surtax, mortgage stamps, intangible tax and recording charges are all published and cited (`lib/promulgated-premium.ts` and `lib/statutory-rates.ts`, read from the rule and the statutes on 2026-09-14). Still open per county: who-pays custom, and recording turnaround where the clerk publishes one.
 3. **Homepage, About, Team pages** — copy drafted in the voice guide; team bios have placeholders awaiting three team members' own sentences.
-4. **Calculators** — premium and closing cost. **Unblocked.** `lib/promulgated-premium.ts` computes the promulgated premium (original, reissue, simultaneous issue) and `lib/statutory-rates.ts` the taxes and recording charges; a calculator is now a UI on top of those, not a data problem.
+4. **Calculators** — **built.** `/calculator` works out the promulgated premium (original, reissue, simultaneous issue), documentary stamps, the Miami-Dade surtax, intangible tax and recording, for a purchase or a refinance, citing the rule or section on every line. The arithmetic is `lib/closing-estimate.ts`, which deliberately stops at the promulgated and statutory figures and prints what it is not counting. Our own fee, search and examination go in when there are verified numbers for them.
 5. **Reviews sync** — Google Business Profile API access was rejected once (likely the gmail.com contact address). Reviews are seeded manually and work fine; the sync is an optimization, not a blocker.
 6. **Redirects** — map every legacy Wix URL in `next.config.mjs`, including the Pennsylvania pages.
 
@@ -178,7 +178,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 
 ## Known blockers
 
-- `rate_tables` empty → no calculators yet, though the figures they need are now in `lib/`
+- `rate_tables` empty, but nothing is waiting on it: the calculator and the county pages read the rule and the statutes from `lib/`
 - Six pages make First American coverage statements that are unverified
 - Timeline data is placeholder on every library page
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer, Chaya

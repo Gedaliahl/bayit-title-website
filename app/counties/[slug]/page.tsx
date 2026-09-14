@@ -184,6 +184,13 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <CitedFigures figures={REISSUE_SCHEDULE} />
 
+        <p>
+          <Link href="/calculator">
+            Work the premium, tax and recording out for a specific price
+          </Link>{' '}
+          — the calculator uses this schedule and cites the same rule.
+        </p>
+
         <p className="muted">
           Read from {PREMIUM_RULE.cite} on {formatLongDate(PREMIUM_CHECKED_ON)}. The rule was last
           amended {formatLongDate(PREMIUM_RULE.lastAmended)}. Tell us if a figure here does not
