@@ -6,18 +6,25 @@ import { z } from 'zod';
 
 const trimmed = (max: number) => z.string().trim().max(max);
 
-/** Currency arriving as a string from a form field. Empty means "not provided". */
+/**
+ * Currency arriving as a string from a form field. Empty means "not provided".
+ *
+ * Anything else that will not parse is an error, not a silent undefined. The
+ * transform used to swallow it, which made the message below unreachable and
+ * meant "about four hundred k" submitted cleanly as no price at all — the
+ * sender believing they had told us, the office seeing a blank field.
+ */
 const optionalMoney = z
   .union([z.string(), z.number()])
   .optional()
   .transform((value) => {
     if (value === undefined || value === '') return undefined;
-    const parsed = Number(String(value).replace(/[$,\s]/g, ''));
-    return Number.isFinite(parsed) ? parsed : undefined;
+    return Number(String(value).replace(/[$,\s]/g, ''));
   })
-  .refine((value) => value === undefined || (value >= 0 && value < 1_000_000_000), {
-    message: 'Enter an amount as a number.',
-  });
+  .refine(
+    (value) => value === undefined || (Number.isFinite(value) && value >= 0 && value < 1_000_000_000),
+    { message: 'Enter an amount as a number.' },
+  );
 
 /**
  * Bots fill hidden fields. Anything is accepted here so validation still passes;

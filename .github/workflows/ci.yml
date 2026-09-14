@@ -42,8 +42,18 @@ jobs:
 
       - run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
+
+      # The rules these cover — the reviewed/VERIFY gate, the review
+      # suppressions, the document allowlist, the IP fingerprint — are decisions
+      # about what the firm publishes and stores, not implementation detail. A
+      # refactor could weaken any of them and every build would still be green.
+      - name: Test
+        run: npm test
 
       # Drafts have no route in production, so a production build alone would
       # never render the content library — a broken draft page would reach a

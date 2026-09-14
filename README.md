@@ -33,10 +33,20 @@ fall back to empty or to the canonical values in `lib/site.ts`; the form
 endpoints return a 500 with an instruction to phone or email instead.
 
 ```bash
+npm run lint        # eslint, flat config
 npm run typecheck   # tsc --noEmit
+npm test            # vitest
 npm run build       # production build; drafts excluded
 SHOW_DRAFTS=1 npm run build   # preview build; drafts included
 ```
+
+`.github/workflows/ci.yml` runs all five on every pull request.
+
+The tests in `tests/` cover the decisions rather than the plumbing: the
+reviewed/VERIFY gate, the two review suppression rules, the document allowlist
+that has to mirror the bucket, and the IP fingerprint. Each of those is a choice
+about what the firm publishes or stores, and each could be weakened by a
+refactor without a single build turning red.
 
 ## The one rule that matters most
 
