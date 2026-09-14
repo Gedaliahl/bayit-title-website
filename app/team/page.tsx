@@ -45,7 +45,7 @@ export default function TeamPage() {
             <p className="eyebrow" style={{ marginTop: '-0.35rem' }}>
               {member.role}
             </p>
-            {member.bio ? <p>{member.bio}</p> : null}
+            {member.bio?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             {member.publicRecord.length > 0 ? (
               <ul className="ui muted" style={{ fontSize: '0.875rem' }}>
                 {member.publicRecord.map((entry) => (
