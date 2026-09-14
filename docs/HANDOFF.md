@@ -168,7 +168,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 ## What to build next, in order
 
 1. **Order and quote forms** — Route Handlers writing to Supabase `leads`/`orders`, email notification to shevy@bayittitle.com, encrypted upload to the private bucket. This exercises the security design; get it right.
-2. **Three county pages** — Broward, Palm Beach, Miami-Dade. Who-pays custom (seller in Broward/PB, buyer in Miami-Dade), doc stamps and Miami-Dade surtax, clerk quirks, recording fees. Needs verified data first.
+2. **Three county pages** — Broward, Palm Beach, Miami-Dade. Who-pays custom for the owner's policy (buyer in Broward and Miami-Dade under FAR/BAR ¶9(c)(iii), seller in Palm Beach — verified 2026-09-14, see the `notes` on each `locations` row), doc stamps and Miami-Dade surtax, clerk quirks, recording fees. Needs verified data first.
 3. **Homepage, About, Team pages** — copy drafted in the voice guide; team bios have placeholders awaiting three team members' own sentences.
 4. **Calculators** — premium and closing cost. **Blocked** until `rate_tables` is populated with verified figures.
 5. **Reviews sync** — Google Business Profile API access was rejected once (likely the gmail.com contact address). Reviews are seeded manually and work fine; the sync is an optimization, not a blocker.
