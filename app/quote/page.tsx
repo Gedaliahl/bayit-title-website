@@ -44,6 +44,12 @@ export default async function QuotePage() {
           have not seen yet — a survey, an existing policy, an entity buyer — the quote will say so
           rather than average it out.
         </p>
+
+        <p>
+          For the promulgated and statutory part on its own — premium, documentary stamps,
+          intangible tax, recording — the <Link href="/calculator">calculator</Link> works it out
+          without asking you for anything.
+        </p>
         <p className="form-note">
           We are not publishing a calculator until every rate and fee behind it is tied to its
           source. Until then a person prepares the quote. See{' '}

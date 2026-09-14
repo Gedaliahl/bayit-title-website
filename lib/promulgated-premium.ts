@@ -67,7 +67,9 @@ const toCents = (value: number) => Math.round(value * 100) / 100;
  * liability rounds up to the next $100 first, and only then is divided into
  * thousands — which is why a $499,950 purchase and a $500,000 one pay the same.
  */
-function premium(liability: number, brackets: Bracket[]): number {
+function premium(liability: number, brackets: Bracket[], minimum = MINIMUM_PREMIUM): number {
+  if (liability <= 0) return 0;
+
   const insured = Math.ceil(liability / 100) * 100;
 
   let remaining = insured;
@@ -82,7 +84,7 @@ function premium(liability: number, brackets: Bracket[]): number {
     floor = bracket.upTo ?? floor;
   }
 
-  return Math.max(MINIMUM_PREMIUM, toCents(due));
+  return Math.max(minimum, toCents(due));
 }
 
 /** What an owner's policy costs at this purchase price. */
@@ -119,3 +121,20 @@ function schedule(brackets: Bracket[], cite: string, sourceUrl: string): CitedFi
 export const ORIGINAL_SCHEDULE = schedule(ORIGINAL, `${PREMIUM_RULE.cite}(1)(a)`, PREMIUM_RULE.url);
 
 export const REISSUE_SCHEDULE = schedule(REISSUE, `${PREMIUM_RULE.cite}(2)(a)`, PREMIUM_RULE.url);
+
+/**
+ * R. 69O-186.003(5)(a). The loan policy issued alongside an owner's policy on
+ * the same land is $25 up to the owner's amount; "the risk premium on the
+ * amount of the mortgage policy or policies in excess of the owner's policy
+ * shall be figured at the regular original title insurance rates for mortgage
+ * policies", so the excess alone is rated, and the $100 policy minimum is not
+ * applied a second time to it.
+ */
+export function simultaneousLoanPremium(loanAmount: number, ownerCoverage: number): number {
+  if (loanAmount <= 0) return 0;
+  if (loanAmount <= ownerCoverage) return SIMULTANEOUS_LOAN_PREMIUM;
+
+  return toCents(
+    SIMULTANEOUS_LOAN_PREMIUM + premium(loanAmount - ownerCoverage, ORIGINAL, 0),
+  );
+}

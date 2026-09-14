@@ -114,7 +114,7 @@ Scale: `--step-0` 1.0625rem · `--step-1` 1.25 · `--step-2` 1.5 ·
 
 ## 4. Route map
 
-23 routes. `[slug]` routes are statically generated at build time.
+24 routes. `[slug]` routes are statically generated at build time.
 
 **Content**
 - `/` — homepage
@@ -131,6 +131,8 @@ Scale: `--step-0` 1.0625rem · `--step-1` 1.25 · `--step-2` 1.5 ·
 **Conversion**
 - `/order` — title order form, the largest form
 - `/quote` — closing cost quote request
+- `/calculator` — premium and closing cost calculator, the one interactive page
+  that asks for nothing and stores nothing
 
 **Machine-facing** (no visual design, but they exist)
 - `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/api/leads`, `/api/orders`
@@ -206,6 +208,14 @@ This sequence is fixed and is the core of the site:
   uppercase Archivo legend. Error state turns borders oxblood and shows a
   0.8125rem message. `.form-status--ok` is a sage panel; `--error` is
   oxblood-bordered. `.form-note` carries the wire-fraud warning.
+- **Calculator** (`.calc`) — two columns capped at `56rem`, inputs left at
+  `18rem` and figures right, stacking to one column below `52rem`. The figures
+  panel (`.calc__result`) reuses the quick-facts frame: 1px border with a 2px
+  `--sage-deep` top rule. Each `.estimate-line` is a hairline row with the
+  label and its citation left and a tabular-numeral amount right; the total
+  sits under a 2px oxblood rule. **Every line carries its citation** — that is
+  the design, not decoration, and a redesign must keep the figure and its
+  authority in the same row.
 - **Section grounds** (`.section--sage`) — full-bleed sage bands used to break
   up the homepage.
 
@@ -251,5 +261,6 @@ all nine pages with the draft banner.
 - The answer panel's prominence and its isolation from surrounding text
 - The credential line in the footer
 - Visible VERIFY flags — they are deliberately loud and deliberately public
+- The citation on every calculator line, and the list of what it is not counting
 - The byline block on every content page
 - The reading measure of ~34rem for body copy

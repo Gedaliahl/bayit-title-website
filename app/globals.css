@@ -750,3 +750,142 @@ legend {
   padding: 0;
   margin-bottom: 0.85rem;
 }
+
+/* ---------- premium calculator ---------- */
+/* Inputs left, figures right, the reissue note under both. The figures column
+   is the point of the page, so it gets the wider half. */
+
+.calc {
+  display: grid;
+  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+  margin: 2rem 0;
+  /* Wider than the reading measure, narrower than the frame: a row of figures
+     stops being readable long before it reaches 72rem. */
+  max-width: 56rem;
+}
+
+.calc__footnote {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 52rem) {
+  .calc {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calc__fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.1rem;
+}
+
+.calc__fieldset legend {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+.calc__radio,
+.calc__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  margin-bottom: 0.5rem;
+}
+
+.calc__check {
+  margin-bottom: 1.1rem;
+}
+
+.calc__radio input,
+.calc__check input {
+  margin-top: 0.25rem;
+  flex: none;
+}
+
+.calc__details summary {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.calc__details .field__hint {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.calc__result {
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--sage-deep);
+  padding: 1.25rem 1.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+}
+
+.estimate-group + .estimate-group {
+  margin-top: 1.5rem;
+}
+
+.estimate-group h3 {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin: 0 0 0.35rem;
+}
+
+.estimate-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.estimate-line__amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.estimate-line__note,
+.estimate-line__cite {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.estimate-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--oxblood);
+  font-weight: 600;
+}
+
+.estimate-caveat {
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin: 1.25rem 0 0;
+}
+
+ul.estimate-caveat {
+  margin-top: 0.4rem;
+  padding-left: 1.1rem;
+}
