@@ -28,7 +28,7 @@ jobs:
     env:
       # The real site URL is not a secret, and pinning it keeps the canonical
       # tags and JSON-LD in a CI build identical to production.
-      NEXT_PUBLIC_SITE_URL: https://bayittitle.com
+      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
       # Supabase credentials are deliberately absent. The site is built to
       # render without them, so CI proves that path stays working.
 

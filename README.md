@@ -280,6 +280,37 @@ browser holds permission to write exactly one object at exactly one path.
   nor the notification claims anything about deletion, and neither should until
   that decision is made.
 
+## The Wix cutover
+
+`bayittitle.com` runs on Wix today. Every source in the redirect map in
+`next.config.mjs` was checked against the live site rather than guessed at; the
+list it replaced was a first pass at Wix naming conventions, and seven of its
+nine entries redirected paths that had never existed while six real pages had no
+redirect and would have 404ed. `tests/redirects.test.ts` pins the map, because a
+dropped entry is invisible until the traffic is already gone.
+
+**The canonical host is www.** The Wix site 301s the apex to `www`, so every
+indexed URL and inbound link already points there; moving to the apex would put
+a redirect hop in front of the whole existing index for nothing. **Vercel must
+have `www.bayittitle.com` set as the primary domain**, with the apex attached
+and redirecting to it — that is where the host redirect belongs, not duplicated
+in `next.config.mjs`.
+
+Next serves `permanent: true` as a 308 rather than a 301. Google treats the two
+the same for passing ranking signal.
+
+Two things are still open:
+
+- **`/privacy` and `/privacy-policy` are live on Wix and will 404 at cutover.**
+  This site has no privacy page. That is a page to write, not a redirect to add,
+  and it matters more now that the order form accepts uploaded documents.
+- The Wix sitemap lists what Wix *publishes*, which is a floor rather than a
+  ceiling — a URL deleted years ago can still sit in Google's index with links
+  pointing at it. Re-check the map against Search Console's Pages report on the
+  Wix property before the cutover. The Pennsylvania entries are exactly that
+  case: they 404 on Wix already and are kept because the firm is Florida-only
+  and a stale page must neither resurface nor land on a 404.
+
 ## Known blockers
 
 Carried forward from `docs/HANDOFF.md`, still open:
@@ -293,8 +324,8 @@ Carried forward from `docs/HANDOFF.md`, still open:
 - Google Business Profile API access was rejected; reapply from a bayittitle.com
   address. Reviews are seeded manually and work fine — the sync is an
   optimisation, not a blocker.
-- Legacy Wix URLs in `next.config.mjs` are a first pass; complete them from Wix
-  analytics
+- No privacy policy page, while `/privacy` and `/privacy-policy` are live on the
+  Wix site and the order form now accepts uploaded documents
 
 ## Docs
 

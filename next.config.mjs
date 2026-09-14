@@ -83,20 +83,51 @@ function contentSecurityPolicy() {
 const nextConfig = {
   reactStrictMode: true,
 
-  // Legacy Wix URLs. The old site included Pennsylvania pages that must not
-  // resurface as live content — they redirect to the Florida equivalents.
-  // Add the remaining legacy paths here as they are pulled from Wix analytics.
+  /**
+   * Legacy Wix URLs.
+   *
+   * Every source below was checked against the live site rather than guessed
+   * at. The list it replaces was a first pass at Wix naming conventions, and
+   * seven of its nine entries redirected paths that had never existed while six
+   * real pages had no redirect at all and would have 404ed at cutover.
+   *
+   * The authority is https://www.bayittitle.com/pages-sitemap.xml. That lists
+   * what Wix currently publishes, which is a floor rather than a ceiling: a URL
+   * deleted years ago can still sit in Google's index with links pointing at
+   * it. Search Console's Pages report on the Wix property is the only place
+   * those show up, so re-check this list against it before the cutover.
+   *
+   * Destinations are chosen to match what the old page was about. An off-topic
+   * redirect is treated as a soft 404 and passes nothing, so sending everything
+   * to the homepage would throw away exactly what these exist to preserve.
+   *
+   * `/about` is deliberately absent: the path is the same on both sites.
+   */
   async redirects() {
     return [
+      // Live on Wix today, verified 200.
       { source: '/home', destination: '/', permanent: true },
-      { source: '/about-us', destination: '/about', permanent: true },
-      { source: '/our-team', destination: '/team', permanent: true },
       { source: '/contact-us', destination: '/contact', permanent: true },
-      { source: '/services-1', destination: '/services', permanent: true },
-      { source: '/testimonials', destination: '/reviews', permanent: true },
+      { source: '/order-title', destination: '/order', permanent: true },
+      { source: '/process', destination: '/services', permanent: true },
+      { source: '/titleinsurance', destination: '/services', permanent: true },
+      // No calculator to send them to — rate_tables is empty — so the quote
+      // form is the nearest thing that actually answers the question.
+      { source: '/rates', destination: '/quote', permanent: true },
+
+      // 404 on Wix today, so they are already gone. Kept because the handoff
+      // records that the old site carried Pennsylvania pages, which means they
+      // may still be indexed with links pointing at them. The firm is licensed
+      // in Florida only, so a stale PA page must not resurface and must not
+      // land on a 404 either.
       { source: '/pennsylvania', destination: '/', permanent: true },
       { source: '/pa-closings', destination: '/', permanent: true },
       { source: '/pennsylvania-title-insurance', destination: '/', permanent: true },
+
+      // TODO: /privacy and /privacy-policy are live on Wix and have nowhere to
+      // go — this site has no privacy page. Both will 404 at cutover. That is a
+      // page to write, not a redirect to add, and it matters more now that the
+      // order form accepts uploaded documents.
 
       // The icon is app/icon.svg, linked from the document head. Agents that
       // still guess at /favicon.ico get sent there rather than a 404.
