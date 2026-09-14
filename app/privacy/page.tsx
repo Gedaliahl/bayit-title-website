@@ -1,185 +1,243 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 
 import { site } from '@/lib/site';
-import { PRIVACY_PUBLISHED, PRIVACY_STATUS } from '@/lib/privacy';
+import { PRIVACY_EFFECTIVE_DATE } from '@/lib/privacy';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { DraftBanner } from '@/components/DraftBanner';
-import { VerifyBanner } from '@/components/Prose';
+import { formatLongDate } from '@/lib/seo';
 
 /**
- * A privacy policy is a binding representation by a licensed financial
- * institution, so it gets the same gate as every other page that says something
- * a regulator could read: unreviewed, it does not reach the public site.
+ * The website's privacy policy.
  *
- * Everything below that describes the website is written from the code and is
- * checkable — the fields each form posts, the fingerprint that replaces the
- * caller's IP, the absence of cookies, the vendors that actually receive data.
- * Everything that is a decision about the firm's practice rather than a fact
- * about the software is flagged rather than guessed, because inventing a
- * retention period or a rights process is exactly the failure this repository
- * is built to prevent.
+ * Two policies ran on the Wix site — /privacy (effective 17 April 2026) and
+ * /privacy-policy (last updated 15 March 2026) — saying overlapping things in
+ * different words. Every substantive commitment in both is carried over here
+ * and the duplicate path now redirects, so there is one policy rather than two
+ * that can drift apart.
  *
- * The status itself lives in lib/privacy.ts, because the footer link and the
- * sitemap have to agree with this page about whether the policy exists yet.
+ * The SMS section is carried over close to the original on purpose. Text of
+ * that shape is what carriers require to be publicly posted for an A2P
+ * messaging registration, and the old page was cited as both the privacy policy
+ * and the SMS terms of service. Removing or loosening it could break message
+ * delivery, so it is not the place to be creative.
+ *
+ * Everything describing the website itself is written from the code and is
+ * checkable: the fields each form posts, the salted fingerprint that replaces
+ * the caller's IP, the absence of any cookie or browser storage. No retention
+ * period is stated, because the firm has never set one and inventing a number
+ * would be worse than describing the practice honestly.
  */
-
-/** Only the firm and its counsel can close these. */
-const OPEN_ITEMS = [
-  'How long form submissions, orders and uploaded documents are kept, and what happens at the end of that period',
-  'Whether this page is the agency’s Gramm-Leach-Bliley privacy notice or whether a separate notice is delivered at closing',
-  'How someone asks what we hold about them, asks for it to be corrected, or asks for it to be deleted, and who handles that',
-  'What is shared with First American as underwriter, and on what basis',
-  'The effective date, and how changes to this page will be communicated',
-];
-
 export const metadata: Metadata = {
-  title: 'Privacy',
-  description: `What ${site.legalName} does with information submitted through this website.`,
+  title: 'Privacy Policy',
+  description: `How ${site.legalName} collects, uses and protects information submitted through this website.`,
   alternates: { canonical: '/privacy' },
-  ...(PRIVACY_STATUS === 'draft' ? { robots: { index: false, follow: false } } : {}),
 };
 
-/** An unresolved point, marked in the copy the way the library pages mark theirs. */
-function Verify({ children }: { children: React.ReactNode }) {
-  return <span className="verify-inline">VERIFY: {children}</span>;
-}
-
 export default function PrivacyPage() {
-  if (!PRIVACY_PUBLISHED) notFound();
-
   return (
     <div className="frame section">
       <div className="measure">
         <Breadcrumbs
           trail={[
             { name: 'Home', path: '/' },
-            { name: 'Privacy', path: '/privacy' },
+            { name: 'Privacy Policy', path: '/privacy' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Privacy</h1>
+        <h1 style={{ marginTop: '1.5rem' }}>Privacy Policy</h1>
+
+        <p className="eyebrow" style={{ marginTop: '-0.5rem' }}>
+          Effective {formatLongDate(PRIVACY_EFFECTIVE_DATE)}
+        </p>
 
         <p className="lede">
-          This page describes what happens to information you send through this website. It is
-          written from what the site actually does, and the points still open are marked as open
-          rather than filled in.
+          {site.legalName} respects your privacy and protects the information you give us. This
+          policy explains what this website collects, what we do with it, who else sees it, and how
+          to reach us about it.
         </p>
 
-        {PRIVACY_STATUS === 'draft' ? <DraftBanner /> : null}
-        <VerifyBanner flags={OPEN_ITEMS} />
-
-        <h2>What this page covers</h2>
+        <h2>What this policy covers</h2>
         <p>
-          This website, at {site.url.replace('https://', '')}. A closing file is a separate matter:
-          information you give us during a transaction is handled under the agency’s own
-          procedures, not under this page.{' '}
-          <Verify>
-            whether a separate Gramm-Leach-Bliley privacy notice is delivered to consumers at
-            closing, and whether this page is meant to be that notice
-          </Verify>
+          This website, at {site.url.replace('https://', '')}, and the information you send through
+          its forms. Information you give us later, inside a transaction, is used to do the work you
+          asked for and is handled with the same care described here.
         </p>
 
-        <h2>What a form collects</h2>
-        <p>
-          Only what you type. The quote and contact forms take your name and an email address, and
-          optionally a phone number, your role in the transaction, a property address and county,
-          the type of transaction, a purchase price and loan amount, how you heard about us, and
-          whatever you write in the message.
-        </p>
-        <p>
-          The <Link href="/order">order form</Link> takes the same, plus buyer and seller names, a
-          parcel or folio number, the lender and a lender contact, a target closing date, the
-          signing method you prefer, and your notes. Each submission also records which page it was
-          sent from.
-        </p>
-        <p>
-          Every field except your name, your email and the property address is optional, and the
-          form says so next to each one.
-        </p>
-
-        <h2>Documents you attach to an order</h2>
-        <p>
-          Attachments do not pass through this website. Your browser sends them directly to private
-          storage using a short-lived link issued for that one file, and the office opens them
-          through links that expire. Alongside the file we record what it was called, its type and
-          size, and when it arrived.
-        </p>
-        <p>
-          Do not send bank account or wire details through the form or by email. We will never send
-          you wire instructions by email, and we will not change instructions once given. Call{' '}
-          {site.phoneDisplay} to verify anything that claims to come from us.
-        </p>
-
-        <h2>What we do not collect</h2>
+        <h2>1. Information we collect</h2>
+        <p>Through the forms on this site we collect only what you type:</p>
         <ul>
+          <li>Your name, email address and, if you give it, a telephone or mobile number</li>
+          <li>Your role in the transaction, and how you heard about us</li>
           <li>
-            <strong>No cookies.</strong> This site sets none, and stores nothing in your browser.
+            Property and transaction information — the property address, county, parcel or folio
+            number, transaction type, purchase price, loan amount, target closing date, the lender
+            and a lender contact, buyer and seller names, and the signing method you prefer
           </li>
+          <li>Anything you write in a message or notes field</li>
+          <li>Which page of this site you sent the form from</li>
+        </ul>
+        <p>
+          Only your name, your email address and the property address are required. Every other
+          field is optional and is marked as optional on the form.
+        </p>
+        <p>
+          If you attach documents to an order, we receive those documents and whatever they contain
+          — a contract, a survey, a payoff letter or an estoppel may itself carry financial or
+          identification information. We record the file name, its type and size, and when it
+          arrived.
+        </p>
+
+        <h2>2. How we use it</h2>
+        <p>Information is used only for legitimate business purposes:</p>
+        <ul>
+          <li>Opening and working your title, escrow and settlement file</li>
+          <li>Processing and closing real estate transactions</li>
           <li>
-            <strong>Not your IP address.</strong> It is never stored. When a form is submitted the
-            address is converted, using a secret key, into a short fingerprint that cannot be turned
-            back into an address. Its only use is to cap how many submissions come from one source
-            in an hour, so the forms cannot be flooded.
+            Communicating with you about your file — status, closing dates, documents we still need,
+            reminders and service updates
           </li>
-          <li>
-            <strong>No advertising or social trackers.</strong> The site loads no third-party
-            scripts at all, which is enforced by the browser rather than left to good intentions.
-          </li>
+          <li>Responding to inquiries and customer support requests</li>
+          <li>Meeting legal, regulatory and underwriting requirements</li>
         </ul>
 
-        <h2>How we measure the site</h2>
+        <h2>3. How we share it</h2>
         <p>
-          We count page views and page speed using tools served from our own domain. They set no
-          cookie and build no profile of you; they tell us which pages get read and how quickly they
-          load.
+          <strong>We do not sell your personal information to anyone.</strong> We share it only as
+          far as is necessary to do the work or to comply with the law, with:
+        </p>
+        <ul>
+          <li>Title insurance underwriters, to issue a policy</li>
+          <li>
+            Parties directly involved in your transaction — lenders, real estate agents and
+            attorneys
+          </li>
+          <li>Government recording offices and municipalities, as the law requires</li>
+          <li>
+            Service providers who help us operate, under confidentiality obligations. For this
+            website those are our hosting provider, our database and document storage provider, and
+            the service that emails a notification to our office when you submit a form. All store
+            information in the United States.
+          </li>
+          <li>Government or regulatory authorities, when legally required</li>
+        </ul>
+        <p>
+          Your consent to receive text messages is never shared with third parties or affiliates.
+          Mobile information will not be sold, rented, or shared for marketing or promotional
+          purposes.
         </p>
 
-        <h2>Who else handles it</h2>
+        <h2>4. Text messaging (SMS) — terms and conditions</h2>
         <p>
-          The site runs on Vercel. Submissions, orders and uploaded documents are stored with
-          Supabase, in the United States. When you send a form, a notification is emailed to the
-          office through Resend. Those three hold information because the site cannot work without
-          them.
+          By providing your telephone number and consenting to receive text messages from{' '}
+          {site.legalName}, you agree to receive SMS messages from us. These are transactional and
+          customer care messages related to your title insurance and escrow closing order, such as:
         </p>
+        <ul>
+          <li>File opened and order status updates</li>
+          <li>Closing date and appointment reminders</li>
+          <li>Document requests and missing information alerts</li>
+          <li>Closing confirmation and funds notifications</li>
+          <li>General customer care and follow-up</li>
+        </ul>
+        <p>
+          Message frequency varies. Message and data rates may apply. To opt out at any time, reply
+          STOP to any message. For assistance, reply HELP or visit{' '}
+          {site.url.replace('https://', '')}. This page is both our privacy policy and our SMS terms
+          of service.
+        </p>
+        <p>
+          By opting in to SMS from a web form or any other medium, you are agreeing to receive SMS
+          messages from {site.legalName}. Message frequency varies. Message and data rates may
+          apply. Reply HELP for help. Reply STOP to any message to opt out.
+        </p>
+
+        <h2>5. Cookies, analytics and tracking</h2>
+        <ul>
+          <li>
+            <strong>This site sets no cookies</strong> and stores nothing in your browser.
+          </li>
+          <li>
+            <strong>We do not store your IP address.</strong> When you submit a form, your address
+            is converted using a secret key into a short fingerprint that cannot be turned back into
+            an address. Its only purpose is to limit how many submissions come from one source in an
+            hour, so the forms cannot be flooded.
+          </li>
+          <li>
+            <strong>We run no advertising or social media trackers.</strong> This site loads no
+            third-party scripts at all, which your browser enforces rather than taking our word for
+            it.
+          </li>
+          <li>
+            We measure page views and page speed using tools served from our own domain. They set no
+            cookie and build no profile of you. They tell us which pages are read and how quickly
+            they load.
+          </li>
+        </ul>
         <p>
           The reviews shown on this site were collected by Google on its own platform, not by us. We
-          display what reviewers chose to publish there.{' '}
-          <Verify>
-            what information is shared with First American Title Insurance Company as underwriter,
-            and on what basis
-          </Verify>
+          display what reviewers chose to publish there.
         </p>
 
-        <h2>How long we keep it</h2>
+        <h2>6. How we protect it</h2>
         <p>
-          <Verify>
-            no retention schedule has been set for form submissions, orders or uploaded documents.
-            This section must say what is kept, for how long, and what happens at the end of that
-            period, and it needs to be a decision the firm makes rather than a default inherited
-            from software
-          </Verify>
+          We maintain reasonable administrative, technical and physical safeguards designed to
+          protect personal information from unauthorised access, disclosure or misuse. Documents you
+          attach to an order do not pass through this website: your browser sends them directly to
+          private storage using a single-use link, and our office opens them through links that
+          expire.
+        </p>
+        <p>
+          <strong>A word about wire fraud.</strong> Do not send bank account or wire details through
+          this website or by email. We will never send you wire instructions by email, and we will
+          not change instructions once they have been given. Call {site.phoneDisplay} and speak to
+          someone you know to verify anything that claims to come from us.
         </p>
 
-        <h2>Asking what we hold</h2>
+        <h2>7. How long we keep it</h2>
         <p>
-          <Verify>
-            how someone asks what we hold about them, asks for it to be corrected, or asks for it to
-            be deleted; who at the firm handles that; and how long a response takes
-          </Verify>
+          We keep information for as long as it is needed for the purposes described above and for
+          as long as the law and our underwriting obligations require us to keep it. When it is no
+          longer needed for either, we dispose of it. You can ask us to delete information we hold
+          about you, and we will do so unless we are required to keep it.
         </p>
 
-        <h2>Reaching us about this</h2>
+        <h2>8. Your rights</h2>
         <p>
-          {site.legalName}, {site.address.street}, {site.address.city}, {site.address.region}{' '}
-          {site.address.postalCode}. Telephone{' '}
-          <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>, email{' '}
-          <a href={`mailto:${site.email}`}>{site.email}</a>.
+          You may contact us at any time to ask what personal information we hold about you, to ask
+          for it to be corrected, or to ask for it to be deleted, subject to applicable legal
+          requirements. Write to <a href={`mailto:${site.email}`}>{site.email}</a> or call{' '}
+          {site.phoneDisplay} and we will tell you what we hold and what we can do about it.
         </p>
 
-        <h2>Changes to this page</h2>
+        <h2>9. Children</h2>
         <p>
-          <Verify>the effective date, and how a material change to this page gets communicated</Verify>
+          This website is meant for people conducting real estate transactions. It is not directed
+          to children, and we do not knowingly collect information from anyone under 13. If you
+          believe a child has sent us information, contact us and we will delete it.
+        </p>
+
+        <h2>10. Changes to this policy</h2>
+        <p>
+          We may update this policy from time to time. Any update is posted on this page with a
+          revised effective date. This policy is linked in the footer of every page on this site and
+          next to every form that asks for your information.
+        </p>
+
+        <h2>11. Contact us</h2>
+        <p>
+          {site.legalName}
+          <br />
+          {site.address.street}
+          <br />
+          {site.address.city}, {site.address.region} {site.address.postalCode}
+          <br />
+          Telephone <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+          <br />
+          Email <a href={`mailto:${site.email}`}>{site.email}</a>
+        </p>
+        <p className="form-note">
+          This page describes how we handle information. It is not legal advice, and it does not
+          change the terms of any contract or closing document. If you have a question about your
+          own file, <Link href="/contact">get in touch</Link> and ask us directly.
         </p>
       </div>
     </div>

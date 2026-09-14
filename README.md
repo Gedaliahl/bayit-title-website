@@ -301,9 +301,8 @@ the same for passing ranking signal.
 
 Two things are still open:
 
-- **The privacy policy is drafted but unreviewed**, so `/privacy` still 404s in
-  production and `/privacy-policy` redirects into it. See below — reviewing it
-  is a cutover blocker.
+- The privacy policy is live but has not been through a lawyer; the GLBA
+  question and a definite retention schedule are still open
 - The Wix sitemap lists what Wix *publishes*, which is a floor rather than a
   ceiling — a URL deleted years ago can still sit in Google's index with links
   pointing at it. Re-check the map against Search Console's Pages report on the
@@ -313,32 +312,40 @@ Two things are still open:
 
 ## The privacy policy
 
-`app/privacy/page.tsx`, gated on `lib/privacy.ts` the same way content is: a
-policy is a binding representation by a licensed financial institution, so an
-unreviewed one is not served, not linked in the footer, and not listed in the
-sitemap. It renders on a preview build, `noindex`, with the draft banner and its
-open items shown.
+`app/privacy/page.tsx`, live, linked in the footer and next to both forms, and
+listed in the sitemap.
 
-Everything on it describing the website is written from the code and is
-checkable — the exact fields each form posts, the salted fingerprint that
-replaces the caller's IP, the absence of any cookie or browser storage
-(verified in a browser, including with analytics active), and the vendors that
-actually receive data. Nothing about the firm's *practice* is invented. Five
-things only the firm and its counsel can answer are flagged on the page:
+Two policies ran on the Wix site — `/privacy`, effective 17 April 2026, and
+`/privacy-policy`, last updated 15 March 2026 — saying overlapping things in
+different words. Every substantive commitment in both is carried over into this
+one page and the duplicate path redirects, so there is no longer a pair of
+documents free to drift apart. `tests/privacy.test.ts` asserts the commitments
+survived, because a privacy policy is a set of promises rather than copy: a
+dropped line about not selling personal information is invisible on the page and
+consequential everywhere else.
 
-1. Retention — how long submissions, orders and uploaded documents are kept.
-   No schedule has ever been set; this is the same question that got a purge
-   promise removed from the order form.
-2. Whether this page is the agency's Gramm-Leach-Bliley notice, or whether a
-   separate notice is delivered at closing. A title agency is a financial
-   institution under GLBA, and this is a question for counsel.
-3. How someone asks what is held about them, and who handles that.
-4. What is shared with First American as underwriter, and on what basis.
-5. The effective date, and how changes get communicated.
+**The SMS section is compliance text, not copy.** Carriers require terms of that
+shape to be publicly posted for an A2P messaging registration, and the old page
+was cited as both the privacy policy and the SMS terms of service. Check with
+whoever manages that registration before changing its wording. Note also that
+**no form on this site collects SMS consent** — there is no checkbox — so if the
+registration relies on web-form opt-in, that mechanism does not exist here yet.
 
-Resolve those, delete the `Verify` markers, and set `PRIVACY_STATUS` to
-`'reviewed'` in `lib/privacy.ts`. That one change publishes the page, restores
-the footer link, and adds it to the sitemap.
+Everything describing the website is written from the code and is checkable: the
+fields each form posts, the salted fingerprint that replaces the caller's IP, and
+the absence of any cookie or browser storage, which was verified in a browser
+with analytics active. Two of those are pinned by tests, because the page now
+makes claims the code has to keep true.
+
+**It has not been through a lawyer**, and two things deserve counsel's eye:
+
+1. Whether the agency needs a separate Gramm-Leach-Bliley notice for the closing
+   side. A title agency is a financial institution under GLBA, and this page is
+   scoped to the website.
+2. Retention. Section 7 describes the practice honestly — kept as long as needed
+   and as long as the law requires — because no schedule has ever been set. A
+   definite one would be better, and it is the same decision still outstanding
+   for uploaded order documents.
 
 ## Known blockers
 

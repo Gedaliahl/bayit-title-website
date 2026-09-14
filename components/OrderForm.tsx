@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { TextField, TextArea, SelectField, FileField, Honeypot } from './Field';
@@ -392,7 +393,8 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
         This form opens a file and nothing more. Do not send bank account or wire details through
         it — not in a field, not in an attachment — or through email. We will never send you wire
         instructions by email, and we will not change instructions once given. Call{' '}
-        {site.phoneDisplay} to verify anything that claims to come from us.
+        {site.phoneDisplay} to verify anything that claims to come from us. What we do with what
+        you send is set out in our <Link href="/privacy">privacy policy</Link>.
       </p>
     </form>
   );

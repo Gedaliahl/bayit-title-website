@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useErrorFocus } from './useErrorFocus';
@@ -181,7 +182,8 @@ export function LeadForm({
       <p className="form-note" style={{ marginTop: '1rem' }}>
         Please do not send bank account or wire details through this form. We will never email you
         wire instructions, and we will never change instructions once given. Call{' '}
-        {site.phoneDisplay} to verify anything that claims to come from us.
+        {site.phoneDisplay} to verify anything that claims to come from us. What we do with what
+        you send is set out in our <Link href="/privacy">privacy policy</Link>.
       </p>
     </form>
   );
