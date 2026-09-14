@@ -140,6 +140,29 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
   captured, because a body cut off by Google's "View full review" link would be
   quoted out of context.
 
+## Rates and fees
+
+`rate_tables` holds what the recording office charges and what tax it collects at
+recording. Every row carries a `source_url` and a `source_note` naming the
+statute or the office's own schedule, and `lib/rates.ts` drops any row whose
+amount is missing or whose unit it does not know how to render rather than
+printing a figure it cannot format. County pages render the tables from this
+data, and `/counties` takes its headline figures from the same rows, so nothing
+is typed into copy where it could drift.
+
+A row with `county_slug = NULL` applies in all 67 counties. That is the normal
+case: Fla. Stat. § 28.24 says a recording charge "may not exceed" the amounts it
+lists, which makes the recording charge a statewide ceiling rather than a county
+price. A row with a `county_slug` is a real local departure, and Florida has
+exactly one — Miami-Dade, whose deed tax is $0.60 per $100 rather than $0.70 and
+which is the only county that may levy the discretionary surtax, because
+Fla. Stat. § 125.011(1) limits it to a county under an 1885-constitution home
+rule charter.
+
+The seeds are in `supabase/seed/`, checked into Git so a licensed reviewer can
+read every figure against its source in a diff. They are safe to re-run. Adding a
+figure means finding it in the primary source first — the same rule as content.
+
 ## Forms
 
 `/order`, `/quote` and `/contact` post to Route Handlers under `app/api/`.
@@ -159,7 +182,9 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
 
 Carried forward from `docs/HANDOFF.md`, still open:
 
-- `rate_tables` is empty → no calculators, and county pages withhold fee figures
+- The premium side of `rate_tables` is still empty. Recording charges, documentary
+  stamps, the Miami-Dade surtax and the intangible tax are seeded and published; the
+  promulgated premium schedule is not, so a full closing-cost calculator is still blocked
 - Several pages make First American coverage statements that are unverified
 - Timeline data is a `[VERIFY]` flag on every library page
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer and Chaya; the About
