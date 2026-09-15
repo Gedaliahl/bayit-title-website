@@ -363,10 +363,12 @@ Carried forward from `docs/HANDOFF.md`, still open:
   pack: `docs/review/verify-fill-review.pdf`
 - Which team members hold Florida *online* notary registrations is still open,
   and is the one flag that must come from the commission record
-- `rate_tables` is empty and nothing is waiting on it. The promulgated premium
-  is in `lib/promulgated-premium.ts` from OIR rule 69O-186.003, and transfer
-  taxes and recording charges in `lib/statutory-rates.ts` from the statutes that
-  set them; `/calculator` and the county pages read those and cite every line.
+- `rate_tables` has a seed (`supabase/seed/rate_tables.sql`, statutory figures
+  verified 2026-09-14) but no code reads it: the site takes the same figures from
+  cited TypeScript instead, so the build does not depend on Supabase. Nothing is
+  waiting on the table. The promulgated premium is in
+  `lib/promulgated-premium.ts` from OIR rule 69O-186.003, and transfer taxes and
+  recording charges in `lib/statutory-rates.ts` from the statutes that set them; `/calculator` and the county pages read those and cite every line.
   What is still unpriced anywhere on the site is our own fee, the search and
   examination, and endorsements — the calculator lists them as not counted
 - Several pages make First American coverage statements that are unverified
