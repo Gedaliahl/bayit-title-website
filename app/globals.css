@@ -184,6 +184,17 @@ th {
   background: var(--sage);
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -293,14 +304,21 @@ th {
   font-size: 0.9375rem;
 }
 
-.nav a {
+/* `:not(.btn)` is load-bearing, not tidiness. `.nav a` outranks `.btn--primary`
+   on specificity — a class plus an element beats a class — so without it this
+   rule repainted the header's "Open an order" button ink-on-oxblood at a
+   contrast ratio of 1.46:1, and overrode its padding besides. A button that
+   happens to sit in the nav is not a nav link. Same guard on the other two
+   container rules below, which have the same shape and would fail the same way
+   the moment a call to action lands in them. */
+.nav a:not(.btn) {
   color: var(--ink);
   text-decoration: none;
   padding-block: 0.25rem;
   border-bottom: 1px solid transparent;
 }
 
-.nav a:hover {
+.nav a:not(.btn):hover {
   border-bottom-color: var(--oxblood);
   color: var(--ink);
 }
@@ -339,12 +357,12 @@ th {
   margin-top: 0.4rem;
 }
 
-.sitefoot a {
+.sitefoot a:not(.btn) {
   color: var(--ink);
   text-decoration: none;
 }
 
-.sitefoot a:hover {
+.sitefoot a:not(.btn):hover {
   color: var(--oxblood);
   text-decoration: underline;
 }
@@ -552,14 +570,14 @@ th {
   border-bottom: 1px solid var(--rule);
 }
 
-.linklist a {
+.linklist a:not(.btn) {
   display: block;
   padding: 0.85rem 0;
   color: var(--ink);
   text-decoration: none;
 }
 
-.linklist a:hover {
+.linklist a:not(.btn):hover {
   color: var(--oxblood);
 }
 
@@ -691,6 +709,73 @@ th {
   font-family: var(--font-ui);
   font-size: 0.8125rem;
   color: var(--oxblood);
+}
+
+.field input[type='file'] {
+  padding: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.field input[type='file']::file-selector-button {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  background: var(--sage);
+  border: 1px solid var(--sage-deep);
+  border-radius: 2px;
+  padding: 0.4rem 0.7rem;
+  margin-right: 0.7rem;
+  cursor: pointer;
+}
+
+.file-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  border-top: 1px solid var(--rule);
+}
+
+.file-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.file-list__name {
+  flex: 1;
+  /* Filenames arrive long and unbroken. Truncate rather than blow out the column. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-list__size {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.file-list__remove {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--oxblood);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.file-list__remove[disabled] {
+  color: var(--ink-muted);
+  cursor: default;
 }
 
 .field-row {

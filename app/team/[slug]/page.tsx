@@ -61,7 +61,12 @@ export default async function TeamMemberPage({ params }: { params: Promise<{ slu
           {member.role}
         </p>
 
-        {member.bio ? <p className="lede">{member.bio}</p> : null}
+        {/* The opening paragraph carries the page, so it reads as the lede. */}
+        {member.bio?.map((paragraph, index) => (
+          <p key={paragraph} className={index === 0 ? 'lede' : undefined}>
+            {paragraph}
+          </p>
+        ))}
 
         {member.publicRecord.length > 0 ? (
           <>

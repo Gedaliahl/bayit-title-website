@@ -3,9 +3,10 @@ import { site } from './site';
 /**
  * Team detail beyond the canonical facts in site.ts.
  *
- * `bio` is intentionally null for three of four members. Each person writes
- * their own two or three sentences; nothing here is written on their behalf.
- * A null bio renders as an omitted section, not as invented copy.
+ * `bio` is null until the person has written their own two or three sentences.
+ * Nothing here is written on anyone's behalf, and a null bio renders as an
+ * omitted section rather than as invented copy. It is an array because a bio is
+ * paragraphs as its author wrote them, not one run-on block.
  */
 export interface TeamMember {
   slug: string;
@@ -14,7 +15,7 @@ export interface TeamMember {
   credential: string | null;
   /** Verifiable licence or commission detail, stated exactly as the public record has it. */
   publicRecord: string[];
-  bio: string | null;
+  bio: string[] | null;
   linkedin?: string;
 }
 
@@ -46,7 +47,15 @@ export const team: TeamMember[] = [
     role: 'Processor',
     credential: 'Florida Notary Public, Commission HH 795313',
     publicRecord: ['Florida Notary Public, Commission HH 795313, expires May 24, 2030'],
-    bio: null,
+    // Jennifer's own words, as supplied. First person because they are hers.
+    bio: [
+      'I am a dedicated Real Estate Title Processor with several years of experience in the ' +
+        'title industry. I enjoy managing the details behind each transaction, from reviewing ' +
+        'title work and clearing requirements to coordinating with lenders, agents, and clients ' +
+        'to help ensure a smooth closing. What I enjoy most about title processing is bringing ' +
+        'all the moving pieces together and knowing my work helps make the closing process ' +
+        'easier for everyone involved.',
+    ],
   },
   {
     slug: 'chaya',
@@ -54,7 +63,17 @@ export const team: TeamMember[] = [
     role: 'Closer',
     credential: 'Florida Notary Public, Commission HH 817398',
     publicRecord: ['Florida Notary Public, Commission HH 817398, expires June 24, 2030'],
-    bio: null,
+    // Chaya's own words, as supplied. One copy edit: "insuring" to "ensuring",
+    // which on a title insurance site reads as the wrong word rather than a typo.
+    bio: [
+      'Hi, I’m Chaya! The Closer at Bayit Title. I help coordinate signings, communicate ' +
+        'with buyers, sellers, lenders, and notaries, and make sure everything stays on course ' +
+        'throughout the closing process. I enjoy working through the details and ensuring ' +
+        'things run smoothly.',
+      'One thing I always want first-time buyers to know is that signing day doesn’t have ' +
+        'to be a stressful event. I’m here to help answer any question and make the ' +
+        'process as easy and comfortable as possible.',
+    ],
   },
 ];
 

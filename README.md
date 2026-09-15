@@ -33,10 +33,20 @@ fall back to empty or to the canonical values in `lib/site.ts`; the form
 endpoints return a 500 with an instruction to phone or email instead.
 
 ```bash
+npm run lint        # eslint, flat config
 npm run typecheck   # tsc --noEmit
+npm test            # vitest
 npm run build       # production build; drafts excluded
 SHOW_DRAFTS=1 npm run build   # preview build; drafts included
 ```
+
+`.github/workflows/ci.yml` runs all five on every pull request.
+
+The tests in `tests/` cover the decisions rather than the plumbing: the
+reviewed/VERIFY gate, the two review suppression rules, the document allowlist
+that has to mirror the bucket, and the IP fingerprint. Each of those is a choice
+about what the firm publishes or stores, and each could be weakened by a
+refactor without a single build turning red.
 
 ## The one rule that matters most
 
@@ -118,6 +128,87 @@ availability — reviews may describe it, the firm must not promise it.
 Banned: seamless, stress-free, concierge (as a tier), trusted, hassle-free, peace
 of mind, dream home, hero, rescue.
 
+## Accessibility
+
+Audited with axe-core (WCAG 2.0/2.1/2.2 A and AA, plus best practice) across
+every page type at 375px and 1280px, and by hand for the things a scanner
+cannot see. Current state: **no axe violations, no horizontal overflow at any
+width down to 320px, every focusable element carries a visible focus ring, and
+the text-spacing override of SC 1.4.12 clips nothing.**
+
+Two findings, both fixed:
+
+- `.nav a` outranked `.btn--primary` on specificity, which repainted the
+  header's "Open an order" button ink-on-oxblood — a contrast ratio of **1.46:1**
+  on the primary call to action, on every page. The container link rules now
+  exclude `.btn`.
+- A failed submit was silent on a phone. The button sits at the bottom of a long
+  form and the errors render above the fold, so four errors rendered with none
+  on screen, while the disabling button dropped focus onto `<body>`.
+  `components/useErrorFocus.ts` moves focus to the first rejected field, which
+  scrolls it into view, puts the caret where the fix gets typed, and reads the
+  label and error together.
+
+Undersized tap targets were checked against SC 2.5.8 properly rather than by
+size alone: every one is either inline in text or clears the 24px spacing
+exception, so none is a failure.
+
+## Security headers
+
+`next.config.mjs` sets HSTS, `nosniff`, a referrer policy, `X-Frame-Options`
+and a **Content-Security-Policy**. The policy is static rather than
+nonce-based, and that is the one trade worth understanding.
+
+`script-src` carries `'unsafe-inline'` deliberately. Next emits two inline
+bootstrap scripts per page, and the JSON-LD this site exists to publish is
+inline by definition. Removing it means a per-request nonce, which needs
+middleware and opts every page out of static rendering — a real cost on a site
+whose whole shape is statically generated content served from the edge.
+
+What the policy still buys, verified in a browser against the exact header the
+app serves: an injected `<script src>` pointing at another host is refused, so
+is an injected form posting elsewhere, so is a rewritten `<base>`, an `<object>`,
+an outside image, an `<iframe>`, and any `fetch` to an origin not named below.
+Markdown is rendered with `sanitize: false`, so that backstop is not theoretical.
+
+`connect-src` names the Supabase origin because **the browser uploads order
+documents straight to the storage bucket**. The origin is read from
+`SUPABASE_URL`, the same variable the server client uses, so the policy cannot
+drift from the project the app points at. With that variable unset the build
+warns and uploads will be blocked by the browser — loudly, rather than
+mysteriously at the worst moment.
+
+`tests/csp.test.ts` asserts the properties rather than the string, because a
+weakened CSP breaks nothing and is therefore invisible.
+
+## Measurement
+
+Vercel Web Analytics and Speed Insights, mounted in `components/Analytics.tsx`
+and **rendered only when `VERCEL_ENV` is `production`**. Preview deployments are
+the team reading its own drafts, which on a site starting from this much traffic
+would be most of the data rather than a rounding error.
+
+Both scripts are served from this origin under `/_vercel/`. Nothing calls a
+third party and nothing sets a cookie, so the site needs no consent banner to
+count a pageview and a future CSP has no outside host to name.
+
+### Search Console and Bing
+
+`GOOGLE_SITE_VERIFICATION` and `BING_SITE_VERIFICATION` emit the ownership meta
+tags. Neither is a secret — both are published in the page head. They are env
+vars so verifying a property is a dashboard change rather than a deploy, and
+with neither set no tag is emitted at all rather than an empty one.
+
+**Set them on production only.** A Search Console property is per-origin;
+verifying the Vercel preview hostname would report on a site nobody is meant to
+find. If you are already in the domain's DNS for the cutover, prefer Google's
+DNS TXT method and leave `GOOGLE_SITE_VERIFICATION` unset — it verifies the
+whole domain including subdomains. Bing can import an already-verified Search
+Console property, which skips its token too.
+
+`robots.txt` already points at `sitemap.xml`, so submission is the only step
+left once a property exists.
+
 ## Structured data
 
 `components/Schema.tsx` emits Organization, Person, Article, FAQPage and
@@ -155,10 +246,116 @@ Fetched from Supabase at build time and failing soft. Two rules are enforced in
 - The submission is persisted before the notification email is attempted, so a
   mail outage loses a notification, never a lead.
 
+### Order documents
+
+Files never pass through the application. `/api/orders` stores the order, then
+mints one short-lived signed upload URL per declared document; the browser PUTs
+the bytes straight to the private `order-documents` bucket and calls
+`/api/orders/documents` to confirm.
+
+That shape is partly a platform limit — a serverless function body caps out
+around 4.5 MB and a survey PDF clears that alone — and partly the safer design:
+the bucket stays private, the service-role key stays on the server, and the
+browser holds permission to write exactly one object at exactly one path.
+
+- **The order is saved and notified before any file moves.** A closed tab costs
+  the office an attachment, never an order. Documents arrive in their own
+  notification, with signed links that expire in a week.
+- **A row is written only once the object is seen in the bucket.** An upload
+  ticket is permission, not evidence, so `order_documents` never lists a
+  document nobody sent. That also makes confirmation safe to expose: holding an
+  order id is not enough, because registering a document requires having
+  uploaded it first.
+- **Storage paths are generated, never derived from the filename.** The sender's
+  name is a label in `original_name`; size and type are read back off the stored
+  object.
+- The accepted types in `lib/documents.ts` mirror `allowed_mime_types` on the
+  bucket, and the size cap mirrors its `file_size_limit`. The bucket is the real
+  gate — adding a type in code alone buys a picker that accepts a file and an
+  upload that fails.
+- Documents carry a `purge_after` date marking when they become eligible for
+  deletion. **Nothing acts on it.** There is no purge job and no retention
+  policy — how long the agency must keep a contract or a payoff letter is a
+  decision for the firm and its counsel, not a schema default. Neither the form
+  nor the notification claims anything about deletion, and neither should until
+  that decision is made.
+
+## The Wix cutover
+
+`bayittitle.com` runs on Wix today. Every source in the redirect map in
+`next.config.mjs` was checked against the live site rather than guessed at; the
+list it replaced was a first pass at Wix naming conventions, and seven of its
+nine entries redirected paths that had never existed while six real pages had no
+redirect and would have 404ed. `tests/redirects.test.ts` pins the map, because a
+dropped entry is invisible until the traffic is already gone.
+
+**The canonical host is www.** The Wix site 301s the apex to `www`, so every
+indexed URL and inbound link already points there; moving to the apex would put
+a redirect hop in front of the whole existing index for nothing. **Vercel must
+have `www.bayittitle.com` set as the primary domain**, with the apex attached
+and redirecting to it — that is where the host redirect belongs, not duplicated
+in `next.config.mjs`.
+
+Next serves `permanent: true` as a 308 rather than a 301. Google treats the two
+the same for passing ranking signal.
+
+Two things are still open:
+
+- The privacy policy is live but has not been through a lawyer; the GLBA
+  question and a definite retention schedule are still open
+- The Wix sitemap lists what Wix *publishes*, which is a floor rather than a
+  ceiling — a URL deleted years ago can still sit in Google's index with links
+  pointing at it. Re-check the map against Search Console's Pages report on the
+  Wix property before the cutover. The Pennsylvania entries are exactly that
+  case: they 404 on Wix already and are kept because the firm is Florida-only
+  and a stale page must neither resurface nor land on a 404.
+
+## The privacy policy
+
+`app/privacy/page.tsx`, live, linked in the footer and next to both forms, and
+listed in the sitemap.
+
+Two policies ran on the Wix site — `/privacy`, effective 17 April 2026, and
+`/privacy-policy`, last updated 15 March 2026 — saying overlapping things in
+different words. Every substantive commitment in both is carried over into this
+one page and the duplicate path redirects, so there is no longer a pair of
+documents free to drift apart. `tests/privacy.test.ts` asserts the commitments
+survived, because a privacy policy is a set of promises rather than copy: a
+dropped line about not selling personal information is invisible on the page and
+consequential everywhere else.
+
+**The SMS section is compliance text, not copy.** Carriers require terms of that
+shape to be publicly posted for an A2P messaging registration, and the old page
+was cited as both the privacy policy and the SMS terms of service. Check with
+whoever manages that registration before changing its wording. Note also that
+**no form on this site collects SMS consent** — there is no checkbox — so if the
+registration relies on web-form opt-in, that mechanism does not exist here yet.
+
+Everything describing the website is written from the code and is checkable: the
+fields each form posts, the salted fingerprint that replaces the caller's IP, and
+the absence of any cookie or browser storage, which was verified in a browser
+with analytics active. Two of those are pinned by tests, because the page now
+makes claims the code has to keep true.
+
+**It has not been through a lawyer**, and two things deserve counsel's eye:
+
+1. Whether the agency needs a separate Gramm-Leach-Bliley notice for the closing
+   side. A title agency is a financial institution under GLBA, and this page is
+   scoped to the website.
+2. Retention. Section 7 describes the practice honestly — kept as long as needed
+   and as long as the law requires — because no schedule has ever been set. A
+   definite one would be better, and it is the same decision still outstanding
+   for uploaded order documents.
+
 ## Known blockers
 
 Carried forward from `docs/HANDOFF.md`, still open:
 
+**Waiting on the firm**
+
+- All nine content files are still `status: draft`, so production publishes zero
+  library pages. See `docs/verify-worklist.md` — 62 flags, triaged by who can
+  answer them.
 - `rate_tables` is empty and nothing is waiting on it. The promulgated premium
   is in `lib/promulgated-premium.ts` from OIR rule 69O-186.003, and transfer
   taxes and recording charges in `lib/statutory-rates.ts` from the statutes that
@@ -167,14 +364,36 @@ Carried forward from `docs/HANDOFF.md`, still open:
   examination, and endorsements — the calculator lists them as not counted
 - Several pages make First American coverage statements that are unverified
 - Timeline data is a `[VERIFY]` flag on every library page
-- Team bios need 2–3 sentences each from Gedaliah, Jennifer and Chaya; the About
-  page's founding story is Shevy's to write
+- Bios for Shevy and Gedaliah; the About page's founding story is Shevy's to
+  write. Jennifer's and Chaya's are in.
 - No usable photography
+- No retention schedule for form submissions, orders or uploaded documents. It
+  blocks a definite §7 in the privacy policy and any purge of `purge_after`.
+- The privacy policy is live but has not been through a lawyer; the
+  Gramm-Leach-Bliley question for the closing side is open.
+
+**Engineering, unblocked**
+
+- The document upload's storage round-trip has never been exercised: minting a
+  signed URL, the browser PUT, and the bucket listing on confirm all need a
+  service-role key and one real submission.
+- No form collects SMS consent, while the privacy policy carries SMS terms for an
+  A2P registration. If that registration relies on web-form opt-in, the mechanism
+  does not exist here.
+- `review_requests` and `ai_audit_log` are schema with no code — the review-ask
+  flow and the quarterly AI-visibility audit are both unbuilt.
 - Google Business Profile API access was rejected; reapply from a bayittitle.com
   address. Reviews are seeded manually and work fine — the sync is an
   optimisation, not a blocker.
-- Legacy Wix URLs in `next.config.mjs` are a first pass; complete them from Wix
-  analytics
+
+**Launch mechanics, none started**
+
+- Domain cutover, with `www.bayittitle.com` set as the primary domain in Vercel
+- `RESEND_API_KEY` unset, so form notifications silently no-op; plus SPF/DKIM for
+  the sending domain
+- Supabase environment variables confirmed in Vercel before cutover, not after
+- Search Console and Bing properties created on the real domain, and the redirect
+  map re-checked against Search Console's Pages report for stale indexed URLs
 
 ## Docs
 

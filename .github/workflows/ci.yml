@@ -1,4 +1,9 @@
-# Lint, typecheck and build every pull request and every push to main.
+# The build is this project's compliance gate, not just a bundler.
+#
+# lib/content.ts refuses to build a page marked `status: reviewed` that still
+# carries a [VERIFY] flag, or one that claims a review without naming the
+# reviewer and the dates. That rule is the reason the repo exists in this shape.
+# It runs here, on every pull request, before a reviewer can merge.
 #
 # Vercel already builds previews, but it only reports pass or fail on the
 # deployment — it does not run ESLint or tsc, and it does not block anything.
@@ -19,17 +24,25 @@ permissions:
   contents: read
 
 jobs:
-  check:
-    name: Lint, typecheck, build
+  verify:
+    name: Lint, typecheck, test, build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      # The real site URL is not a secret, and pinning it keeps the canonical
+      # tags and JSON-LD in a CI build identical to production.
+      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+      # Supabase credentials are deliberately absent. The site is built to
+      # render without them, so CI proves that path stays working — it
+      # exercises the canonical fallback in lib/locations.ts.
 
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
-          # Matches the engines field in package.json.
-          node-version: '22'
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install
@@ -45,9 +58,26 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run typecheck
 
-      # No SHOW_DRAFTS here on purpose: this is the production path, where
-      # unreviewed drafts have no route at all. Supabase is not configured in
-      # CI either, which exercises the canonical fallback in lib/locations.ts.
-      - name: Build
+      # The rules these cover — the reviewed/VERIFY gate, the review
+      # suppressions, the document allowlist, the IP fingerprint — are decisions
+      # about what the firm publishes and stores, not implementation detail. A
+      # refactor could weaken any of them and every build would still be green.
+      - name: Test
+        if: ${{ !cancelled() }}
+        run: npm test
+
+      # Drafts have no route in production, so a production build alone would
+      # never render the content library — a broken draft page would reach a
+      # reviewer unbuilt. This build generates every draft and is the one that
+      # exercises the library template.
+      - name: Build with drafts (preview parity)
+        if: ${{ !cancelled() }}
+        run: npm run build
+        env:
+          SHOW_DRAFTS: '1'
+
+      # The build that decides what the public actually gets: drafts excluded,
+      # and the reviewed/VERIFY gate enforced on everything that remains.
+      - name: Build for production
         if: ${{ !cancelled() }}
         run: npm run build

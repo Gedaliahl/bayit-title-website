@@ -2,6 +2,8 @@
 
 import type { ReactNode } from 'react';
 
+import { formatBytes } from '@/lib/documents';
+
 interface BaseProps {
   name: string;
   label: string;
@@ -107,6 +109,65 @@ export function SelectField({
           </option>
         ))}
       </select>
+    </Wrapper>
+  );
+}
+
+/**
+ * Attachments. Controlled from the form rather than read off the DOM at submit
+ * time, because a person who picks three files and then one more expects four —
+ * a plain multiple input would replace the set.
+ */
+export function FileField({
+  files,
+  onAdd,
+  onRemove,
+  accept,
+  disabled,
+  ...props
+}: BaseProps & {
+  files: File[];
+  onAdd: (added: File[]) => void;
+  onRemove: (index: number) => void;
+  accept: string;
+  disabled?: boolean;
+}) {
+  return (
+    <Wrapper {...props}>
+      <input
+        id={props.name}
+        name={props.name}
+        type="file"
+        multiple
+        accept={accept}
+        disabled={disabled}
+        aria-invalid={props.error ? true : undefined}
+        aria-describedby={describedBy(props.name, props.hint, props.error)}
+        onChange={(event) => {
+          onAdd(Array.from(event.target.files ?? []));
+          // Clear it, so picking the same file again after removing it still fires.
+          event.target.value = '';
+        }}
+      />
+
+      {files.length > 0 ? (
+        <ul className="file-list">
+          {files.map((file, index) => (
+            <li key={`${file.name}-${file.size}-${index}`}>
+              <span className="file-list__name">{file.name}</span>
+              <span className="file-list__size">{formatBytes(file.size)}</span>
+              <button
+                type="button"
+                className="file-list__remove"
+                onClick={() => onRemove(index)}
+                disabled={disabled}
+              >
+                Remove<span className="visually-hidden"> {file.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </Wrapper>
   );
 }

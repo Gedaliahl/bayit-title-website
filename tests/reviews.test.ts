@@ -1,0 +1,186 @@
+/**
+ * The two review rules that live in lib/reviews.ts rather than in the UI.
+ *
+ * Forty of the ninety-two rows have dates derived from "12 weeks ago" labels,
+ * two of which contradict their own owner-reply dates, so those rows print no
+ * date at all. Rows whose body Google truncated are withheld entirely, because
+ * a body cut off at "View full review" would be quoted out of context. Both are
+ * decisions about what the firm is willing to publish, so neither may drift
+ * into being a template detail.
+ */
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+interface Call {
+  method: string;
+  args: unknown[];
+}
+
+/** Records the query that was built, then resolves like a PostgREST call. */
+function fakeClient(result: { data: unknown; error: { message: string } | null }) {
+  const calls: Call[] = [];
+
+  const builder: Record<string, unknown> = {
+    then(resolve: (value: unknown) => unknown) {
+      return Promise.resolve(result).then(resolve);
+    },
+    maybeSingle() {
+      calls.push({ method: 'maybeSingle', args: [] });
+      return Promise.resolve(result);
+    },
+  };
+
+  for (const method of ['select', 'eq', 'not', 'order', 'limit']) {
+    builder[method] = (...args: unknown[]) => {
+      calls.push({ method, args });
+      return builder;
+    };
+  }
+
+  return {
+    calls,
+    client: {
+      from(table: string) {
+        calls.push({ method: 'from', args: [table] });
+        return builder;
+      },
+    },
+  };
+}
+
+function row(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'r1',
+    author_name: 'A. Reviewer',
+    rating: 5,
+    body: 'They caught an open permit before closing.',
+    published_at: '2026-03-01',
+    reply_body: null,
+    topic_tags: ['permits'],
+    team_member_slug: 'shevy',
+    county_slug: 'broward-county',
+    is_featured: false,
+    date_is_approximate: false,
+    body_truncated: false,
+    ...overrides,
+  };
+}
+
+const getServiceClient = vi.fn();
+
+vi.mock('@/lib/supabase', () => ({
+  getServiceClient: () => getServiceClient(),
+  requireServiceClient: () => getServiceClient(),
+}));
+
+beforeEach(() => {
+  vi.resetModules();
+  getServiceClient.mockReset();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe('dates that cannot be trusted', () => {
+  it('prints no date for a row whose date was approximated', async () => {
+    const { client } = fakeClient({
+      data: [row({ id: 'approx', date_is_approximate: true, published_at: '2026-01-15' })],
+      error: null,
+    });
+    getServiceClient.mockReturnValue(client);
+
+    const { getReviews } = await import('@/lib/reviews');
+    const [review] = await getReviews();
+
+    expect(review.id).toBe('approx');
+    // The stored value exists; publishing it would be a guess.
+    expect(review.publishedAt).toBeNull();
+  });
+
+  it('keeps the date on a row that was dated properly', async () => {
+    const { client } = fakeClient({ data: [row({ published_at: '2026-03-01' })], error: null });
+    getServiceClient.mockReturnValue(client);
+
+    const { getReviews } = await import('@/lib/reviews');
+    const [review] = await getReviews();
+
+    expect(review.publishedAt).toBe('2026-03-01');
+  });
+});
+
+describe('bodies Google cut off', () => {
+  it('asks the database to withhold truncated and hidden rows', async () => {
+    const { client, calls } = fakeClient({ data: [], error: null });
+    getServiceClient.mockReturnValue(client);
+
+    const { getReviews } = await import('@/lib/reviews');
+    await getReviews();
+
+    const filters = calls.filter((call) => call.method === 'eq').map((call) => call.args);
+    expect(filters).toContainEqual(['body_truncated', false]);
+    expect(filters).toContainEqual(['is_hidden', false]);
+    // A review with no text at all has nothing to quote either.
+    expect(calls).toContainEqual({ method: 'not', args: ['body', 'is', null] });
+  });
+});
+
+describe('failing soft', () => {
+  it('renders without reviews when Supabase is not configured', async () => {
+    getServiceClient.mockReturnValue(null);
+
+    const { getReviews, getReviewSnapshot } = await import('@/lib/reviews');
+
+    await expect(getReviews()).resolves.toEqual([]);
+    await expect(getReviewSnapshot()).resolves.toBeNull();
+  });
+
+  it('renders without reviews when the query fails, rather than failing the build', async () => {
+    const { client } = fakeClient({ data: null, error: { message: 'connection reset' } });
+    getServiceClient.mockReturnValue(client);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { getReviews } = await import('@/lib/reviews');
+
+    await expect(getReviews()).resolves.toEqual([]);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('connection reset'));
+  });
+});
+
+describe('pulling a relevant review onto a page', () => {
+  it('ranks by how many tags overlap, most specific first', async () => {
+    const { client } = fakeClient({
+      data: [
+        row({ id: 'one-tag', topic_tags: ['permits'] }),
+        row({ id: 'two-tags', topic_tags: ['permits', 'hoa'] }),
+        row({ id: 'no-overlap', topic_tags: ['wire'] }),
+      ],
+      error: null,
+    });
+    getServiceClient.mockReturnValue(client);
+
+    const { getReviewsByTags } = await import('@/lib/reviews');
+    const matched = await getReviewsByTags(['permits', 'hoa']);
+
+    expect(matched.map((review) => review.id)).toEqual(['two-tags', 'one-tag']);
+  });
+
+  it('returns nothing when the page declares no tags', async () => {
+    getServiceClient.mockReturnValue(null);
+    const { getReviewsByTags } = await import('@/lib/reviews');
+
+    expect(await getReviewsByTags([])).toEqual([]);
+    // No tags means no query at all.
+    expect(getServiceClient).not.toHaveBeenCalled();
+  });
+
+  it('honours the limit it is given', async () => {
+    const { client } = fakeClient({
+      data: [row({ id: 'a' }), row({ id: 'b' }), row({ id: 'c' })],
+      error: null,
+    });
+    getServiceClient.mockReturnValue(client);
+
+    const { getReviewsByTags } = await import('@/lib/reviews');
+    expect(await getReviewsByTags(['permits'], 1)).toHaveLength(1);
+  });
+});

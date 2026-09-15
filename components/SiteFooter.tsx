@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { site, footerCredentialLine } from '@/lib/site';
+import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export function SiteFooter() {
   return (
@@ -66,6 +67,14 @@ export function SiteFooter() {
               <li>
                 <Link href="/contact">Contact us</Link>
               </li>
+              {/* Linked only once reviewed. A footer link to a 404 is worse
+                  than no link, and the policy stays a draft until counsel has
+                  been through it. */}
+              {PRIVACY_PUBLISHED ? (
+                <li>
+                  <Link href="/privacy">Privacy</Link>
+                </li>
+              ) : null}
             </ul>
           </div>
         </div>

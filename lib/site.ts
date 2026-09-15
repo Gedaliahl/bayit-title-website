@@ -5,7 +5,11 @@
 export const site = {
   name: 'Bayit Title',
   legalName: 'Bayit Title LLC',
-  url: 'https://bayittitle.com',
+  // www, not the apex. The Wix site is canonical on www and 301s the apex to
+  // it, so every indexed URL and inbound link already points there. Moving the
+  // canonical host at cutover would put a needless redirect hop in front of the
+  // whole existing index. Vercel must have www set as the primary domain.
+  url: 'https://www.bayittitle.com',
   founded: '2021',
 
   agencyLicense: 'W806540',

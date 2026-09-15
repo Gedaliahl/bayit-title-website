@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { useErrorFocus } from './useErrorFocus';
 import { TextField, TextArea, SelectField, Honeypot } from './Field';
 import { site } from '@/lib/site';
 
@@ -28,6 +30,7 @@ export function LeadForm({
   const pathname = usePathname();
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { formRef, reportFailure } = useErrorFocus();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,11 +51,13 @@ export function LeadForm({
       if (response.status === 422 && body.errors) {
         setErrors(body.errors);
         setStatus({ kind: 'failed', message: 'Some details need another look.' });
+        reportFailure();
         return;
       }
 
       if (!response.ok) {
         setStatus({ kind: 'failed', message: body.error ?? 'Something went wrong.' });
+        reportFailure();
         return;
       }
 
@@ -62,6 +67,7 @@ export function LeadForm({
         kind: 'failed',
         message: `We could not reach the server. Email ${site.email} or call ${site.phoneDisplay}.`,
       });
+      reportFailure();
     }
   }
 
@@ -74,9 +80,10 @@ export function LeadForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} onSubmit={handleSubmit} noValidate>
       {status.kind === 'failed' ? (
-        <p className="form-status form-status--error" role="alert">
+        // tabIndex so focus can land here when no single field is at fault.
+        <p className="form-status form-status--error" role="alert" tabIndex={-1}>
           {status.message}
         </p>
       ) : null}
@@ -175,7 +182,8 @@ export function LeadForm({
       <p className="form-note" style={{ marginTop: '1rem' }}>
         Please do not send bank account or wire details through this form. We will never email you
         wire instructions, and we will never change instructions once given. Call{' '}
-        {site.phoneDisplay} to verify anything that claims to come from us.
+        {site.phoneDisplay} to verify anything that claims to come from us. What we do with what
+        you send is set out in our <Link href="/privacy">privacy policy</Link>.
       </p>
     </form>
   );
