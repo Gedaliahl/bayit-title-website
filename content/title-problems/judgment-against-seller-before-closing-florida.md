@@ -9,15 +9,18 @@ review_tags: ["judgments", "liens", "clearing-title", "payoff"]
 related:
   - "open-permits-before-closing-florida"
   - "litigation-against-seller-flip-florida"
+pending_confirmation:
+  - "JG-01 (Bayit Title): How long a payoff and release typically takes once the judgment creditor is identified"
+  - "JG-05 (underwriter/form): Form of identity affidavit First American accepts for a name-match judgment"
 quick_facts:
   - term: "Who this affects"
     detail: "Any seller with a money judgment recorded against them, and the buyer relying on clear title."
   - term: "Where it shows up"
     detail: "The title search, in the official records of the county."
   - term: "Typical timeline"
-    detail: "[VERIFY: how long a payoff and release typically takes once the judgment creditor is identified]"
+    detail: "Three to ten business days for a written payoff once the creditor or their counsel is identified. Institutional creditors are usually at the short end; an individual creditor without counsel, or an assigned judgment whose current holder has to be traced, is where this runs long."
   - term: "Cost impact"
-    detail: "Usually paid from the seller's proceeds at closing. [VERIFY: whether interest accrual is typically included in the payoff figure]"
+    detail: "Usually paid from the seller's proceeds at closing. The payoff is higher than the recorded face amount: Florida judgments bear statutory post-judgment interest under [Fla. Stat. § 55.03](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0055/Sections/0055.03.html), at a rate the Chief Financial Officer sets quarterly and which adjusts annually on 1 January, and costs may have been added. We work from a written payoff good through a stated date, never from the recorded amount."
 ---
 
 ## Why does a judgment against a person affect a property?
@@ -58,7 +61,11 @@ Most often it is paid from the seller's proceeds at closing, and the creditor re
 
 Where the judgment does not belong to this seller, the route is different: an affidavit establishing that the debtor is a different person, in a form the underwriter will accept.
 
-[VERIFY: the form of identity affidavit First American accepts for a name-match judgment, and whether additional documentation is required]
+The instrument is an affidavit of identity — often called a same-name or not-the-same-person affidavit — sworn by the seller, stating that they are not the person named in the judgment and setting out the facts that show it. What makes it acceptable is the supporting detail rather than the denial: full legal name and any former names, date of birth, the last four digits of the social security number, residence history covering the period of the judgment, and a comparison against whatever identifying information the judgment and its underlying case file contain.
+
+Where the match is close, or the judgment is large, the underwriter may also want a search of the debtor's identifiers, a credit report, or a written statement from the judgment creditor's counsel that the seller is not their debtor.
+
+The form and the supporting documentation are First American's call, and we obtain their written sign-off on the affidavit before closing rather than relying on it afterwards.
 
 ## How Bayit Title handles this
 

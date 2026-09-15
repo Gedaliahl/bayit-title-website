@@ -356,6 +356,13 @@ Carried forward from `docs/HANDOFF.md`, still open:
 - All nine content files are still `status: draft`, so production publishes zero
   library pages. See `docs/verify-worklist.md` — 62 flags, triaged by who can
   answer them.
+- Every `[VERIFY]` flag has now been drafted in, but 41 of the 62 answers are
+  unconfirmed — 10 need First American, 31 are our own timelines, costs and
+  practice. They are tracked per page in a `pending_confirmation` front-matter
+  list, which the build enforces the same way it enforces `[VERIFY]`. Review
+  pack: `docs/review/verify-fill-review.pdf`
+- Which team members hold Florida *online* notary registrations is still open,
+  and is the one flag that must come from the commission record
 - `rate_tables` is empty and nothing is waiting on it. The promulgated premium
   is in `lib/promulgated-premium.ts` from OIR rule 69O-186.003, and transfer
   taxes and recording charges in `lib/statutory-rates.ts` from the statutes that
@@ -363,7 +370,6 @@ Carried forward from `docs/HANDOFF.md`, still open:
   What is still unpriced anywhere on the site is our own fee, the search and
   examination, and endorsements — the calculator lists them as not counted
 - Several pages make First American coverage statements that are unverified
-- Timeline data is a `[VERIFY]` flag on every library page
 - Bios for Shevy and Gedaliah; the About page's founding story is Shevy's to
   write. Jennifer's and Chaya's are in.
 - No usable photography

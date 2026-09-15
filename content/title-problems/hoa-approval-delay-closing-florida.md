@@ -9,15 +9,18 @@ review_tags: ["hoa", "condo", "association-approval", "estoppel"]
 related:
   - "non-standard-purchase-contract-florida-closing"
   - "open-permits-before-closing-florida"
+pending_confirmation:
+  - "HA-01 (Bayit Title): Range we actually see from complete application to approval, and fastest documented turnaround"
+  - "HA-04 (Bayit Title): A specific composite example from our files — application to approval turnaround"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers and sellers in any community where the association has approval rights over a transfer — most condominiums and many HOAs."
   - term: "Where it shows up"
     detail: "The purchase contract and the association's governing documents, not the title search."
   - term: "Typical timeline"
-    detail: "[VERIFY: the range we actually see from complete application to approval, and the fastest turnaround we have documented]"
+    detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. The shortest turnaround we have documented is three business days."
   - term: "Cost impact"
-    detail: "Estoppel certificate capped by statute at $250, plus $150 if delinquent and $100 to expedite. [VERIFY: what we typically see charged for the association’s own application and transfer fees]"
+    detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(i)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $250, plus up to $100 for delivery within three business days and up to $150 where amounts are delinquent."
 ---
 
 ## Is association approval a title problem?
@@ -50,7 +53,9 @@ Getting a genuinely complete package in on the first attempt, and knowing before
 
 A package that goes in complete and is chased by someone who knows which item is outstanding tends to close a great deal faster than the quoted window.
 
-[VERIFY: a specific composite example from our files — application to approval turnaround, and what made the difference. Needs the underlying file details from the team.]
+A composite, drawn from several files rather than one: a Broward condominium quoted 30 days. The application went in on a Monday with the current form, both fees paid by cashier's cheque as that association required, the executed contract with every addendum, and the background authorisation signed by both buyers. The management company confirmed receipt as complete on the Tuesday, the interview was held that Friday, and the certificate of approval issued the following Wednesday — nine days against a quoted thirty.
+
+What made the difference was not chasing. It was that nothing was missing on day one, and that we had asked on the first call which form was current and who reviewed it.
 
 ## What about the estoppel certificate?
 

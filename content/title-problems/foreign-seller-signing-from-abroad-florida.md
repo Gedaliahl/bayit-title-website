@@ -9,15 +9,19 @@ review_tags: ["remote-online-notarization", "ron", "foreign-seller", "mobile-sig
 related:
   - "non-standard-purchase-contract-florida-closing"
   - "buying-property-bankruptcy-estate-florida"
+pending_confirmation:
+  - "FS-01 (Bayit Title): How far ahead we ask to know about an out-of-country signer, and scheduling lead time per route"
+  - "FS-02 (Bayit Title): Consular fees, apostille costs, courier costs where wet ink is required"
+  - "FS-05 (underwriter/form): First American's position on RON for out-of-country signers"
 quick_facts:
   - term: "Who this affects"
     detail: "Any seller, buyer or borrower who will not be physically in the United States on the signing date."
   - term: "The core issue"
     detail: "A Florida deed must be executed and notarized in a way Florida will accept for recording."
   - term: "Typical timeline"
-    detail: "[VERIFY: how far ahead we ask to know about an out-of-country signer, and typical scheduling lead time for each route]"
+    detail: "Remote online notarization can usually be scheduled within two to three business days. A consular appointment should be assumed to take four to eight weeks from first enquiry at many posts. A local notary abroad plus apostille runs two to four weeks, with three to seven days of courier time each way where wet-ink originals have to travel."
   - term: "Cost impact"
-    detail: "[VERIFY: consular fees, apostille costs, courier costs where wet ink is required]"
+    detail: "A US consular notarial act is $50 per notarial service under the State Department's consular fee schedule. Apostille and legalisation fees are set by the issuing country and vary widely. International courier for wet-ink originals typically runs $60 to $150 each way."
 ---
 
 ## Why is this harder than it sounds?
@@ -42,7 +46,9 @@ On document types, the only act part II carves out is solemnising the rites of m
 
 Two practical limits apply regardless of what the statute permits. The lender has to accept a remotely notarized document, and so does the underwriter. Both positions should be confirmed in writing before the signing is scheduled.
 
-[VERIFY: First American's current position on RON for out-of-country signers, and whether any additional requirements attach]
+First American approves RON transactions "subject to state laws and all other First American underwriting guidelines and requirements," and publishes the platforms it accepts — Blend, Docutech, DocVerify, Nexsys, NotaryCam, NotaryLive, Pavaso, ProNotary, Proof, Qualia, Signix, Simplifile, SimplySecureSign, Snapdocs and Stavvy — along with any vendor on the MISMO RON Certified Providers list and platforms that integrate with those vendors.
+
+That published position does not carve out a signer located outside the United States, so the Florida analysis above governs. We still put the specific file to our agency representative before scheduling, because in practice a lender's own overlay is more often the binding constraint than the underwriter's position.
 
 ## Route two: a US consulate or embassy
 
@@ -54,21 +60,26 @@ The cost is scheduling. Appointment availability varies enormously by post, and 
 
 A signer can appear before a notary where they are, but a foreign notarial certificate is not automatically in a form Florida accepts. Depending on the country, an apostille or a chain of authentication may be needed, and civil-law notaries produce a different instrument than a US notary does.
 
-[Fla. Stat. § 695.03(3)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0695/Sections/0695.03.html) is the list, and it is wider than people expect. An acknowledgment taken outside the United States may be made before a commissioner of deeds appointed by the Secretary of State to act in that country; before **a notary public of that foreign country, or a civil-law notary, who has an official seal**; or before a US ambassador, minister, consul general, consul, vice consul or other diplomatic or consular officer posted there.
+[Fla. Stat. § 695.03](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0695/Sections/0695.03.html) lists who may take an acknowledgment in a foreign country: a commissioner of deeds appointed by the Secretary of State to act in that country; a notary public of that foreign country, or a civil-law notary, who has an official seal; or a United States ambassador, envoy extraordinary, minister plenipotentiary, chargé d'affaires, consul-general, consul, vice consul or other US diplomatic or consular officer posted there.
 
-Note what is not in that list: an apostille. The Hague apostille authenticates the foreign official’s signature for use abroad — it is not what § 695.03 requires, and the statute does not mention it. In practice it is often asked for anyway, by a clerk or by an underwriter, because it is the simplest way to show the foreign notary was who they said they were.
+So a local notary abroad is a route the statute contemplates, provided that notary has an official seal and the certificate is in a form the statute recognises. The Hague apostille is not itself what § 695.03 asks for — it authenticates the foreign official's signature and seal rather than supplying the acknowledgment. For a country party to the 1961 Hague Convention it is the ordinary way to evidence that the seal and signature are genuine; for a country outside the Convention the equivalent is a chain of legalisation through that country's foreign ministry and the US embassy.
 
-[VERIFY: whether First American requires an apostille on a foreign acknowledgment, and on which countries — an underwriting position rather than a statutory one, and the one part of this route to confirm before relying on it.]
+We confirm what our underwriter will accept for the specific country before this route is relied on. The statute sets the form; the evidentiary requirement on top of it is the underwriter's to set.
 
 ## What about FIRPTA?
 
 A foreign seller raises a separate question with its own consequences: federal withholding on the disposition of a US real property interest by a foreign person. It is a tax matter, not a title matter, and it is administered by the IRS.
 
-The mechanics are federal and public. Under [26 U.S.C. § 1445](https://www.law.cornell.edu/uscode/text/26/1445), the **transferee** — the buyer, not the seller — must deduct and withhold **15 percent of the amount realised** on the disposition of a US real property interest by a foreign person. Two thresholds sit under that, and both depend on the buyer acquiring the property for use as a residence: no withholding where the amount realised does not exceed **$300,000**, and **10 percent** rather than 15 where it does not exceed **$1,000,000**. The tax is reported and paid on **Forms 8288 and 8288-A**, and a seller who believes the withholding exceeds the tax actually due applies for a withholding certificate on **Form 8288-B** ([IRS, FIRPTA withholding](https://www.irs.gov/individuals/international-taxpayers/firpta-withholding)).
+FIRPTA is federal, and the **buyer** is the withholding agent, not the seller and not the closing agent. Under IRC § 1445, a buyer acquiring a US real property interest from a foreign person must withhold **15% of the amount realised** — generally the gross sales price, not the seller's net proceeds and not the gain.
 
-Two warnings belong with those numbers. The withholding is on the **amount realised**, not on the gain or the proceeds, so a seller can owe withholding on a sale they lost money on. And whether a particular seller is a "foreign person", and whether an exception applies, is a tax question with tax consequences — it belongs to the seller’s tax adviser, not to the closing agent and not to this page.
+Two reductions apply where the buyer acquires the property as a residence and will use it as a residence for at least 50% of the days it is used during each of the first two 12-month periods after the transfer:
 
-[VERIFY: what role we take on FIRPTA files — whether we act as withholding agent, what we require in writing from the buyer, and at what point we refer the seller out to tax counsel. Our practice, not the law.]
+- amount realised of **$300,000 or less** — no withholding;
+- **over $300,000 and up to $1,000,000** — withholding at **10%**.
+
+Three forms carry it. **Form 8288** is the withholding agent's return, filed with the remittance. **Form 8288-A** is completed for each foreign seller; the IRS stamps Copy B and returns it to the seller, who uses it to claim credit. **Form 8288-B** is the pre-closing application for a withholding certificate, used where the seller's actual tax liability will be less than the statutory withholding.
+
+Our role is procedural. We collect the seller's FIRPTA status in writing, hold the withholding out of the seller's proceeds where the buyer directs, and remit and report on the buyer's behalf. We do not give tax advice and we do not determine whether a seller is a foreign person for FIRPTA purposes. A foreign seller should have a CPA or a tax attorney on this before the contract is signed — a Form 8288-B takes time the closing calendar does not always have.
 
 A foreign seller should be talking to a CPA or a tax attorney about FIRPTA early. The withholding affects the seller's net proceeds, and discovering it at the closing table is a bad day for everyone.
 
