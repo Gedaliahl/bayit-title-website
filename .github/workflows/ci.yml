@@ -1,0 +1,53 @@
+# Lint, typecheck and build every pull request and every push to main.
+#
+# Vercel already builds previews, but it only reports pass or fail on the
+# deployment — it does not run ESLint or tsc, and it does not block anything.
+# This is the check that does.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push supersedes the run in flight for the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          # Matches the engines field in package.json.
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Each check runs even if an earlier one failed, so a single run reports
+      # everything wrong rather than one thing at a time.
+      - name: Lint
+        if: ${{ !cancelled() }}
+        run: npm run lint
+
+      - name: Typecheck
+        if: ${{ !cancelled() }}
+        run: npm run typecheck
+
+      # No SHOW_DRAFTS here on purpose: this is the production path, where
+      # unreviewed drafts have no route at all. Supabase is not configured in
+      # CI either, which exercises the canonical fallback in lib/locations.ts.
+      - name: Build
+        if: ${{ !cancelled() }}
+        run: npm run build
