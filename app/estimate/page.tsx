@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { ROLL_COUNTY_SLUGS } from '@/lib/property-lookup';
+import { VALUE_COUNTY_SLUGS } from '@/lib/property-lookup';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   PREMIUM_RULE,
@@ -34,10 +34,12 @@ export default async function EstimatePage() {
   const counties = await getCounties();
 
   // Named from the registry rather than typed into the copy, so a county added
-  // to lib/property-lookup.ts is a county this page stops leaving out.
+  // to lib/property-lookup.ts is a county this page stops leaving out. The
+  // paragraph below still names the two kinds of source by hand, because which
+  // kind a county is read by is the part a reader is owed.
   const rollCounties = listNames(
     counties
-      .filter((county) => ROLL_COUNTY_SLUGS.includes(county.slug))
+      .filter((county) => VALUE_COUNTY_SLUGS.includes(county.slug))
       .map((county) => county.name.replace(/ County$/, '')),
   );
 
@@ -59,9 +61,9 @@ export default async function EstimatePage() {
           text={
             'Start typing the address and pick the property. In ' +
             rollCounties +
-            ' the assessed value arrives with it, straight off the property ' +
-            'appraiser’s published roll; everywhere else the address still names the county and ' +
-            'you type the value in. From there this prices the promulgated title insurance ' +
+            ' the assessed value arrives with it, off the published tax roll; everywhere else ' +
+            'the address still names the county and you type the value in. From there this ' +
+            'prices the promulgated title insurance ' +
             'premium, the documentary stamp tax and the recording charges — and the county ' +
             'decides the stamp rate, which is 60 cents per $100 in Miami-Dade and 70 everywhere ' +
             'else. Assessed value is a tax figure and usually sits below what a property sells ' +
@@ -77,17 +79,28 @@ export default async function EstimatePage() {
           propertyAppraiserUrl: county.propertyAppraiserUrl,
           customaryOwnerPolicyPayer: county.customaryOwnerPolicyPayer,
         }))}
-        rollCountySlugs={ROLL_COUNTY_SLUGS}
+        valueCountySlugs={VALUE_COUNTY_SLUGS}
       />
 
       <div className="measure">
         <h2>Where the assessed value comes from</h2>
         <p>
-          In {rollCounties} the property appraiser publishes its certified roll as an open data
-          service. Type an address in one of those counties, pick the property out of the list, and
-          the figure in the box is that office&rsquo;s own, with the parcel number and a link to
-          the record it came from printed underneath it. Nothing is estimated on the way: what you
-          see is what the roll says.
+          In {rollCounties} picking a property fills the figure in, and the line under the box says
+          which office it came from, which parcel it belongs to and which year&rsquo;s roll it is
+          on. Nothing is estimated on the way: what you see is what the roll says.
+        </p>
+        <p>
+          It arrives two ways. Broward, Palm Beach, Miami-Dade and Hillsborough publish their
+          certified roll as an open data service, address and value in the same row, so the figure
+          comes back with the suggestion. Orange and Duval publish where every address is but not
+          what it is worth — Orange as the property appraiser&rsquo;s address points, Duval as the
+          city&rsquo;s address locator — so picking a property there looks the parcel up on the{' '}
+          <a href="https://floridarevenue.com/property/Pages/DataPortal.aspx" rel="nofollow">
+            Department of Revenue&rsquo;s statewide parcel roll
+          </a>{' '}
+          by where it stands. That second step checks itself: unless the parcel it finds carries
+          the address you picked, you get an empty box and the appraiser&rsquo;s link rather than
+          the figure for the house next door.
         </p>
         <p>
           In the rest of Florida the list is built from the{' '}

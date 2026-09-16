@@ -285,39 +285,61 @@ browser holds permission to write exactly one object at exactly one path.
 `/estimate` starts from a property address instead of a price. Typing one opens
 a dropdown of real properties; picking one sets the county, fills in the
 assessed value, and prices the premium, the transfer taxes and the recording
-against it.
+against it. Six counties fill the figure in: Broward, Palm Beach, Miami-Dade,
+Hillsborough, Orange and Duval.
 
-Two sources sit behind the dropdown, and they are not equivalent:
+Three kinds of source sit behind the dropdown, and they are not equivalent:
 
-- **Four county rolls.** Broward, Palm Beach, Miami-Dade and Hillsborough each
-  publish their certified tax roll as an open ArcGIS feature service, with the
-  situs address, the parcel number and the values in the same row. In those
-  counties a suggestion carries the appraiser's own figure, and the page prints
-  the office it came from and the parcel it belongs to.
-- **The U.S. Census Bureau geocoder** for the other sixty-three. It is free,
-  keyless and statewide, it names the county the address falls in — which is
-  better than the place-name guess in `lib/florida-places.ts` — and it knows
-  nothing about value. There the assessed-value box stays the reader's to fill,
-  with the link to their property appraiser beside it.
+- **Four county rolls, with the figures in the row.** Broward, Palm Beach,
+  Miami-Dade and Hillsborough each publish their certified tax roll as an open
+  ArcGIS feature service, with the situs address, the parcel number and the
+  values together. In those counties a suggestion carries the appraiser's own
+  figure, and the page prints the office it came from and the parcel it belongs
+  to.
+- **Two counties in two steps.** Orange and Duval publish where their addresses
+  are but not what they are worth — Orange as the property appraiser's address
+  points, Duval as the city's address locator. Both give a rooftop coordinate,
+  and the Department of Revenue's statewide parcel layer answers "which parcel
+  covers this point" in well under a second, so picking a property there fetches
+  the figure from `/api/parcel-value` while the dropdown stays fast. That layer
+  is stored in EPSG:3086 and reprojects a latitude and longitude slowly enough
+  to matter — 44 seconds against 0.4 on a cold cache — so `lib/florida-albers.ts`
+  projects the point before asking.
+- **The U.S. Census Bureau geocoder** for the rest of Florida. Free, keyless,
+  statewide; it names the county the address falls in — better than the
+  place-name guess in `lib/florida-places.ts` — and knows nothing about value.
+  There the assessed-value box stays the reader's to fill, with the link to
+  their property appraiser beside it.
 
-`lib/property-lookup.ts` holds the registry. Adding a county is adding an entry
-to it: the layer's query URL, the fields, a `where` builder and a `read` that
-maps a row onto `{ address, city, zip, parcelId, assessedValue, justValue }`.
+**A parcel found by location has to prove it is the right parcel.** Before any
+two-step figure is shown, either the parcel numbers must agree — Orange writes
+township-range-section where the Department of Revenue writes
+section-township-range, which `parcelIdsAgree` knows about — or the addresses
+must (`addressesAgree`). A point that lands on a right-of-way strip, a
+condominium's parent parcel or the lot next door satisfies neither, and the
+reader gets an empty box and the appraiser's link instead of a plausible wrong
+number. Corner lots are the reason both checks exist: 1409 E Esther Street in
+Orlando is 1919 Pine Bluff Ave on the state roll, one parcel with two front
+doors, and the page says so under the figure.
 
-**What was tried and rejected.** The statewide FDOR parcel layer covers all 67
-counties and cannot serve this: attribute queries against its 10.8 million rows
-time out at around 55 seconds, and a point query from a geocoded coordinate
-lands on the road right-of-way parcel rather than the house, because the
-geocoder interpolates along the street centreline. A wrong assessed value that
-looks right is worse than an empty box. A commercial aggregator would cover the
-state, but then the page could not name the office each figure came from, which
-is the part that makes it worth publishing.
+`lib/property-lookup.ts` holds all of it. Adding a county with a roll is adding
+an entry to `ROLL_SOURCES`: the layer's query URL, the fields, a `where` builder
+and a `read` that maps a row onto `{ address, city, zip, parcelId, assessedValue,
+justValue }`. Adding one that needs the two-step path means a search function
+that returns suggestions carrying a `valueLookup`.
 
-**The address is not kept.** `/api/property-search` writes nothing, notifies
-nobody and sets no cookie. It is a POST so the address stays out of request
-logs, and its rate limit is counted in process rather than in the database —
-the opposite of the form endpoints, because this one fires while somebody
-types. The privacy policy says all of this in its own words.
+**What was tried and rejected.** Searching the statewide layer by address: its
+10.8 million rows time out at around 55 seconds on any attribute query, which is
+why it is only ever asked about a point. Using a Census coordinate for that point:
+the geocoder interpolates along the street centreline, so it finds the road
+parcel or nothing. A commercial aggregator would cover all 67 counties, and then
+no figure on the page could name the office it came from.
+
+**The address is not kept.** `/api/property-search` and `/api/parcel-value`
+write nothing, notify nobody and set no cookie. Both are POSTs so the address
+stays out of request logs, and their rate limits are counted in process rather
+than in the database — the opposite of the form endpoints, because the first of
+them fires while somebody types. The privacy policy says all of this in its own words.
 
 **The county changes the tax, never the premium.** The promulgated schedule is
 statewide. What moves with the county is documentary stamp tax on the deed —

@@ -14,6 +14,61 @@
 /** A directional as the rolls store it, so "NW" is read as one rather than as a street. */
 const DIRECTIONALS = new Set(['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']);
 
+/**
+ * Street types, in both the forms an office writes them.
+ *
+ * Most abbreviations are a prefix of the word they stand for — St/Street,
+ * Ave/Avenue, Ct/Court — so a LIKE that ends before the type matches either
+ * spelling. Trl/Trail, Pkwy/Parkway and Hwy/Highway are the ones that are not,
+ * which is the reason a source that spells the type out is asked for a prefix
+ * with the type left off entirely.
+ */
+const STREET_TYPE_CANON: Record<string, string> = {
+  ST: 'ST', STREET: 'ST',
+  AVE: 'AVE', AV: 'AVE', AVENUE: 'AVE',
+  BLVD: 'BLVD', BOULEVARD: 'BLVD',
+  DR: 'DR', DRIVE: 'DR',
+  RD: 'RD', ROAD: 'RD',
+  LN: 'LN', LANE: 'LN',
+  CT: 'CT', COURT: 'CT',
+  CIR: 'CIR', CIRCLE: 'CIR',
+  PL: 'PL', PLACE: 'PL',
+  TER: 'TER', TERR: 'TER', TERRACE: 'TER',
+  TRL: 'TRL', TRAIL: 'TRL',
+  PKWY: 'PKWY', PARKWAY: 'PKWY',
+  HWY: 'HWY', HIGHWAY: 'HWY',
+  WAY: 'WAY',
+  LOOP: 'LOOP',
+  RUN: 'RUN',
+  PT: 'PT', POINT: 'PT',
+  CV: 'CV', COVE: 'CV',
+  XING: 'XING', CROSSING: 'XING',
+  SQ: 'SQ', SQUARE: 'SQ',
+  PATH: 'PATH',
+  PASS: 'PASS',
+  BND: 'BND', BEND: 'BND',
+  PLZ: 'PLZ', PLAZA: 'PLZ',
+  ROW: 'ROW',
+  WALK: 'WALK',
+  CRES: 'CRES', CRESCENT: 'CRES',
+  ALY: 'ALY', ALLEY: 'ALY',
+  GLN: 'GLN', GLEN: 'GLN',
+  GRN: 'GRN', GREEN: 'GRN',
+  KNL: 'KNL', KNOLL: 'KNL',
+  RDG: 'RDG', RIDGE: 'RDG',
+  TRCE: 'TRCE', TRACE: 'TRCE',
+  VW: 'VW', VIEW: 'VW',
+  VIS: 'VIS', VISTA: 'VIS',
+  MNR: 'MNR', MANOR: 'MNR',
+  ISLE: 'ISLE',
+  KEY: 'KEY',
+  CAY: 'CAY',
+  CMN: 'CMN', COMMON: 'CMN',
+  EXT: 'EXT', EXTENSION: 'EXT',
+};
+
+const STREET_TYPES = new Set(Object.keys(STREET_TYPE_CANON));
+
 /** Dropped from the tail of a typed address: they narrow nothing on a Florida roll. */
 const TRAILING_NOISE = new Set(['FL', 'FLA', 'FLORIDA', 'USA', 'US']);
 
@@ -109,18 +164,99 @@ export function parseTypedAddress(raw: string): TypedAddress {
  * commits to either is wrong in one of them. Stopping short matches both, at
  * the cost of also matching 480TH Street, which the reader can see and ignore.
  */
-export function rollAddressPrefix(parsed: TypedAddress): string | null {
+export function rollAddressPrefix(
+  parsed: TypedAddress,
+  options: { dropStreetType?: boolean } = {},
+): string | null {
   if (!parsed.number) return null;
+
+  const street = options.dropStreetType
+    ? parsed.street.filter((token, index) => !(index > 0 && STREET_TYPES.has(token)))
+    : parsed.street;
 
   const parts = [parsed.number];
   if (parsed.directional) parts.push(parsed.directional);
 
-  for (const token of parsed.street) {
+  for (const token of street) {
     parts.push(token);
     if (/^\d+$/.test(token)) break;
   }
 
   return parts.join(' ');
+}
+
+/**
+ * Whether two addresses are the same address, allowing for the fact that one of
+ * them came off a different office's keyboard.
+ *
+ * This guards the statewide value lookup, which finds a parcel by where it is
+ * rather than by what it is called: the Department of Revenue's row has to
+ * agree with the address the reader picked, or the figure belongs to the house
+ * next door and nothing on the screen would say so.
+ *
+ * So the whole street has to agree, word for word, and not merely its first
+ * word — 400 S Orange Ave and 400 S Orange Blossom Trl are both real Orlando
+ * addresses at the same number. Street types are dropped before comparing,
+ * because one office writes Trl where another writes Trail, and an
+ * abbreviation is allowed to stand for the word it opens. Anything less
+ * certain than that is answered with no figure rather than a plausible one.
+ */
+export function addressesAgree(a: string, b: string): boolean {
+  const left = parseTypedAddress(a);
+  const right = parseTypedAddress(b);
+
+  if (!left.number || !right.number || left.number !== right.number) return false;
+
+  // A directional on both sides has to agree; on one side only it is missing
+  // information rather than a contradiction.
+  if (left.directional && right.directional && left.directional !== right.directional) {
+    return false;
+  }
+
+  const named = (parsed: TypedAddress) => {
+    const withoutTypes = parsed.street.filter((token) => !STREET_TYPES.has(token));
+    // A street called nothing but a type word — Park Way, The Circle — keeps it.
+    return withoutTypes.length > 0 ? withoutTypes : parsed.street;
+  };
+
+  const leftStreet = named(left);
+  const rightStreet = named(right);
+
+  if (leftStreet.length === 0 || leftStreet.length !== rightStreet.length) return false;
+
+  // Where both sides name a street type, it has to be the same type: 100 Park
+  // Ave and 100 Park Way are different addresses that the comparison below,
+  // which ignores types, would otherwise call equal.
+  const typeOf = (parsed: TypedAddress) => {
+    const last = parsed.street[parsed.street.length - 1];
+    return last ? STREET_TYPE_CANON[last] : undefined;
+  };
+  const leftType = typeOf(left);
+  const rightType = typeOf(right);
+  if (leftType && rightType && leftType !== rightType) return false;
+
+  return leftStreet.every((token, index) => {
+    const other = rightStreet[index];
+    const [shorter, longer] = token.length <= other.length ? [token, other] : [other, token];
+    return shorter.length >= 2 && longer.startsWith(shorter);
+  });
+}
+
+/**
+ * One address written one way, so two offices' spellings of the same house
+ * collapse into a single suggestion.
+ *
+ * "1409 E Esther St" off a geocoder and "1409 E Esther Street" off the county's
+ * address points are the same front door, and a dropdown that offers both —
+ * one of them with a figure attached and one without — makes the reader choose
+ * between two identical-looking lines. Street types are canonicalised rather
+ * than dropped, because 100 Park Ave and 100 Park Way are two addresses.
+ */
+export function addressKey(raw: string): string {
+  return normalizeForMatch(raw)
+    .split(' ')
+    .map((token) => STREET_TYPE_CANON[token] ?? token)
+    .join(' ');
 }
 
 /**

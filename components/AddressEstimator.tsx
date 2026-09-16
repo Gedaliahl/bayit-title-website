@@ -10,8 +10,9 @@ import {
   type AssessedInput,
   type Purpose,
 } from '@/lib/assessed-estimate';
+import { addressKey } from '@/lib/address-format';
 import { matchCounty } from '@/lib/florida-places';
-import type { PropertySuggestion } from '@/lib/property-lookup';
+import type { ParcelValue, PropertySuggestion } from '@/lib/property-lookup';
 import { discretionarySurtax, formatMoney } from '@/lib/statutory-rates';
 
 export interface EstimatorCounty {
@@ -51,11 +52,11 @@ function suggestionLine(suggestion: PropertySuggestion): string {
 
 export function AddressEstimator({
   counties,
-  rollCountySlugs,
+  valueCountySlugs,
 }: {
   counties: EstimatorCounty[];
-  /** Counties whose property appraiser publishes the roll we can read a value off. */
-  rollCountySlugs: string[];
+  /** Counties where picking a property produces a figure rather than an errand. */
+  valueCountySlugs: string[];
 }) {
   const [address, setAddress] = useState('');
   const [input, setInput] = useState<AssessedInput>(ASSESSED_DEFAULTS);
@@ -72,7 +73,12 @@ export function AddressEstimator({
   const [searching, setSearching] = useState(false);
   /** The suggestion the figures below are standing on, if any. */
   const [parcel, setParcel] = useState<PropertySuggestion | null>(null);
+  /** Where the figure in the box came from, once it is the appraiser's. */
+  const [record, setRecord] = useState<ParcelValue | null>(null);
   const [valueOrigin, setValueOrigin] = useState<ValueOrigin>('typed');
+  /** Orange and Duval need a second request before there is a figure to show. */
+  const [lookingUpValue, setLookingUpValue] = useState(false);
+  const [valueMissed, setValueMissed] = useState(false);
 
   // Taking a suggestion rewrites the address box, which would otherwise look
   // exactly like typing and send the rewritten address straight back to the
@@ -142,24 +148,79 @@ export function AddressEstimator({
     setActiveIndex(-1);
     setSearching(false);
     setParcel(suggestion);
+    setValueMissed(false);
     setChosenCounty(
       counties.some((entry) => entry.slug === suggestion.countySlug)
         ? suggestion.countySlug
         : ELSEWHERE,
     );
 
+    if (suggestion.assessedValue || suggestion.justValue) {
+      applyValue({
+        address: suggestion.address,
+        parcelId: suggestion.parcelId,
+        assessedValue: suggestion.assessedValue,
+        justValue: suggestion.justValue,
+        rollYear: suggestion.rollYear,
+        sourceName: suggestion.sourceName,
+        sourceUrl: suggestion.sourceUrl,
+      });
+      return;
+    }
+
+    setRecord(null);
+    setValueOrigin('typed');
+
+    // Orange and Duval publish where their addresses are but not what they are
+    // worth, so the figure is one more request away. The box stays as the
+    // reader left it until it arrives.
+    if (suggestion.valueLookup) void lookUpValue(suggestion);
+  }
+
+  /** Puts a roll figure in the box and remembers whose it is. */
+  function applyValue(value: ParcelValue) {
+    setRecord(value);
+
     // The assessed value is what the reader was going to go and copy across, so
     // that is what goes in the box. Where a county publishes only a market
     // value — or only an assessed one — the box takes whichever exists, and the
     // line under it says which of the two is sitting there.
-    if (suggestion.assessedValue) {
-      set('assessedValue', suggestion.assessedValue);
+    if (value.assessedValue) {
+      set('assessedValue', value.assessedValue);
       setValueOrigin('assessed');
-    } else if (suggestion.justValue) {
-      set('assessedValue', suggestion.justValue);
+    } else if (value.justValue) {
+      set('assessedValue', value.justValue);
       setValueOrigin('just');
     } else {
       setValueOrigin('typed');
+    }
+  }
+
+  async function lookUpValue(suggestion: PropertySuggestion) {
+    setLookingUpValue(true);
+    try {
+      const response = await fetch('/api/parcel-value', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          address: suggestion.address,
+          countyName: suggestion.countyName,
+          parcelId: suggestion.parcelId,
+          lookup: suggestion.valueLookup,
+        }),
+      });
+
+      const payload = response.ok ? await response.json() : { value: null };
+
+      if (payload.value) applyValue(payload.value as ParcelValue);
+      // A null is the parcel layer declining to confirm that what is under
+      // that point is the property that was picked. It is said out loud rather
+      // than left as an empty box that looks like nothing happened.
+      else setValueMissed(true);
+    } catch {
+      setValueMissed(true);
+    } finally {
+      setLookingUpValue(false);
     }
   }
 
@@ -213,9 +274,9 @@ export function AddressEstimator({
 
   const isPurchase = input.purpose === 'purchase';
   const surtaxApplies = discretionarySurtax(countySlug) !== null;
-  const rollCounty = rollCountySlugs.includes(countySlug);
-  /** The parcel's figures belong to the parcel, not to a number typed over them. */
-  const showingRollFigure = parcel !== null && valueOrigin !== 'typed';
+  const valueCounty = valueCountySlugs.includes(countySlug);
+  /** The roll's figures belong to the roll, not to a number typed over them. */
+  const showingRollFigure = record !== null && valueOrigin !== 'typed';
 
   return (
     <div className="calc">
@@ -229,8 +290,8 @@ export function AddressEstimator({
         <div className="field">
           <label htmlFor="address">Property address</label>
           <span className="field__hint" id="address-hint">
-            Start typing and pick the property. Where the county publishes its roll, the assessed
-            value comes with it.
+            Start typing and pick the property. Where the roll can be read, the assessed value
+            comes with it.
           </span>
           <div className="combo">
             <input
@@ -251,9 +312,11 @@ export function AddressEstimator({
                 // A new address means the figure below is no longer this
                 // property's figure. The number stays — it may be the one they
                 // wanted — but it stops claiming to be the appraiser's.
-                if (parcel) {
+                if (parcel || record) {
                   setParcel(null);
+                  setRecord(null);
                   setValueOrigin('typed');
+                  setValueMissed(false);
                 }
               }}
               onKeyDown={onAddressKeyDown}
@@ -354,21 +417,31 @@ export function AddressEstimator({
         {isPurchase ? (
           <div className="field">
             <label htmlFor="assessed">Assessed value</label>
-            <span className="field__hint" id="assessed-hint">
-              {showingRollFigure && parcel ? (
+            <span className="field__hint" id="assessed-hint" aria-live="polite">
+              {lookingUpValue ? (
+                'Reading the parcel off the roll…'
+              ) : showingRollFigure && record ? (
                 <>
                   {valueOrigin === 'assessed' ? 'Assessed value' : 'Just (market) value'}
-                  {parcel.rollYear ? ` on the ${parcel.rollYear} roll` : ''}, from the{' '}
-                  <a href={parcel.sourceUrl} rel="nofollow noopener" target="_blank">
-                    {parcel.sourceName}
+                  {record.rollYear ? ` on the ${record.rollYear} roll` : ''}, from the{' '}
+                  <a href={record.sourceUrl} rel="nofollow noopener" target="_blank">
+                    {record.sourceName}
                   </a>
-                  {parcel.parcelId ? ` · parcel ${parcel.parcelId}` : ''}.
+                  {record.parcelId ? ` · parcel ${record.parcelId}` : ''}.
+                  {/* A corner lot is filed by the county under one of its
+                      streets and by the state under the other, so the roll's
+                      own spelling is shown rather than quietly swapped in. */}
+                  {addressKey(record.address) !== addressKey(parcel?.address ?? record.address)
+                    ? ` The roll files that parcel as ${record.address}.`
+                    : ''}
                 </>
               ) : county?.propertyAppraiserUrl ? (
                 <>
-                  {rollCounty
-                    ? 'Pick the property above and this fills itself in, or look the parcel up on the '
-                    : 'Look the parcel up on the '}
+                  {valueMissed
+                    ? 'The roll would not confirm a parcel at that address, so this one is yours to fill in. Look it up on the '
+                    : valueCounty
+                      ? 'Pick the property above and this fills itself in, or look the parcel up on the '
+                      : 'Look the parcel up on the '}
                   <a href={county.propertyAppraiserUrl} rel="nofollow noopener" target="_blank">
                     {county.name} Property Appraiser
                   </a>{' '}
@@ -388,32 +461,32 @@ export function AddressEstimator({
                 setValueOrigin('typed');
               }}
             />
-            {parcel && parcel.justValue && parcel.assessedValue ? (
+            {record && record.justValue && record.assessedValue ? (
               <span className="field__hint">
                 {valueOrigin === 'just' ? (
                   <>
-                    Assessed value is {formatMoney(parcel.assessedValue)}.{' '}
+                    Assessed value is {formatMoney(record.assessedValue)}.{' '}
                     <button
                       type="button"
                       className="linkish"
                       onClick={() => {
-                        set('assessedValue', parcel.assessedValue ?? 0);
+                        set('assessedValue', record.assessedValue ?? 0);
                         setValueOrigin('assessed');
                       }}
                     >
                       Use that instead
                     </button>
                   </>
-                ) : (
+                ) : record.justValue === record.assessedValue ? null : (
                   <>
                     The appraiser also puts the just (market) value at{' '}
-                    {formatMoney(parcel.justValue)}, which is nearer what a policy would be written
+                    {formatMoney(record.justValue)}, which is nearer what a policy would be written
                     for.{' '}
                     <button
                       type="button"
                       className="linkish"
                       onClick={() => {
-                        set('assessedValue', parcel.justValue ?? 0);
+                        set('assessedValue', record.justValue ?? 0);
                         setValueOrigin('just');
                       }}
                     >

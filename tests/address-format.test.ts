@@ -11,6 +11,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  addressesAgree,
   formatAddressForDisplay,
   formatPlaceForDisplay,
   normalizeAddressText,
@@ -129,5 +130,45 @@ describe('writing an address back out', () => {
   it('title cases a place, hyphens and all', () => {
     expect(formatPlaceForDisplay('LAUDERDALE-BY-THE-SEA')).toBe('Lauderdale-By-The-Sea');
     expect(formatPlaceForDisplay('WEST PALM BEACH')).toBe('West Palm Beach');
+  });
+});
+
+describe('asking a source that spells the street type out', () => {
+  it('leaves the type off the prefix, so St matches Street and Trl matches Trail', () => {
+    // Orange County's address points read "1409 E Esther Street" and
+    // "400 S Orange Blossom Trail". "TRL" is not a prefix of "TRAIL".
+    expect(rollAddressPrefix(parseTypedAddress('1409 E Esther St'), { dropStreetType: true })).toBe(
+      '1409 E ESTHER',
+    );
+    expect(
+      rollAddressPrefix(parseTypedAddress('400 S Orange Blossom Trl'), { dropStreetType: true }),
+    ).toBe('400 S ORANGE BLOSSOM');
+  });
+
+  it('keeps a street that is only a type word', () => {
+    // "100 Park Way" is a street called Park Way, and dropping the type would
+    // leave "100 PARK", which still finds it.
+    expect(rollAddressPrefix(parseTypedAddress('100 Park Way'), { dropStreetType: true })).toBe(
+      '100 PARK',
+    );
+  });
+});
+
+describe('checking a parcel found by location against the address picked', () => {
+  it('accepts the same address written two ways', () => {
+    expect(addressesAgree('4304 Herschel St', '4304 HERSCHEL ST')).toBe(true);
+    expect(addressesAgree('400 S Orange Avenue', '400 S ORANGE AVE')).toBe(true);
+    expect(addressesAgree('1409 NW 48th Street', '1409 NW 48 ST')).toBe(true);
+  });
+
+  it('refuses the house next door, which is the whole point of it', () => {
+    expect(addressesAgree('4304 Herschel St', '4306 HERSCHEL ST')).toBe(false);
+    expect(addressesAgree('400 S Orange Ave', '400 S ORANGE BLOSSOM TRL')).toBe(false);
+    expect(addressesAgree('1409 NW 48th St', '1409 SW 48 ST')).toBe(false);
+    expect(addressesAgree('400 Orange Ave', '400 ORCHID AVE')).toBe(false);
+  });
+
+  it('refuses a right-of-way parcel, which carries a street and no number', () => {
+    expect(addressesAgree('2500 E Las Olas Blvd', 'LAS OLAS BLVD')).toBe(false);
   });
 });
