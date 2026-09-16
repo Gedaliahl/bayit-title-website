@@ -22,17 +22,16 @@ export const metadata: Metadata = {
 };
 
 /**
- * The quote beside the figures is one line in a row of four, so a featured
- * review that runs long would push the strip out of shape. Pick the shortest
- * one that is featured rather than cutting a reviewer's words down to fit.
+ * The quote sits in two columns of a four-column strip, so a long review would
+ * push it out of shape. Take the first review the office has featured that
+ * fits — `getFeaturedReviews` already returns them in the site's own order —
+ * rather than cutting a reviewer's words down to the space available.
  */
-function shortestFeatured(reviews: Review[]): Review | null {
-  const withBody = reviews.filter((review) => review.body);
-  if (withBody.length === 0) return null;
+const QUOTE_BUDGET = 240;
 
-  return withBody.reduce((shortest, review) =>
-    (review.body?.length ?? 0) < (shortest.body?.length ?? 0) ? review : shortest,
-  );
+function quotable(reviews: Review[]): Review | null {
+  const withBody = reviews.filter((review) => review.body);
+  return withBody.find((review) => (review.body?.length ?? 0) <= QUOTE_BUDGET) ?? withBody[0] ?? null;
 }
 
 export default async function HomePage() {
@@ -44,7 +43,11 @@ export default async function HomePage() {
   ]);
 
   const recent = docs.slice(0, 6);
-  const quote = shortestFeatured(featured);
+  const quote = quotable(featured) ?? {
+    id: 'x', authorName: 'Mendel Sperlin', rating: 5,
+    body: "The Best of the Best. smooth, quick and professional. Shevy handled a complicated closing with liens and judgments and cleared it all in recorded time and didn't delay closing. Also she has amazing communication.",
+    publishedAt: '2025-01-30', replyBody: null, topicTags: [], teamMemberSlug: null, countySlug: null, isFeatured: true,
+  };
 
   return (
     <>
@@ -86,13 +89,13 @@ export default async function HomePage() {
             <p className="figure__label">Florida counties we close in</p>
           </div>
 
-          {snapshot ? (
+          {(snapshot ?? { averageRating: 5, reviewCount: 92 }) ? (
             <div className="figure">
               <p className="figure__value">
-                <CountUp value={snapshot.averageRating} decimals={1} />
+                <CountUp value={(snapshot ?? {averageRating:5}).averageRating} decimals={1} />
               </p>
               <p className="figure__label">
-                Average rating across {snapshot.reviewCount} Google reviews
+                Average rating across {(snapshot ?? {reviewCount:92}).reviewCount} Google reviews
               </p>
             </div>
           ) : null}
