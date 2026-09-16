@@ -30,10 +30,14 @@ function find(all: Redirect[], source: string): Redirect | undefined {
   return all.find((entry) => entry.source === source);
 }
 
-/** Paths this site actually serves, so no redirect can point into thin air. */
+/**
+ * Paths this site actually serves, so no redirect can point into thin air.
+ * Add a route here when one is added to app/ and a redirect could target it.
+ */
 const ROUTES = new Set([
   '/', '/about', '/team', '/services', '/counties', '/title-problems',
-  '/reviews', '/contact', '/order', '/quote', '/privacy', '/icon.svg',
+  '/reviews', '/contact', '/order', '/quote', '/calculator', '/estimate',
+  '/partners', '/privacy', '/icon.svg',
 ]);
 
 describe('pages live on Wix today', () => {
@@ -45,9 +49,9 @@ describe('pages live on Wix today', () => {
     ['/order-title', '/order'],
     ['/process', '/services'],
     ['/titleinsurance', '/services'],
-    // No calculator exists — rate_tables is empty — so the quote form is the
-    // nearest page that actually answers what /rates was asked.
-    ['/rates', '/quote'],
+    // The calculator publishes the promulgated schedule and works a specific
+    // price out, which is what /rates was asked for.
+    ['/rates', '/calculator'],
   ];
 
   it.each(expected)('sends %s to %s, permanently', async (source, destination) => {
@@ -75,7 +79,7 @@ describe('pages live on Wix today', () => {
 });
 
 describe('Pennsylvania', () => {
-  // The firm holds a Florida licence only. These 404 on Wix already, but the
+  // The firm holds a Florida license only. These 404 on Wix already, but the
   // handoff records that the old site carried them, so they may still be
   // indexed — and a stale PA page must neither resurface nor land on a 404.
   it.each(['/pennsylvania', '/pa-closings', '/pennsylvania-title-insurance'])(

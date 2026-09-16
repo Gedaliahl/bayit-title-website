@@ -13,20 +13,24 @@ Producing and maintaining bayittitle.com: title-problem library pages, service p
 1. **A licensed human reviews every page before it publishes.** Claude drafts; Shevy (or another licensed agent) verifies every legal statement, statute cite, fee, and timeline. The byline belongs to the reviewer, not to Claude.
 2. **Never invent a fact.** No statute number, fee, deadline, form name, or county procedure goes in a draft unless it came from the source list below or from a verified note supplied by the team. If a fact is needed and not available, write `[VERIFY: what's needed]` in the draft. A draft with honest gaps is useful; a draft with plausible fabrications is dangerous.
 3. **No client-identifying detail, ever.** No names, addresses, parcel numbers, prices, dates of specific transactions, employers, professions, medical situations, or family circumstances that could identify a party. Case examples are composites and labeled as such.
-4. **No superlatives or comparisons.** Florida regulates advertising by licensed title agencies. Never write best, top, #1, fastest, cheapest, "better than," "unlike other title companies," or anything comparative about competitors. Authority is demonstrated by specificity, never asserted.
+4. **No superlatives, and no comparison naming or characterising another agency.** Florida regulates advertising by licensed title agencies. Never write best, top, #1, fastest, cheapest, or anything that names or characterises a competitor — no "unlike other title companies," no claims about how anyone else works.
+
+   The firm has decided the site should say plainly that its work is **excellent**, and should say why a file comes here rather than to another title agency. That argument is made one way only, and it is the one the regulator cannot object to: the premium is promulgated and identical at every agency, so the only thing left to choose on is execution, and execution is then described in specific, checkable terms — who reads the search, when a problem is put in writing, who is on the file from opening to recording. Excellence is *evidenced* (by that specificity and by the Google reviews, quoted in full and unedited), never asserted on its own and never leaned on a claim about somebody else.
 5. **No legal advice.** Explain how things generally work in Florida and what Bayit Title does. Recommend a real estate attorney where the situation calls for one — probate, quiet title, litigation, boundary disputes, anything contested.
 6. **Nothing about Pennsylvania**, prior careers outside title, or any tenure claim other than the canonical dates below.
 
 ## Canonical facts (use exactly; never paraphrase into something new)
 
-- Bayit Title LLC, founded 2021, Coral Springs, Florida. "Bayit" means home in Hebrew.
+- Bayit Title LLC, Coral Springs, Florida. "Bayit" means home in Hebrew. **Do not publish a founding date or "since 2021" anywhere on the site** — the firm has asked for it to come out. License issue dates on the team page's public-record list are a separate thing and stay.
 - Florida Title Insurance Agency License **W806540** (type 0412, issued November 22, 2021; NPN 20152864).
 - Agent in Charge: **Batsheva "Shevy" Lowenstein**, Florida Title Agent License **W766033** (issued October 22, 2021; NPN 19304095). In title since 2017; Florida-licensed since 2021. Never write "licensed since 2017."
 - Policies underwritten by **First American Title Insurance Company**; agency appointment on the public DFS record since December 9, 2021.
 - Team of four: Shevy Lowenstein (Founder, licensed title agent); Gedaliah Lowenstein (COO); Jennifer Simon (Processor, Florida notary, Commission HH 795313, exp. 5/24/2030); Chaya Brooks (Closer, Florida notary, Commission HH 817398, exp. 6/24/2030).
 - Office: 3301 N University Drive, Suite 100, Coral Springs, FL 33065. Phone 754.253.2270. Email shevy@bayittitle.com.
-- Hours: Mon–Thu 9:00–5:00, Fri 9:00–12:00, closed weekends. Never imply 24/7 or standing after-hours availability.
-- Closes throughout Florida. Emphasis: Broward, Palm Beach, Miami-Dade.
+- Hours: Mon–Fri 9:00–5:00, closed weekends. Never imply 24/7 or standing after-hours availability. Render them from `officeHoursLine` in lib/site.ts rather than by indexing into `site.hours`.
+- Closes throughout Florida. Emphasis: Broward, Palm Beach, Miami-Dade, Hillsborough, Orange, Duval. A county named in `site.priorityCounties` must also exist in the `locations` table — see supabase/seed/locations_priority_counties.sql — or its link is a 404.
+- Residential **and commercial** title: entity authority, leasehold and ALTA policies, lender endorsements, UCC and judgment searches, staged disbursement.
+- 1031 like-kind exchanges are facilitated through **Bayit Exchange Company**, an affiliated company. Always say the client may use any qualified intermediary they choose, and never give tax advice — the decision to exchange belongs with the client's CPA or tax counsel.
 - All closing methods offered: in-office, mobile/concierge signing wherever the signer wants, and remote online notarization.
 
 ## Voice
@@ -71,7 +75,7 @@ Length follows the topic: 600–1,800 words. Never pad.
 - **Florida OIR** promulgated title insurance rate schedule.
 - **Florida DFS** licensee search; **FL Dept. of State** notary search.
 - **Florida DOR** documentary stamp tax guidance.
-- **County sources:** Broward, Palm Beach, and Miami-Dade Clerk of Court, Property Appraiser, and Tax Collector sites; municipal building departments for permit questions.
+- **County sources:** the Clerk of Court (or, in Broward and Orange, the office that actually records), Property Appraiser, and Tax Collector sites for each priority county; municipal building departments for permit questions.
 - **IRS** for FIRPTA; **First American** underwriting bulletins where the team supplies them.
 - **ALTA** for policy form names and Best Practices.
 

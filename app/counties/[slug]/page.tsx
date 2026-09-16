@@ -158,10 +158,10 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         <p>Three things in the same rule move that figure, and each is worth asking about:</p>
         <ul>
           <li>
-            <strong>The reissue rate</strong>, where the seller&rsquo;s own title was insured and
-            both we and the underwriter hold a copy of that policy. The common case is a new policy
-            dated less than three years after the one that insured the seller. It is a different
-            schedule, not a discount on this one:{' '}
+            <strong>The reissue rate</strong>, where the owner&rsquo;s or the seller&rsquo;s own
+            title was insured and both we and the underwriter hold a copy of that policy. The
+            common case is a new policy dated less than three years after the one that insured the
+            owner or seller. It is a different schedule, not a discount on this one:{' '}
             {formatMoney(reissuePremium(EXAMPLE_PRICE))} on the same{' '}
             {formatMoney(EXAMPLE_PRICE)} purchase, or{' '}
             {formatMoney(originalPremium(EXAMPLE_PRICE) - reissuePremium(EXAMPLE_PRICE))} less.

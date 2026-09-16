@@ -31,7 +31,7 @@ advertising and from the firm's professional exposure.
 
 - **No superlatives or comparisons.** No "best", "fastest", "#1", "trusted",
   "unlike other title companies". Authority is demonstrated by specificity —
-  licence numbers, statute cites, named reviewers — never asserted. Any design
+  license numbers, statute cites, named reviewers — never asserted. Any design
   that needs a "Why choose us?" badge is the wrong design.
 - **No `AggregateRating` star display as our own rating.** Reviews were
   collected by Google. They can be shown and attributed, never aggregated into
@@ -155,8 +155,8 @@ hover, plus one primary button ("Open an order").
 
 **Footer** (`.sitefoot`) — four auto-fit columns at `13rem` min: address/phone/
 email, hours, pages, get started. Below them `.credential-line`: 0.8125rem
-muted text carrying the legal name, agency licence number, agent in charge and
-licence, underwriter, a plain-language "this is not legal advice" line, and
+muted text carrying the legal name, agency license number, agent in charge and
+license, underwriter, a plain-language "this is not legal advice" line, and
 copyright. **This block is a compliance requirement, not decoration.**
 
 ### The library page, in body order

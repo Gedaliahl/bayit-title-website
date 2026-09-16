@@ -111,6 +111,11 @@ export default async function CalculatorPage() {
         <p>
           <Link href="/quote">Request a full closing cost quote</Link>
         </p>
+        <p>
+          No contract price yet?{' '}
+          <Link href="/estimate">Estimate the premium from a property address</Link> instead — that
+          one works from the county and the assessed value on the property appraiser&rsquo;s record.
+        </p>
       </div>
     </div>
   );

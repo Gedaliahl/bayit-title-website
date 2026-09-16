@@ -5,19 +5,12 @@ import 'server-only';
 import { cache } from 'react';
 import { getServiceClient } from './supabase';
 
-export interface Review {
-  id: string;
-  authorName: string;
-  rating: number;
-  body: string | null;
-  /** Null when the stored date was derived from a relative label and can't be trusted. */
-  publishedAt: string | null;
-  replyBody: string | null;
-  topicTags: string[];
-  teamMemberSlug: string | null;
-  countySlug: string | null;
-  isFeatured: boolean;
-}
+import { DEFAULT_REVIEW_ORDER, sortReviews, type Review } from './review-order';
+
+// Re-exported so a page can keep importing the review type from the module it
+// gets reviews from. The ordering itself lives in ./review-order because the
+// browser sorts too, and this module is server-only.
+export type { Review, ReviewOrder } from './review-order';
 
 export interface ReviewSnapshot {
   averageRating: number;
@@ -76,6 +69,10 @@ export const getReviews = cache(async (): Promise<Review[]> => {
     // context. Hold those back until the full text is captured.
     .eq('body_truncated', false)
     .not('body', 'is', null)
+    // Ordered again below. Postgres decides the tie-breaks it likes; the order
+    // a reader sees is a decision of ours, and it is made in one place —
+    // ./review-order — so that the page, the county pages and the partners
+    // page cannot drift apart from each other.
     .order('is_featured', { ascending: false })
     .order('published_at', { ascending: false });
 
@@ -84,7 +81,7 @@ export const getReviews = cache(async (): Promise<Review[]> => {
     return [];
   }
 
-  return data.map(toReview);
+  return sortReviews(data.map(toReview), DEFAULT_REVIEW_ORDER);
 });
 
 export const getReviewSnapshot = cache(async (): Promise<ReviewSnapshot | null> => {

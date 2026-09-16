@@ -9,8 +9,9 @@ import { QuietCta } from '@/components/QuietCta';
 export const metadata: Metadata = {
   title: 'Counties we close in',
   description:
-    'We close throughout Florida, with most files in Broward, Palm Beach and Miami-Dade. ' +
-    'What differs county to county: who customarily pays for the owner’s policy, recording, and clerk practice.',
+    'We close throughout Florida, with most files in Broward, Palm Beach, Miami-Dade, ' +
+    'Hillsborough, Orange and Duval. What differs county to county: who customarily pays for the ' +
+    'owner’s policy, recording, and clerk practice.',
   alternates: { canonical: '/counties' },
 };
 
@@ -39,6 +40,11 @@ export default async function CountiesPage() {
           and local mechanics: which side customarily pays for the owner&rsquo;s policy, what the
           clerk charges to record, how the property appraiser and tax collector publish their data,
           and how long a recording takes to post.
+        </p>
+
+        <p>
+          <Link href="/estimate">Estimate title insurance from an address</Link> and the tool will
+          point you at the right county&rsquo;s property appraiser for the assessed value.
         </p>
 
         <h2>Where most of our files are</h2>

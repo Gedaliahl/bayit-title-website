@@ -75,11 +75,19 @@ export const DEFAULTS: EstimateInput = {
   mortgagePages: 12,
 };
 
-/** R. 69O-186.003(2)(b), in the order the rule lists them. */
+/**
+ * The reissue conditions, as a seller or an owner meets them in practice.
+ *
+ * R. 69O-186.003(2)(b) lists a fourth condition — unimproved land except for
+ * roads, drainage and utilities — which is deliberately not printed here. It
+ * almost never decides one of our files, and a reader working out whether the
+ * reissue rate applies to a house is better served by three conditions they
+ * might actually meet. Ask us on a land file and we will check the rule
+ * against it.
+ */
 export const REISSUE_CONDITIONS = [
-  'The seller’s own title was insured, and both we and the underwriter keep a copy of that policy.',
-  'The new policy is dated less than three years after the policy that insured the seller — this is the common one.',
-  'Or the land is unimproved except for roads, drainage and utilities and the current owner’s title was insured.',
+  'The owner’s or the seller’s own title was insured, and both we and the underwriter keep a copy of that policy.',
+  'The new policy is dated less than three years after the policy that insured the owner or seller — this is the common one.',
   'Or it is a mortgage policy on a refinance of property insured by an owner’s policy that insured this same borrower.',
 ];
 

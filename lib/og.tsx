@@ -5,7 +5,7 @@
  * placeholder: there is no usable photography, and the stock imagery this
  * industry reaches for — handshakes, keys, families on lawns — is exactly what
  * the design direction rules out. Specificity does the work instead, which is
- * why the licence number is on the card.
+ * why the license number is on the card.
  */
 import 'server-only';
 

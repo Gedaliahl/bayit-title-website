@@ -77,7 +77,7 @@ export default async function TeamMemberPage({ params }: { params: Promise<{ slu
               ))}
             </ul>
             <p className="form-note">
-              Licence status can be confirmed through the Florida Department of Financial Services
+              License status can be confirmed through the Florida Department of Financial Services
               licensee search; notary commissions through the Florida Department of State.
             </p>
           </>

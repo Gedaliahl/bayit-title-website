@@ -1,5 +1,5 @@
 // JSON-LD. The point of this file is entity resolution: search engines and AI
-// assistants need to confirm that bayittitle.com, the DFS licence record, the
+// assistants need to confirm that bayittitle.com, the DFS license record, the
 // Google Business Profile and the LinkedIn company page are one entity.
 //
 // Deliberately absent: AggregateRating. The reviews were collected by Google,
@@ -22,20 +22,44 @@ function JsonLd({ data }: { data: Record<string, unknown> }) {
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const AGENT_ID = `${SITE_URL}/team/${site.agentInCharge.displayName.split(' ')[0].toLowerCase()}#person`;
 
+const WEEK = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+] as const;
+
+/**
+ * "Monday – Friday" is a range to a reader and a list of two days to a parser.
+ * Splitting on the dash and stopping there published hours for Monday and
+ * Friday and silently closed the office for the three days in between, so the
+ * range is expanded here instead.
+ */
+function daysInRange(label: string): string[] {
+  const [from, to] = label.split('–').map((day) => day.trim());
+  if (!to) return [from];
+
+  const start = WEEK.indexOf(from as (typeof WEEK)[number]);
+  const end = WEEK.indexOf(to as (typeof WEEK)[number]);
+  // An unrecognised day name is a typo in lib/site.ts, not a reason to emit
+  // nothing: fall back to the two named days rather than dropping the entry.
+  if (start === -1 || end === -1 || end < start) return [from, to];
+
+  return WEEK.slice(start, end + 1) as unknown as string[];
+}
+
 export function OrganizationSchema() {
   const openingHours = site.hours
     .filter((entry) => entry.open !== null)
-    .map((entry) => {
-      const days = entry.days.includes('–')
-        ? entry.days.split('–').map((day) => day.trim())
-        : [entry.days.trim()];
-      return {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: days,
-        opens: entry.open,
-        closes: entry.close,
-      };
-    });
+    .map((entry) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: daysInRange(entry.days),
+      opens: entry.open,
+      closes: entry.close,
+    }));
 
   return (
     <JsonLd
@@ -46,10 +70,10 @@ export function OrganizationSchema() {
         name: site.name,
         legalName: site.legalName,
         url: SITE_URL,
-        foundingDate: site.founded,
         description:
           `${site.legalName} is a Florida title insurance agency in ${site.address.city}, ` +
-          `closing residential and commercial transactions throughout Florida.`,
+          `closing residential and commercial transactions throughout Florida, and facilitating ` +
+          `1031 exchanges through ${site.exchangeCompany.name}.`,
         telephone: site.phone,
         email: site.email,
         address: {

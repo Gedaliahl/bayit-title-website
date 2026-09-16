@@ -1,13 +1,17 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { site } from '@/lib/site';
+import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: `${site.legalName} is a Florida title insurance agency founded in ${site.founded} in ${site.address.city}, closing throughout Florida.`,
+  description:
+    `${site.legalName} is a Florida title insurance agency in ${site.address.city}, closing ` +
+    `residential and commercial transactions throughout Florida. The premium is set by rule and ` +
+    `is the same everywhere; the excellence of the work around it is why files come here rather ` +
+    `than to another title company.`,
   alternates: { canonical: '/about' },
 };
 
@@ -24,9 +28,8 @@ export default function AboutPage() {
         <h1 style={{ marginTop: '1.5rem' }}>About Bayit Title</h1>
 
         <p className="lede">
-          Bayit means home in Hebrew. {site.legalName} was founded in {site.founded} in{' '}
-          {site.address.city}, Florida, and closes residential and commercial transactions
-          throughout Florida.
+          Bayit means home in Hebrew. {site.legalName} is a Florida title insurance agency in{' '}
+          {site.address.city}, closing residential and commercial transactions throughout Florida.
         </p>
 
         {/*
@@ -35,31 +38,87 @@ export default function AboutPage() {
           is written here on her behalf. Drop that copy in when it arrives.
         */}
 
-        <h2>What we are, precisely</h2>
+        <h2>What we are</h2>
         <p>
-          We are a licensed Florida title insurance agency, not a law firm and not an underwriter.
-          We search title, examine what the search returns, issue title commitments and policies as
-          an agent for {site.underwriter}, hold escrow, and conduct closings. Where a matter is
-          contested — a probate that needs administration, a quiet title action, a boundary dispute,
-          anything headed to a courtroom — the right person is a Florida real estate attorney, and
-          we will say so rather than work around it.
+          We are a licensed Florida title insurance agency. That means four things, and it is worth
+          being exact about them, because &ldquo;title company&rdquo; is used loosely and the
+          differences decide who is responsible when something goes wrong on your file.
+        </p>
+        <ul>
+          <li>
+            <strong>We search and examine title.</strong> Somebody here reads the public record
+            back through the chain — deeds, mortgages, liens, judgments, probates, plats, permits —
+            and works out what actually encumbers the property and what it would take to clear.
+          </li>
+          <li>
+            <strong>We issue title insurance.</strong> We write commitments and policies as an
+            agent for {site.underwriter}. The underwriter carries the risk; we are the licensed
+            agency that examines the title and issues the policy on its paper.
+          </li>
+          <li>
+            <strong>We hold the escrow.</strong> Deposits, payoffs and proceeds sit in our trust
+            account, reconciled, and go out on written instructions we have confirmed by voice. We
+            will never email you a change to wire instructions.
+          </li>
+          <li>
+            <strong>We close the transaction.</strong> We prepare the settlement statement, run the
+            signing in our office, wherever the signer is, or by remote online notarization, record
+            the documents, disburse, and issue the policy.
+          </li>
+        </ul>
+        <p>
+          And we are excellent at it. Florida promulgates the title insurance premium — the Office
+          of Insurance Regulation sets it by rule, every agency charges the same for the same
+          coverage, and none of us can discount it. So the thing you are actually choosing between
+          title companies is how well the work is done: whether the search is read or skimmed,
+          whether a problem is raised in week one or at the closing table, whether the phone is
+          answered by someone who knows your file. That is where we compete, that is what our{' '}
+          <Link href="/reviews">clients and their agents describe in their reviews</Link>, and it is
+          why a file comes here rather than to another title company.
+        </p>
+        <p>
+          What we are not: a law firm and not an underwriter. Where a matter is contested — a
+          probate that needs administration, a quiet title action, a boundary dispute, anything
+          headed for a courtroom — the right person is a Florida real estate attorney, and we will
+          say so rather than work around it.
+        </p>
+
+        <h2>What we handle</h2>
+        <p>
+          <strong>Residential.</strong> Purchases, sales, refinances, new construction, condominium
+          and HOA files, cash closings, out-of-state and foreign sellers.
+        </p>
+        <p>
+          <strong>Commercial.</strong> Office, retail, industrial, multifamily and land. Entity
+          searches and authority documents, leasehold and ALTA policies, lender endorsements, UCC
+          and judgment searches against the entities on both sides, and escrow held to the terms
+          the parties negotiated rather than to a residential template.
+        </p>
+        <p>
+          <strong>1031 exchanges.</strong> A like-kind exchange needs a qualified intermediary, and
+          the exchange has to be in place before the relinquished property closes. We can facilitate
+          one through {site.exchangeCompany.name}, which is {site.exchangeCompany.relationship}, so
+          the intermediary and the closing are coordinated in one place. You are free to use any
+          intermediary you like; tell us early either way, because after the seller has constructive
+          receipt of the money there is no exchange left to structure. We are not tax advisers — the
+          decision to exchange belongs with your CPA or tax counsel.{' '}
+          <Link href="/services">What we do, in full →</Link>
         </p>
 
         <h2>Licensing</h2>
         <ul>
           <li>
             {site.legalName} holds Florida Title Insurance Agency License{' '}
-            <strong>{site.agencyLicense}</strong> (NPN {site.agencyNpn}), issued November 22, 2021.
+            <strong>{site.agencyLicense}</strong> (NPN {site.agencyNpn}).
           </li>
           <li>
             The Agent in Charge is {site.agentInCharge.legalName}, Florida Title Agent License{' '}
-            <strong>{site.agentInCharge.license}</strong> (NPN {site.agentInCharge.npn}), issued
-            October 22, 2021. She has worked in title since {site.agentInCharge.inTitleSince} and
-            has been Florida-licensed since {site.agentInCharge.licensedSince}.
+            <strong>{site.agentInCharge.license}</strong> (NPN {site.agentInCharge.npn}). She has
+            worked in title since {site.agentInCharge.inTitleSince}.
           </li>
           <li>
-            Policies are underwritten by {site.underwriter}. Our agency appointment has been on the
-            Florida Department of Financial Services public record since December 9, 2021.
+            Policies are underwritten by {site.underwriter}, and our agency appointment is on the
+            Florida Department of Financial Services public record.
           </li>
         </ul>
         <p className="form-note">
@@ -82,9 +141,8 @@ export default function AboutPage() {
           notarization — whichever suits the file.
         </p>
         <p className="muted ui" style={{ fontSize: '0.875rem' }}>
-          Office hours are {site.hours[0].days} {site.hours[0].open} to {site.hours[0].close}, and{' '}
-          {site.hours[1].days} {site.hours[1].open} to {site.hours[1].close}. Signings outside those
-          hours are arranged in advance, file by file.
+          Office hours are {officeHoursLine}. Signings outside those hours are arranged in advance,
+          file by file.
         </p>
 
         <h2>Why we write these pages</h2>
@@ -92,7 +150,7 @@ export default function AboutPage() {
           Most of what is written about Florida title online is either an advertisement or a
           national article that does not survive contact with a Florida county. The pages in our{' '}
           <Link href="/title-problems">title problems library</Link> take one situation at a time,
-          say what it is and what clearing it takes, and carry the name and licence number of the
+          say what it is and what clearing it takes, and carry the name and license number of the
           agent who reviewed them. Where a fact is not yet confirmed, the page says so on its face
           instead of guessing.
         </p>

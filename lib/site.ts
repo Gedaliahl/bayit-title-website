@@ -10,7 +10,6 @@ export const site = {
   // canonical host at cutover would put a needless redirect hop in front of the
   // whole existing index. Vercel must have www set as the primary domain.
   url: 'https://www.bayittitle.com',
-  founded: '2021',
 
   agencyLicense: 'W806540',
   agencyNpn: '20152864',
@@ -61,14 +60,30 @@ export const site = {
 
   // From the Google Business Profile. Keep in sync with GBP, not the other way round.
   hours: [
-    { days: 'Monday – Thursday', open: '9:00 AM', close: '5:00 PM' },
-    { days: 'Friday', open: '9:00 AM', close: '12:00 PM' },
+    { days: 'Monday – Friday', open: '9:00 AM', close: '5:00 PM' },
     { days: 'Saturday – Sunday', open: null, close: null },
   ],
 
-  // Emphasis first, then the rest of the state.
-  priorityCounties: ['Broward County', 'Palm Beach County', 'Miami-Dade County'],
+  // Emphasis first, then the rest of the state. Every slug here must exist in
+  // the locations table, or the county page it links to is a 404 — see
+  // supabase/seed/locations_priority_counties.sql.
+  priorityCounties: [
+    'Broward County',
+    'Palm Beach County',
+    'Miami-Dade County',
+    'Hillsborough County',
+    'Orange County',
+    'Duval County',
+  ],
   serviceArea: 'Florida',
+
+  // A 1031 exchange needs a qualified intermediary, and the intermediary cannot
+  // be the taxpayer's agent for the sale. So it is a separate company, named
+  // here rather than blurred into "we handle 1031s".
+  exchangeCompany: {
+    name: 'Bayit Exchange Company',
+    relationship: 'affiliated with Bayit Title',
+  },
 
   team: [
     { slug: 'shevy',    name: 'Shevy Lowenstein',    role: 'Founder',                 credential: 'Florida Title Agent, License W766033' },
@@ -77,6 +92,16 @@ export const site = {
     { slug: 'chaya',    name: 'Chaya Brooks',        role: 'Closer',                  credential: 'Florida Notary Public, Commission HH 817398' },
   ],
 } as const;
+
+/**
+ * The hours, as one sentence. Several pages said this by reaching for
+ * `site.hours[0]` and `site.hours[1]` by index, which broke the moment the two
+ * weekday rows became one. Hours change; the sentence should change with them.
+ */
+export const officeHoursLine = site.hours
+  .filter((entry) => entry.open !== null)
+  .map((entry) => `${entry.days}, ${entry.open} to ${entry.close}`)
+  .join('; ');
 
 export const footerCredentialLine =
   `${site.legalName} · Florida Title Insurance Agency License ${site.agencyLicense} · ` +

@@ -213,7 +213,7 @@ left once a property exists.
 
 `components/Schema.tsx` emits Organization, Person, Article, FAQPage and
 Breadcrumb JSON-LD. The point is entity resolution: confirming that this site,
-the DFS licence record, the Google Business Profile and the LinkedIn page are one
+the DFS license record, the Google Business Profile and the LinkedIn page are one
 entity.
 
 **There is deliberately no `AggregateRating`.** The reviews were collected by

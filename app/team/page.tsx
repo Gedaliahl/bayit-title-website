@@ -8,7 +8,7 @@ import { PersonSchema } from '@/components/Schema';
 
 export const metadata: Metadata = {
   title: 'Our team',
-  description: `The four people who work every file at ${site.legalName}, with their Florida licence and commission numbers.`,
+  description: `The four people who work every file at ${site.legalName}, with their Florida license and commission numbers.`,
   alternates: { canonical: '/team' },
 };
 

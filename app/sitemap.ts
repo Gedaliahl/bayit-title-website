@@ -31,6 +31,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/order'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/quote'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/calculator'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/estimate'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/partners'), lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     // Same rule as a draft content page: nothing unreviewed is listed for crawlers.
     ...(PRIVACY_PUBLISHED
       ? [

@@ -614,6 +614,13 @@ th {
   font-size: 0.875rem;
 }
 
+/* The sort control on /reviews. Narrow on purpose: it is a control over the
+   list, not a form, and it should not read like one. */
+.review-sort {
+  margin-top: 2rem;
+  max-width: 24rem;
+}
+
 .review--pull {
   background: var(--paper);
   border: 1px solid var(--rule);

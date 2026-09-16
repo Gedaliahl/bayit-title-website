@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { getReviews, getReviewSnapshot } from '@/lib/reviews';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { ReviewList, ReviewSummaryLine } from '@/components/Reviews';
+import { ReviewBrowser } from '@/components/ReviewBrowser';
+import { ReviewSummaryLine } from '@/components/Reviews';
 import { QuietCta } from '@/components/QuietCta';
 
 export const metadata: Metadata = {
@@ -38,11 +39,11 @@ export default async function ReviewsPage() {
         <p className="form-note">
           Some reviews carry no date. Google reports the older ones only as relative labels
           (&ldquo;a year ago&rdquo;), and rather than print a date we would be guessing at, we
-          print none.
+          print none. The order below can be changed; nothing is filtered out of it.
         </p>
 
         {reviews.length > 0 ? (
-          <ReviewList reviews={reviews} />
+          <ReviewBrowser reviews={reviews} />
         ) : (
           <p className="muted">
             Reviews load from our Google Business Profile at build time and are not available right

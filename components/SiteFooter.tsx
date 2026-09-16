@@ -47,6 +47,9 @@ export function SiteFooter() {
                 <Link href="/counties">Counties we close in</Link>
               </li>
               <li>
+                <Link href="/partners">For realtors and mortgage brokers</Link>
+              </li>
+              <li>
                 <Link href="/team">Our team</Link>
               </li>
               <li>
@@ -63,6 +66,12 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link href="/quote">Request a quote</Link>
+              </li>
+              <li>
+                <Link href="/estimate">Estimate from an address</Link>
+              </li>
+              <li>
+                <Link href="/calculator">Premium calculator</Link>
               </li>
               <li>
                 <Link href="/contact">Contact us</Link>

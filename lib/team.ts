@@ -13,7 +13,7 @@ export interface TeamMember {
   name: string;
   role: string;
   credential: string | null;
-  /** Verifiable licence or commission detail, stated exactly as the public record has it. */
+  /** Verifiable license or commission detail, stated exactly as the public record has it. */
   publicRecord: string[];
   bio: string[] | null;
   linkedin?: string;
