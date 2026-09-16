@@ -280,6 +280,54 @@ browser holds permission to write exactly one object at exactly one path.
   nor the notification claims anything about deletion, and neither should until
   that decision is made.
 
+## Estimating from an address
+
+`/estimate` starts from a property address instead of a price. Typing one opens
+a dropdown of real properties; picking one sets the county, fills in the
+assessed value, and prices the premium, the transfer taxes and the recording
+against it.
+
+Two sources sit behind the dropdown, and they are not equivalent:
+
+- **Four county rolls.** Broward, Palm Beach, Miami-Dade and Hillsborough each
+  publish their certified tax roll as an open ArcGIS feature service, with the
+  situs address, the parcel number and the values in the same row. In those
+  counties a suggestion carries the appraiser's own figure, and the page prints
+  the office it came from and the parcel it belongs to.
+- **The U.S. Census Bureau geocoder** for the other sixty-three. It is free,
+  keyless and statewide, it names the county the address falls in — which is
+  better than the place-name guess in `lib/florida-places.ts` — and it knows
+  nothing about value. There the assessed-value box stays the reader's to fill,
+  with the link to their property appraiser beside it.
+
+`lib/property-lookup.ts` holds the registry. Adding a county is adding an entry
+to it: the layer's query URL, the fields, a `where` builder and a `read` that
+maps a row onto `{ address, city, zip, parcelId, assessedValue, justValue }`.
+
+**What was tried and rejected.** The statewide FDOR parcel layer covers all 67
+counties and cannot serve this: attribute queries against its 10.8 million rows
+time out at around 55 seconds, and a point query from a geocoded coordinate
+lands on the road right-of-way parcel rather than the house, because the
+geocoder interpolates along the street centreline. A wrong assessed value that
+looks right is worse than an empty box. A commercial aggregator would cover the
+state, but then the page could not name the office each figure came from, which
+is the part that makes it worth publishing.
+
+**The address is not kept.** `/api/property-search` writes nothing, notifies
+nobody and sets no cookie. It is a POST so the address stays out of request
+logs, and its rate limit is counted in process rather than in the database —
+the opposite of the form endpoints, because this one fires while somebody
+types. The privacy policy says all of this in its own words.
+
+**The county changes the tax, never the premium.** The promulgated schedule is
+statewide. What moves with the county is documentary stamp tax on the deed —
+60¢ per $100 in Miami-Dade against 70¢ elsewhere, plus that county's 45¢
+surtax on anything that is not a single-family residence. Those taxes are
+charged on the *consideration*, and a page that starts from an address has no
+consideration in it, so `lib/assessed-estimate.ts` computes them on the
+valuation figure, says so on every line that does it, and keeps them out of the
+premium subtotal.
+
 ## The Wix cutover
 
 `bayittitle.com` runs on Wix today. Every source in the redirect map in

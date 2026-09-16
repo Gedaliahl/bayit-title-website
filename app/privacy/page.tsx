@@ -162,6 +162,14 @@ export default function PrivacyPage() {
             hour, so the forms cannot be flooded.
           </li>
           <li>
+            <strong>The address box on the estimator is not stored.</strong> While you type an
+            address there, this site asks the county property appraiser&rsquo;s published tax roll
+            and the U.S. Census Bureau&rsquo;s address geocoder about it, and shows you what they
+            say. The address is not written to our database, not emailed to the office and not kept
+            after the answer comes back, and it is sent as a POST so it does not appear in a server
+            log the way a search in a web address would.
+          </li>
+          <li>
             <strong>We run no advertising or social media trackers.</strong> This site loads no
             third-party scripts at all, which your browser enforces rather than taking our word for
             it.

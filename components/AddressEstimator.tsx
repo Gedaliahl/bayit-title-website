@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import {
   ASSESSED_DEFAULTS,
@@ -11,7 +11,8 @@ import {
   type Purpose,
 } from '@/lib/assessed-estimate';
 import { matchCounty } from '@/lib/florida-places';
-import { formatMoney } from '@/lib/statutory-rates';
+import type { PropertySuggestion } from '@/lib/property-lookup';
+import { discretionarySurtax, formatMoney } from '@/lib/statutory-rates';
 
 export interface EstimatorCounty {
   slug: string;
@@ -23,6 +24,15 @@ export interface EstimatorCounty {
 /** Chosen when the address is somewhere we have no appraiser link for. */
 const ELSEWHERE = 'elsewhere';
 
+/** Long enough to be a house number and part of a street. */
+const MIN_QUERY_LENGTH = 5;
+
+/** Long enough that somebody has stopped typing, short enough not to feel like waiting. */
+const DEBOUNCE_MS = 250;
+
+/** Where the figure in the assessed value box came from. */
+type ValueOrigin = 'typed' | 'assessed' | 'just';
+
 function parseAmount(raw: string): number {
   const digits = raw.replace(/[^\d]/g, '');
   return digits === '' ? 0 : Number(digits);
@@ -32,69 +42,278 @@ function displayAmount(value: number): string {
   return value === 0 ? '' : value.toLocaleString('en-US');
 }
 
-export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) {
+/** "1409 NW 48th St, Boca Raton 33431" — what the box says once a suggestion is taken. */
+function suggestionLine(suggestion: PropertySuggestion): string {
+  return [suggestion.address, [suggestion.city, suggestion.zip].filter(Boolean).join(' ')]
+    .filter(Boolean)
+    .join(', ');
+}
+
+export function AddressEstimator({
+  counties,
+  rollCountySlugs,
+}: {
+  counties: EstimatorCounty[];
+  /** Counties whose property appraiser publishes the roll we can read a value off. */
+  rollCountySlugs: string[];
+}) {
   const [address, setAddress] = useState('');
   const [input, setInput] = useState<AssessedInput>(ASSESSED_DEFAULTS);
   // Null until the reader chooses one themselves; before that the suggestion
   // from the address is what is selected.
   const [chosenCounty, setChosenCounty] = useState<string | null>(null);
 
-  const suggestion = useMemo(() => matchCounty(address), [address]);
+  // What came back, and what it came back for. Keeping the query alongside the
+  // rows is what makes a stale answer impossible to show: the moment the box
+  // says something else, these rows stop being this box's rows.
+  const [answer, setAnswer] = useState<{ query: string; items: PropertySuggestion[] } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [searching, setSearching] = useState(false);
+  /** The suggestion the figures below are standing on, if any. */
+  const [parcel, setParcel] = useState<PropertySuggestion | null>(null);
+  const [valueOrigin, setValueOrigin] = useState<ValueOrigin>('typed');
 
-  // Before an address is typed there is nothing to guess from, and falling
-  // through to ELSEWHERE there left the reader with no property appraiser to
-  // read the assessed value off — which is the one thing this page needs them
-  // to go and do. So the first county stands in until the address says
-  // otherwise or the reader picks one. The link names the county it points at,
-  // so a wrong default is visible rather than silent.
-  const countySlug =
-    chosenCounty ??
-    (suggestion && counties.some((entry) => entry.slug === suggestion.countySlug)
-      ? suggestion.countySlug
-      : (counties[0]?.slug ?? ELSEWHERE));
+  // Taking a suggestion rewrites the address box, which would otherwise look
+  // exactly like typing and send the rewritten address straight back to the
+  // server for a search nobody asked for.
+  const skipNextSearch = useRef(false);
+  const listId = useId();
 
-  const county = counties.find((entry) => entry.slug === countySlug) ?? null;
+  const placeGuess = useMemo(() => matchCounty(address), [address]);
+
+  const query = address.trim();
+  // Every roll behind this is addressed by house number, so there is nothing to
+  // ask about until one has been typed.
+  const searchable = query.length >= MIN_QUERY_LENGTH && /\d/.test(query);
+  const suggestions = answer?.query === query ? answer.items : [];
+  const foundNothing = answer?.query === query && answer.items.length === 0;
+
+  useEffect(() => {
+    if (skipNextSearch.current) {
+      skipNextSearch.current = false;
+      return;
+    }
+    if (!searchable) return;
+
+    const controller = new AbortController();
+
+    const timer = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const response = await fetch('/api/property-search', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ q: query }),
+          signal: controller.signal,
+        });
+
+        const payload = response.ok ? await response.json() : { suggestions: [] };
+        setAnswer({
+          query,
+          items: Array.isArray(payload.suggestions) ? payload.suggestions : [],
+        });
+        setActiveIndex(-1);
+        setOpen(true);
+      } catch {
+        // The usual case is the next keystroke aborting this one, and that
+        // keystroke's own request is already on its way. A request that
+        // genuinely failed leaves the box exactly as usable as it was before
+        // any of this existed, which is why nothing is said about it here.
+        if (!controller.signal.aborted) setAnswer({ query, items: [] });
+      } finally {
+        if (!controller.signal.aborted) setSearching(false);
+      }
+    }, DEBOUNCE_MS);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query, searchable]);
 
   const set = <K extends keyof AssessedInput>(key: K, value: AssessedInput[K]) =>
     setInput((current) => ({ ...current, [key]: value }));
 
-  const result = useMemo(() => estimateFromAssessedValue(input), [input]);
+  function takeSuggestion(suggestion: PropertySuggestion) {
+    skipNextSearch.current = true;
+    setAddress(suggestionLine(suggestion));
+    setOpen(false);
+    setActiveIndex(-1);
+    setSearching(false);
+    setParcel(suggestion);
+    setChosenCounty(
+      counties.some((entry) => entry.slug === suggestion.countySlug)
+        ? suggestion.countySlug
+        : ELSEWHERE,
+    );
+
+    // The assessed value is what the reader was going to go and copy across, so
+    // that is what goes in the box. Where a county publishes only a market
+    // value — or only an assessed one — the box takes whichever exists, and the
+    // line under it says which of the two is sitting there.
+    if (suggestion.assessedValue) {
+      set('assessedValue', suggestion.assessedValue);
+      setValueOrigin('assessed');
+    } else if (suggestion.justValue) {
+      set('assessedValue', suggestion.justValue);
+      setValueOrigin('just');
+    } else {
+      setValueOrigin('typed');
+    }
+  }
+
+  function onAddressKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (!open || suggestions.length === 0) {
+      if (event.key === 'ArrowDown' && suggestions.length > 0) {
+        setOpen(true);
+        event.preventDefault();
+      }
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveIndex((index) => (index + 1) % suggestions.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveIndex((index) => (index <= 0 ? suggestions.length - 1 : index - 1));
+    } else if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault();
+      takeSuggestion(suggestions[activeIndex]);
+    } else if (event.key === 'Escape') {
+      setOpen(false);
+      setActiveIndex(-1);
+    }
+  }
+
+  // Before an address is typed there is nothing to guess from, and falling
+  // through to ELSEWHERE there left the reader with no property appraiser to
+  // read the assessed value off — which is the one thing this page needs them
+  // to go and do when the roll cannot be read for them. So the first county
+  // stands in until the address says otherwise or the reader picks one. The
+  // link names the county it points at, so a wrong default is visible rather
+  // than silent.
+  const countySlug =
+    chosenCounty ??
+    (placeGuess && counties.some((entry) => entry.slug === placeGuess.countySlug)
+      ? placeGuess.countySlug
+      : (counties[0]?.slug ?? ELSEWHERE));
+
+  const county = counties.find((entry) => entry.slug === countySlug) ?? null;
+
+  // The county is derived from the address, the selector and the parcel, so it
+  // is handed to the estimate here rather than mirrored into the form state —
+  // the deed stamp rate on the screen is then the selected county's by
+  // construction, with no chance of the two disagreeing for a render.
+  const result = useMemo(
+    () => estimateFromAssessedValue({ ...input, countySlug }),
+    [input, countySlug],
+  );
 
   const isPurchase = input.purpose === 'purchase';
+  const surtaxApplies = discretionarySurtax(countySlug) !== null;
+  const rollCounty = rollCountySlugs.includes(countySlug);
+  /** The parcel's figures belong to the parcel, not to a number typed over them. */
+  const showingRollFigure = parcel !== null && valueOrigin !== 'typed';
 
   return (
     <div className="calc">
       <form
         className="calc__form"
-        // Nothing is submitted and nothing is stored. The address is used in
-        // this browser to guess a county and never leaves it.
+        // Nothing is submitted here and nothing is stored. The address is used
+        // to ask a county roll about a parcel and is gone when the answer
+        // comes back.
         onSubmit={(event) => event.preventDefault()}
       >
         <div className="field">
           <label htmlFor="address">Property address</label>
           <span className="field__hint" id="address-hint">
-            Street and city is enough. It stays in your browser — nothing is sent to us.
+            Start typing and pick the property. Where the county publishes its roll, the assessed
+            value comes with it.
           </span>
-          <input
-            id="address"
-            autoComplete="off"
-            aria-describedby="address-hint"
-            placeholder="123 Example Street, Coral Springs"
-            value={address}
-            onChange={(event) => {
-              setAddress(event.target.value);
-              // A new address means a new guess; a county the reader picked by
-              // hand is left alone.
-            }}
-          />
+          <div className="combo">
+            <input
+              id="address"
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={open && suggestions.length > 0}
+              aria-controls={listId}
+              aria-autocomplete="list"
+              aria-describedby="address-hint"
+              aria-activedescendant={
+                activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined
+              }
+              placeholder="1409 NW 48th St, Boca Raton"
+              value={address}
+              onChange={(event) => {
+                setAddress(event.target.value);
+                // A new address means the figure below is no longer this
+                // property's figure. The number stays — it may be the one they
+                // wanted — but it stops claiming to be the appraiser's.
+                if (parcel) {
+                  setParcel(null);
+                  setValueOrigin('typed');
+                }
+              }}
+              onKeyDown={onAddressKeyDown}
+              onFocus={() => suggestions.length > 0 && setOpen(true)}
+              onBlur={() => setOpen(false)}
+            />
+
+            {open && suggestions.length > 0 ? (
+              <ul className="combo__list" id={listId} role="listbox" aria-label="Matching properties">
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={suggestion.id}
+                    id={`${listId}-option-${index}`}
+                    role="option"
+                    aria-selected={index === activeIndex}
+                    className={`combo__option${index === activeIndex ? ' combo__option--active' : ''}`}
+                    // Mouse down rather than click: the input blurs first, and
+                    // a closed list has nothing left to click on.
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      takeSuggestion(suggestion);
+                    }}
+                    onMouseEnter={() => setActiveIndex(index)}
+                  >
+                    <span className="combo__address">{suggestion.address}</span>
+                    <span className="combo__meta">
+                      {[suggestion.city, suggestion.zip, suggestion.countyName]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                    {suggestion.assessedValue || suggestion.justValue ? (
+                      <span className="combo__value">
+                        {suggestion.assessedValue
+                          ? `Assessed ${formatMoney(suggestion.assessedValue)}`
+                          : `Just value ${formatMoney(suggestion.justValue ?? 0)}`}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+
+          <span className="field__hint" aria-live="polite">
+            {searching
+              ? 'Looking…'
+              : foundNothing
+                ? 'No property found for that. Type the value in below and the figures still work.'
+                : ''}
+          </span>
         </div>
 
         <div className="field">
           <label htmlFor="estimator-county">County</label>
           <span className="field__hint" id="estimator-county-hint">
-            {suggestion && chosenCounty === null
-              ? `Read from “${suggestion.place}” in the address above. Change it if that is wrong.`
-              : 'Where the property is. It decides which property appraiser publishes the assessed value for the parcel.'}
+            {parcel
+              ? `From the parcel you picked, in ${parcel.countyName}.`
+              : placeGuess && chosenCounty === null
+                ? `Read from “${placeGuess.place}” in the address above. Change it if that is wrong.`
+                : 'Where the property is. It decides the documentary stamp rate on the deed and which property appraiser publishes the value.'}
           </span>
           <select
             id="estimator-county"
@@ -136,9 +355,20 @@ export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) 
           <div className="field">
             <label htmlFor="assessed">Assessed value</label>
             <span className="field__hint" id="assessed-hint">
-              {county?.propertyAppraiserUrl ? (
+              {showingRollFigure && parcel ? (
                 <>
-                  Look the parcel up on the{' '}
+                  {valueOrigin === 'assessed' ? 'Assessed value' : 'Just (market) value'}
+                  {parcel.rollYear ? ` on the ${parcel.rollYear} roll` : ''}, from the{' '}
+                  <a href={parcel.sourceUrl} rel="nofollow noopener" target="_blank">
+                    {parcel.sourceName}
+                  </a>
+                  {parcel.parcelId ? ` · parcel ${parcel.parcelId}` : ''}.
+                </>
+              ) : county?.propertyAppraiserUrl ? (
+                <>
+                  {rollCounty
+                    ? 'Pick the property above and this fills itself in, or look the parcel up on the '
+                    : 'Look the parcel up on the '}
                   <a href={county.propertyAppraiserUrl} rel="nofollow noopener" target="_blank">
                     {county.name} Property Appraiser
                   </a>{' '}
@@ -153,8 +383,46 @@ export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) 
               inputMode="numeric"
               aria-describedby="assessed-hint"
               value={displayAmount(input.assessedValue)}
-              onChange={(event) => set('assessedValue', parseAmount(event.target.value))}
+              onChange={(event) => {
+                set('assessedValue', parseAmount(event.target.value));
+                setValueOrigin('typed');
+              }}
             />
+            {parcel && parcel.justValue && parcel.assessedValue ? (
+              <span className="field__hint">
+                {valueOrigin === 'just' ? (
+                  <>
+                    Assessed value is {formatMoney(parcel.assessedValue)}.{' '}
+                    <button
+                      type="button"
+                      className="linkish"
+                      onClick={() => {
+                        set('assessedValue', parcel.assessedValue ?? 0);
+                        setValueOrigin('assessed');
+                      }}
+                    >
+                      Use that instead
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    The appraiser also puts the just (market) value at{' '}
+                    {formatMoney(parcel.justValue)}, which is nearer what a policy would be written
+                    for.{' '}
+                    <button
+                      type="button"
+                      className="linkish"
+                      onClick={() => {
+                        set('assessedValue', parcel.justValue ?? 0);
+                        setValueOrigin('just');
+                      }}
+                    >
+                      Use that instead
+                    </button>
+                  </>
+                )}
+              </span>
+            ) : null}
           </div>
         ) : null}
 
@@ -183,44 +451,76 @@ export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) 
             <span className="field__hint"> — the owner or seller was insured within three years</span>
           </span>
         </label>
+
+        {isPurchase && surtaxApplies ? (
+          <label className="calc__check">
+            <input
+              type="checkbox"
+              checked={input.singleFamilyResidence}
+              onChange={(event) => set('singleFamilyResidence', event.target.checked)}
+            />
+            <span>
+              It is a single-family residence
+              <span className="field__hint">
+                {' '}
+                — {county?.name ?? 'this county'} charges a surtax on everything else
+              </span>
+            </span>
+          </label>
+        ) : null}
       </form>
 
       <div className="calc__result" aria-live="polite">
-        {result.lines.length === 0 ? (
+        {result.groups.length === 0 ? (
           <p className="muted" style={{ margin: 0 }}>
             {isPurchase
-              ? 'Enter the assessed value and the figures appear here.'
+              ? 'Pick the property above, or enter the assessed value, and the figures appear here.'
               : 'Enter the loan amount and the figures appear here.'}
           </p>
         ) : (
           <>
-            <section className="estimate-group">
-              <h3>Title insurance premium</h3>
-              {result.lines.map((line) => (
-                <div className="estimate-line" key={line.label}>
-                  <div>
-                    {line.label}
-                    {line.note ? <span className="estimate-line__note">{line.note}</span> : null}
-                    <a className="estimate-line__cite" href={line.sourceUrl} rel="nofollow">
-                      {line.cite}
-                    </a>
+            {result.groups.map((group) => (
+              <section className="estimate-group" key={group.title}>
+                <h3>{group.title}</h3>
+                {group.lines.map((line) => (
+                  <div className="estimate-line" key={line.label}>
+                    <div>
+                      {line.label}
+                      {line.note ? <span className="estimate-line__note">{line.note}</span> : null}
+                      <a className="estimate-line__cite" href={line.sourceUrl} rel="nofollow">
+                        {line.cite}
+                      </a>
+                    </div>
+                    <div className="estimate-line__amount">{formatMoney(line.value)}</div>
                   </div>
-                  <div className="estimate-line__amount">{formatMoney(line.value)}</div>
-                </div>
-              ))}
-            </section>
+                ))}
+                {group.lines.length > 1 ? (
+                  <div className="estimate-subtotal">
+                    <div>Subtotal</div>
+                    <div className="estimate-line__amount">{formatMoney(group.subtotal)}</div>
+                  </div>
+                ) : null}
+              </section>
+            ))}
 
             <div className="estimate-total">
-              <div>Promulgated premium</div>
+              <div>
+                Estimated charges
+                <span className="estimate-line__note">
+                  Everything above is set by the rule, the statute or the clerk — none of it is our
+                  fee.
+                </span>
+              </div>
               <div className="estimate-line__amount">{formatMoney(result.total)}</div>
             </div>
 
             {result.alternateRateTotal !== null &&
-            result.alternateRateTotal !== result.total ? (
+            result.alternateRateTotal !== result.premiumTotal ? (
               <p className="estimate-caveat">
                 At the {otherRateLabel(input.reissue)} the same coverage is{' '}
-                <strong>{formatMoney(result.alternateRateTotal)}</strong>. The difference is what it
-                is worth finding the old policy for.
+                <strong>{formatMoney(result.alternateRateTotal)}</strong> in premium against{' '}
+                {formatMoney(result.premiumTotal)}. The difference is what it is worth finding the
+                old policy for.
               </p>
             ) : null}
 
@@ -232,10 +532,7 @@ export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) 
               </p>
             ) : null}
 
-            <p className="estimate-caveat">
-              This is the promulgated premium on that amount of coverage and nothing else. Not in
-              it:
-            </p>
+            <p className="estimate-caveat">What is not in it:</p>
             <ul className="estimate-caveat">
               {ASSESSED_UNKNOWNS.map((item) => (
                 <li key={item}>{item}</li>

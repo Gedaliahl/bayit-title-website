@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
+import { ROLL_COUNTY_SLUGS } from '@/lib/property-lookup';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   PREMIUM_RULE,
@@ -17,14 +18,28 @@ import { QuietCta } from '@/components/QuietCta';
 export const metadata: Metadata = {
   title: 'Estimate title insurance from a property address',
   description:
-    'Type a Florida property address, take the assessed value from the county property ' +
-    'appraiser, and see the promulgated title insurance premium on it — cited to the OIR rule, ' +
-    'with no form to fill in.',
+    'Type a Florida property address, pick the property, and see the assessed value from the ' +
+    'county property appraiser with the title insurance premium, transfer taxes and recording ' +
+    'priced on it — cited to the rule and the statute, with no form to fill in.',
   alternates: { canonical: '/estimate' },
 };
 
+/** "Broward, Palm Beach, Miami-Dade and Hillsborough". */
+function listNames(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? '';
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
+
 export default async function EstimatePage() {
   const counties = await getCounties();
+
+  // Named from the registry rather than typed into the copy, so a county added
+  // to lib/property-lookup.ts is a county this page stops leaving out.
+  const rollCounties = listNames(
+    counties
+      .filter((county) => ROLL_COUNTY_SLUGS.includes(county.slug))
+      .map((county) => county.name.replace(/ County$/, '')),
+  );
 
   return (
     <div className="frame section">
@@ -42,11 +57,15 @@ export default async function EstimatePage() {
 
         <AnswerPanel
           text={
-            'Start with the address. This works out the county, points you at that county’s ' +
-            'property appraiser for the assessed value on the parcel, and prices the title ' +
-            'insurance premium on it straight from the rate schedule the Office of Insurance ' +
-            'Regulation promulgates. Assessed value is a tax figure and usually sits below what a ' +
-            'property sells for, so treat the result as a floor rather than a quote.'
+            'Start typing the address and pick the property. In ' +
+            rollCounties +
+            ' the assessed value arrives with it, straight off the property ' +
+            'appraiser’s published roll; everywhere else the address still names the county and ' +
+            'you type the value in. From there this prices the promulgated title insurance ' +
+            'premium, the documentary stamp tax and the recording charges — and the county ' +
+            'decides the stamp rate, which is 60 cents per $100 in Miami-Dade and 70 everywhere ' +
+            'else. Assessed value is a tax figure and usually sits below what a property sells ' +
+            'for, so treat the result as a floor rather than a quote.'
           }
         />
       </div>
@@ -58,20 +77,47 @@ export default async function EstimatePage() {
           propertyAppraiserUrl: county.propertyAppraiserUrl,
           customaryOwnerPolicyPayer: county.customaryOwnerPolicyPayer,
         }))}
+        rollCountySlugs={ROLL_COUNTY_SLUGS}
       />
 
       <div className="measure">
-        <h2>Why the address decides so little</h2>
+        <h2>Where the assessed value comes from</h2>
         <p>
-          It decides the county, and the county decides where you read the assessed value and which
-          side customarily pays for the owner&rsquo;s policy. It does not decide the premium. The
-          Office of Insurance Regulation sets title insurance rates by rule under{' '}
+          In {rollCounties} the property appraiser publishes its certified roll as an open data
+          service. Type an address in one of those counties, pick the property out of the list, and
+          the figure in the box is that office&rsquo;s own, with the parcel number and a link to
+          the record it came from printed underneath it. Nothing is estimated on the way: what you
+          see is what the roll says.
+        </p>
+        <p>
+          In the rest of Florida the list is built from the{' '}
+          <a href="https://geocoding.geo.census.gov/geocoder/" rel="nofollow">
+            U.S. Census Bureau geocoder
+          </a>
+          , which knows addresses and counties and nothing about value. There the box stays yours to
+          fill in and the link beside it goes to the right property appraiser. We would rather leave
+          it empty than fill it from a data broker&rsquo;s copy of a roll we cannot cite.
+        </p>
+
+        <h2>What the county changes, and what it does not</h2>
+        <p>
+          It does not change the premium. The Office of Insurance Regulation sets title insurance
+          rates by rule under{' '}
           <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
             {PREMIUM_RULE.authorityCite}
           </a>
-          , and the schedule runs the same in Pensacola as it does in Key West. The figure is the
-          rule&rsquo;s rather than anyone&rsquo;s opinion, which is the reason this page can do the
-          arithmetic in your browser instead of asking you for your phone number first.
+          , and the schedule runs the same in Pensacola as it does in Key West. What the county does
+          change is the tax on the deed: documentary stamp tax is 70&cent; per $100 of consideration
+          across Florida and 60&cent; in Miami-Dade, which never applied the ten-cent increase in
+          ch. 92-317, and Miami-Dade adds a 45&cent; surtax on anything that is not a single-family
+          residence.
+        </p>
+        <p>
+          That tax is charged on the <em>consideration</em> — the price — and a page that starts
+          from an address has no price in it. So the figures compute it on the appraiser&rsquo;s
+          value instead, say so on every line that does it, and keep it in its own group away from
+          the premium. On a sale above the assessed value, which is most sales, the real tax is
+          higher.
         </p>
 
         <h2>Why assessed value, and where it goes wrong</h2>
@@ -103,10 +149,18 @@ export default async function EstimatePage() {
 
         <h2>What happens to the address you typed</h2>
         <p>
-          Nothing. It is read in your browser to guess at a county and is never sent to us, stored,
-          or attached to anything. There is no form on this page for the same reason there is no
-          form on the calculator: the premium is the rule&rsquo;s, not ours, so there is nothing to
-          trade for it.
+          It is sent to this site while you type, and this site asks the county property appraiser
+          and the Census geocoder about it. That is the whole of it: nothing is written down,
+          nothing is emailed to the office, no cookie is set, and the request is a POST so the
+          address does not end up in a server log the way a search in a URL would. Turn the page and
+          there is no record you were here.
+        </p>
+        <p>
+          There is no form on this page for the same reason there is no form on the calculator: the
+          premium is the rule&rsquo;s, not ours, so there is nothing to trade for it. If you would
+          rather send nothing at all, type the county in by hand — the figures are computed in your
+          browser either way, and the address box is only there to save you a trip to the property
+          appraiser.
         </p>
 
         <p className="muted">

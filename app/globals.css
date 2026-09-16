@@ -981,3 +981,88 @@ ul.estimate-caveat {
   margin-top: 0.4rem;
   padding-left: 1.1rem;
 }
+
+/* ---------- address suggestions ---------- */
+/* The dropdown under the estimator's address box. It is positioned rather than
+   in flow: the fields below it must not jump down the page every time another
+   keystroke changes how many properties match. */
+
+.combo {
+  position: relative;
+}
+
+.combo__list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 20rem;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  box-shadow: 0 6px 20px rgb(20 35 27 / 12%);
+}
+
+.combo__option {
+  display: block;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--rule);
+}
+
+.combo__option:last-child {
+  border-bottom: 0;
+}
+
+.combo__option--active {
+  background: var(--sage);
+}
+
+.combo__address {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+.combo__meta,
+.combo__value {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+
+.combo__value {
+  font-variant-numeric: tabular-nums;
+  color: var(--moss);
+}
+
+/* A button that reads as a link: it changes a figure in the form rather than
+   going anywhere, so it is a button, and it sits inside a sentence, so it
+   looks like the rest of the sentence. */
+.linkish {
+  font: inherit;
+  color: var(--moss);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.estimate-subtotal {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.5rem 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+}
