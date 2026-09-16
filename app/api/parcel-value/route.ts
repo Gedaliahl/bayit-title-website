@@ -21,6 +21,15 @@ export const dynamic = 'force-dynamic';
 
 const lookupSchema = z.discriminatedUnion('kind', [
   z.object({
+    kind: z.literal('parcel'),
+    parcelId: z.string().trim().min(3).max(60),
+  }),
+  z.object({
+    kind: z.literal('county-feature'),
+    countySlug: z.string().trim().min(3).max(60),
+    objectId: z.number().int().min(0),
+  }),
+  z.object({
     kind: z.literal('point'),
     lat: z.number().min(-90).max(90),
     lon: z.number().min(-180).max(180),

@@ -172,3 +172,17 @@ describe('checking a parcel found by location against the address picked', () =>
     expect(addressesAgree('2500 E Las Olas Blvd', 'LAS OLAS BLVD')).toBe(false);
   });
 });
+
+describe('a unit on the end of one of them', () => {
+  it('is the same front door', () => {
+    // A county's address point against the state's row for the parcel under it.
+    expect(addressesAgree('427 W 10th Ave', '427 W 10TH AVE APT A')).toBe(true);
+    expect(addressesAgree('1200 Brickell Ave', '1200 BRICKELL AVE 100-A')).toBe(true);
+    expect(addressesAgree('100 Worth Ave PH 14', '100 WORTH AVE')).toBe(true);
+  });
+
+  it('does not stretch to another street', () => {
+    expect(addressesAgree('400 S Orange Ave', '400 S ORANGE BLOSSOM TRL')).toBe(false);
+    expect(addressesAgree('5151 N Sr Highway A1a', '5151 N HIGHWAY A1A 312')).toBe(false);
+  });
+});

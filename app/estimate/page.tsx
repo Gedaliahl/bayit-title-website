@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { VALUE_COUNTY_SLUGS } from '@/lib/property-lookup';
+import { VALUE_COUNTIES, VALUE_COUNTY_SLUGS } from '@/lib/property-lookup';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   PREMIUM_RULE,
@@ -33,15 +33,33 @@ function listNames(names: string[]): string {
 export default async function EstimatePage() {
   const counties = await getCounties();
 
+  // The county selector lists the counties the locations table knows about —
+  // the ones with pages, custom and a recording office behind them — plus any
+  // county the estimator can read a roll for. A reader who picks a property in
+  // Lee has to be able to see Lee in the box the figures are computed for.
+  const selectable = [
+    ...counties.map((county) => ({
+      slug: county.slug,
+      name: county.name,
+      propertyAppraiserUrl: county.propertyAppraiserUrl,
+      customaryOwnerPolicyPayer: county.customaryOwnerPolicyPayer,
+    })),
+    ...VALUE_COUNTIES.filter((county) => !counties.some((known) => known.slug === county.slug)).map(
+      (county) => ({
+        slug: county.slug,
+        name: county.name,
+        propertyAppraiserUrl: null,
+        customaryOwnerPolicyPayer: null,
+      }),
+    ),
+  ];
+
   // Named from the registry rather than typed into the copy, so a county added
-  // to lib/property-lookup.ts is a county this page stops leaving out. The
-  // paragraph below still names the two kinds of source by hand, because which
-  // kind a county is read by is the part a reader is owed.
-  const rollCounties = listNames(
-    counties
-      .filter((county) => VALUE_COUNTY_SLUGS.includes(county.slug))
-      .map((county) => county.name.replace(/ County$/, '')),
+  // to lib/county-rolls.ts is a county this page stops leaving out.
+  const valueCounties = listNames(
+    VALUE_COUNTIES.map((county) => county.name.replace(/ County$/, '')),
   );
+  const valueCountyCount = VALUE_COUNTIES.length;
 
   return (
     <div className="frame section">
@@ -59,11 +77,10 @@ export default async function EstimatePage() {
 
         <AnswerPanel
           text={
-            'Start typing the address and pick the property. In ' +
-            rollCounties +
-            ' the assessed value arrives with it, off the published tax roll; everywhere else ' +
-            'the address still names the county and you type the value in. From there this ' +
-            'prices the promulgated title insurance ' +
+            `Start typing the address and pick the property. In ${valueCountyCount} of ` +
+            'Florida’s 67 counties the assessed value arrives with it, off the published tax ' +
+            'roll; everywhere else the address still names the county and you type the value ' +
+            'in. From there this prices the promulgated title insurance ' +
             'premium, the documentary stamp tax and the recording charges — and the county ' +
             'decides the stamp rate, which is 60 cents per $100 in Miami-Dade and 70 everywhere ' +
             'else. Assessed value is a tax figure and usually sits below what a property sells ' +
@@ -72,35 +89,27 @@ export default async function EstimatePage() {
         />
       </div>
 
-      <AddressEstimator
-        counties={counties.map((county) => ({
-          slug: county.slug,
-          name: county.name,
-          propertyAppraiserUrl: county.propertyAppraiserUrl,
-          customaryOwnerPolicyPayer: county.customaryOwnerPolicyPayer,
-        }))}
-        valueCountySlugs={VALUE_COUNTY_SLUGS}
-      />
+      <AddressEstimator counties={selectable} valueCountySlugs={VALUE_COUNTY_SLUGS} />
 
       <div className="measure">
         <h2>Where the assessed value comes from</h2>
         <p>
-          In {rollCounties} picking a property fills the figure in, and the line under the box says
-          which office it came from, which parcel it belongs to and which year&rsquo;s roll it is
-          on. Nothing is estimated on the way: what you see is what the roll says.
+          In {valueCountyCount} counties picking a property fills the figure in, and the line under
+          the box says which office it came from, which parcel it belongs to and which year&rsquo;s
+          roll it is on. Nothing is estimated on the way: what you see is what the roll says. Those
+          counties are {`${valueCounties}.`}
         </p>
         <p>
-          It arrives two ways. Broward, Palm Beach, Miami-Dade and Hillsborough publish their
-          certified roll as an open data service, address and value in the same row, so the figure
-          comes back with the suggestion. Orange and Duval publish where every address is but not
-          what it is worth — Orange as the property appraiser&rsquo;s address points, Duval as the
-          city&rsquo;s address locator — so picking a property there looks the parcel up on the{' '}
+          It arrives two ways. A handful of appraisers publish their certified roll as an open data
+          service, address and value in the same row, so the figure comes back with the suggestion.
+          The rest publish where every address is but not what it is worth — as address points, as
+          parcels, or as a geocoder — so picking a property there reads the parcel off the{' '}
           <a href="https://floridarevenue.com/property/Pages/DataPortal.aspx" rel="nofollow">
             Department of Revenue&rsquo;s statewide parcel roll
           </a>{' '}
-          by where it stands. That second step checks itself: unless the parcel it finds carries
-          the address you picked, you get an empty box and the appraiser&rsquo;s link rather than
-          the figure for the house next door.
+          at the point it stands on. That second step checks itself: unless the parcel it finds
+          carries the address you picked, you get an empty box and the appraiser&rsquo;s link
+          rather than the figure for the house next door.
         </p>
         <p>
           In the rest of Florida the list is built from the{' '}

@@ -12,6 +12,7 @@
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check:rolls": "vitest run --config vitest.live.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

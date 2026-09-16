@@ -69,6 +69,18 @@ const STREET_TYPE_CANON: Record<string, string> = {
 
 const STREET_TYPES = new Set(Object.keys(STREET_TYPE_CANON));
 
+/**
+ * Words that introduce a unit, and everything after one is the unit.
+ *
+ * A county's address point stands on a building; the Department of Revenue's
+ * row for the parcel under it is often filed with a unit on the end — "427 W
+ * 10th Ave" against "427 W 10TH AVE APT A". That is the same front door.
+ */
+const UNIT_MARKERS = new Set([
+  'APT', 'UNIT', 'STE', 'SUITE', 'LOT', 'BLDG', 'BLD', 'RM', 'ROOM', 'TRLR', 'SPC', 'SPACE',
+  'FLOOR', 'PH', '#',
+]);
+
 /** Dropped from the tail of a typed address: they narrow nothing on a Florida roll. */
 const TRAILING_NOISE = new Set(['FL', 'FLA', 'FLORIDA', 'USA', 'US']);
 
@@ -170,9 +182,12 @@ export function rollAddressPrefix(
 ): string | null {
   if (!parsed.number) return null;
 
-  const street = options.dropStreetType
-    ? parsed.street.filter((token, index) => !(index > 0 && STREET_TYPES.has(token)))
-    : parsed.street;
+  // Stopping before the type, rather than dropping it: a street type can sit
+  // in the middle of an address — "1215 CHERRY ST N" — and removing it leaves
+  // "1215 CHERRY N", which is a prefix of nothing at all.
+  const typeAt = parsed.street.findIndex((token, index) => index > 0 && STREET_TYPES.has(token));
+  const street =
+    options.dropStreetType && typeAt > 0 ? parsed.street.slice(0, typeAt) : parsed.street;
 
   const parts = [parsed.number];
   if (parsed.directional) parts.push(parsed.directional);
@@ -214,15 +229,27 @@ export function addressesAgree(a: string, b: string): boolean {
   }
 
   const named = (parsed: TypedAddress) => {
-    const withoutTypes = parsed.street.filter((token) => !STREET_TYPES.has(token));
+    const unitAt = parsed.street.findIndex((token) => UNIT_MARKERS.has(token));
+    const street = unitAt >= 0 ? parsed.street.slice(0, unitAt) : parsed.street;
+    const withoutTypes = street.filter((token) => !STREET_TYPES.has(token));
     // A street called nothing but a type word — Park Way, The Circle — keeps it.
-    return withoutTypes.length > 0 ? withoutTypes : parsed.street;
+    return withoutTypes.length > 0 ? withoutTypes : street;
   };
 
   const leftStreet = named(left);
   const rightStreet = named(right);
 
-  if (leftStreet.length === 0 || leftStreet.length !== rightStreet.length) return false;
+  if (leftStreet.length === 0 || rightStreet.length === 0) return false;
+
+  // One side carrying a bare unit on the end — "1200 BRICKELL AVE 100-A" — is
+  // still the same address. Two extra words would be a different street.
+  const [shortSide, longSide] =
+    leftStreet.length <= rightStreet.length ? [leftStreet, rightStreet] : [rightStreet, leftStreet];
+  const extra = longSide.slice(shortSide.length);
+  if (extra.length > 2 || extra.some((token) => token.length > 5)) return false;
+  if (extra.length > 0 && !shortSide.every((token, index) => token === longSide[index])) {
+    return false;
+  }
 
   // Where both sides name a street type, it has to be the same type: 100 Park
   // Ave and 100 Park Way are different addresses that the comparison below,
@@ -235,8 +262,8 @@ export function addressesAgree(a: string, b: string): boolean {
   const rightType = typeOf(right);
   if (leftType && rightType && leftType !== rightType) return false;
 
-  return leftStreet.every((token, index) => {
-    const other = rightStreet[index];
+  return shortSide.every((token, index) => {
+    const other = longSide[index];
     const [shorter, longer] = token.length <= other.length ? [token, other] : [other, token];
     return shorter.length >= 2 && longer.startsWith(shorter);
   });

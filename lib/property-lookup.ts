@@ -1,48 +1,52 @@
 // Looking an address up on the public tax roll, so the estimator can fill the
 // assessed value in instead of asking the reader to go and find it.
 //
-// Two kinds of source sit behind this, and they are not interchangeable:
+// Which counties can answer, and how, is in lib/county-rolls.ts. This file is
+// the machinery, and what it knows is that a suggestion comes from one of four
+// kinds of source:
 //
-//  1. COUNTY ROLLS. Four property appraisers publish their certified roll as an
-//     open ArcGIS feature service — address, parcel number, just value and
-//     assessed value in the same row. Those are the counties where typing an
-//     address can produce both a suggestion and a figure, and where the figure
-//     is the appraiser's own rather than an estimate of one.
+//  1. A COUNTY ROLL WITH THE FIGURES IN IT. The appraiser publishes the
+//     certified roll as an open service, address and value in the same row, so
+//     the suggestion arrives priced and the figure is that office's own.
 //
-//  2. AN ADDRESS SERVICE PLUS THE STATEWIDE ROLL, in two steps. Orange and
-//     Duval publish no roll with values in it, but they do publish where every
-//     address is: Orange as the property appraiser's own address points, Duval
-//     as the city's geocoder. A rooftop coordinate is enough, because the
-//     Department of Revenue's statewide parcel layer answers "which parcel is
-//     at this point" quickly even though it cannot be searched by address at
-//     all. So the dropdown comes from the county and the figure is fetched
-//     when a property is picked — and only if the parcel the point lands on
-//     carries the address that was picked.
+//  2. A COUNTY ADDRESS SERVICE PLUS THE STATEWIDE ROLL, in two steps. Most
+//     counties publish where their addresses are and not what they are worth.
+//     A point standing on the property is enough: the Department of Revenue's
+//     statewide parcel layer answers "which parcel is at this point" quickly
+//     even though it cannot be searched by address at all. So the dropdown
+//     comes from the county and the figure is fetched when a property is
+//     picked — and only if the parcel found there carries the address picked.
 //
-//  3. THE CENSUS GEOCODER. Free, keyless, statewide, and knows nothing about
+//  3. ORANGE AND DUVAL, which are the same idea with their own request shapes:
+//     Orange has the property appraiser's address points, Duval the city's
+//     address locator, which answers with a key before it answers with a
+//     coordinate.
+//
+//  4. THE CENSUS GEOCODER. Free, keyless, statewide, and knows nothing about
 //     value. It covers the remaining counties for the address half of the job
 //     and names the county the address is in, which is the thing the
 //     place-name guess in lib/florida-places.ts can only approximate. The
 //     assessed value there stays a box the reader fills in, with the link to
 //     their appraiser next to it, exactly as it was before.
 //
-// Deliberately not here: a paid aggregator. The four rolls and the geocoder are
-// public records published by the office that keeps them, which is what lets
-// the page print where every figure came from and link a reader to it. An
-// aggregator would cover all 67 counties and none of that would be true.
+// Deliberately not here: a paid aggregator. Every source above is a public
+// record published by the office that keeps it, which is what lets the page
+// print where a figure came from and link a reader to it. An aggregator would
+// cover all 67 counties and none of that would be true.
 //
 // Why the statewide layer is only ever asked about a point: attribute queries
 // against its 10.8 million rows time out at around 55 seconds, so it cannot be
-// searched by address. Asked which parcel covers a coordinate, in its own
-// projection, it answers in well under a second. That only helps where the
-// coordinate is the roof rather than the road — the Census geocoder
-// interpolates along the street centreline, and a point in the street finds a
-// right-of-way parcel or nothing — which is why the two-step sources are the
-// ones with a real address service behind them and the Census suggestions are
-// left without a figure.
+// searched by address, and PARCEL_ID is its one indexed column. Asked which
+// parcel covers a coordinate, in its own projection, it answers in well under a
+// second. That only helps where the coordinate stands on the property — an
+// address point or a parcel's centroid does, and the Census geocoder's, which
+// is interpolated along a block and can be two hundred metres out, does not.
 import 'server-only';
 
+import { COUNTY_ROLLS, ROLLS_CHECKED_ON, rollFor, type CountyRoll } from './county-rolls';
 import { isInFlorida, toFloridaAlbers } from './florida-albers';
+import { matchCounty } from './florida-places';
+import { site } from './site';
 
 import {
   addressKey,
@@ -86,8 +90,22 @@ export interface PropertySuggestion {
 
 /** How a suggestion's figures are fetched once somebody picks it. */
 export type ValueLookup =
+  /**
+   * A parcel number to read off the statewide roll. The best of the three:
+   * PARCEL_ID is the one indexed column on that layer, so it answers in about
+   * two seconds, and a parcel number is an identity rather than a guess about
+   * where a point fell.
+   */
+  | { kind: 'parcel'; parcelId: string }
   /** A rooftop coordinate to ask the statewide parcel layer about. */
   | { kind: 'point'; lat: number; lon: number }
+  /**
+   * One row of a county layer, to be fetched for its geometry. For services
+   * too old to hand back a centroid with the search. The county is named
+   * rather than its URL sent, so what the browser asks for is a county and a
+   * row number and never an address of our server's choosing.
+   */
+  | { kind: 'county-feature'; countySlug: string; objectId: number }
   /** Jacksonville's geocoder answers with a key first and a coordinate second. */
   | { kind: 'jacksonville'; magicKey: string };
 
@@ -104,6 +122,8 @@ export interface ParcelValue {
 
 interface RollRow {
   address: string;
+  /** The layer's own row number, for fetching that row's geometry later. */
+  objectId: number | null;
   city: string | null;
   zip: string | null;
   parcelId: string | null;
@@ -113,23 +133,8 @@ interface RollRow {
   useDescription: string | null;
 }
 
-interface RollSource {
-  countySlug: string;
-  countyName: string;
-  /** Cited under the figure. */
-  sourceName: string;
-  /** Where a reader checks the figure against the office that published it. */
-  sourceUrl: string;
-  /** The layer's /query endpoint. */
-  serviceUrl: string;
-  outFields: string[];
-  /** Null where the typed text cannot address this roll — no house number, usually. */
-  where: (parsed: TypedAddress) => string | null;
-  read: (attributes: Record<string, unknown>) => RollRow | null;
-}
-
-/** The date each service URL, field mapping and value column below was last checked. */
-export const ROLL_SOURCES_CHECKED_ON = '2026-09-16';
+/** The date the machinery below was last checked; the registry carries its own. */
+export const ROLL_SOURCES_CHECKED_ON = ROLLS_CHECKED_ON;
 
 const num = (value: unknown): number | null =>
   typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
@@ -145,246 +150,120 @@ const zip5 = (value: unknown): string | null => {
   return digits.length >= 5 ? digits.slice(0, 5) : null;
 };
 
+/** Every column an entry names, which is what a query asks the service for. */
+export function outFieldsOf(roll: CountyRoll): string[] {
+  const address =
+    roll.address.kind === 'line'
+      ? [roll.address.field, roll.address.unitField]
+      : [
+          roll.address.numberField,
+          roll.address.directionField,
+          roll.address.nameField,
+          roll.address.typeField,
+          roll.address.unitField,
+        ];
+
+  return [
+    ...address,
+    roll.assessedField,
+    roll.justField,
+    ...(roll.justParts ?? []),
+    roll.yearField,
+    roll.parcelField,
+    roll.cityField,
+    roll.zipField,
+    roll.useField,
+  ].filter((field): field is string => Boolean(field));
+}
+
 /**
- * Broward stores the situs city as a two-letter code and publishes no lookup
- * table with the layer. Every code below was derived from the roll itself: for
- * each code, the most common owner-mailing city among its homesteaded parcels,
- * which is the owner living at the property. `BC` (no street numbers, ZIPs in
- * the unincorporated north of the county) and `DN` (State Road 84 at 33312) do
- * not resolve that way and are read as unincorporated Broward and Dania Beach.
+ * The where clause for one roll, or null where the typed text cannot address it.
  *
- * It is a display label and nothing else — no figure and no county depends on
- * it, so a wrong entry costs a line of text under a suggestion.
+ * A house number is required by every entry. Without one a roll query returns
+ * the first two thousand rows of a street and the reader learns nothing, so the
+ * estimator waits rather than guesses.
  */
-const BROWARD_CITY_CODES: Record<string, string> = {
-  BC: 'Unincorporated Broward',
-  CK: 'Coconut Creek',
-  CS: 'Coral Springs',
-  CY: 'Cooper City',
-  DB: 'Deerfield Beach',
-  DN: 'Dania Beach',
-  DV: 'Davie',
-  FL: 'Fort Lauderdale',
-  HA: 'Hallandale Beach',
-  HB: 'Hillsboro Beach',
-  HW: 'Hollywood',
-  LH: 'Lauderhill',
-  LL: 'Lauderdale Lakes',
-  LP: 'Lighthouse Point',
-  LS: 'Lauderdale-by-the-Sea',
-  LZ: 'Lazy Lake',
-  MG: 'Margate',
-  MM: 'Miramar',
-  NL: 'North Lauderdale',
-  OP: 'Oakland Park',
-  PA: 'Parkland',
-  PB: 'Pompano Beach',
-  PI: 'Pembroke Pines',
-  PK: 'Pembroke Park',
-  PL: 'Plantation',
-  SL: 'Sea Ranch Lakes',
-  SU: 'Sunrise',
-  SW: 'Southwest Ranches',
-  TM: 'Tamarac',
-  WM: 'Wilton Manors',
-  WP: 'West Park',
-  WS: 'Weston',
-};
+export function whereFor(roll: CountyRoll, parsed: TypedAddress): string | null {
+  const clauses: string[] = [];
 
-/**
- * A house number is required by every source here. Without one a roll query
- * returns the first two thousand rows of a street and the reader learns
- * nothing, so the estimator waits rather than guesses.
- */
-const ROLL_SOURCES: RollSource[] = [
-  {
-    countySlug: 'broward-county',
-    countyName: 'Broward County',
-    sourceName: 'Broward County Property Appraiser tax roll',
-    sourceUrl: 'https://web.bcpa.net/BcpaClient/#/Record-Search',
-    serviceUrl:
-      'https://services.arcgis.com/JMAJrTsHNLrSsWf5/arcgis/rest/services/PARCEL_POLY_BCPA_TAXROLL/FeatureServer/0/query',
-    outFields: [
-      'FOLIO',
-      'SITUS_STREET_NUMBER',
-      'SITUS_STREET_DIRECTION',
-      'SITUS_STREET_NAME',
-      'SITUS_STREET_TYPE',
-      'SITUS_UNIT_NUMBER',
-      'SITUS_CITY',
-      'SITUS_ZIP_CODE',
-      'JUST_LAND_VALUE',
-      'JUST_BUILDING_VALUE',
-      'JUST_OTHER_VALUE',
-      'NEW_SOH_VALUE',
-      'USE_TYPE',
-    ],
-    // Broward keeps the situs address in five columns, so this is the one
-    // source that cannot take a prefix of the whole line. The street name is
-    // matched as a prefix because "48" has to find "48" and nothing else has to
-    // be typed exactly.
-    where: (parsed) => {
-      if (!parsed.number || parsed.street.length === 0) return null;
-      const clauses = [`SITUS_STREET_NUMBER = '${sql(parsed.number)}'`];
-      if (parsed.directional) clauses.push(`SITUS_STREET_DIRECTION = '${sql(parsed.directional)}'`);
-      clauses.push(`SITUS_STREET_NAME LIKE '${sql(parsed.street[0])}%'`);
-      return clauses.join(' AND ');
-    },
-    read: (a) => {
-      const address = [
-        str(a.SITUS_STREET_NUMBER),
-        str(a.SITUS_STREET_DIRECTION),
-        str(a.SITUS_STREET_NAME),
-        str(a.SITUS_STREET_TYPE),
-        str(a.SITUS_UNIT_NUMBER),
-      ]
-        .filter(Boolean)
-        .join(' ');
-      if (!address) return null;
+  if (roll.address.kind === 'parts') {
+    if (!parsed.number || parsed.street.length === 0) return null;
+    clauses.push(`${roll.address.numberField} = '${sql(parsed.number)}'`);
+    if (parsed.directional && roll.address.directionField) {
+      clauses.push(`${roll.address.directionField} = '${sql(parsed.directional)}'`);
+    }
+    // The street name is matched as a prefix because "48" has to find "48" and
+    // nothing else has to be typed exactly.
+    clauses.push(`${roll.address.nameField} LIKE '${sql(parsed.street[0])}%'`);
+  } else {
+    const prefix = rollAddressPrefix(parsed, { dropStreetType: roll.address.spellsTypeOut });
+    if (!prefix) return null;
+    // UPPER() rather than trusting a collation: these are sixty services kept
+    // by sixty offices, and some of them compare case-sensitively.
+    clauses.push(`UPPER(${roll.address.field}) LIKE '${sql(prefix)}%'`);
+  }
 
-      // The roll carries just value in three columns — land, building and
-      // everything else — and no column that adds them up for you.
-      const just =
-        (num(a.JUST_LAND_VALUE) ?? 0) +
-        (num(a.JUST_BUILDING_VALUE) ?? 0) +
-        (num(a.JUST_OTHER_VALUE) ?? 0);
+  if (roll.filter) clauses.push(`(${roll.filter})`);
 
-      const cityCode = str(a.SITUS_CITY);
+  return clauses.join(' AND ');
+}
 
-      return {
-        address,
-        city: cityCode ? (BROWARD_CITY_CODES[cityCode] ?? null) : null,
-        zip: zip5(a.SITUS_ZIP_CODE),
-        parcelId: str(a.FOLIO),
-        // NEW_SOH_VALUE is the assessed value after the Save Our Homes cap:
-        // on a homesteaded parcel it is the taxable value plus the $50,000
-        // exemption, which is how it was identified.
-        assessedValue: num(a.NEW_SOH_VALUE),
-        justValue: just > 0 ? just : null,
-        rollYear: null,
-        useDescription: null,
-      };
-    },
-  },
-  {
-    countySlug: 'palm-beach-county',
-    countyName: 'Palm Beach County',
-    sourceName: 'Palm Beach County Property Appraiser roll',
-    sourceUrl: 'https://pbcpao.gov/Property/Search',
-    serviceUrl:
-      'https://services1.arcgis.com/ZWOoUZbtaYePLlPw/arcgis/rest/services/Parcels_and_Property_Details_WebMercator/FeatureServer/0/query',
-    outFields: [
-      'PARID',
-      'SITE_ADDR_STR',
-      'MUNICIPALITY',
-      'TOTAL_MARKET',
-      'ASSESSED_VAL',
-      'PROPERTY_USE',
-    ],
-    where: (parsed) => {
-      const prefix = rollAddressPrefix(parsed);
-      return prefix ? `SITE_ADDR_STR LIKE '${sql(prefix)}%'` : null;
-    },
-    read: (a) => {
-      const address = str(a.SITE_ADDR_STR);
-      if (!address) return null;
-      return {
-        address,
-        // CITYNAME on this layer is the owner's mailing city — a Palm Beach
-        // condominium owner in Connecticut has a Connecticut CITYNAME — so the
-        // situs city is read off MUNICIPALITY instead.
-        city: str(a.MUNICIPALITY),
-        zip: null,
-        parcelId: str(a.PARID),
-        assessedValue: num(a.ASSESSED_VAL),
-        justValue: num(a.TOTAL_MARKET),
-        rollYear: null,
-        useDescription: str(a.PROPERTY_USE),
-      };
-    },
-  },
-  {
-    countySlug: 'miami-dade-county',
-    countyName: 'Miami-Dade County',
-    sourceName: 'Miami-Dade County Property Appraiser roll',
-    sourceUrl: 'https://www.miamidade.gov/Apps/PA/propertysearch/',
-    serviceUrl:
-      'https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/PaGISView_gdb/FeatureServer/0/query',
-    outFields: [
-      'FOLIO',
-      'TRUE_SITE_ADDR',
-      'TRUE_SITE_CITY',
-      'TRUE_SITE_ZIP_CODE',
-      'ASSESSED_VAL_CUR',
-      'ASSESSMENT_YEAR_CUR',
-      'DOR_DESC',
-    ],
-    where: (parsed) => {
-      const prefix = rollAddressPrefix(parsed);
-      return prefix ? `TRUE_SITE_ADDR LIKE '${sql(prefix)}%'` : null;
-    },
-    read: (a) => {
-      const address = str(a.TRUE_SITE_ADDR);
-      if (!address) return null;
+/** One row off a roll, in the shape every source is read into. */
+export function readRow(roll: CountyRoll, a: Record<string, unknown>): RollRow | null {
+  const address =
+    roll.address.kind === 'line'
+      ? [str(a[roll.address.field]), roll.address.unitField ? str(a[roll.address.unitField]) : null]
+          .filter(Boolean)
+          .join(' ')
+      : [
+          str(a[roll.address.numberField]),
+          roll.address.directionField ? str(a[roll.address.directionField]) : null,
+          str(a[roll.address.nameField]),
+          roll.address.typeField ? str(a[roll.address.typeField]) : null,
+          roll.address.unitField ? str(a[roll.address.unitField]) : null,
+        ]
+          .filter(Boolean)
+          .join(' ');
 
-      // A reference folio is the roll's placeholder for a condominium's parent
-      // parcel: an address, no value and nothing anybody buys. It would sit at
-      // the top of a search for the building, under the units that are real.
-      if (str(a.DOR_DESC)?.toUpperCase() === 'REFERENCE FOLIO') return null;
+  if (!address) return null;
 
-      return {
-        address,
-        city: str(a.TRUE_SITE_CITY),
-        zip: zip5(a.TRUE_SITE_ZIP_CODE),
-        parcelId: str(a.FOLIO),
-        assessedValue: num(a.ASSESSED_VAL_CUR),
-        // This view publishes the assessed value and no market value, so the
-        // estimator has the capped figure here and says so.
-        justValue: null,
-        rollYear: num(a.ASSESSMENT_YEAR_CUR),
-        useDescription: str(a.DOR_DESC),
-      };
-    },
-  },
-  {
-    countySlug: 'hillsborough-county',
-    countyName: 'Hillsborough County',
-    sourceName: 'Hillsborough County Property Appraiser roll',
-    sourceUrl: 'https://gis.hcpafl.org/propertysearch/',
-    serviceUrl:
-      'https://services.arcgis.com/apTfC6SUmnNfnxuF/arcgis/rest/services/HCPA_Parcels_All/FeatureServer/0/query',
-    outFields: ['FOLIO', 'SITE_ADDR', 'SITE_CITY', 'SITE_ZIP', 'JUST', 'ASD_VAL'],
-    where: (parsed) => {
-      const prefix = rollAddressPrefix(parsed);
-      return prefix ? `SITE_ADDR LIKE '${sql(prefix)}%'` : null;
-    },
-    read: (a) => {
-      const address = str(a.SITE_ADDR);
-      if (!address) return null;
-      return {
-        address,
-        city: str(a.SITE_CITY),
-        zip: zip5(a.SITE_ZIP),
-        parcelId: str(a.FOLIO),
-        assessedValue: num(a.ASD_VAL),
-        justValue: num(a.JUST),
-        rollYear: null,
-        useDescription: null,
-      };
-    },
-  },
-];
+  const use = roll.useField ? str(a[roll.useField]) : null;
+  if (use && roll.excludeUse?.some((excluded) => use.toUpperCase() === excluded)) return null;
+
+  const justFromParts = (roll.justParts ?? []).reduce(
+    (running, field) => running + (num(a[field]) ?? 0),
+    0,
+  );
+
+  const cityRaw = roll.cityField ? str(a[roll.cityField]) : null;
+
+  return {
+    address,
+    objectId: num(a.OBJECTID) ?? num(a.FID) ?? num(a.OBJECTID_1),
+    // A city code that is not in the table is left off rather than printed raw:
+    // "WM" under an address helps nobody.
+    city: cityRaw && roll.cityCodes ? (roll.cityCodes[cityRaw] ?? null) : cityRaw,
+    zip: roll.zipField ? zip5(a[roll.zipField]) : null,
+    parcelId: roll.parcelField ? str(a[roll.parcelField]) : null,
+    assessedValue: roll.assessedField ? num(a[roll.assessedField]) : null,
+    justValue: roll.justField ? num(a[roll.justField]) : justFromParts > 0 ? justFromParts : null,
+    rollYear: roll.yearField ? num(a[roll.yearField]) : null,
+    useDescription: use,
+  };
+}
 
 /**
  * Counties where picking an address produces a figure — either because the
  * roll carried it in the row, or because the parcel under the address can be
  * found and read on the statewide layer.
  */
-export const VALUE_COUNTY_SLUGS = [
-  ...ROLL_SOURCES.map((source) => source.countySlug),
-  'orange-county',
-  'duval-county',
-];
+export const VALUE_COUNTIES: { slug: string; name: string }[] = [
+  ...COUNTY_ROLLS.map((roll) => ({ slug: roll.countySlug, name: roll.countyName })),
+  { slug: 'orange-county', name: 'Orange County' },
+  { slug: 'duval-county', name: 'Duval County' },
+].sort((a, b) => a.name.localeCompare(b.name));
+
+export const VALUE_COUNTY_SLUGS = VALUE_COUNTIES.map((county) => county.slug);
 
 /**
  * Single quotes are the only character that can end a string literal in these
@@ -430,24 +309,43 @@ async function getJson(url: string, timeoutMs = UPSTREAM_TIMEOUT_MS): Promise<un
 /** How many rows a single roll is asked for before scoring narrows them down. */
 const ROWS_PER_SOURCE = 25;
 
-async function queryRoll(
-  source: RollSource,
+/** Exported for the live registry check in tests/rolls.live.test.ts. */
+export async function queryRoll(
+  roll: CountyRoll,
   parsed: TypedAddress,
   typed: string,
 ): Promise<PropertySuggestion[]> {
-  const where = source.where(parsed);
+  const where = whereFor(roll, parsed);
   if (!where) return [];
 
-  const url = `${source.serviceUrl}?${new URLSearchParams({
+  const url = `${roll.serviceUrl}?${new URLSearchParams({
     where,
-    outFields: source.outFields.join(','),
-    returnGeometry: 'false',
+    outFields: outFieldsOf(roll).join(','),
+    // An address point layer is already the point; anything with an outline is
+    // asked for its centroid, which is inside the parcel. Either way the point
+    // is what makes the statewide roll answerable — it cannot land on the road
+    // the way a geocoded address does — and it is asked for even where the
+    // county publishes its own figures, because a row with the value missing
+    // is common and can still be priced from the state's roll.
+    returnGeometry: roll.figures === 'point' ? 'true' : 'false',
+    ...(roll.figures === 'point'
+      ? { outSR: '4326' }
+      : roll.figures === 'centroid' || roll.centroidOnSearch
+        ? { returnCentroid: 'true', outSR: '4326' }
+        : {}),
     resultRecordCount: String(ROWS_PER_SOURCE),
     f: 'json',
   })}`;
 
   const payload = (await getJson(url)) as
-    | { features?: { attributes?: Record<string, unknown> }[]; error?: unknown }
+    | {
+        features?: {
+          attributes?: Record<string, unknown>;
+          centroid?: { x?: number; y?: number };
+          geometry?: { x?: number; y?: number };
+        }[];
+        error?: unknown;
+      }
     | null;
 
   if (!payload || payload.error || !Array.isArray(payload.features)) return [];
@@ -455,27 +353,30 @@ async function queryRoll(
   const suggestions: PropertySuggestion[] = [];
 
   for (const feature of payload.features) {
-    const row = feature.attributes ? source.read(feature.attributes) : null;
+    const row = feature.attributes ? readRow(roll, feature.attributes) : null;
     if (!row) continue;
     if (scoreAddressMatch(typed, row.address) <= 0) continue;
 
     suggestions.push({
-      id: `${source.countySlug}:${row.parcelId ?? row.address}`,
+      id: `${roll.countySlug}:${row.parcelId ?? row.address}`,
       address: formatAddressForDisplay(row.address),
       city: row.city ? formatPlaceForDisplay(row.city) : null,
       zip: row.zip,
-      countySlug: source.countySlug,
-      countyName: source.countyName,
+      countySlug: roll.countySlug,
+      countyName: roll.countyName,
       parcelId: row.parcelId,
       assessedValue: row.assessedValue,
       justValue: row.justValue,
       rollYear: row.rollYear,
       useDescription: row.useDescription ? formatPlaceForDisplay(row.useDescription) : null,
-      sourceName: source.sourceName,
-      sourceUrl: source.sourceUrl,
-      // The roll answered with the figures already in the row; there is
-      // nothing further to ask.
-      valueLookup: null,
+      sourceName: roll.sourceName ?? `${roll.countyName} address records`,
+      sourceUrl: roll.sourceUrl ?? STATEWIDE_SOURCE_URL,
+      // Where the county's own layer carries the figures there is nothing
+      // further to ask. Where it does not, the figures come off the statewide
+      // roll when somebody picks the property — at the parcel's centroid, by
+      // its number, or by fetching the one row's geometry, in that order of
+      // preference and of certainty.
+      valueLookup: lookupFor(roll, row, feature.centroid ?? feature.geometry),
     });
   }
 
@@ -680,6 +581,129 @@ const STATEWIDE_SOURCE_URL =
 /** The roll is a year's work; a lookup against it can have longer than a keystroke. */
 const VALUE_TIMEOUT_MS = 9_000;
 
+const STATEWIDE_OUT_FIELDS = 'PARCEL_ID,PHY_ADDR1,JV,AV_SD,ASMNT_YR';
+
+/** Which parcel covers this point. Fast only in the layer's own projection. */
+async function parcelAtPoint(
+  point: { lat: number; lon: number } | null,
+): Promise<Record<string, unknown> | null> {
+  if (!point || !isInFlorida(point.lon, point.lat)) return null;
+
+  const { x, y } = toFloridaAlbers(point.lon, point.lat);
+
+  const url = `${STATEWIDE_PARCELS}?${new URLSearchParams({
+    geometry: `${x.toFixed(3)},${y.toFixed(3)}`,
+    geometryType: 'esriGeometryPoint',
+    // The layer's own projection. Handed degrees instead, the service
+    // reprojects, and on a cold cache that took 44 seconds against 0.4 here.
+    inSR: '3086',
+    spatialRel: 'esriSpatialRelIntersects',
+    outFields: STATEWIDE_OUT_FIELDS,
+    returnGeometry: 'false',
+    f: 'json',
+  })}`;
+
+  const payload = (await getJson(url, VALUE_TIMEOUT_MS)) as
+    | { features?: { attributes?: Record<string, unknown> }[]; error?: unknown }
+    | null;
+
+  return payload?.features?.[0]?.attributes ?? null;
+}
+
+/**
+ * The parcel with this number, read off the statewide roll.
+ *
+ * PARCEL_ID is the only column on that layer with an index behind it — an
+ * address search times out at 55 seconds where this answers in two — which is
+ * what makes a county service that publishes nothing but addresses and parcel
+ * numbers enough to price a property.
+ *
+ * The counties do not all write the number the same way the Department of
+ * Revenue does. Punctuation is dropped, and where that finds nothing the
+ * section-township-range reordering Orange County uses is tried as well.
+ */
+async function parcelById(parcelId: string): Promise<Record<string, unknown> | null> {
+  const plain = parcelId.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  if (plain.length < 5) return null;
+
+  const reordered =
+    plain.length >= 7
+      ? plain.slice(4, 6) + plain.slice(2, 4) + plain.slice(0, 2) + plain.slice(6)
+      : null;
+
+  for (const candidate of reordered && reordered !== plain ? [plain, reordered] : [plain]) {
+    const url = `${STATEWIDE_PARCELS}?${new URLSearchParams({
+      where: `PARCEL_ID = '${sql(candidate)}'`,
+      outFields: STATEWIDE_OUT_FIELDS,
+      returnGeometry: 'false',
+      resultRecordCount: '1',
+      f: 'json',
+    })}`;
+
+    const payload = (await getJson(url, VALUE_TIMEOUT_MS)) as
+      | { features?: { attributes?: Record<string, unknown> }[]; error?: unknown }
+      | null;
+
+    const attributes = payload?.features?.[0]?.attributes;
+    if (attributes) return attributes;
+  }
+
+  return null;
+}
+
+/**
+ * The middle of one row of a county layer.
+ *
+ * Older ArcGIS Servers will not return a centroid with a search, so the
+ * geometry of the single row somebody picked is fetched here instead — one
+ * parcel's outline rather than twenty-five of them on every keystroke. The
+ * average of the outline's corners is inside any parcel that is not badly
+ * concave, and a point that lands outside one fails the address check further
+ * down rather than answering with a neighbour's figure.
+ */
+async function countyFeaturePoint(
+  countySlug: string,
+  objectId: number,
+): Promise<{ lat: number; lon: number } | null> {
+  const roll = rollFor(countySlug);
+  if (!roll || !Number.isInteger(objectId)) return null;
+
+  const url = `${roll.serviceUrl}?${new URLSearchParams({
+    objectIds: String(objectId),
+    outFields: 'OBJECTID',
+    returnGeometry: 'true',
+    outSR: '4326',
+    resultRecordCount: '1',
+    f: 'json',
+  })}`;
+
+  const payload = (await getJson(url, VALUE_TIMEOUT_MS)) as
+    | {
+        features?: {
+          geometry?: { rings?: number[][][]; x?: number; y?: number };
+        }[];
+      }
+    | null;
+
+  const geometry = payload?.features?.[0]?.geometry;
+  if (!geometry) return null;
+
+  if (typeof geometry.x === 'number' && typeof geometry.y === 'number') {
+    return isInFlorida(geometry.x, geometry.y) ? { lat: geometry.y, lon: geometry.x } : null;
+  }
+
+  const ring = (geometry.rings ?? []).reduce(
+    (longest: number[][], candidate) => (candidate.length > longest.length ? candidate : longest),
+    [] as number[][],
+  );
+  if (ring.length === 0) return null;
+
+  const lon = ring.reduce((total, point) => total + point[0], 0) / ring.length;
+  const lat = ring.reduce((total, point) => total + point[1], 0) / ring.length;
+
+  return isInFlorida(lon, lat) ? { lat, lon } : null;
+}
+
 async function jacksonvillePoint(magicKey: string): Promise<{ lat: number; lon: number } | null> {
   const url = `${JACKSONVILLE_GEOCODER}/findAddressCandidates?${new URLSearchParams({
     magicKey,
@@ -749,38 +773,27 @@ export async function resolveParcelValue(
   countyName: string,
   parcelId: string | null = null,
 ): Promise<ParcelValue | null> {
-  const point =
-    lookup.kind === 'point'
-      ? { lat: lookup.lat, lon: lookup.lon }
-      : await jacksonvillePoint(lookup.magicKey);
+  const attributes =
+    lookup.kind === 'parcel'
+      ? await parcelById(lookup.parcelId)
+      : await parcelAtPoint(
+          lookup.kind === 'point'
+            ? { lat: lookup.lat, lon: lookup.lon }
+            : lookup.kind === 'county-feature'
+              ? await countyFeaturePoint(lookup.countySlug, lookup.objectId)
+              : await jacksonvillePoint(lookup.magicKey),
+        );
 
-  if (!point || !isInFlorida(point.lon, point.lat)) return null;
-
-  const { x, y } = toFloridaAlbers(point.lon, point.lat);
-
-  const url = `${STATEWIDE_PARCELS}?${new URLSearchParams({
-    geometry: `${x.toFixed(3)},${y.toFixed(3)}`,
-    geometryType: 'esriGeometryPoint',
-    // The layer's own projection. Handed degrees instead, the service
-    // reprojects, and on a cold cache that took 44 seconds against 0.4 here.
-    inSR: '3086',
-    spatialRel: 'esriSpatialRelIntersects',
-    outFields: 'PARCEL_ID,PHY_ADDR1,JV,AV_SD,ASMNT_YR',
-    returnGeometry: 'false',
-    f: 'json',
-  })}`;
-
-  const payload = (await getJson(url, VALUE_TIMEOUT_MS)) as
-    | { features?: { attributes?: Record<string, unknown> }[]; error?: unknown }
-    | null;
-
-  const attributes = payload?.features?.[0]?.attributes;
   if (!attributes) return null;
 
   const rollParcelId = str(attributes.PARCEL_ID);
   const rollAddress = str(attributes.PHY_ADDR1);
 
+  // A parcel number is an identity: the row that came back is the parcel that
+  // was asked for, and nothing further has to agree. The other two lookups
+  // found a parcel by where it is, so they have to prove it is the right one.
   const confirmed =
+    lookup.kind === 'parcel' ||
     parcelIdsAgree(parcelId, rollParcelId) ||
     (rollAddress !== null && addressesAgree(address, rollAddress));
 
@@ -801,6 +814,36 @@ export async function resolveParcelValue(
     sourceName: `${countyName} roll as published by the Florida Department of Revenue`,
     sourceUrl: STATEWIDE_SOURCE_URL,
   };
+}
+
+/** What a suggestion carries so its figures can be fetched when it is picked. */
+function lookupFor(
+  roll: CountyRoll,
+  row: RollRow,
+  centroid?: { x?: number; y?: number },
+): ValueLookup | null {
+  if (row.assessedValue || row.justValue) return null;
+
+  if (typeof centroid?.x === 'number' && typeof centroid?.y === 'number') {
+    return isInFlorida(centroid.x, centroid.y)
+      ? { kind: 'point', lat: centroid.y, lon: centroid.x }
+      : null;
+  }
+
+  // A parcel number is an identity where the Department of Revenue writes it
+  // the same way the county does, which is not everywhere: Lee County's STRAP
+  // and the state's number for the same parcel share no digits. So it is used
+  // where a county has been checked and found to agree, and the geometry of
+  // the row is the fallback everywhere else.
+  if (roll.figures !== 'centroid' && row.parcelId && roll.parcelIsStatewide) {
+    return { kind: 'parcel', parcelId: row.parcelId };
+  }
+
+  if (roll.figures === 'feature' && row.objectId !== null) {
+    return { kind: 'county-feature', countySlug: roll.countySlug, objectId: row.objectId };
+  }
+
+  return null;
 }
 
 const CENSUS_GEOCODER =
@@ -891,12 +934,58 @@ const MAX_UNPRICED_SUGGESTIONS = 3;
 const MIN_MATCH_SCORE = 0.35;
 
 /**
+ * The counties asked on every keystroke, whatever the address says.
+ *
+ * Sixty-odd rolls cannot all be asked at once — that is sixty requests a
+ * keystroke to other offices' services, which would be rude if it were not
+ * first slow. These are the counties this office works in, so they are the
+ * ones worth a standing question; everywhere else waits for the geocoder to
+ * name a county, one hop later. See searchProperties.
+ */
+const ALWAYS_ASKED: string[] = site.priorityCounties.map(
+  (name) => `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+);
+
+/**
+ * Whether somebody has finished typing an address, near enough: a city after a
+ * comma, a ZIP, or a house number and three more words.
+ */
+function looksComplete(typed: string): boolean {
+  if (typed.includes(',') || /\b\d{5}\b/.test(typed)) return true;
+  return typed.trim().split(/\s+/).length >= 4;
+}
+
+/** Every source that can answer for one county, roll or address service. */
+function sourcesFor(
+  countySlug: string,
+  parsed: TypedAddress,
+  typedStreet: string,
+  typed: string,
+): Promise<PropertySuggestion[]>[] {
+  const work: Promise<PropertySuggestion[]>[] = [];
+
+  const roll = rollFor(countySlug);
+  if (roll) work.push(queryRoll(roll, parsed, typedStreet));
+
+  // The two counties that publish where their addresses are but not what they
+  // are worth; the figure follows when a property is picked.
+  if (countySlug === 'orange-county') work.push(queryOrangeAddressPoints(parsed, typedStreet));
+  if (countySlug === 'duval-county') work.push(queryJacksonvilleGeocoder(typed));
+
+  return work;
+}
+
+/**
  * What the estimator's address box offers while somebody types.
  *
- * The rolls and the geocoder are asked at the same time, not one after the
- * other: the rolls are the better answer where they exist, the geocoder is the
- * only answer everywhere else, and waiting for the first before starting the
- * second would put the slower of the two on the end of the faster one.
+ * It goes in two waves, and the first one is as wide as it can afford to be.
+ * The counties this office works in are asked outright, at the same time as
+ * the Census geocoder — the rolls are the better answer where they exist, the
+ * geocoder is the only answer everywhere else, and waiting for either would
+ * put the slower on the end of the faster. The geocoder also names the county
+ * the address is in, which is what the second wave is for: an address in one
+ * of the other sixty counties gets its own roll asked on the strength of that,
+ * one hop later. It is the price of not asking sixty services per keystroke.
  */
 export async function searchProperties(query: string): Promise<PropertySuggestion[]> {
   const typed = query.trim();
@@ -911,12 +1000,45 @@ export async function searchProperties(query: string): Promise<PropertySuggestio
   // matched against "1409 NE 27 DR" would score two thirds rather than one.
   const typedStreet = typed.split(',')[0]?.trim() || typed;
 
-  const results = await Promise.all([
-    ...ROLL_SOURCES.map((source) => queryRoll(source, parsed, typedStreet)),
-    queryOrangeAddressPoints(parsed, typedStreet),
-    queryJacksonvilleGeocoder(typed),
-    queryCensus(typed),
-  ]);
+  // A place name in the address is a county without asking anybody, so the
+  // county it names joins the first wave.
+  const guessed = matchCounty(typed)?.countySlug;
+  const asked = new Set(guessed ? [...ALWAYS_ASKED, guessed] : ALWAYS_ASKED);
+
+  const censusWork = queryCensus(typed);
+  const firstWave = await Promise.all(
+    [...asked].flatMap((countySlug) => sourcesFor(countySlug, parsed, typedStreet, typed)),
+  );
+
+  const census = await censusWork;
+  const secondWave = await Promise.all(
+    [...new Set(census.map((suggestion) => suggestion.countySlug))]
+      .filter((countySlug) => !asked.has(countySlug))
+      .flatMap((countySlug) => {
+        asked.add(countySlug);
+        return sourcesFor(countySlug, parsed, typedStreet, typed);
+      }),
+  );
+
+  // Last resort, and only for an address that looks finished: the geocoder
+  // cannot place a house in a subdivision built since its last street file, so
+  // an address the first two waves both missed gets put to every county that
+  // keeps a roll. It is the one case worth the requests, because the reader has
+  // typed the whole thing and been given nothing.
+  const found = [...firstWave, ...secondWave].flat();
+  const lastWave =
+    found.length === 0 && looksComplete(typed)
+      ? await Promise.all(
+          COUNTY_ROLLS.filter((roll) => !asked.has(roll.countySlug)).map((roll) =>
+            queryRoll(roll, parsed, typedStreet),
+          ),
+        )
+      : [];
+
+  // The geocoder's rows go last, so that where a county and the geocoder
+  // describe the same house it is the county's row — the one that can produce
+  // a figure — that survives the deduplication below.
+  const results = [...firstWave, ...secondWave, ...lastWave, census];
 
   const seen = new Map<string, PropertySuggestion[]>();
   const merged: PropertySuggestion[] = [];
