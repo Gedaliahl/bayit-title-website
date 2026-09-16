@@ -43,11 +43,7 @@ export default async function HomePage() {
   ]);
 
   const recent = docs.slice(0, 6);
-  const quote = quotable(featured) ?? {
-    id: 'x', authorName: 'Mendel Sperlin', rating: 5,
-    body: "The Best of the Best. smooth, quick and professional. Shevy handled a complicated closing with liens and judgments and cleared it all in recorded time and didn't delay closing. Also she has amazing communication.",
-    publishedAt: '2025-01-30', replyBody: null, topicTags: [], teamMemberSlug: null, countySlug: null, isFeatured: true,
-  };
+  const quote = quotable(featured);
 
   return (
     <>
@@ -89,13 +85,13 @@ export default async function HomePage() {
             <p className="figure__label">Florida counties we close in</p>
           </div>
 
-          {(snapshot ?? { averageRating: 5, reviewCount: 92 }) ? (
+          {snapshot ? (
             <div className="figure">
               <p className="figure__value">
-                <CountUp value={(snapshot ?? {averageRating:5}).averageRating} decimals={1} />
+                <CountUp value={snapshot.averageRating} decimals={1} />
               </p>
               <p className="figure__label">
-                Average rating across {(snapshot ?? {reviewCount:92}).reviewCount} Google reviews
+                Average rating across {snapshot.reviewCount} Google reviews
               </p>
             </div>
           ) : null}
