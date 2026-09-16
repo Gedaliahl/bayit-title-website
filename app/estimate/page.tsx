@@ -43,10 +43,10 @@ export default async function EstimatePage() {
         <AnswerPanel
           text={
             'Start with the address. This works out the county, points you at that county’s ' +
-            'property appraiser for the assessed value on the parcel, and prices the promulgated ' +
-            'title insurance premium on it — the same premium every agency in Florida charges for ' +
-            'that coverage. Assessed value is a tax figure and usually sits below what a property ' +
-            'sells for, so treat the result as a floor rather than a quote.'
+            'property appraiser for the assessed value on the parcel, and prices the title ' +
+            'insurance premium on it straight from the rate schedule the Office of Insurance ' +
+            'Regulation promulgates. Assessed value is a tax figure and usually sits below what a ' +
+            'property sells for, so treat the result as a floor rather than a quote.'
           }
         />
       </div>
@@ -69,9 +69,9 @@ export default async function EstimatePage() {
           <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
             {PREMIUM_RULE.authorityCite}
           </a>
-          , and the same coverage costs the same in Pensacola and in Key West. An agency cannot
-          discount it, which is the reason this page can do the arithmetic in your browser instead
-          of asking you for your phone number first.
+          , and the schedule runs the same in Pensacola as it does in Key West. The figure is the
+          rule&rsquo;s rather than anyone&rsquo;s opinion, which is the reason this page can do the
+          arithmetic in your browser instead of asking you for your phone number first.
         </p>
 
         <h2>Why assessed value, and where it goes wrong</h2>

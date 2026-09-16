@@ -41,10 +41,17 @@ export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) 
 
   const suggestion = useMemo(() => matchCounty(address), [address]);
 
+  // Before an address is typed there is nothing to guess from, and falling
+  // through to ELSEWHERE there left the reader with no property appraiser to
+  // read the assessed value off — which is the one thing this page needs them
+  // to go and do. So the first county stands in until the address says
+  // otherwise or the reader picks one. The link names the county it points at,
+  // so a wrong default is visible rather than silent.
   const countySlug =
-    chosenCounty ?? (suggestion && counties.some((c) => c.slug === suggestion.countySlug)
+    chosenCounty ??
+    (suggestion && counties.some((entry) => entry.slug === suggestion.countySlug)
       ? suggestion.countySlug
-      : ELSEWHERE);
+      : (counties[0]?.slug ?? ELSEWHERE));
 
   const county = counties.find((entry) => entry.slug === countySlug) ?? null;
 
@@ -87,7 +94,7 @@ export function AddressEstimator({ counties }: { counties: EstimatorCounty[] }) 
           <span className="field__hint" id="estimator-county-hint">
             {suggestion && chosenCounty === null
               ? `Read from “${suggestion.place}” in the address above. Change it if that is wrong.`
-              : 'Where the property is. The premium is the same statewide; the county decides where you read the assessed value.'}
+              : 'Where the property is. It decides which property appraiser publishes the assessed value for the parcel.'}
           </span>
           <select
             id="estimator-county"

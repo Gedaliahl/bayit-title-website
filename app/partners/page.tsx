@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   description:
     'How Bayit Title works with real estate agents and loan officers: one named processor and ' +
     'closer per file, title read in the first week, lender conditions answered directly, and ' +
-    'signings arranged around the client. In the reviews below, the people who say so are agents ' +
-    'and lenders.',
+    'signings arranged around the client. The reviews on this page were left by agents and ' +
+    'lenders, not by us.',
   alternates: { canonical: '/partners' },
 };
 
@@ -54,28 +54,28 @@ export default async function PartnersPage() {
 
         <AnswerPanel
           text={
-            'Your client’s closing is your reputation as much as ours. What you get here is a named ' +
-            'processor and a named closer on every file from opening to recording, the title read ' +
-            'in the first week rather than the last, problems put in writing with what it takes to ' +
-            'clear them, and someone who answers the phone knowing which file you mean. The premium ' +
-            'is promulgated and identical everywhere, so the only thing we can actually compete on ' +
-            'is doing this excellently — and we do.'
+            'Your client’s closing is your reputation as much as ours, so the work here is held to ' +
+            'one standard: excellence, in the parts that decide whether your date holds. A named ' +
+            'processor and a named closer on every file from opening to recording. The title read ' +
+            'in the first week rather than the last. Problems put in writing with what it takes to ' +
+            'clear them. Lender conditions answered by someone who can resolve them. And a phone ' +
+            'answered by a person who already knows which file you mean.'
           }
         />
 
-        <h2>What you are choosing between</h2>
+        <h2>What the file gets</h2>
         <p>
-          Nothing, on price. The Office of Insurance Regulation promulgates Florida title insurance
-          rates; every agency charges the same premium for the same coverage and no agency may
-          discount it. So when you send a file somewhere, the entire decision is execution: whether
-          the search gets read, whether a lien shows up in week one or on the day of closing,
-          whether the lender&rsquo;s conditions get answered by a person or bounced, and whether
-          anyone calls your client back.
+          A referral is a risk you are taking with your own name, so here is what we think you are
+          owed for it: the search read early, a lien found in week one rather than on the day of
+          closing, the lender&rsquo;s conditions answered by a person who can resolve them, and
+          your client called back. That is the whole of our pitch, and everything below is a
+          specific about how it is done.
         </p>
         <p>
-          That is the ground we compete on and it is the whole of our pitch to you. The{' '}
-          <Link href="/reviews">reviews</Link> below are not ours; they were left on Google, mostly
-          by agents, loan officers and signing agents, and they are reproduced in full, unedited.
+          You do not have to take it from us. The{' '}
+          <Link href="/reviews">reviews</Link> on this page are not ours; they were left on Google,
+          mostly by agents, loan officers and signing agents, and they are reproduced in full,
+          unedited.
         </p>
 
         <h2>For real estate agents</h2>

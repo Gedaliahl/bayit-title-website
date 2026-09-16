@@ -9,9 +9,8 @@ export const metadata: Metadata = {
   title: 'About',
   description:
     `${site.legalName} is a Florida title insurance agency in ${site.address.city}, closing ` +
-    `residential and commercial transactions throughout Florida. The premium is set by rule and ` +
-    `is the same everywhere; the excellence of the work around it is why files come here rather ` +
-    `than to another title company.`,
+    `residential and commercial transactions throughout Florida. What we are, exactly, what we ` +
+    `are not, and the specific things that make the work excellent.`,
   alternates: { canonical: '/about' },
 };
 
@@ -67,14 +66,14 @@ export default function AboutPage() {
           </li>
         </ul>
         <p>
-          And we are excellent at it. Florida promulgates the title insurance premium — the Office
-          of Insurance Regulation sets it by rule, every agency charges the same for the same
-          coverage, and none of us can discount it. So the thing you are actually choosing between
-          title companies is how well the work is done: whether the search is read or skimmed,
-          whether a problem is raised in week one or at the closing table, whether the phone is
-          answered by someone who knows your file. That is where we compete, that is what our{' '}
-          <Link href="/reviews">clients and their agents describe in their reviews</Link>, and it is
-          why a file comes here rather than to another title company.
+          And we are excellent at it. That word is doing specific work here, so here is what it
+          means in practice: the search is read rather than skimmed, by a person who will tell you
+          what each exception actually does to your file. A problem is raised in week one, in
+          writing, with what clearing it takes — not in week six. The same processor and the same
+          closer hold the file from opening through recording. The phone is answered by someone who
+          knows which file you mean. Read our{' '}
+          <Link href="/reviews">clients&rsquo; and their agents&rsquo; own accounts</Link> and that
+          is what they describe.
         </p>
         <p>
           What we are not: a law firm and not an underwriter. Where a matter is contested — a

@@ -107,8 +107,8 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
               ? `In ${county.name} the owner’s title policy is customarily paid for by the ${payer}, ` +
                 'though the contract controls and the parties can agree otherwise. '
               : '') +
-            'Title insurance premiums in Florida are promulgated, so the premium is the same at any ' +
-            'agency; what differs is local custom, recording practice and who is working the file.'
+            'Title insurance premiums in Florida are promulgated by the Office of Insurance ' +
+            'Regulation; what differs county to county is local custom and recording practice.'
           }
         />
 
@@ -136,10 +136,8 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
             {PREMIUM_RULE.authorityCite}
           </a>
-          , and every agency in the state charges the same premium for the same coverage. We cannot
-          discount it and neither can anyone else. A quote that comes in under another quote is
-          lower on some other line, not on this one — which is why the schedule is printed here
-          rather than kept behind a form.
+          . The schedule below is that rule&rsquo;s, not ours, which is why it is printed here
+          rather than kept behind a form: you can open the rule and arrive at the same number.
         </p>
         <p>
           The rate runs per $1,000 of liability, and an owner&rsquo;s policy is written for the full

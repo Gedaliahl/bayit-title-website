@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'Request a closing cost quote',
   description:
     'Request an itemised Florida closing cost quote. Title insurance premiums in Florida are ' +
-    'promulgated, so the premium is the same at any agency — the quote itemises everything else.',
+    'promulgated by the Office of Insurance Regulation — the quote itemises everything else.',
   alternates: { canonical: '/quote' },
 };
 
@@ -32,7 +32,7 @@ export default async function QuotePage() {
         <AnswerPanel
           text={
             'Florida title insurance rates are promulgated by the Office of Insurance Regulation, ' +
-            'so the premium for a given coverage amount is the same at every agency in the state. ' +
+            'so the premium for a given coverage amount comes straight off a published schedule. ' +
             'Recording charges and documentary stamp tax are set by statute and are the same ' +
             'statewide, Miami-Dade aside. A quote is therefore about the lines that do move: ' +
             'search, examination, our settlement fee, endorsements, and what the file turns up.'

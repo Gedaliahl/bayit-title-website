@@ -67,10 +67,10 @@ export default async function CalculatorPage() {
           <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
             {PREMIUM_RULE.authorityCite}
           </a>
-          . Every agency in Florida charges the same premium for the same coverage — us included.
-          An agency cannot discount it, so a quote that undercuts another quote is lower on some
-          other line. That is the reason this page exists: once the promulgated part is settled,
-          the only thing left to compare is the part each agency actually chooses.
+          . The schedule is the rule&rsquo;s, not ours, and it runs the same in every Florida
+          county. That is the reason this page exists: the promulgated part of a closing statement
+          is arithmetic anyone can check against the source, so it is printed here with the rule
+          behind it rather than held behind a form.
         </p>
 
         <h2>The schedule it works from</h2>

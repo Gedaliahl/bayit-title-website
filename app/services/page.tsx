@@ -32,9 +32,8 @@ export default async function ServicesIndex() {
         <p className="lede">
           We search title, examine what the search returns, issue commitments and policies as an
           agent for {site.underwriter}, hold the escrow, and run the closing. Every file is worked
-          by the same four people, in {site.address.city}. The premium is fixed by rule and
-          identical at every agency in Florida, so what you are choosing is the standard of the
-          work — and ours is excellent.
+          by the same four people, in {site.address.city}, and the standard we hold it to is
+          excellence — read by a person, raised early, and in writing.
         </p>
 
         <h2>Residential closings</h2>

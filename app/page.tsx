@@ -12,9 +12,10 @@ export const metadata: Metadata = {
   title: `Florida title insurance agency in ${site.address.city}`,
   description:
     `${site.legalName} searches title, issues policies as an agent for ${site.underwriter}, holds ` +
-    `escrow and closes residential and commercial transactions throughout Florida. The premium is ` +
-    `the same at every agency; the difference is the excellence of the work around it — which is ` +
-    `why files come here rather than to another title company.`,
+    `escrow and closes residential and commercial transactions throughout Florida. Excellent ` +
+    `title work, done by four named people in Coral Springs: the search read by a person, ` +
+    `problems put in writing the week they are found, the same processor and closer on your file ` +
+    `from opening to recording.`,
   alternates: { canonical: '/' },
 };
 
@@ -60,19 +61,17 @@ export default async function HomePage() {
         <div className="frame measure">
           <h2 style={{ marginTop: 0 }}>Why bring the file here</h2>
           <p>
-            Florida title insurance premiums are promulgated. The Office of Insurance Regulation
-            sets them by rule, every agency in the state charges the same premium for the same
-            coverage, and no agency can discount it. So price is not what separates one title
-            company from the next. The execution is — and ours is excellent.
+            Because the work is excellent, and excellence in title is a set of specific, checkable
+            things rather than a claim. The search is read by a person who says out loud what the
+            exceptions mean. A problem goes to you in writing the week it is found, with what it
+            would take to clear, instead of surfacing at the closing table. The same processor and
+            the same closer carry the file from opening through recording. The phone is answered by
+            someone who already knows your file.
           </p>
           <p>
-            Excellence here is a set of specific, checkable things: the search read by a person who
-            says out loud what the exceptions mean, a problem put in writing the week it is found
-            rather than at the closing table, the same processor and the same closer on the file
-            from opening to recording, and a phone that is answered by someone who knows your
-            file&rsquo;s name. That is the reason a file comes to us instead of to another title
-            company, and it is the reason our{' '}
-            <Link href="/reviews">clients and their agents keep saying so in public</Link>.
+            None of that is a promise you have to take on trust. It is what our{' '}
+            <Link href="/reviews">clients and their agents describe, in public, in their own words</Link>{' '}
+            — reproduced here in full, unedited.
           </p>
           <p>
             <Link href="/partners">How we work with realtors and mortgage brokers →</Link>
