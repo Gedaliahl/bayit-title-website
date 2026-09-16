@@ -52,7 +52,7 @@ export default async function HomePage() {
         <div className="frame hero__inner">
           <div>
             <p className="eyebrow">
-              {site.address.city}, Florida · Since {site.agentInCharge.licensedSince}
+              {site.address.city}, Florida
             </p>
             <h1>A title agency that tells you what the search actually says.</h1>
             <p className="hero__lede">
