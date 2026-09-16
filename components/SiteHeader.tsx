@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { site } from '@/lib/site';
+import { SiteNav, type NavItem } from '@/components/SiteNav';
 
-const NAV = [
+const NAV: NavItem[] = [
   { href: '/title-problems', label: 'Title problems' },
   { href: '/services', label: 'Services' },
   { href: '/counties', label: 'Counties' },
@@ -10,6 +11,8 @@ const NAV = [
   { href: '/about', label: 'About' },
   { href: '/reviews', label: 'Reviews' },
 ];
+
+const ACTION: NavItem = { href: '/order', label: 'Open an order' };
 
 export function SiteHeader() {
   return (
@@ -20,16 +23,7 @@ export function SiteHeader() {
           <span className="wordmark__meaning">Bayit means home</span>
         </Link>
 
-        <nav className="nav" aria-label="Primary">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href}>
-              {item.label}
-            </Link>
-          ))}
-          <Link href="/order" className="btn btn--primary">
-            Open an order
-          </Link>
-        </nav>
+        <SiteNav items={NAV} action={ACTION} />
       </div>
     </header>
   );

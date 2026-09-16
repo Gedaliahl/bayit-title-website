@@ -304,6 +304,29 @@ th {
   font-size: 0.9375rem;
 }
 
+/* The Menu button. Absent on a desktop, where the nav is simply a row; at
+   phone widths it is what opens that row. Sized past 44px so it is a real
+   tap target rather than a word to aim at. */
+.nav__toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.75rem;
+  margin-inline-end: -0.75rem;
+  background: none;
+  border: 0;
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.nav__toggle-glyph {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
 /* `:not(.btn)` is load-bearing, not tidiness. `.nav a` outranks `.btn--primary`
    on specificity — a class plus an element beats a class — so without it this
    rule repainted the header's "Open an order" button ink-on-oxblood at a
@@ -321,6 +344,75 @@ th {
 .nav a:not(.btn):hover {
   border-bottom-color: var(--oxblood);
   color: var(--ink);
+}
+
+/* Seven links and a call to action wrap to four rows on a phone, which put
+   half an iPhone SE's screen between the top of the page and the first word of
+   it. Below this width the list collapses behind the button above.
+   62rem rather than the phone widths alone: measured across the range, the nav
+   wraps to two rows of links on top of dropping below the wordmark from about
+   737px up to roughly 1000px — a 168px header on an iPad in portrait, which is
+   the same problem the button exists to solve. From 62rem to about 72rem it is
+   one tidy row under the wordmark, and above that it sits beside it. */
+@media (max-width: 62rem) {
+  .nav__toggle {
+    display: inline-flex;
+  }
+
+  .nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 0.75rem;
+  }
+
+  .nav--open {
+    display: flex;
+  }
+
+  /* One link per row, each its own tap target, separated rather than crowded. */
+  .nav a:not(.btn) {
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav a:not(.btn):hover {
+    border-bottom-color: var(--rule);
+  }
+
+  .nav .btn {
+    margin-top: 0.9rem;
+    text-align: center;
+  }
+}
+
+/* No scripting, no button worth showing: the panel could never be opened, so
+   the nav stays as it was — wrapped and long, but every link reachable. */
+@media (max-width: 62rem) and (scripting: none) {
+  .nav__toggle {
+    display: none;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    width: auto;
+  }
+
+  .nav a:not(.btn) {
+    padding-block: 0.25rem;
+    border-bottom: 1px solid transparent;
+  }
+}
+
+/* The link for the page you are already on. */
+.nav a[aria-current='page'] {
+  border-bottom-color: var(--oxblood);
 }
 
 .sitefoot {
