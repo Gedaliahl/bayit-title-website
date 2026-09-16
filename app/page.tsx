@@ -128,10 +128,11 @@ export default async function HomePage() {
           </p>
           <p>
             <strong>1031 exchanges.</strong> We can facilitate a like-kind exchange through{' '}
-            {site.exchangeCompany.name}, so the qualified intermediary and the closing are arranged
-            together instead of by two offices that have never spoken. It has to be set up before
-            the relinquished property closes — once the seller has touched the money, the exchange
-            is over. Tell us early and we will help you get the paperwork in the right order.{' '}
+            {site.exchangeCompany.name} — {site.exchangeCompany.relationship}, despite the shared
+            name — so the qualified intermediary and the closing are arranged together rather than
+            by two offices that have never spoken. It has to be set up before the relinquished
+            property closes: once the seller has touched the money, the exchange is over. Tell us
+            early and we will help you get the paperwork in the right order.{' '}
             <Link href="/services">More on all three →</Link>
           </p>
         </div>

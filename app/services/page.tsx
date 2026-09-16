@@ -85,17 +85,20 @@ export default async function ServicesIndex() {
           exchange left to structure.
         </p>
         <p>
-          We can facilitate that exchange through {site.exchangeCompany.name}, which is{' '}
-          {site.exchangeCompany.relationship}. In practice it means the intermediary and the
-          closing are arranged in one place: the exchange documents are ready before the settlement
-          statement is cut, the proceeds go where they are supposed to go, and the 45-day
-          identification and 180-day acquisition clocks are tracked by the same people handling the
-          file rather than by an office that has never seen it.
+          We can facilitate that exchange through {site.exchangeCompany.name}. It is{' '}
+          {site.exchangeCompany.relationship} — the name is shared, the ownership is not, and that
+          is worth stating rather than leaving the name to imply otherwise.
+        </p>
+        <p>
+          What the arrangement gets you is coordination rather than two offices working the same
+          deadline separately: the exchange documents are ready before the settlement statement is
+          cut, the proceeds go where they are supposed to go, and the 45-day identification and
+          180-day acquisition clocks are watched by people who are also holding the closing file.
         </p>
         <p>
           You are free to use any qualified intermediary you choose, and nothing about closing here
-          requires ours. What we ask is only that you tell us early. We are not tax advisers — the
-          decision to exchange, and whether the property qualifies, belongs with your CPA or tax
+          requires that one. What we ask is only that you tell us early. We are not tax advisers —
+          the decision to exchange, and whether the property qualifies, belongs with your CPA or tax
           counsel.
         </p>
 

@@ -32,7 +32,7 @@ Producing and maintaining bayittitle.com: title-problem library pages, service p
 - Hours: Mon–Fri 9:00–5:00, closed weekends. Never imply 24/7 or standing after-hours availability. Render them from `officeHoursLine` in lib/site.ts rather than by indexing into `site.hours`.
 - Closes throughout Florida. Emphasis: Broward, Palm Beach, Miami-Dade, Hillsborough, Orange, Duval. A county named in `site.priorityCounties` must also exist in the `locations` table — see supabase/seed/locations_priority_counties.sql — or its link is a 404.
 - Residential **and commercial** title: entity authority, leasehold and ALTA policies, lender endorsements, UCC and judgment searches, staged disbursement.
-- 1031 like-kind exchanges are facilitated through **Bayit Exchange Company**, an affiliated company. Always say the client may use any qualified intermediary they choose, and never give tax advice — the decision to exchange belongs with the client's CPA or tax counsel.
+- 1031 like-kind exchanges are facilitated through **Bayit Exchange Company**. It shares the Bayit name but **not the ownership** — different owners, so it is *not* an affiliated business of Bayit Title and the site must never call it affiliated, a sister company, or ours. Say the separate ownership plainly wherever the company comes up, because the shared name invites the opposite assumption. Always say the client may use any qualified intermediary they choose, and never give tax advice — the decision to exchange belongs with the client's CPA or tax counsel.
 - All closing methods offered: in-office, mobile/concierge signing wherever the signer wants, and remote online notarization.
 
 ## Voice
