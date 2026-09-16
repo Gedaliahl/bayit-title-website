@@ -49,66 +49,79 @@ advertising and from the firm's professional exposure.
 
 ## 3. Design direction as built
 
-Grounded in the firm's own office — warm neutrals, wood, plants, a yellow-green
-wall. Deliberately **not** the default title-agency look (navy/gold, cream/serif,
-terracotta, skyline photography).
+White ground, black text, one trust blue carrying every action. No photography,
+no navy-and-gold crest, no skyline: the page is type, hairlines and a single
+accent, which is what the two audiences above are actually here for.
 
-The one intentionally bold element is the **answer panel** on library pages,
+The **answer panel** on library pages stays the one intentionally bold element,
 because that is the block an AI assistant lifts and the block a hurried reader
-reads first. Everything else is quiet.
+reads first. The homepage adds two moving parts and no others: the services
+ticker and the two figures that count up once on load.
 
 ### Colour tokens
 
 | Token | Value | Role |
 |---|---|---|
-| `--ink` | `#14231b` | Deep forest. Body text. |
-| `--paper` | `#faf9f5` | Warm white. Page ground. |
-| `--sage` | `#e4e8d2` | The office wall. Section grounds, answer panel, CTA. |
-| `--sage-deep` | `#c3cba4` | Quick-facts top rule, pull-quote rule. |
-| `--moss` | `#3f5940` | Links, answer-panel label, review stars. |
-| `--oxblood` | `#6f1d2b` | Primary actions, answer-panel rule, VERIFY flags. **Sparingly.** |
-| `--ink-muted` | `#4c5c53` | Secondary text, eyebrows, credential line. |
-| `--rule` | `#d9d8ce` | Hairlines, card borders. |
-| `--rule-strong` | `#b9b8ab` | Input borders, quiet button border. |
+| `--ink` | `#111` | Body text. |
+| `--paper` | `#fff` | Page ground. |
+| `--band` | `#f6f8fb` | Alternating section grounds. |
+| `--accent` | `#3b78c4` | Primary actions, rules, the live timeline step. |
+| `--accent-deep` | `#1f4e8c` | Links, eyebrows, chip text. |
+| `--accent-navy` | `#0b2545` | The masthead button, and nothing else. |
+| `--accent-wash` | `#e8f0fa` | Chips, icon discs, answer panel, CTA. |
+| `--gold` | `#b58a4c` | Review stars and the pull-quote rule. Nowhere else. |
+| `--flag` | `#6f1d2b` | VERIFY banners and form errors only. |
+| `--ink-muted` | `#555` | Secondary text, labels, credential line. |
+| `--ink-faint` | `#7a8799` | Steps not yet reached on the example file card. |
+| `--rule` | `#e5e7eb` | Chrome and section hairlines. |
+| `--rule-card` | `#dfe3ea` | Card, pill and panel edges. |
+| `--rule-strong` | `#aeb8c6` | Input borders, which need a visible edge. |
 
-One off-token colour exists: `#fdf6f2`, the warm blush ground of the VERIFY
-banner, and `#58161f` as the oxblood hover.
+Two off-token colours exist: `#fdf6f2`, the warm blush ground of the VERIFY
+banner, and `#123a66` as the navy button's hover.
 
 There is currently **no dark mode**.
 
 ### Type
 
-- **Newsreader** (serif) — all prose and all headings. Weights 400/500/600,
-  normal + italic. This is a reading-heavy site; the serif is the default, not
-  the accent.
-- **Archivo** (sans) — navigation, labels, credential lines, form fields,
-  metadata, buttons, tables. Weights 400/500/600.
+- **Libre Caslon Text** (serif) — headings and quoted reviews. Weights 400/700,
+  normal + italic.
+- **DM Sans** (sans) — body copy, navigation, labels, figures, form fields,
+  metadata, buttons, tables. Weights 400/500/600/700. Card titles are sans too:
+  the serif is the voice of the headings, not of every title.
 
-Headings are weight **500**, `line-height: 1.18`, `letter-spacing: -0.011em`,
+Headings are weight **400**, `line-height: 1.14`, `letter-spacing: -0.01em`,
 `text-wrap: balance`. Body is `1.0625rem` at `line-height: 1.65`.
 
 Scale: `--step-0` 1.0625rem · `--step-1` 1.25 · `--step-2` 1.5 ·
 `--step-3` 1.9375 (h2) · `--step-4` 2.5 ·
-`--step-5` `clamp(2.25rem, 1.4rem + 3.6vw, 3.5rem)` (h1).
+`--step-5` `clamp(2.125rem, 1.35rem + 3.2vw, 3.25rem)` (h1). The homepage hero
+sets its own clamp, up to `3.75rem`.
 
 ### Layout
 
 - `--measure: 34rem` — the reading column. Most pages are a single column of
   this width, left-aligned, not centred text.
-- `--wide: 72rem` — the page frame for headers, footers and card grids.
+- `--wide: 77.5rem` — the page frame for headers, footers and card grids.
 - `--gutter: 1.5rem` — horizontal page padding.
-- **One breakpoint in the entire stylesheet: `34rem`**, and it only restacks the
-  quick-facts definition list. Everything else is intrinsically responsive via
-  flex-wrap and `auto-fill` grids.
+- Breakpoints restack the hero, the card grid, the figure strip and the
+  quick-facts list. Everything else is intrinsically responsive via flex-wrap
+  and `auto-fill` grids.
 
 ### Shape and motion
 
-- `border-radius: 2px` on buttons and inputs. Nothing else is rounded. No cards
-  with soft corners, no pills.
-- **No shadows anywhere.** Separation is done with 1px hairlines.
-- Motion is limited to `120ms` colour transitions on buttons. No scroll
-  animation, no reveals, no parallax.
-- Focus: `2px solid var(--oxblood)`, `2px` offset.
+- `--radius: 6px` on buttons and inputs, `--radius-card: 12px` on cards and
+  panels, `999px` on chips and ticker pills.
+- Two shadows, both soft and both on white: `--shadow-card` under the hero's
+  example-file card, `--shadow-pill` under the ticker pills. Everything else
+  separates with 1px hairlines.
+- Motion: `120ms` colour transitions on buttons, the services ticker's 46s
+  linear scroll, and a 2.2s count-up on the two figures, once, on load. The
+  ticker stops under `prefers-reduced-motion` and in print; the figures skip the
+  count entirely under `prefers-reduced-motion` and are server-rendered at their
+  final value, so nothing depends on the animation running. No reveals, no
+  parallax.
+- Focus: `2px solid var(--accent)`, `2px` offset.
 
 ---
 
@@ -147,11 +160,11 @@ Class names are the real ones in `app/globals.css`.
 
 ### Site chrome
 
-**Masthead** (`.masthead`) — 1px bottom hairline, `4.75rem` min-height, flex row
-that wraps. Wordmark is "Bayit Title" in Newsreader 1.375rem beside
-"BAYIT MEANS HOME" in Archivo 0.6875rem, uppercase, `0.1em` tracking, muted.
-Nav is Archivo 0.9375rem with a transparent bottom border that turns oxblood on
-hover, plus one primary button ("Open an order").
+**Masthead** (`.masthead`) — 1px bottom hairline, `5rem` min-height, flex row
+that wraps. Wordmark is the 38×42 brand mark beside "BAYIT" in Libre Caslon Text
+1.4375rem with `0.04em` tracking, then "TITLE" at 0.8125rem with `0.28em`
+tracking in `--accent-deep`. Nav is DM Sans 0.9375rem/500 with a transparent
+bottom border that turns blue on hover, plus the navy button ("Open an order").
 
 **Footer** (`.sitefoot`) — four auto-fit columns at `13rem` min: address/phone/
 email, hours, pages, get started. Below them `.credential-line`: 0.8125rem
@@ -163,61 +176,88 @@ copyright. **This block is a compliance requirement, not decoration.**
 
 This sequence is fixed and is the core of the site:
 
-1. **Breadcrumbs** — Archivo 0.8125rem, muted, slash-separated
-2. **Eyebrow** (`.eyebrow`) — cluster name. 0.75rem, 600, uppercase, `0.12em`
+1. **Breadcrumbs** — DM Sans 0.8125rem, muted, slash-separated
+2. **Eyebrow** (`.eyebrow`) — cluster name. 0.78125rem, 600, uppercase, `0.14em`,
+   in `--accent-deep`
 3. **H1** — the reader's question verbatim ("There's a judgment against the
    seller. What happens to the closing?")
-4. **Answer panel** (`.answer-panel`) — **the signature element.** Sage ground,
-   3px oxblood left rule, `1.5rem 1.75rem` padding. Contains a moss-coloured
-   label "THE SHORT ANSWER" and 40–60 words at `--step-1`/1.55. Square, flat,
-   no radius, no shadow.
+4. **Answer panel** (`.answer-panel`) — **the signature element.** Pale blue
+   ground, 3px blue left rule, `1.5rem 1.75rem` padding. Contains an
+   `--accent-deep` label "THE SHORT ANSWER" and 40–60 words at `--step-1`/1.55.
+   Square, flat, no radius, no shadow.
 5. **Draft banner** (`.verify-banner`, 2px) — only on unreviewed drafts
-6. **VERIFY banner** (`.verify-banner`) — oxblood border, 3px left, `#fdf6f2`
-   ground, Archivo 0.875rem, with a bulleted list of unresolved facts. Two
+6. **VERIFY banner** (`.verify-banner`) — `--flag` border, 3px left, `#fdf6f2`
+   ground, DM Sans 0.875rem, with a bulleted list of unresolved facts. Two
    variants: `flagged` on a library page, where every listed item also carries
    a `VERIFY` mark in the copy below, and `withheld` on a county page, where
    the items are facts deliberately absent from the page and there is no mark
    to point at
-7. **Quick facts** (`.quick-facts`) — 1px box with a 2px `--sage-deep` top rule.
-   Two-column `dl` (label column `8rem` min) that stacks below `34rem`
+7. **Quick facts** (`.quick-facts`) — rounded 1px box with a 2px `--accent` top
+   rule. Two-column `dl` (label column `8rem` min) that stacks below `34rem`
 8. **Prose** (`.prose`) — H2s carry a top hairline and generous space above
-9. **Review pull-quote** (`.review--pull`) — optional, topic-matched
+9. **Review pull-quote** (`.review--pull`) — optional, topic-matched. Gold left
+   rule, rounded on the outer corners
 10. **Related situations** (`.linklist`) — hairline-separated rows, title plus
-    a muted Archivo subtitle
-11. **Byline** (`.byline`) — top hairline, Archivo 0.875rem muted. Names the
+    a muted DM Sans subtitle
+11. **Byline** (`.byline`) — top hairline, DM Sans 0.875rem muted. Names the
     licensed reviewer, their credential, review date and next review date
-12. **Quiet CTA** (`.cta`) — sage ground, flex row: one sentence of specific
-    text, then a primary button and the phone number as a quiet button
+12. **Quiet CTA** (`.cta`) — pale blue rounded panel, flex row: one sentence of
+    specific text, then a primary button and the phone number as a quiet button
 
 ### Other pieces
 
-- **Buttons** — `.btn--primary` oxblood on paper; `.btn--quiet` transparent with
-  `--rule-strong` border, sage on hover. Archivo 0.9375rem/600, `2px` radius.
+- **Buttons** — `.btn--primary` blue on white; `.btn--quiet` transparent with a
+  1.5px ink border, pale blue on hover; `.btn--navy` is the masthead's and is
+  used nowhere else. DM Sans 0.9375rem/600, `6px` radius.
 - **Cards** (`.card-grid` / `.card`) — `auto-fill` grid at `17rem` min,
-  `1.25rem` gap. Flat, 1px border, no shadow. Title link, muted summary,
-  uppercase meta line pushed to the bottom.
+  `1.25rem` gap; `.card-grid--three` pins the homepage row to three columns.
+  1px border, `12px` radius, no shadow. Optional `.chip` (pale blue pill,
+  `--accent-deep` text), then a sans 600 title link; `.card__meta` is the older
+  uppercase meta line, still used on the index pages.
+- **Chips** (`.chip`) — pale blue pill, 0.75rem/600, used for cluster labels and
+  for the "Example file" marker on the homepage card.
 - **Link lists** (`.linklist`) — the dominant list pattern. Hairline rows,
   optional muted sub-line.
 - **Reviews** — `.review` hairline-separated block with body text then a muted
-  attribution line: moss stars, name, date, "Google review". **Many reviews
+  attribution line: gold stars, name, date, "Google review". **Many reviews
   deliberately show no date** — those dates were derived from relative labels
   and can't be trusted, so nothing is printed. The design must not require a
   date to be present.
 - **Forms** — `.field` label/hint/input/error stack; `.field-row` is an
   `auto-fit` grid at `13rem`; `fieldset` + `legend` group sections with an
-  uppercase Archivo legend. Error state turns borders oxblood and shows a
-  0.8125rem message. `.form-status--ok` is a sage panel; `--error` is
-  oxblood-bordered. `.form-note` carries the wire-fraud warning.
+  uppercase DM Sans legend. Error state turns borders `--flag` and shows a
+  0.8125rem message. `.form-status--ok` is a pale blue panel; `--error` is
+  `--flag`-bordered. `.form-note` carries the wire-fraud warning.
 - **Calculator** (`.calc`) — two columns capped at `56rem`, inputs left at
   `18rem` and figures right, stacking to one column below `52rem`. The figures
   panel (`.calc__result`) reuses the quick-facts frame: 1px border with a 2px
-  `--sage-deep` top rule. Each `.estimate-line` is a hairline row with the
+  `--accent` top rule. Each `.estimate-line` is a hairline row with the
   label and its citation left and a tabular-numeral amount right; the total
-  sits under a 2px oxblood rule. **Every line carries its citation** — that is
+  sits under a 2px blue rule. **Every line carries its citation** — that is
   the design, not decoration, and a redesign must keep the figure and its
   authority in the same row.
-- **Section grounds** (`.section--sage`) — full-bleed sage bands used to break
-  up the homepage.
+- **Section grounds** (`.section--band`) — full-bleed `--band` bands, hairlined
+  top and bottom, used to break up the homepage.
+
+### Homepage-only pieces
+
+- **Split hero** (`.hero__inner`) — copy left, the example file card right at
+  `27.5rem`, stacking below `62rem`.
+- **Example file card** (`.filecard` / `.filestep`) — rounded, shadowed panel
+  holding the four steps of a file with a dot-and-rail timeline: blue for steps
+  passed, a ringed dot for the step in progress, `--rule-card` and `--ink-faint`
+  for the step still to come. It is labelled "Example file" because it is a
+  sequence, not a schedule.
+- **Services ticker** (`.ticker`) — full-bleed band of pill cards, one per
+  transaction type on the order form, scrolling left over 46s with the run
+  duplicated for a seamless loop and the second copy `aria-hidden`. Faded edges
+  both sides.
+- **Figure strip** (`.figures__grid`) — four columns: two figures with blue left
+  rules that count up once on load (`components/CountUp.tsx`), then a featured
+  Google review across the remaining two with a gold rule, gold stars and the
+  quote set in Libre Caslon Text. The review is whichever row is `is_featured`
+  in Supabase; the shortest is chosen so the strip keeps its shape, and the
+  whole strip degrades to the counties figure alone if Supabase is unreachable.
 
 ---
 
@@ -227,7 +267,7 @@ This sequence is fixed and is the core of the site:
 are `status: draft`, and unreviewed drafts are excluded from production builds
 until a licensed agent signs off. So right now:
 
-- The homepage's sage band has **no cards under it**
+- The homepage's title-problems section has **no cards under it**
 - `/title-problems` lists **nothing**
 - The chrome, `/about`, `/team`, `/contact`, `/order`, `/quote` and the three
   county pages are fully populated and real
@@ -240,11 +280,13 @@ all nine pages with the draft banner.
 ## 7. Open questions for design
 
 1. **Photography.** There is none. Nothing in the firm's Instagram works at hero
-   size. The site currently has **zero images** — no logo mark, no icons, no
-   illustrations, no favicon beyond the default. This is the single biggest gap.
-2. **A logo.** "Bayit Title" is currently set in Newsreader as live text.
-3. **The homepage hero** is a headline, a paragraph and two buttons on plain
-   paper. It is honest but plain, and it is the weakest screen.
+   size. Apart from the brand mark and the ticker's line icons the site carries
+   **no imagery**, and the hero has none by design.
+2. **A vector logo.** The masthead mark is `public/brand/mark-t.png`, a raster
+   crop with a transparent ground. An SVG would be better at every size.
+3. **The homepage hero** is a headline, a paragraph, two buttons and the example
+   file card. The card carries the hero now; whether that is enough without
+   photography is still worth a designer's eye.
 4. **Empty states.** The library index and homepage card grid have no designed
    empty state — they simply render nothing, which is what you will see today.
 5. **Dark mode** — not built. Decide whether it is wanted.

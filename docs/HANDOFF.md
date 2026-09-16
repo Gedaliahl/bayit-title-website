@@ -103,18 +103,21 @@ Nine tables in `public`, all with RLS enabled:
 
 ## Design system
 
-Grounded in the firm's own 2026 office video — warm neutrals, wood, plants, the yellow-green wall — deliberately *not* the default cream/serif/terracotta look.
+White ground, black text, one trust blue carrying every action. Gold appears only around a quoted Google review.
 
 ```
---ink: #14231b       deep forest, body text
---paper: #faf9f5     warm white
---sage: #e4e8d2      the office wall; section grounds, answer panel
---sage-deep: #c3cba4
---moss: #3f5940      links
---oxblood: #6f1d2b   primary actions, threshold rule. Sparingly.
+--ink: #111            body text
+--paper: #fff          page ground
+--band: #f6f8fb        alternating section grounds
+--accent: #3b78c4      primary actions, rules, the live timeline step
+--accent-deep: #1f4e8c links, eyebrows, chip text
+--accent-navy: #0b2545 the masthead button, and nothing else
+--accent-wash: #e8f0fa chips, icon discs, answer panel
+--gold: #b58a4c        review stars and the pull-quote rule. Nowhere else.
+--flag: #6f1d2b        VERIFY banners and form errors only
 ```
 
-Type: **Newsreader** for prose (reading-heavy site), **Archivo** for nav, labels, credential lines. The one bold element is the **answer panel** on library pages — sage ground, oxblood left rule — because that's the block an AI assistant lifts.
+Type: **Libre Caslon Text** for headings and quoted reviews, **DM Sans** for body copy, nav, labels and figures. The one bold element is the **answer panel** on library pages — pale blue ground, blue left rule — because that's the block an AI assistant lifts. `docs/ui-inventory.md` carries the full token table.
 
 ---
 

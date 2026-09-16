@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
-import { getReviewSnapshot } from '@/lib/reviews';
+import { getFeaturedReviews, getReviewSnapshot, type Review } from '@/lib/reviews';
 import { getCounties } from '@/lib/locations';
-import { metaDescription } from '@/lib/seo';
 import { officeHoursLine, site } from '@/lib/site';
-import { ReviewSummaryLine } from '@/components/Reviews';
+import { CountUp } from '@/components/CountUp';
+import { ServicesTicker } from '@/components/ServicesTicker';
+import { FileTimeline } from '@/components/FileTimeline';
+import { FeaturedQuote } from '@/components/Reviews';
 
 export const metadata: Metadata = {
   title: `Florida title insurance agency in ${site.address.city}`,
@@ -19,45 +21,87 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 };
 
+/**
+ * The quote beside the figures is one line in a row of four, so a featured
+ * review that runs long would push the strip out of shape. Pick the shortest
+ * one that is featured rather than cutting a reviewer's words down to fit.
+ */
+function shortestFeatured(reviews: Review[]): Review | null {
+  const withBody = reviews.filter((review) => review.body);
+  if (withBody.length === 0) return null;
+
+  return withBody.reduce((shortest, review) =>
+    (review.body?.length ?? 0) < (shortest.body?.length ?? 0) ? review : shortest,
+  );
+}
+
 export default async function HomePage() {
-  const [docs, snapshot, counties] = await Promise.all([
+  const [docs, snapshot, counties, featured] = await Promise.all([
     getAllDocs('title-problems'),
     getReviewSnapshot(),
     getCounties(),
+    getFeaturedReviews(),
   ]);
 
   const recent = docs.slice(0, 6);
+  const quote = shortestFeatured(featured);
 
   return (
     <>
-      <section className="frame section">
-        <div className="measure">
-          <p className="eyebrow">Coral Springs, Florida · Residential and commercial</p>
-          <h1>A title agency that tells you what the search actually says.</h1>
-          <p className="lede">
-            We search title, examine what comes back, issue policies as an agent for{' '}
-            {site.underwriter}, hold the escrow and run the closing — anywhere in Florida. When
-            something turns up on a file, we tell you what it is and what clearing it takes, in
-            writing, the same week.
-          </p>
-          <p style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.75rem' }}>
-            <Link href="/order" className="btn btn--primary">
-              Open a title order
-            </Link>
-            <Link href="/quote" className="btn btn--quiet">
-              Request a quote
-            </Link>
-          </p>
-          {snapshot ? (
-            <ReviewSummaryLine
-              averageRating={snapshot.averageRating}
-              reviewCount={snapshot.reviewCount}
-            />
-          ) : null}
+      <section className="section hero">
+        <div className="frame hero__inner">
+          <div>
+            <p className="eyebrow">
+              {site.address.city}, Florida · Since {site.agentInCharge.licensedSince}
+            </p>
+            <h1>A title agency that tells you what the search actually says.</h1>
+            <p className="hero__lede">
+              We search title, examine what comes back, issue policies as an agent for{' '}
+              {site.underwriter}, hold the escrow and run the closing — anywhere in Florida. When
+              something turns up on a file, we tell you what it is and what clearing it takes, in
+              writing, the same week.
+            </p>
+            <p className="hero__actions">
+              <Link href="/order" className="btn btn--primary">
+                Open a title order
+              </Link>
+              <Link href="/quote" className="btn btn--quiet">
+                Request a quote
+              </Link>
+            </p>
+          </div>
+
+          <FileTimeline />
         </div>
       </section>
 
-      <section className="section section--sage">
+      <ServicesTicker />
+
+      <section className="section figures">
+        <div className="frame figures__grid">
+          <div className="figure">
+            <p className="figure__value">
+              <CountUp value={site.floridaCounties} />
+            </p>
+            <p className="figure__label">Florida counties we close in</p>
+          </div>
+
+          {snapshot ? (
+            <div className="figure">
+              <p className="figure__value">
+                <CountUp value={snapshot.averageRating} decimals={1} />
+              </p>
+              <p className="figure__label">
+                Average rating across {snapshot.reviewCount} Google reviews
+              </p>
+            </div>
+          ) : null}
+
+          {quote ? <FeaturedQuote review={quote} /> : null}
+        </div>
+      </section>
+
+      <section className="section section--band">
         <div className="frame measure">
           <h2 style={{ marginTop: 0 }}>Why bring the file here</h2>
           <p>
@@ -80,8 +124,14 @@ export default async function HomePage() {
       </section>
 
       <section className="frame section">
+        <div className="section__head">
+          <h2 style={{ marginTop: 0, marginBottom: 0 }}>Title problems, written out</h2>
+          <Link href="/title-problems" className="section__head-link">
+            All title problem pages →
+          </Link>
+        </div>
+
         <div className="measure">
-          <h2 style={{ marginTop: 0 }}>Title problems, written out</h2>
           <p>
             Most title questions are specific: an open permit, a judgment against a seller, an
             estate that never closed, a parcel with no recorded access. These pages take one
@@ -91,27 +141,20 @@ export default async function HomePage() {
         </div>
 
         {recent.length > 0 ? (
-          <ul className="card-grid" style={{ marginTop: '2rem' }}>
+          <ul className="card-grid card-grid--three" style={{ marginTop: '1.5rem' }}>
             {recent.map((doc) => (
               <li key={doc.slug} className="card">
+                <span className="chip">{CLUSTER_LABELS[doc.cluster]}</span>
                 <h3>
                   <Link href={`/title-problems/${doc.slug}`}>{doc.title}</Link>
                 </h3>
-                <p>{metaDescription(doc.summary ?? doc.direct_answer, 150)}</p>
-                <p className="card__meta">{CLUSTER_LABELS[doc.cluster]}</p>
               </li>
             ))}
           </ul>
         ) : null}
-
-        <div className="measure">
-          <p style={{ marginTop: '2rem' }}>
-            <Link href="/title-problems">All title problem pages →</Link>
-          </p>
-        </div>
       </section>
 
-      <section className="section section--sage">
+      <section className="section section--band">
         <div className="frame measure">
           <h2 style={{ marginTop: 0 }}>What we close</h2>
           <p>
@@ -162,7 +205,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section section--sage">
+      <section className="section section--band">
         <div className="frame measure">
           <h2 style={{ marginTop: 0 }}>How a signing can happen</h2>
           <ul>

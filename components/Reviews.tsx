@@ -56,6 +56,28 @@ export function ReviewPullQuote({ review }: { review: Review }) {
 }
 
 /**
+ * The review set beside the figures on the homepage. The stars belong to this
+ * one review and are drawn above it for that reason; the attribution line
+ * underneath follows the same rules as every other review on the site.
+ */
+export function FeaturedQuote({ review }: { review: Review }) {
+  if (!review.body) return null;
+
+  const date = formatReviewDate(review.publishedAt);
+
+  return (
+    <figure className="figures__quote">
+      <Stars rating={review.rating} />
+      <blockquote>&ldquo;{review.body}&rdquo;</blockquote>
+      <figcaption className="review__attribution">
+        {review.authorName}
+        {date ? ` · ${date}` : ''} · Google review
+      </figcaption>
+    </figure>
+  );
+}
+
+/**
  * Plain count and average, stated as what it is: a Google rating.
  * No AggregateRating markup — see components/Schema.tsx.
  */

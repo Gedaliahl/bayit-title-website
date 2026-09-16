@@ -21,12 +21,13 @@ export const OG_CONTENT_TYPE = 'image/png';
 
 // Tokens from app/globals.css. Duplicated as literals because Satori resolves
 // no custom properties — if these drift, the card stops matching the site.
-const INK = '#14231b';
-const PAPER = '#faf9f5';
-const SAGE = '#e4e8d2';
-const MOSS = '#3f5940';
-const OXBLOOD = '#6f1d2b';
-const INK_MUTED = '#4c5c53';
+const INK = '#111';
+const PAPER = '#fff';
+const ACCENT = '#3b78c4';
+const ACCENT_DEEP = '#1f4e8c';
+const ACCENT_NAVY = '#0b2545';
+const ACCENT_WASH = '#e8f0fa';
+const INK_MUTED = '#555';
 
 /**
  * Read once per build. These are static routes, so this runs at build time and
@@ -41,8 +42,13 @@ let fonts: { name: string; data: Buffer; weight: 500; style: 'normal' }[] | null
 function brandFonts() {
   if (!fonts) {
     fonts = [
-      { name: 'Newsreader', data: readFont('Newsreader-Medium.ttf'), weight: 500, style: 'normal' },
-      { name: 'Archivo', data: readFont('Archivo-Medium.ttf'), weight: 500, style: 'normal' },
+      {
+        name: 'Libre Caslon Text',
+        data: readFont('LibreCaslonText-Regular.ttf'),
+        weight: 500,
+        style: 'normal',
+      },
+      { name: 'DM Sans', data: readFont('DMSans-Medium.ttf'), weight: 500, style: 'normal' },
     ];
   }
   return fonts;
@@ -81,11 +87,11 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
           height: '100%',
           display: 'flex',
           background: PAPER,
-          fontFamily: 'Newsreader',
+          fontFamily: 'Libre Caslon Text',
         }}
       >
-        {/* The threshold rule, the same oxblood edge the answer panel carries. */}
-        <div style={{ width: 16, height: '100%', background: OXBLOOD }} />
+        {/* The threshold rule, the same blue edge the answer panel carries. */}
+        <div style={{ width: 16, height: '100%', background: ACCENT }} />
 
         <div
           style={{
@@ -99,11 +105,11 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div
               style={{
-                fontFamily: 'Archivo',
+                fontFamily: 'DM Sans',
                 fontSize: 25,
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
-                color: MOSS,
+                color: ACCENT_DEEP,
                 marginBottom: 34,
               }}
             >
@@ -126,7 +132,7 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
               <div style={{ fontSize: 38, color: INK }}>{site.legalName}</div>
               <div
                 style={{
-                  fontFamily: 'Archivo',
+                  fontFamily: 'DM Sans',
                   fontSize: 23,
                   color: INK_MUTED,
                   marginTop: 8,
@@ -139,11 +145,12 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
             <div
               style={{
                 display: 'flex',
-                fontFamily: 'Archivo',
+                fontFamily: 'DM Sans',
                 fontSize: 21,
-                color: INK_MUTED,
-                background: SAGE,
+                color: ACCENT_DEEP,
+                background: ACCENT_WASH,
                 padding: '12px 20px',
+                borderRadius: 999,
               }}
             >
               {`Florida Title Insurance Agency ${site.agencyLicense}`}
@@ -162,7 +169,7 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
  *
  * A gabled silhouette rather than a monogram: "bayit" is Hebrew for home, and a
  * shape survives 16px in a browser tab where a letterform turns to mush. The
- * oxblood band across the base is the same threshold rule as the card.
+ * blue band across the base is the same threshold rule as the card.
  *
  * Square and full-bleed on purpose. iOS masks this into a squircle itself, so a
  * corner radius here would be rounded twice, and the glyph is held at 70% to
@@ -178,12 +185,12 @@ export function iconImage(size: number): ImageResponse {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: INK,
+          background: ACCENT_NAVY,
         }}
       >
         <svg width={size * 0.7} height={size * 0.7} viewBox="0 0 32 32">
-          <path d="M16 6 L27 15 V25 H5 V15 Z" fill={SAGE} />
-          <rect x="5" y="22.4" width="22" height="2.6" fill={OXBLOOD} />
+          <path d="M16 6 L27 15 V25 H5 V15 Z" fill={ACCENT_WASH} />
+          <rect x="5" y="22.4" width="22" height="2.6" fill={ACCENT} />
         </svg>
       </div>
     ),
