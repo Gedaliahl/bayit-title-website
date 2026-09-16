@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { site } from '@/lib/site';
 import { SiteNav, type NavItem } from '@/components/SiteNav';
 
 const NAV: NavItem[] = [
@@ -19,8 +19,17 @@ export function SiteHeader() {
     <header className="masthead">
       <div className="frame masthead__inner">
         <Link href="/" className="wordmark">
-          {site.name}
-          <span className="wordmark__meaning">Bayit means home</span>
+          <Image
+            src="/brand/mark-t.png"
+            alt=""
+            width={38}
+            height={42}
+            className="wordmark__mark"
+            priority
+          />
+          <span className="wordmark__name">
+            Bayit <span>Title</span>
+          </span>
         </Link>
 
         <SiteNav items={NAV} action={ACTION} />

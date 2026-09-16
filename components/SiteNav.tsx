@@ -80,7 +80,7 @@ export function SiteNav({
             {item.label}
           </Link>
         ))}
-        <Link href={action.href} className="btn btn--primary">
+        <Link href={action.href} className="btn btn--navy">
           {action.label}
         </Link>
       </nav>

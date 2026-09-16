@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Newsreader, Archivo } from 'next/font/google';
+import { Libre_Caslon_Text, DM_Sans } from 'next/font/google';
 
 import './globals.css';
 import { SiteHeader } from '@/components/SiteHeader';
@@ -9,21 +9,21 @@ import { Analytics } from '@/components/Analytics';
 import { site } from '@/lib/site';
 import { SITE_URL, siteVerification } from '@/lib/seo';
 
-// Newsreader for prose — this is a reading-heavy site.
-const newsreader = Newsreader({
+// Libre Caslon Text carries the headings and quoted reviews.
+const libreCaslon = Libre_Caslon_Text({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-newsreader',
-  weight: ['400', '500', '600'],
+  variable: '--font-libre-caslon',
+  weight: ['400', '700'],
   style: ['normal', 'italic'],
 });
 
-// Archivo for nav, labels and credential lines.
-const archivo = Archivo({
+// DM Sans for body copy, nav, labels and figures.
+const dmSans = DM_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-archivo',
-  weight: ['400', '500', '600'],
+  variable: '--font-dm-sans',
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${archivo.variable}`}>
+    <html lang="en" className={`${libreCaslon.variable} ${dmSans.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           Skip to content

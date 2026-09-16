@@ -77,6 +77,10 @@ export const site = {
   ],
   serviceArea: 'Florida',
 
+  // Florida has 67 counties and the agency closes in all of them, so this is
+  // the count of the state, not a claim about volume.
+  floridaCounties: 67,
+
   // A 1031 exchange needs a qualified intermediary, and the intermediary cannot
   // be the taxpayer's agent for the sale. So it is a separate company, named
   // here rather than blurred into "we handle 1031s".
