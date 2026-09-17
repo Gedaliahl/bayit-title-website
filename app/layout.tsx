@@ -7,7 +7,7 @@ import { SiteFooter } from '@/components/SiteFooter';
 import { OrganizationSchema } from '@/components/Schema';
 import { Analytics } from '@/components/Analytics';
 import { site } from '@/lib/site';
-import { SITE_URL, siteVerification } from '@/lib/seo';
+import { SITE_URL, indexingAllowed, siteVerification } from '@/lib/seo';
 
 // Libre Caslon Text carries the headings and quoted reviews.
 const libreCaslon = Libre_Caslon_Text({
@@ -49,11 +49,16 @@ export const metadata: Metadata = {
   // Search Console and Bing Webmaster Tools. Absent until the tokens are set,
   // which should be on the real domain rather than the Vercel one.
   verification: siteVerification(),
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
-  },
+  // robots.txt already closes a non-canonical deployment to crawlers, but a URL
+  // that is linked from somewhere can be indexed without ever being fetched.
+  // The meta tag is what refuses that, so the two say the same thing.
+  robots: indexingAllowed()
+    ? {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
+      }
+    : { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

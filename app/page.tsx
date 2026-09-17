@@ -73,7 +73,7 @@ export default async function HomePage() {
                   <path d="M8 8h8" />
                   <path d="M9 13h0M15 13h0M9 17h0M15 17h0" />
                 </svg>
-                How Much Will It Cost?
+                What&rsquo;s the cost?
                 <svg
                   className="btn__icon"
                   viewBox="0 0 24 24"
