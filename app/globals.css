@@ -1549,12 +1549,15 @@ ul.estimate-caveat {
    The dots are 8px with 16px between them, so the 24px target each one gets
    below meets its neighbour without overlapping it. */
 /* The dots and the way on to the rest of the reviews share a line under the
-   quote. It wraps, because on a narrow screen the strip is one column wide and
-   the sentence would otherwise sit on top of the dots. */
+   quote: the dots under the text they belong to, the link out at the far edge
+   of the quote's own columns. The line wraps, because on a narrow screen the
+   strip is one column wide and the sentence would otherwise sit on top of the
+   dots; a wrapped link falls back to the left, under them. */
 .quote-rotator__foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem 1.25rem;
   margin-top: 1rem;
 }

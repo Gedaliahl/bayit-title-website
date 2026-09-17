@@ -266,10 +266,10 @@ This sequence is fixed and is the core of the site:
   and the reviewer's name as its label. A dot goes to that review and ends the
   rotation, which is also the stop control the auto-advance needs; the pointer
   or the keyboard focus resting on the strip holds it meanwhile. "Read all
-  Google reviews →" sits on the same line, linking to `/reviews` — the section
-  head treatment at `0.8125rem`, wrapping under the dots if the line runs out.
-  The whole strip degrades to the counties figure alone if Supabase is
-  unreachable.
+  Google reviews →" shares that line, pushed out to the right edge of the
+  quote's two columns and linking to `/reviews` — the section head treatment at
+  `0.8125rem`, dropping back under the dots if the line runs out. The whole
+  strip degrades to the counties figure alone if Supabase is unreachable.
 - **Underwriter credit** (`.underwriter`) — under the figure strip, above a
   hairline top rule: the First American lockup at `1.875rem` tall, a vertical
   rule, then "Policies underwritten by First American Title Insurance Company"
