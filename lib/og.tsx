@@ -23,10 +23,10 @@ export const OG_CONTENT_TYPE = 'image/png';
 // no custom properties — if these drift, the card stops matching the site.
 const INK = '#111';
 const PAPER = '#fff';
-const ACCENT = '#3b78c4';
-const ACCENT_DEEP = '#1f4e8c';
-const ACCENT_NAVY = '#0b2545';
-const ACCENT_WASH = '#e8f0fa';
+const ACCENT = '#97701a';
+const ACCENT_DEEP = '#6b4f0c';
+const ACCENT_DARK = '#2f2408';
+const ACCENT_WASH = '#f7efdc';
 const INK_MUTED = '#555';
 
 /**
@@ -90,7 +90,7 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
           fontFamily: 'Libre Caslon Text',
         }}
       >
-        {/* The threshold rule, the same blue edge the answer panel carries. */}
+        {/* The threshold rule, the same gold edge the answer panel carries. */}
         <div style={{ width: 16, height: '100%', background: ACCENT }} />
 
         <div
@@ -169,7 +169,7 @@ export function ogImage({ eyebrow, title }: CardOptions): ImageResponse {
  *
  * A gabled silhouette rather than a monogram: "bayit" is Hebrew for home, and a
  * shape survives 16px in a browser tab where a letterform turns to mush. The
- * blue band across the base is the same threshold rule as the card.
+ * gold band across the base is the same threshold rule as the card.
  *
  * Square and full-bleed on purpose. iOS masks this into a squircle itself, so a
  * corner radius here would be rounded twice, and the glyph is held at 70% to
@@ -185,7 +185,7 @@ export function iconImage(size: number): ImageResponse {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: ACCENT_NAVY,
+          background: ACCENT_DARK,
         }}
       >
         <svg width={size * 0.7} height={size * 0.7} viewBox="0 0 32 32">
