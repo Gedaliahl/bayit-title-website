@@ -243,6 +243,10 @@ This sequence is fixed and is the core of the site:
 
 - **Split hero** (`.hero__inner`) — copy left, the example file card right at
   `27.5rem`, stacking below `62rem`.
+- **Underwriter line** (`.hero__underwriter`) — under the hero buttons, the
+  First American mark (`public/brand/first-american.png`, sized off a
+  `1.75rem` height) beside "Policies underwritten by First American Title
+  Insurance Company". The mark is `alt=""` because the line names the company.
 - **Example file card** (`.filecard` / `.filestep`) — rounded, shadowed panel
   holding the four steps of a file with a dot-and-rail timeline: blue for steps
   passed, a ringed dot for the step in progress, `--rule-card` and `--ink-faint`

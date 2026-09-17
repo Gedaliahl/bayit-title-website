@@ -1186,6 +1186,24 @@ ul.estimate-caveat {
   flex-wrap: wrap;
 }
 
+/* The underwriter line. The mark keeps its own aspect ratio off the height,
+   so the logo file can be replaced without touching the layout. */
+.hero__underwriter {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  margin: 1.75rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.hero__underwriter-mark {
+  width: auto;
+  height: 2.5rem;
+}
+
 @media (max-width: 62rem) {
   .hero__inner {
     grid-template-columns: minmax(0, 1fr);

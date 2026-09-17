@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
@@ -63,6 +64,20 @@ export default async function HomePage() {
               <Link href="/quote" className="btn btn--quiet">
                 Request a quote
               </Link>
+            </p>
+            {/* The underwriter, above the fold. The mark is decorative — the
+                company is named in the line beside it, so a screen reader
+                should hear it once. */}
+            <p className="hero__underwriter">
+              <Image
+                src="/brand/first-american.png"
+                alt=""
+                width={811}
+                height={190}
+                className="hero__underwriter-mark"
+                priority
+              />
+              <span>Policies underwritten by {site.underwriter}</span>
             </p>
           </div>
 
