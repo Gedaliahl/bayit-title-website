@@ -50,9 +50,7 @@ export default async function HomePage() {
       <section className="section hero">
         <div className="frame hero__inner">
           <div>
-            <p className="eyebrow">
-              {site.address.city}, Florida
-            </p>
+            <p className="eyebrow">Florida</p>
             <h1>A title agency that tells you what the search actually says.</h1>
             <p className="hero__lede">
               We search title, examine what comes back, issue policies as an agent for{' '}
