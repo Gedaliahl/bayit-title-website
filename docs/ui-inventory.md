@@ -243,6 +243,14 @@ This sequence is fixed and is the core of the site:
 
 - **Split hero** (`.hero__inner`) — copy left, the example file card right at
   `27.5rem`, stacking below `62rem`.
+- **Underwriter credit** (`.underwriter`) — the First American lockup at
+  `1.875rem` tall, a hairline rule, then "Policies underwritten by First
+  American Title Insurance Company" at `0.8125rem` in `--ink-muted`. It sits
+  above the h1 so the underwriter is on screen before anyone scrolls, on a
+  phone as much as on a desktop; below `30rem` the sentence drops under the
+  mark and the rule comes off. The sentence is `underwriterLine` in
+  `lib/site.ts`, which the footer credential line also reads, so the two
+  cannot drift apart.
 - **Example file card** (`.filecard` / `.filestep`) — rounded, shadowed panel
   holding the four steps of a file with a dot-and-rail timeline: blue for steps
   passed, a ringed dot for the step in progress, `--rule-card` and `--ink-faint`
@@ -280,12 +288,13 @@ all nine pages with the draft banner.
 ## 7. Open questions for design
 
 1. **Photography.** There is none. Nothing in the firm's Instagram works at hero
-   size. Apart from the brand mark and the ticker's line icons the site carries
-   **no imagery**, and the hero has none by design.
+   size. Apart from the brand mark, the underwriter's lockup in the hero and the
+   ticker's line icons the site carries **no imagery**, and the hero has no
+   photography by design.
 2. **A vector logo.** The masthead mark is `public/brand/mark-t.png`, a raster
    crop with a transparent ground. An SVG would be better at every size.
-3. **The homepage hero** is a headline, a paragraph, two buttons and the example
-   file card. The card carries the hero now; whether that is enough without
+3. **The homepage hero** is an underwriter credit, a headline, a paragraph, one
+   button and the example file card. The card carries the hero now; whether that is enough without
    photography is still worth a designer's eye.
 4. **Empty states.** The library index and homepage card grid have no designed
    empty state — they simply render nothing, which is what you will see today.

@@ -9,6 +9,7 @@ import { CountUp } from '@/components/CountUp';
 import { ServicesTicker } from '@/components/ServicesTicker';
 import { FileTimeline } from '@/components/FileTimeline';
 import { FeaturedQuote } from '@/components/Reviews';
+import { UnderwriterBadge } from '@/components/UnderwriterBadge';
 
 export const metadata: Metadata = {
   title: `Florida title insurance agency in ${site.address.city}`,
@@ -50,6 +51,7 @@ export default async function HomePage() {
       <section className="section hero">
         <div className="frame hero__inner">
           <div>
+            <UnderwriterBadge />
             <h1>Got a Florida deal to close? We make the title and closing simple.</h1>
             <p className="hero__lede">
               We search title, examine what comes back, issue policies, hold the escrow and run

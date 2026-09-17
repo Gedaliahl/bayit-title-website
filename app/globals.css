@@ -1219,6 +1219,41 @@ ul.estimate-caveat {
   align-items: center;
 }
 
+/* The underwriter credit above the headline. It has to read as a credential
+   rather than a second masthead, so the mark is set small and the sentence
+   beside it takes the same faint label treatment as the rest of the chrome. On
+   a phone the two stack, which keeps the sentence on one or two lines instead
+   of breaking mid-name. */
+
+.underwriter {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.25rem;
+}
+
+.underwriter__mark {
+  width: auto;
+  height: 1.875rem;
+}
+
+.underwriter__line {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  padding-left: 0.875rem;
+  border-left: 1px solid var(--rule);
+}
+
+@media (max-width: 30rem) {
+  .underwriter__line {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
 .hero h1 {
   font-size: clamp(2.5rem, 1.5rem + 3.9vw, 3.75rem);
   margin: 0 0 1.5rem;
