@@ -1370,8 +1370,8 @@ ul.estimate-caveat {
 }
 
 /* ---------- services ticker ---------- */
-/* What the office closes, as a band rather than a list, because the list is
-   eight items long and nobody reads the eighth. */
+/* What the office closes, as a band rather than a list, because a band reads
+   in passing and a list asks to be read. */
 
 .ticker {
   position: relative;

@@ -249,9 +249,10 @@ This sequence is fixed and is the core of the site:
   for the step still to come. It is labelled "Example file" because it is a
   sequence, not a schedule.
 - **Services ticker** (`.ticker`) — full-bleed band of pill cards, one per
-  transaction type on the order form, scrolling left over 46s with the run
-  duplicated for a seamless loop and the second copy `aria-hidden`. Faded edges
-  both sides.
+  headline transaction type (Residential, Commercial, Refinance, 1031 Exchange,
+  FIRPTA), scrolling left over 46s. The run repeats four times so it fills a
+  wide screen and the half-width shift loops without a seam; only the first
+  copy is announced, the rest are `aria-hidden`. Faded edges both sides.
 - **Figure strip** (`.figures__grid`) — four columns: two figures with gold left
   rules that count up once on load (`components/CountUp.tsx`), then a Google
   review across the remaining two with an accent rule, accent stars and the
