@@ -95,8 +95,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <ServicesTicker />
-
       <section className="section figures">
         <div className="frame figures__grid">
           <div className="figure">
@@ -126,6 +124,8 @@ export default async function HomePage() {
           <UnderwriterBadge />
         </div>
       </section>
+
+      <ServicesTicker />
 
       <section className="section section--band">
         <div className="frame measure">

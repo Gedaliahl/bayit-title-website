@@ -1453,6 +1453,12 @@ ul.estimate-caveat {
   }
 }
 
+/* The ticker carries its own rule on both edges, so where it runs straight into
+   a banded section the two hairlines would stack into one 2px line. */
+.ticker + .section--band {
+  border-top: 0;
+}
+
 /* ---------- figure strip ---------- */
 
 .figures__grid {
