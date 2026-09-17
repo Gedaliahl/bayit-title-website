@@ -162,6 +162,19 @@ export default function PrivacyPage() {
             hour, so the forms cannot be flooded.
           </li>
           <li>
+            <strong>The address box on the estimator is not stored.</strong> While you type an
+            address there, this site asks public records about it and shows you what they say:
+            county property appraisers&rsquo; published tax rolls and address points, the city of
+            Jacksonville&rsquo;s address locator, the Florida Department of Revenue&rsquo;s
+            statewide parcel roll and the U.S. Census Bureau&rsquo;s address geocoder. To find
+            addresses in counties that publish none of their own, we also send what you type to
+            Esri&rsquo;s geocoding service, which tells us where a building is and nothing else;
+            we ask for the result on the basis that it is not stored, and we do not store it. The
+            address is not written to our database, not emailed to the office and not kept after
+            the answer comes back, and it is sent as a POST so it does not appear in a server log
+            the way a search in a web address would.
+          </li>
+          <li>
             <strong>We run no advertising or social media trackers.</strong> This site loads no
             third-party scripts at all, which your browser enforces rather than taking our word for
             it.

@@ -17,6 +17,7 @@ import {
   otherRateLabel,
 } from '@/lib/assessed-estimate';
 import { originalPremium, reissuePremium } from '@/lib/promulgated-premium';
+import { deedStampTaxDue, discretionarySurtaxDue } from '@/lib/statutory-rates';
 
 describe('guessing the county from an address', () => {
   it('finds the city in a full street address', () => {
@@ -58,13 +59,16 @@ describe('guessing the county from an address', () => {
 });
 
 describe('pricing from an assessed value', () => {
+  const premiumOf = (result: ReturnType<typeof estimateFromAssessedValue>) =>
+    result.groups.find((group) => group.title === 'Title insurance premium');
+
   it('prices the owner’s policy at the promulgated original rate', () => {
     const result = estimateFromAssessedValue({
       ...ASSESSED_DEFAULTS,
       assessedValue: 500_000,
     });
 
-    expect(result.total).toBe(originalPremium(500_000));
+    expect(result.premiumTotal).toBe(originalPremium(500_000));
     // The alternative offered alongside is the reissue rate on the same cover.
     expect(result.alternateRateTotal).toBe(reissuePremium(500_000));
     expect(otherRateLabel(false)).toBe('reissue rate');
@@ -77,7 +81,7 @@ describe('pricing from an assessed value', () => {
       loanAmount: 400_000,
     });
 
-    expect(result.total).toBe(originalPremium(500_000) + 25);
+    expect(result.premiumTotal).toBe(originalPremium(500_000) + 25);
   });
 
   it('rates a refinance on the loan, never on the assessed value', () => {
@@ -89,16 +93,32 @@ describe('pricing from an assessed value', () => {
       loanAmount: 300_000,
     });
 
-    expect(result.total).toBe(originalPremium(300_000));
-    expect(result.lines).toHaveLength(1);
+    expect(result.premiumTotal).toBe(originalPremium(300_000));
+    expect(premiumOf(result)?.lines).toHaveLength(1);
+  });
+
+  it('leaves the deed out of a refinance, and the deed tax with it', () => {
+    const labels = estimateFromAssessedValue({
+      ...ASSESSED_DEFAULTS,
+      purpose: 'refinance',
+      assessedValue: 900_000,
+      loanAmount: 300_000,
+    })
+      .groups.flatMap((group) => group.lines)
+      .map((line) => line.label.toLowerCase());
+
+    expect(labels.some((label) => label.includes('deed'))).toBe(false);
+    expect(labels.some((label) => label.includes('stamp tax on the mortgage'))).toBe(true);
+    expect(labels.some((label) => label.includes('intangible'))).toBe(true);
   });
 
   it('says nothing at all until it has been given a number', () => {
-    expect(estimateFromAssessedValue(ASSESSED_DEFAULTS)).toEqual({
-      lines: [],
-      total: 0,
-      alternateRateTotal: null,
-    });
+    const result = estimateFromAssessedValue(ASSESSED_DEFAULTS);
+
+    expect(result.groups).toEqual([]);
+    expect(result.total).toBe(0);
+    expect(result.premiumTotal).toBe(0);
+    expect(result.alternateRateTotal).toBeNull();
   });
 
   it('treats a negative value as no value rather than as a credit', () => {
@@ -108,20 +128,101 @@ describe('pricing from an assessed value', () => {
       loanAmount: -5,
     });
 
-    expect(result.lines).toEqual([]);
+    expect(result.groups).toEqual([]);
     expect(result.total).toBe(0);
   });
 
-  it('never prices the transfer taxes, which are charged on consideration', () => {
+  /**
+   * The taxes are the reason the county selector is on the page at all: the
+   * premium schedule is statewide, and a figure that moved with the county
+   * would be wrong. What does move with the county is the tax on the deed.
+   */
+  describe('what the county changes', () => {
+    const inputs = { ...ASSESSED_DEFAULTS, assessedValue: 500_000, loanAmount: 400_000 };
+
+    it('keeps the premium identical across counties', () => {
+      const broward = estimateFromAssessedValue({ ...inputs, countySlug: 'broward-county' });
+      const dade = estimateFromAssessedValue({ ...inputs, countySlug: 'miami-dade-county' });
+
+      expect(dade.premiumTotal).toBe(broward.premiumTotal);
+    });
+
+    it('charges Miami-Dade’s 60-cent deed rate where the rest of Florida pays 70', () => {
+      const broward = estimateFromAssessedValue({ ...inputs, countySlug: 'broward-county' });
+      const dade = estimateFromAssessedValue({ ...inputs, countySlug: 'miami-dade-county' });
+
+      const deedTax = (result: ReturnType<typeof estimateFromAssessedValue>) =>
+        result.groups
+          .flatMap((group) => group.lines)
+          .find((line) => line.label.toLowerCase().includes('deed'))?.value;
+
+      expect(deedTax(broward)).toBe(deedStampTaxDue(500_000, 'broward-county'));
+      expect(deedTax(dade)).toBe(deedStampTaxDue(500_000, 'miami-dade-county'));
+      expect(deedTax(dade)).toBeLessThan(deedTax(broward) as number);
+    });
+
+    it('adds the surtax in Miami-Dade only when it is not a single-family residence', () => {
+      const home = estimateFromAssessedValue({ ...inputs, countySlug: 'miami-dade-county' });
+      const other = estimateFromAssessedValue({
+        ...inputs,
+        countySlug: 'miami-dade-county',
+        singleFamilyResidence: false,
+      });
+      const elsewhere = estimateFromAssessedValue({
+        ...inputs,
+        countySlug: 'broward-county',
+        singleFamilyResidence: false,
+      });
+
+      const surtax = (result: ReturnType<typeof estimateFromAssessedValue>) =>
+        result.groups
+          .flatMap((group) => group.lines)
+          .find((line) => line.label.toLowerCase().includes('surtax'));
+
+      expect(surtax(home)).toBeUndefined();
+      expect(surtax(other)?.value).toBe(discretionarySurtaxDue(500_000, 'miami-dade-county'));
+      // The surtax is that one county's to levy; nowhere else charges it.
+      expect(surtax(elsewhere)).toBeUndefined();
+    });
+  });
+
+  /**
+   * The taxes are charged on the consideration and there is no consideration on
+   * this page — only a valuation figure standing in for one. That substitution
+   * is the weakest thing here, so it is asserted rather than trusted: it stays
+   * out of the premium subtotal, and it says so on the line.
+   */
+  it('keeps the taxes away from the premium and admits what they are computed on', () => {
     const result = estimateFromAssessedValue({
       ...ASSESSED_DEFAULTS,
       assessedValue: 500_000,
       loanAmount: 400_000,
     });
 
-    const labels = result.lines.map((line) => line.label.toLowerCase());
-    expect(labels.some((label) => label.includes('stamp'))).toBe(false);
-    expect(labels.some((label) => label.includes('intangible'))).toBe(false);
-    expect(labels.some((label) => label.includes('recording'))).toBe(false);
+    expect(result.premiumTotal).toBe(originalPremium(500_000) + 25);
+    expect(result.total).toBeGreaterThan(result.premiumTotal);
+
+    const premiumLabels = (premiumOf(result)?.lines ?? []).map((line) => line.label.toLowerCase());
+    expect(premiumLabels.some((label) => label.includes('stamp'))).toBe(false);
+    expect(premiumLabels.some((label) => label.includes('recording'))).toBe(false);
+
+    const deedLine = result.groups
+      .flatMap((group) => group.lines)
+      .find((line) => line.label.toLowerCase().includes('deed') && !line.label.includes('Recording'));
+
+    expect(deedLine?.note).toMatch(/consideration/i);
+  });
+
+  it('totals the groups it prints, and nothing else', () => {
+    const result = estimateFromAssessedValue({
+      ...ASSESSED_DEFAULTS,
+      assessedValue: 500_000,
+      loanAmount: 400_000,
+    });
+
+    const lines = result.groups.flatMap((group) => group.lines);
+    const summed = Math.round(lines.reduce((running, line) => running + line.value, 0) * 100) / 100;
+
+    expect(result.total).toBe(summed);
   });
 });
