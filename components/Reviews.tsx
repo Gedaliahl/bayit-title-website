@@ -1,3 +1,4 @@
+import { AnimatedStars } from '@/components/AnimatedStars';
 import type { Review } from '@/lib/reviews';
 import { formatReviewDate } from '@/lib/seo';
 
@@ -57,8 +58,10 @@ export function ReviewPullQuote({ review }: { review: Review }) {
 
 /**
  * The review set beside the figures on the homepage. The stars belong to this
- * one review and are drawn above it for that reason; the attribution line
- * underneath follows the same rules as every other review on the site.
+ * one review and are drawn above it for that reason — one at a time, as the
+ * figure strip comes into view, so they land with the counts beside them; the
+ * attribution line underneath follows the same rules as every other review on
+ * the site.
  */
 export function FeaturedQuote({ review }: { review: Review }) {
   if (!review.body) return null;
@@ -67,7 +70,7 @@ export function FeaturedQuote({ review }: { review: Review }) {
 
   return (
     <figure className="figures__quote">
-      <Stars rating={review.rating} />
+      <AnimatedStars rating={review.rating} />
       <blockquote>&ldquo;{review.body}&rdquo;</blockquote>
       <figcaption className="review__attribution">
         {review.authorName}
