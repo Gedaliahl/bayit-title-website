@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { AnimatedStars } from '@/components/AnimatedStars';
@@ -24,7 +25,8 @@ const HOLD_MS = 5_000;
 
 /**
  * The review beside the figures on the homepage, rotating through the best
- * reviews the site has, with a dot per review under it.
+ * reviews the site has, with a dot per review under it and a link on to the
+ * full set.
  *
  * Every quote is in the HTML and the first is marked current, so a reader
  * without JavaScript gets a review rather than a gap, and anything reading the
@@ -84,25 +86,33 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
         })}
       </div>
 
-      {quotes.length > 1 ? (
-        <div className="quote-rotator__dots" role="group" aria-label="Choose a review">
-          {quotes.map((quote, position) => (
-            <button
-              key={quote.id}
-              type="button"
-              className={`quote-rotator__dot${
-                position === index ? ' quote-rotator__dot--current' : ''
-              }`}
-              aria-label={`Review from ${quote.authorName}`}
-              aria-current={position === index ? 'true' : undefined}
-              onClick={() => {
-                setIndex(position);
-                setChosen(true);
-              }}
-            />
-          ))}
-        </div>
-      ) : null}
+      <div className="quote-rotator__foot">
+        {quotes.length > 1 ? (
+          <div className="quote-rotator__dots" role="group" aria-label="Choose a review">
+            {quotes.map((quote, position) => (
+              <button
+                key={quote.id}
+                type="button"
+                className={`quote-rotator__dot${
+                  position === index ? ' quote-rotator__dot--current' : ''
+                }`}
+                aria-label={`Review from ${quote.authorName}`}
+                aria-current={position === index ? 'true' : undefined}
+                onClick={() => {
+                  setIndex(position);
+                  setChosen(true);
+                }}
+              />
+            ))}
+          </div>
+        ) : null}
+
+        {/* Five of ninety-two are on show here. The arrow reads the way every
+            other onward link on the site does. */}
+        <Link href="/reviews" className="quote-rotator__all">
+          Read all Google reviews &rarr;
+        </Link>
+      </div>
     </div>
   );
 }

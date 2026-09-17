@@ -1548,10 +1548,34 @@ ul.estimate-caveat {
 
    The dots are 8px with 16px between them, so the 24px target each one gets
    below meets its neighbour without overlapping it. */
+/* The dots and the way on to the rest of the reviews share a line under the
+   quote. It wraps, because on a narrow screen the strip is one column wide and
+   the sentence would otherwise sit on top of the dots. */
+.quote-rotator__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+}
+
 .quote-rotator__dots {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
+}
+
+/* Quiet until it is wanted: the same treatment the section head links get, at
+   the size of the attribution line above it, so five reviews on show do not
+   read as an advertisement for ninety-two. */
+.quote-rotator__all {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.quote-rotator__all:hover {
+  text-decoration: underline;
 }
 
 .quote-rotator__dot {
@@ -1595,7 +1619,9 @@ ul.estimate-caveat {
   }
 }
 
-/* Nothing to click on paper, and the printed page carries the first quote. */
+/* Nothing to click on paper, and the printed page carries the first quote. The
+   link stays: it names where the rest of the reviews are, which is worth having
+   on a printed sheet even though the arrow cannot be followed. */
 @media print {
   .quote-rotator__dots {
     display: none;
