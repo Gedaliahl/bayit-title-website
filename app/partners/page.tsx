@@ -141,9 +141,11 @@ export default async function PartnersPage() {
         <p>
           Commercial transactions — entity authority, leasehold and ALTA policies, UCC and judgment
           searches, staged disbursement — are handled here rather than referred out. So are 1031
-          exchanges, which we can facilitate through {site.exchangeCompany.name}, provided the
-          exchange is set up before the relinquished property closes. If you have an investor client
-          selling into a like-kind exchange, the earliest phone call is the valuable one.{' '}
+          exchanges, which we can facilitate through {site.exchangeCompany.name} —{' '}
+          {site.exchangeCompany.relationship}, not ours, though the name suggests otherwise —
+          provided the exchange is set up before the relinquished property closes. If you have an
+          investor client selling into a like-kind exchange, the earliest phone call is the
+          valuable one.{' '}
           <Link href="/services">What we do, in full →</Link>
         </p>
 

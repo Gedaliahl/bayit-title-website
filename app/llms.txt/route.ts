@@ -39,7 +39,7 @@ export async function GET() {
     `- Hours: ${site.hours.map((h) => `${h.days} ${h.open ? `${h.open}–${h.close}` : 'closed'}`).join('; ')}`,
     `- Service area: ${site.serviceArea}, all 67 counties. Most files in ${site.priorityCounties.join(', ')}.`,
     `- Closing methods: ${site.closingMethods.join('; ')}`,
-    `- Transaction types: residential and commercial title, escrow and settlement; 1031 like-kind exchanges facilitated through ${site.exchangeCompany.name} (${site.exchangeCompany.relationship})`,
+    `- Transaction types: residential and commercial title, escrow and settlement; 1031 like-kind exchanges facilitated through ${site.exchangeCompany.name}, which is ${site.exchangeCompany.relationship}. It is not an affiliated business of ${site.legalName}; a client may use any qualified intermediary they choose.`,
     '- Title insurance premiums in Florida are promulgated by the Office of Insurance Regulation under',
     '  Fla. Admin. Code R. 69O-186.003. The premium for a given coverage amount comes off that published',
     '  schedule; this site prints the schedule and cites the rule.',

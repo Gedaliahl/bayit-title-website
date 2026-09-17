@@ -96,11 +96,12 @@ export default function AboutPage() {
         <p>
           <strong>1031 exchanges.</strong> A like-kind exchange needs a qualified intermediary, and
           the exchange has to be in place before the relinquished property closes. We can facilitate
-          one through {site.exchangeCompany.name}, which is {site.exchangeCompany.relationship}, so
-          the intermediary and the closing are coordinated in one place. You are free to use any
-          intermediary you like; tell us early either way, because after the seller has constructive
-          receipt of the money there is no exchange left to structure. We are not tax advisers — the
-          decision to exchange belongs with your CPA or tax counsel.{' '}
+          one through {site.exchangeCompany.name} — {site.exchangeCompany.relationship}, despite
+          the shared name — so the intermediary and the closing get coordinated instead of arranged
+          twice. You are free to
+          use any intermediary you like; tell us early either way, because after the seller has
+          constructive receipt of the money there is no exchange left to structure. We are not tax
+          advisers — the decision to exchange belongs with your CPA or tax counsel.{' '}
           <Link href="/services">What we do, in full →</Link>
         </p>
 
