@@ -278,6 +278,21 @@ th {
   color: var(--ink);
 }
 
+/* A button that carries icons alongside its label. `.btn` is inline-block so
+   that plain buttons sit on the text baseline; icons need the flex row to
+   centre against the cap height instead. */
+.btn--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.btn__icon {
+  width: 1.125em;
+  height: 1.125em;
+  flex: none;
+}
+
 .btn[disabled] {
   opacity: 0.55;
   cursor: not-allowed;

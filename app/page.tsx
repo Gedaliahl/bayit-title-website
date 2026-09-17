@@ -57,8 +57,35 @@ export default async function HomePage() {
               what it is and what clearing it takes, in writing, the same day.
             </p>
             <p className="hero__actions">
-              <Link href="/estimate" className="btn btn--primary">
-                How much will it cost?
+              <Link href="/estimate" className="btn btn--primary btn--icon">
+                <svg
+                  className="btn__icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="5" y="2.5" width="14" height="19" rx="2" />
+                  <path d="M8 6.5h8v3H8z" />
+                  <path d="M9 13h.01M12 13h.01M15 13h.01M9 17h.01M12 17h.01M15 17h.01" />
+                </svg>
+                How Much Will It Cost?
+                <svg
+                  className="btn__icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 12h15" />
+                  <path d="M13 6l6 6-6 6" />
+                </svg>
               </Link>
             </p>
           </div>
