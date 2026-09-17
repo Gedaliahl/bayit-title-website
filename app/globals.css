@@ -1512,7 +1512,7 @@ ul.estimate-caveat {
   margin-top: 0.625rem;
 }
 
-/* The homepage quote rotates through the best reviews, ten seconds each
+/* The homepage quote rotates through the best reviews, five seconds each
    (components/RotatingQuote.tsx). All of them are laid into one grid cell, so
    the strip is as tall as the longest of them and a change of quote never
    moves the page. The one on show is the only one visible, which is also what
@@ -1530,21 +1530,75 @@ ul.estimate-caveat {
   /* Out before in: the leaving quote clears before the next is drawn, so two
      paragraphs of text are never half-visible on top of each other. Visibility
      is transitioned alongside opacity so it holds until the fade finishes
-     rather than cutting the text on the first frame. */
-  transition: opacity 340ms ease, visibility 340ms;
+     rather than cutting the text on the first frame. The pair runs in 660ms,
+     inside a five-second hold, so a quote is still on show far longer than it
+     is on its way in or out. */
+  transition: opacity 260ms ease, visibility 260ms;
 }
 
 .quote-rotator__slide--current {
   opacity: 1;
   visibility: visible;
-  transition: opacity 460ms ease 340ms, visibility 0s 340ms;
+  transition: opacity 400ms ease 260ms, visibility 0s 260ms;
+}
+
+/* One dot per review, under the quote: which of the five is showing, and the
+   way to any of the others. They are the stop control for the auto-advance as
+   well — clicking one ends the rotation (components/RotatingQuote.tsx).
+
+   The dots are 8px with 16px between them, so the 24px target each one gets
+   below meets its neighbour without overlapping it. */
+.quote-rotator__dots {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.quote-rotator__dot {
+  position: relative;
+  appearance: none;
+  padding: 0;
+  border: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--rule-strong);
+  cursor: pointer;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+/* The dot a finger or a stylus has to hit is 24px square; the one an eye sees
+   stays 8px, because five of those beside a quote should read as a position
+   indicator rather than as a row of buttons. */
+.quote-rotator__dot::after {
+  content: '';
+  position: absolute;
+  inset: -0.5rem;
+}
+
+.quote-rotator__dot:hover {
+  background: var(--ink-faint);
+}
+
+.quote-rotator__dot--current {
+  background: var(--accent);
+  transform: scale(1.25);
 }
 
 /* The component does not rotate at all under this, so this only catches a
-   reader who turns motion down while the strip is on screen. */
+   reader who turns motion down while the strip is on screen, or one moving
+   through the reviews with the dots. */
 @media (prefers-reduced-motion: reduce) {
-  .quote-rotator__slide {
+  .quote-rotator__slide,
+  .quote-rotator__dot {
     transition: none;
+  }
+}
+
+/* Nothing to click on paper, and the printed page carries the first quote. */
+@media print {
+  .quote-rotator__dots {
+    display: none;
   }
 }
 

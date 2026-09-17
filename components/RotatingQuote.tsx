@@ -14,29 +14,35 @@ export interface Quote {
   id: string;
   rating: number;
   body: string;
+  /** On its own as well as in `attribution`, for the dots' labels. */
+  authorName: string;
   attribution: string;
 }
 
-/** Ten seconds on each review. */
-const HOLD_MS = 10_000;
+/** Five seconds on each review. */
+const HOLD_MS = 5_000;
 
 /**
  * The review beside the figures on the homepage, rotating through the best
- * reviews the site has.
+ * reviews the site has, with a dot per review under it.
  *
  * Every quote is in the HTML and the first is marked current, so a reader
  * without JavaScript gets a review rather than a gap, and anything reading the
  * page reads real reviews. The rotation is held back for a reader who has asked
- * for less motion — they keep the first, which is also the best — and pauses
- * while the pointer is over the quote, so a review is never swapped out from
- * under someone mid-sentence.
+ * for less motion — they keep the first, which is also the best, and the dots
+ * still take them to any of the others — and pauses while the pointer or the
+ * keyboard focus is on the strip, so a review is never swapped out from under
+ * someone mid-sentence. Clicking a dot stops the rotation for good: a reader
+ * who has picked a review should not be moved off it five seconds later, and
+ * that makes the dots the stop control the auto-advance needs.
  */
 export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; holdMs?: number }) {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [held, setHeld] = useState(false);
+  const [chosen, setChosen] = useState(false);
 
   useEffect(() => {
-    if (quotes.length < 2 || paused) return;
+    if (quotes.length < 2 || held || chosen) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const timer = setInterval(() => {
@@ -44,7 +50,7 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
     }, holdMs);
 
     return () => clearInterval(timer);
-  }, [quotes.length, paused, holdMs]);
+  }, [quotes.length, held, chosen, holdMs]);
 
   const current = quotes[index];
   if (!current) return null;
@@ -52,8 +58,11 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
   return (
     <div
       className="figures__quote"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => setHeld(true)}
+      onMouseLeave={() => setHeld(false)}
+      // Capture, because the focus lands on a dot rather than on this div.
+      onFocusCapture={() => setHeld(true)}
+      onBlurCapture={() => setHeld(false)}
     >
       <AnimatedStars rating={current.rating} />
 
@@ -74,6 +83,26 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
           );
         })}
       </div>
+
+      {quotes.length > 1 ? (
+        <div className="quote-rotator__dots" role="group" aria-label="Choose a review">
+          {quotes.map((quote, position) => (
+            <button
+              key={quote.id}
+              type="button"
+              className={`quote-rotator__dot${
+                position === index ? ' quote-rotator__dot--current' : ''
+              }`}
+              aria-label={`Review from ${quote.authorName}`}
+              aria-current={position === index ? 'true' : undefined}
+              onClick={() => {
+                setIndex(position);
+                setChosen(true);
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

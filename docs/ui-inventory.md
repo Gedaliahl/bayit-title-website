@@ -255,14 +255,18 @@ This sequence is fixed and is the core of the site:
 - **Figure strip** (`.figures__grid`) — four columns: two figures with gold left
   rules that count up once on load (`components/CountUp.tsx`), then a Google
   review across the remaining two with an accent rule, accent stars and the
-  quote set in Libre Caslon Text. The quote rotates through five reviews, ten
+  quote set in Libre Caslon Text. The quote rotates through five reviews, five
   seconds each (`components/RotatingQuote.tsx`): the five rows marked
   `is_featured` in Supabase, short enough for the two columns the quote has, in
   the site's own order. All five are in the HTML, stacked in one grid cell so
   the strip is as tall as the longest and a rotation never moves the page; the
   first is the one on show without JavaScript, in print, and for a reader who
-  has asked for less motion. Hovering the quote pauses the rotation. The whole
-  strip degrades to the counties figure alone if Supabase is unreachable.
+  has asked for less motion. Five dots sit under the quote — 8px, `--rule-strong`,
+  the one on show in `--accent` and a quarter larger, each with a 24px hit area
+  and the reviewer's name as its label. A dot goes to that review and ends the
+  rotation, which is also the stop control the auto-advance needs; the pointer
+  or the keyboard focus resting on the strip holds it meanwhile. The whole strip
+  degrades to the counties figure alone if Supabase is unreachable.
 - **Underwriter credit** (`.underwriter`) — under the figure strip, above a
   hairline top rule: the First American lockup at `1.875rem` tall, a vertical
   rule, then "Policies underwritten by First American Title Insurance Company"
