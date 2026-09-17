@@ -49,9 +49,10 @@ advertising and from the firm's professional exposure.
 
 ## 3. Design direction as built
 
-White ground, black text, one trust blue carrying every action. No photography,
-no navy-and-gold crest, no skyline: the page is type, hairlines and a single
-accent, which is what the two audiences above are actually here for.
+White ground, black text, one antique gold carrying every action — the same
+gold as the masthead mark. No photography, no crest, no skyline: the page is
+type, hairlines and a single accent, which is what the two audiences above are
+actually here for.
 
 The **answer panel** on library pages stays the one intentionally bold element,
 because that is the block an AI assistant lifts and the block a hurried reader
@@ -64,21 +65,20 @@ ticker and the two figures that count up once on load.
 |---|---|---|
 | `--ink` | `#111` | Body text. |
 | `--paper` | `#fff` | Page ground. |
-| `--band` | `#f6f8fb` | Alternating section grounds. |
-| `--accent` | `#3b78c4` | Primary actions, rules, the live timeline step. |
-| `--accent-deep` | `#1f4e8c` | Links, eyebrows, chip text. |
-| `--accent-navy` | `#0b2545` | The masthead button, and nothing else. |
-| `--accent-wash` | `#e8f0fa` | Chips, icon discs, answer panel, CTA. |
-| `--gold` | `#b58a4c` | Review stars and the pull-quote rule. Nowhere else. |
+| `--band` | `#faf7f0` | Alternating section grounds. |
+| `--accent` | `#97701a` | Primary actions, rules, the live timeline step. |
+| `--accent-deep` | `#6b4f0c` | Links, eyebrows, chip text. |
+| `--accent-dark` | `#2f2408` | The masthead button, and nothing else. |
+| `--accent-wash` | `#f7efdc` | Chips, icon discs, answer panel, CTA. |
 | `--flag` | `#6f1d2b` | VERIFY banners and form errors only. |
 | `--ink-muted` | `#555` | Secondary text, labels, credential line. |
-| `--ink-faint` | `#7a8799` | Steps not yet reached on the example file card. |
-| `--rule` | `#e5e7eb` | Chrome and section hairlines. |
-| `--rule-card` | `#dfe3ea` | Card, pill and panel edges. |
-| `--rule-strong` | `#aeb8c6` | Input borders, which need a visible edge. |
+| `--ink-faint` | `#8a8070` | Steps not yet reached on the example file card. |
+| `--rule` | `#e8e4db` | Chrome and section hairlines. |
+| `--rule-card` | `#e3ded2` | Card, pill and panel edges. |
+| `--rule-strong` | `#bdb3a0` | Input borders, which need a visible edge. |
 
 Two off-token colours exist: `#fdf6f2`, the warm blush ground of the VERIFY
-banner, and `#123a66` as the navy button's hover.
+banner, and `#46360f` as the dark button's hover.
 
 There is currently **no dark mode**.
 
@@ -164,7 +164,7 @@ Class names are the real ones in `app/globals.css`.
 that wraps. Wordmark is the 38×42 brand mark beside "BAYIT" in Libre Caslon Text
 1.4375rem with `0.04em` tracking, then "TITLE" at 0.8125rem with `0.28em`
 tracking in `--accent-deep`. Nav is DM Sans 0.9375rem/500 with a transparent
-bottom border that turns blue on hover, plus the navy button ("Open an order").
+bottom border that turns gold on hover, plus the dark button ("Open an order").
 
 **Footer** (`.sitefoot`) — four auto-fit columns at `13rem` min: address/phone/
 email, hours, pages, get started. Below them `.credential-line`: 0.8125rem
@@ -181,8 +181,8 @@ This sequence is fixed and is the core of the site:
    in `--accent-deep`
 3. **H1** — the reader's question verbatim ("There's a judgment against the
    seller. What happens to the closing?")
-4. **Answer panel** (`.answer-panel`) — **the signature element.** Pale blue
-   ground, 3px blue left rule, `1.5rem 1.75rem` padding. Contains an
+4. **Answer panel** (`.answer-panel`) — **the signature element.** Pale gold
+   ground, 3px gold left rule, `1.5rem 1.75rem` padding. Contains an
    `--accent-deep` label "THE SHORT ANSWER" and 40–60 words at `--step-1`/1.55.
    Square, flat, no radius, no shadow.
 5. **Draft banner** (`.verify-banner`, 2px) — only on unreviewed drafts
@@ -195,45 +195,45 @@ This sequence is fixed and is the core of the site:
 7. **Quick facts** (`.quick-facts`) — rounded 1px box with a 2px `--accent` top
    rule. Two-column `dl` (label column `8rem` min) that stacks below `34rem`
 8. **Prose** (`.prose`) — H2s carry a top hairline and generous space above
-9. **Review pull-quote** (`.review--pull`) — optional, topic-matched. Gold left
+9. **Review pull-quote** (`.review--pull`) — optional, topic-matched. Accent left
    rule, rounded on the outer corners
 10. **Related situations** (`.linklist`) — hairline-separated rows, title plus
     a muted DM Sans subtitle
 11. **Byline** (`.byline`) — top hairline, DM Sans 0.875rem muted. Names the
     licensed reviewer, their credential, review date and next review date
-12. **Quiet CTA** (`.cta`) — pale blue rounded panel, flex row: one sentence of
+12. **Quiet CTA** (`.cta`) — pale gold rounded panel, flex row: one sentence of
     specific text, then a primary button and the phone number as a quiet button
 
 ### Other pieces
 
-- **Buttons** — `.btn--primary` blue on white; `.btn--quiet` transparent with a
-  1.5px ink border, pale blue on hover; `.btn--navy` is the masthead's and is
+- **Buttons** — `.btn--primary` gold on white; `.btn--quiet` transparent with a
+  1.5px ink border, pale gold on hover; `.btn--dark` is the masthead's and is
   used nowhere else. DM Sans 0.9375rem/600, `6px` radius.
 - **Cards** (`.card-grid` / `.card`) — `auto-fill` grid at `17rem` min,
   `1.25rem` gap; `.card-grid--three` pins the homepage row to three columns.
-  1px border, `12px` radius, no shadow. Optional `.chip` (pale blue pill,
+  1px border, `12px` radius, no shadow. Optional `.chip` (pale gold pill,
   `--accent-deep` text), then a sans 600 title link; `.card__meta` is the older
   uppercase meta line, still used on the index pages.
-- **Chips** (`.chip`) — pale blue pill, 0.75rem/600, used for cluster labels and
+- **Chips** (`.chip`) — pale gold pill, 0.75rem/600, used for cluster labels and
   for the "Example file" marker on the homepage card.
 - **Link lists** (`.linklist`) — the dominant list pattern. Hairline rows,
   optional muted sub-line.
 - **Reviews** — `.review` hairline-separated block with body text then a muted
-  attribution line: gold stars, name, date, "Google review". **Many reviews
+  attribution line: accent stars, name, date, "Google review". **Many reviews
   deliberately show no date** — those dates were derived from relative labels
   and can't be trusted, so nothing is printed. The design must not require a
   date to be present.
 - **Forms** — `.field` label/hint/input/error stack; `.field-row` is an
   `auto-fit` grid at `13rem`; `fieldset` + `legend` group sections with an
   uppercase DM Sans legend. Error state turns borders `--flag` and shows a
-  0.8125rem message. `.form-status--ok` is a pale blue panel; `--error` is
+  0.8125rem message. `.form-status--ok` is a pale gold panel; `--error` is
   `--flag`-bordered. `.form-note` carries the wire-fraud warning.
 - **Calculator** (`.calc`) — two columns capped at `56rem`, inputs left at
   `18rem` and figures right, stacking to one column below `52rem`. The figures
   panel (`.calc__result`) reuses the quick-facts frame: 1px border with a 2px
   `--accent` top rule. Each `.estimate-line` is a hairline row with the
   label and its citation left and a tabular-numeral amount right; the total
-  sits under a 2px blue rule. **Every line carries its citation** — that is
+  sits under a 2px gold rule. **Every line carries its citation** — that is
   the design, not decoration, and a redesign must keep the figure and its
   authority in the same row.
 - **Section grounds** (`.section--band`) — full-bleed `--band` bands, hairlined
@@ -244,7 +244,7 @@ This sequence is fixed and is the core of the site:
 - **Split hero** (`.hero__inner`) — copy left, the example file card right at
   `27.5rem`, stacking below `62rem`.
 - **Example file card** (`.filecard` / `.filestep`) — rounded, shadowed panel
-  holding the four steps of a file with a dot-and-rail timeline: blue for steps
+  holding the four steps of a file with a dot-and-rail timeline: gold for steps
   passed, a ringed dot for the step in progress, `--rule-card` and `--ink-faint`
   for the step still to come. It is labelled "Example file" because it is a
   sequence, not a schedule.
@@ -252,9 +252,9 @@ This sequence is fixed and is the core of the site:
   transaction type on the order form, scrolling left over 46s with the run
   duplicated for a seamless loop and the second copy `aria-hidden`. Faded edges
   both sides.
-- **Figure strip** (`.figures__grid`) — four columns: two figures with blue left
+- **Figure strip** (`.figures__grid`) — four columns: two figures with gold left
   rules that count up once on load (`components/CountUp.tsx`), then a featured
-  Google review across the remaining two with a gold rule, gold stars and the
+  Google review across the remaining two with an accent rule, accent stars and the
   quote set in Libre Caslon Text. The review is whichever row is `is_featured`
   in Supabase; the shortest is chosen so the strip keeps its shape, and the
   whole strip degrades to the counties figure alone if Supabase is unreachable.

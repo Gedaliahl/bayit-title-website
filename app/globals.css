@@ -1,22 +1,21 @@
-/* Design tokens. White ground, black text, one trust blue carrying every
-   action, gold held back for quoted reviews. See HANDOFF.md. */
+/* Design tokens. White ground, black text, one antique gold carrying every
+   action — the same gold as the masthead mark. See HANDOFF.md. */
 
 :root {
   --ink: #111;             /* body text */
   --paper: #fff;
-  --band: #f6f8fb;         /* alternating section grounds */
-  --accent: #3b78c4;       /* primary actions, rules, the live timeline */
-  --accent-deep: #1f4e8c;  /* links, labels, chip text */
-  --accent-navy: #0b2545;  /* the one dark button, in the masthead */
-  --accent-wash: #e8f0fa;  /* chips, icon discs, answer panel ground */
-  --gold: #b58a4c;         /* review stars and the pull-quote rule, nowhere else */
+  --band: #faf7f0;         /* alternating section grounds */
+  --accent: #97701a;       /* primary actions, rules, the live timeline */
+  --accent-deep: #6b4f0c;  /* links, labels, chip text */
+  --accent-dark: #2f2408;  /* the one dark button, in the masthead */
+  --accent-wash: #f7efdc;  /* chips, icon discs, answer panel ground */
   --flag: #6f1d2b;         /* unresolved facts and form errors only */
 
   --ink-muted: #555;
-  --ink-faint: #7a8799;
-  --rule: #e5e7eb;         /* chrome and section rules */
-  --rule-card: #dfe3ea;    /* card, pill and panel edges */
-  --rule-strong: #aeb8c6;  /* form controls, which need a visible edge */
+  --ink-faint: #8a8070;
+  --rule: #e8e4db;         /* chrome and section rules */
+  --rule-card: #e3ded2;    /* card, pill and panel edges */
+  --rule-strong: #bdb3a0;  /* form controls, which need a visible edge */
 
   --font-display: var(--font-libre-caslon), Georgia, 'Times New Roman', serif;
   --font-body: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -24,7 +23,7 @@
   --radius: 6px;
   --radius-card: 12px;
   --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.08);
-  --shadow-pill: 0 4px 14px rgba(11, 37, 69, 0.06);
+  --shadow-pill: 0 4px 14px rgba(47, 36, 8, 0.06);
 
   --measure: 34rem;        /* reading column */
   --wide: 77.5rem;         /* page frame */
@@ -254,17 +253,17 @@ th {
   color: var(--paper);
 }
 
-/* The masthead's single dark button. Navy rather than the action blue so the
-   one call to action that follows the reader down every page is the darkest
-   thing in the chrome. */
-.btn--navy {
-  background: var(--accent-navy);
+/* The masthead's single dark button. Near-black bronze rather than the action
+   gold so the one call to action that follows the reader down every page is
+   the darkest thing in the chrome. */
+.btn--dark {
+  background: var(--accent-dark);
   color: var(--paper);
   padding: 0.75rem 1.375rem;
 }
 
-.btn--navy:hover {
-  background: #123a66;
+.btn--dark:hover {
+  background: #46360f;
   color: var(--paper);
 }
 
@@ -277,6 +276,21 @@ th {
 .btn--quiet:hover {
   background: var(--accent-wash);
   color: var(--ink);
+}
+
+/* A button that carries icons alongside its label. `.btn` is inline-block so
+   that plain buttons sit on the text baseline; icons need the flex row to
+   centre against the cap height instead. */
+.btn--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.btn__icon {
+  width: 1.125em;
+  height: 1.125em;
+  flex: none;
 }
 
 .btn[disabled] {
@@ -357,7 +371,7 @@ th {
 
 /* `:not(.btn)` is load-bearing, not tidiness. `.nav a` outranks `.btn--primary`
    on specificity — a class plus an element beats a class — so without it this
-   rule repainted the header's "Open an order" button ink-on-blue at a
+   rule repainted the header's "Open an order" button ink-on-gold at a
    contrast ratio of 1.46:1, and overrode its padding besides. A button that
    happens to sit in the nav is not a nav link. Same guard on the other two
    container rules below, which have the same shape and would fail the same way
@@ -774,7 +788,7 @@ th {
 }
 
 .review__stars {
-  color: var(--gold);
+  color: var(--accent);
   letter-spacing: 0.1em;
   font-size: 0.875rem;
 }
@@ -837,7 +851,7 @@ th {
   background: var(--paper);
   border: 1px solid var(--rule-card);
   border-top: none;
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--accent);
   border-radius: 0 var(--radius-card) var(--radius-card) 0;
   padding: 1.1rem 1.35rem;
   margin: 2rem 0;
@@ -1460,7 +1474,7 @@ ul.estimate-caveat {
 
 .figures__quote {
   grid-column: span 2;
-  border-left: 2px solid var(--gold);
+  border-left: 2px solid var(--accent);
   padding: 0.25rem 1.5rem 0.25rem 1.375rem;
   display: flex;
   flex-direction: column;
