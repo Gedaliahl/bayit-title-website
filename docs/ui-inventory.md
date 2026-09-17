@@ -258,6 +258,15 @@ This sequence is fixed and is the core of the site:
   quote set in Libre Caslon Text. The review is whichever row is `is_featured`
   in Supabase; the shortest is chosen so the strip keeps its shape, and the
   whole strip degrades to the counties figure alone if Supabase is unreachable.
+- **Underwriter credit** (`.underwriter`) — under the figure strip, above a
+  hairline top rule: the First American lockup at `1.875rem` tall, a vertical
+  rule, then "Policies underwritten by First American Title Insurance Company"
+  at `0.8125rem` in `--ink-muted`. It sits with the figures because it is the
+  same kind of statement they are — a checkable fact rather than a claim. Below
+  `30rem` the sentence drops under the mark and the vertical rule comes off, so
+  the company name does not break mid-phrase. The sentence is `underwriterLine`
+  in `lib/site.ts`, which the footer credential line also reads, so the two
+  cannot drift apart.
 
 ---
 
@@ -280,11 +289,12 @@ all nine pages with the draft banner.
 ## 7. Open questions for design
 
 1. **Photography.** There is none. Nothing in the firm's Instagram works at hero
-   size. Apart from the brand mark and the ticker's line icons the site carries
-   **no imagery**, and the hero has none by design.
+   size. Apart from the brand mark, the underwriter's lockup under the figure
+   strip and the ticker's line icons the site carries **no imagery**, and the
+   hero has none by design.
 2. **A vector logo.** The masthead mark is `public/brand/mark-t.png`, a raster
    crop with a transparent ground. An SVG would be better at every size.
-3. **The homepage hero** is a headline, a paragraph, two buttons and the example
+3. **The homepage hero** is a headline, a paragraph, one button and the example
    file card. The card carries the hero now; whether that is enough without
    photography is still worth a designer's eye.
 4. **Empty states.** The library index and homepage card grid have no designed

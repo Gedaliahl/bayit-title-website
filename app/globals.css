@@ -288,9 +288,17 @@ th {
 }
 
 .btn__icon {
-  width: 1.125em;
-  height: 1.125em;
+  width: 1.25em;
+  height: 1.25em;
   flex: none;
+}
+
+/* Set in caps, which needs the tracking opened up to stay readable at this
+   size. The label stays sentence case in the markup so the text a reader
+   copies, or a screen reader spells out, is the ordinary sentence. */
+.btn--caps {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .btn[disabled] {
@@ -1496,6 +1504,45 @@ ul.estimate-caveat {
 
 .figures__quote .review__attribution {
   margin-top: 0.625rem;
+}
+
+/* The underwriter credit, under the figure strip. It belongs with the counties
+   count and the review rating because it is the same kind of statement — a
+   checkable fact about the agency rather than a claim — and it has to read as a
+   credential rather than a second masthead, so the mark is set small and the
+   sentence beside it takes the same faint label treatment as the figures' own
+   labels. On a phone the two stack, which keeps the sentence off a line that
+   breaks mid-name. */
+
+.underwriter {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  margin: 2.25rem 0 0;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.underwriter__mark {
+  width: auto;
+  height: 1.875rem;
+}
+
+.underwriter__line {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+  padding-left: 0.875rem;
+  border-left: 1px solid var(--rule);
+}
+
+@media (max-width: 30rem) {
+  .underwriter__line {
+    padding-left: 0;
+    border-left: 0;
+  }
 }
 
 @media (max-width: 60rem) {

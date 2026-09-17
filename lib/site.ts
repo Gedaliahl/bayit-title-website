@@ -112,7 +112,14 @@ export const officeHoursLine = site.hours
   .map((entry) => `${entry.days}, ${entry.open} to ${entry.close}`)
   .join('; ');
 
+/**
+ * The underwriter credit, in the one wording used everywhere it appears: the
+ * hero's underwriter badge and the footer's credential line both read from
+ * here, so the sentence cannot drift between the two.
+ */
+export const underwriterLine = `Policies underwritten by ${site.underwriter}`;
+
 export const footerCredentialLine =
   `${site.legalName} · Florida Title Insurance Agency License ${site.agencyLicense} · ` +
   `Agent in Charge: ${site.agentInCharge.legalName}, License ${site.agentInCharge.license} · ` +
-  `Policies underwritten by ${site.underwriter}`;
+  underwriterLine;
