@@ -181,6 +181,15 @@ describe('a unit on the end of one of them', () => {
     expect(addressesAgree('100 Worth Ave PH 14', '100 WORTH AVE')).toBe(true);
   });
 
+  it('matches a street that ends in a directional', () => {
+    // One letter, and identical: "1832 Manatee Ave E" is filed on the state
+    // roll as "1832 MANATEE AVE E".
+    expect(addressesAgree('1832 Manatee Ave E', '1832 MANATEE AVE E')).toBe(true);
+    expect(addressesAgree('1524 8th Ave W', '1524 8TH AVE W')).toBe(true);
+    // But not to the other side of the street grid.
+    expect(addressesAgree('1832 Manatee Ave E', '1832 MANATEE AVE W')).toBe(false);
+  });
+
   it('does not stretch to another street', () => {
     expect(addressesAgree('400 S Orange Ave', '400 S ORANGE BLOSSOM TRL')).toBe(false);
     expect(addressesAgree('5151 N Sr Highway A1a', '5151 N HIGHWAY A1A 312')).toBe(false);

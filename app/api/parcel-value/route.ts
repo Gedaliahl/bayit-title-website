@@ -35,6 +35,10 @@ const lookupSchema = z.discriminatedUnion('kind', [
     lon: z.number().min(-180).max(180),
   }),
   z.object({
+    kind: z.literal('esri'),
+    magicKey: z.string().trim().min(1).max(512),
+  }),
+  z.object({
     kind: z.literal('jacksonville'),
     // Base64 of the locator's own reference, which is as long as it is.
     magicKey: z.string().min(1).max(512),
@@ -43,7 +47,8 @@ const lookupSchema = z.discriminatedUnion('kind', [
 
 const requestSchema = z.object({
   address: z.string().trim().min(1).max(160),
-  countyName: z.string().trim().min(1).max(80),
+  // A statewide geocoder's suggestion has no county until it is resolved.
+  countyName: z.string().trim().max(80),
   /** The county's own number for the parcel, where its address service gave one. */
   parcelId: z.string().trim().max(60).nullish(),
   lookup: lookupSchema,

@@ -45,6 +45,8 @@ import 'server-only';
 
 import { COUNTY_ROLLS, ROLLS_CHECKED_ON, rollFor, type CountyRoll } from './county-rolls';
 import { isInFlorida, toFloridaAlbers } from './florida-albers';
+import { countyByCode, countyByName } from './florida-counties';
+import { geocodeSuggestion, geocoderConfigured, suggestAddresses } from './geocoder';
 import { matchCounty } from './florida-places';
 import { site } from './site';
 
@@ -107,11 +109,23 @@ export type ValueLookup =
    */
   | { kind: 'county-feature'; countySlug: string; objectId: number }
   /** Jacksonville's geocoder answers with a key first and a coordinate second. */
-  | { kind: 'jacksonville'; magicKey: string };
+  | { kind: 'jacksonville'; magicKey: string }
+  /**
+   * The statewide geocoder's handle for a suggestion, spent when it is picked.
+   * Only where a key is configured; see lib/geocoder.ts.
+   */
+  | { kind: 'esri'; magicKey: string };
 
 /** What a lookup comes back with: the figures, and where they are from. */
 export interface ParcelValue {
   address: string;
+  /**
+   * The county the parcel is in, read off the roll rather than taken from the
+   * suggestion: a statewide geocoder's suggestion does not know one until it
+   * has been resolved, and this is where it learns.
+   */
+  countySlug: string | null;
+  countyName: string | null;
   parcelId: string | null;
   assessedValue: number | null;
   justValue: number | null;
@@ -581,7 +595,10 @@ const STATEWIDE_SOURCE_URL =
 /** The roll is a year's work; a lookup against it can have longer than a keystroke. */
 const VALUE_TIMEOUT_MS = 9_000;
 
-const STATEWIDE_OUT_FIELDS = 'PARCEL_ID,PHY_ADDR1,JV,AV_SD,ASMNT_YR';
+/** The second attempt, which is the one that usually lands. */
+const VALUE_RETRY_TIMEOUT_MS = 15_000;
+
+const STATEWIDE_OUT_FIELDS = 'PARCEL_ID,PHY_ADDR1,JV,AV_SD,ASMNT_YR,CO_NO';
 
 /** Which parcel covers this point. Fast only in the layer's own projection. */
 async function parcelAtPoint(
@@ -603,11 +620,23 @@ async function parcelAtPoint(
     f: 'json',
   })}`;
 
-  const payload = (await getJson(url, VALUE_TIMEOUT_MS)) as
-    | { features?: { attributes?: Record<string, unknown> }[]; error?: unknown }
-    | null;
+  // Twice, when the first attempt does not answer at all.
+  //
+  // The statewide layer is slow the first time it is asked about a place and
+  // quick every time after — 44 seconds against 0.4 in testing — because the
+  // request that timed out on this end went on to warm the service's cache on
+  // the other. Distinguishing "no answer" from "no parcel there" matters: an
+  // empty feature list is an answer, and asking again would waste the reader's
+  // time to be told the same thing.
+  for (const timeout of [VALUE_TIMEOUT_MS, VALUE_RETRY_TIMEOUT_MS]) {
+    const payload = (await getJson(url, timeout)) as
+      | { features?: { attributes?: Record<string, unknown> }[]; error?: unknown }
+      | null;
 
-  return payload?.features?.[0]?.attributes ?? null;
+    if (payload && !payload.error) return payload.features?.[0]?.attributes ?? null;
+  }
+
+  return null;
 }
 
 /**
@@ -773,6 +802,16 @@ export async function resolveParcelValue(
   countyName: string,
   parcelId: string | null = null,
 ): Promise<ParcelValue | null> {
+  // The statewide geocoder answers with an address as well as a point, and the
+  // address it answers with is the one to check the parcel against: it is what
+  // the geocoder believes it found, rather than what the reader half-typed.
+  const geocoded = lookup.kind === 'esri' ? await geocodeSuggestion(lookup.magicKey) : null;
+
+  // An interpolated match is a guess at where along a block a number falls. The
+  // Census geocoder makes the same guess for free, and it is wrong often enough
+  // that no figure is better than the one it would produce.
+  if (lookup.kind === 'esri' && !geocoded?.rooftop) return null;
+
   const attributes =
     lookup.kind === 'parcel'
       ? await parcelById(lookup.parcelId)
@@ -781,7 +820,9 @@ export async function resolveParcelValue(
             ? { lat: lookup.lat, lon: lookup.lon }
             : lookup.kind === 'county-feature'
               ? await countyFeaturePoint(lookup.countySlug, lookup.objectId)
-              : await jacksonvillePoint(lookup.magicKey),
+              : lookup.kind === 'esri'
+                ? { lat: geocoded!.lat, lon: geocoded!.lon }
+                : await jacksonvillePoint(lookup.magicKey),
         );
 
   if (!attributes) return null;
@@ -795,7 +836,9 @@ export async function resolveParcelValue(
   const confirmed =
     lookup.kind === 'parcel' ||
     parcelIdsAgree(parcelId, rollParcelId) ||
-    (rollAddress !== null && addressesAgree(address, rollAddress));
+    (rollAddress !== null &&
+      (addressesAgree(address, rollAddress) ||
+        (geocoded !== null && addressesAgree(geocoded.address, rollAddress))));
 
   if (!confirmed) return null;
 
@@ -803,15 +846,25 @@ export async function resolveParcelValue(
   const just = num(attributes.JV);
   if (!assessed && !just) return null;
 
+  // Which county published this figure is the roll's own answer — CO_NO on the
+  // row — rather than the caller's, because a statewide geocoder's suggestion
+  // arrives without a county and learns one here.
+  const county =
+    countyByCode(attributes.CO_NO) ??
+    countyByName(countyName) ??
+    countyByName(geocoded?.countyName);
+
   return {
     // The address the figure is filed under, which on a corner lot is not
     // always the one that was typed.
     address: formatAddressForDisplay(rollAddress ?? address),
+    countySlug: county?.slug ?? null,
+    countyName: county?.name ?? null,
     parcelId: rollParcelId,
     assessedValue: assessed,
     justValue: just,
     rollYear: num(attributes.ASMNT_YR),
-    sourceName: `${countyName} roll as published by the Florida Department of Revenue`,
+    sourceName: `${county?.name ?? countyName} roll as published by the Florida Department of Revenue`,
     sourceUrl: STATEWIDE_SOURCE_URL,
   };
 }
@@ -916,6 +969,45 @@ async function queryCensus(typed: string): Promise<PropertySuggestion[]> {
   return suggestions;
 }
 
+/**
+ * The statewide half of the dropdown, where a key is configured.
+ *
+ * Every county is covered, including the forty-five with nothing of their own
+ * to search, and a suggestion carries no county until it is picked: Esri's
+ * suggestions are text and a handle, and the county comes back with the
+ * geocode. The page leaves the county selector saying "another Florida county"
+ * for that moment and corrects it when the figure lands.
+ */
+async function queryGeocoder(typed: string): Promise<PropertySuggestion[]> {
+  const suggestions = await suggestAddresses(typed);
+
+  return suggestions.flatMap((suggestion) => {
+    // "1832 Manatee Ave E, Bradenton, FL, 34208, USA"
+    const [street, city, , zip] = suggestion.text.split(',').map((part) => part.trim());
+    if (!street || !parseTypedAddress(street).number) return [];
+
+    return [
+      {
+        id: `esri:${suggestion.magicKey}`,
+        address: formatAddressForDisplay(street),
+        city: city ? formatPlaceForDisplay(city) : null,
+        zip: zip && /^\d{5}$/.test(zip) ? zip : null,
+        // Unknown until the geocode, which happens when somebody picks it.
+        countySlug: '',
+        countyName: '',
+        parcelId: null,
+        assessedValue: null,
+        justValue: null,
+        rollYear: null,
+        useDescription: null,
+        sourceName: 'Esri World Geocoding Service',
+        sourceUrl: STATEWIDE_SOURCE_URL,
+        valueLookup: { kind: 'esri', magicKey: suggestion.magicKey },
+      },
+    ];
+  });
+}
+
 /** Short enough that it cannot be a street address; asking the rolls would waste a query. */
 const MIN_QUERY_LENGTH = 5;
 
@@ -1006,6 +1098,7 @@ export async function searchProperties(query: string): Promise<PropertySuggestio
   const asked = new Set(guessed ? [...ALWAYS_ASKED, guessed] : ALWAYS_ASKED);
 
   const censusWork = queryCensus(typed);
+  const geocoderWork = queryGeocoder(typed);
   const firstWave = await Promise.all(
     [...asked].flatMap((countySlug) => sourcesFor(countySlug, parsed, typedStreet, typed)),
   );
@@ -1027,7 +1120,7 @@ export async function searchProperties(query: string): Promise<PropertySuggestio
   // typed the whole thing and been given nothing.
   const found = [...firstWave, ...secondWave].flat();
   const lastWave =
-    found.length === 0 && looksComplete(typed)
+    found.length === 0 && !geocoderConfigured() && looksComplete(typed)
       ? await Promise.all(
           COUNTY_ROLLS.filter((roll) => !asked.has(roll.countySlug)).map((roll) =>
             queryRoll(roll, parsed, typedStreet),
@@ -1035,10 +1128,11 @@ export async function searchProperties(query: string): Promise<PropertySuggestio
         )
       : [];
 
-  // The geocoder's rows go last, so that where a county and the geocoder
-  // describe the same house it is the county's row — the one that can produce
-  // a figure — that survives the deduplication below.
-  const results = [...firstWave, ...secondWave, ...lastWave, census];
+  // The geocoders' rows go last, so that where a county and a geocoder describe
+  // the same house it is the county's row that survives the deduplication
+  // below — and the statewide geocoder, which can produce a figure anywhere,
+  // goes ahead of the Census one, which cannot produce one at all.
+  const results = [...firstWave, ...secondWave, ...lastWave, await geocoderWork, census];
 
   const seen = new Map<string, PropertySuggestion[]>();
   const merged: PropertySuggestion[] = [];
@@ -1067,13 +1161,26 @@ export async function searchProperties(query: string): Promise<PropertySuggestio
     // One source names the city and another does not — Jacksonville's locator
     // answers "1200 RIVERSIDE AVE, 32204" with no city in it — so a missing
     // city counts as the same place rather than as a different one.
-    const duplicate = alreadyShown.some(
+    const duplicate = alreadyShown.find(
       (shown) =>
         !shown.city ||
         !suggestion.city ||
         shown.city.toUpperCase() === suggestion.city.toUpperCase(),
     );
-    if (duplicate) continue;
+
+    if (duplicate) {
+      // Two sources describing one house between them: the statewide geocoder
+      // knows the address and not the county, the Census geocoder knows the
+      // county and cannot price it. The row that is kept takes what the
+      // discarded one knew.
+      duplicate.city ??= suggestion.city;
+      duplicate.zip ??= suggestion.zip;
+      if (!duplicate.countySlug && suggestion.countySlug) {
+        duplicate.countySlug = suggestion.countySlug;
+        duplicate.countyName = suggestion.countyName;
+      }
+      continue;
+    }
 
     seen.set(key, [...alreadyShown, suggestion]);
     merged.push(suggestion);

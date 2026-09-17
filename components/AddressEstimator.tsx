@@ -158,6 +158,8 @@ export function AddressEstimator({
     if (suggestion.assessedValue || suggestion.justValue) {
       applyValue({
         address: suggestion.address,
+        countySlug: suggestion.countySlug,
+        countyName: suggestion.countyName,
         parcelId: suggestion.parcelId,
         assessedValue: suggestion.assessedValue,
         justValue: suggestion.justValue,
@@ -212,7 +214,19 @@ export function AddressEstimator({
 
       const payload = response.ok ? await response.json() : { value: null };
 
-      if (payload.value) applyValue(payload.value as ParcelValue);
+      if (payload.value) {
+        const value = payload.value as ParcelValue;
+        // A suggestion from the statewide geocoder arrives without a county;
+        // the roll it was priced from names one, so the selector catches up.
+        if (value.countySlug && value.countySlug !== suggestion.countySlug) {
+          setChosenCounty(
+            counties.some((entry) => entry.slug === value.countySlug)
+              ? value.countySlug
+              : ELSEWHERE,
+          );
+        }
+        applyValue(value);
+      }
       // A null is the parcel layer declining to confirm that what is under
       // that point is the property that was picked. It is said out loud rather
       // than left as an empty box that looks like nothing happened.

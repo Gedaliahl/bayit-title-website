@@ -264,6 +264,11 @@ export function addressesAgree(a: string, b: string): boolean {
 
   return shortSide.every((token, index) => {
     const other = longSide[index];
+    // The same word is the same word, however short. A street that ends in a
+    // directional — "1832 Manatee Ave E" — is one letter, and the abbreviation
+    // rule below would otherwise refuse to match it against itself.
+    if (token === other) return true;
+
     const [shorter, longer] = token.length <= other.length ? [token, other] : [other, token];
     return shorter.length >= 2 && longer.startsWith(shorter);
   });

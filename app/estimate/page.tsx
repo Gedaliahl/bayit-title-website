@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
 import { VALUE_COUNTIES, VALUE_COUNTY_SLUGS } from '@/lib/property-lookup';
+import { geocoderConfigured } from '@/lib/geocoder';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   PREMIUM_RULE,
@@ -60,6 +61,9 @@ export default async function EstimatePage() {
     VALUE_COUNTIES.map((county) => county.name.replace(/ County$/, '')),
   );
   const valueCountyCount = VALUE_COUNTIES.length;
+  // With a statewide geocoder key the answer is "anywhere"; without one it is a
+  // list of counties, and the page says whichever is true of this deployment.
+  const statewide = geocoderConfigured();
 
   return (
     <div className="frame section">
@@ -77,10 +81,15 @@ export default async function EstimatePage() {
 
         <AnswerPanel
           text={
-            `Start typing the address and pick the property. In ${valueCountyCount} of ` +
-            'Florida’s 67 counties the assessed value arrives with it, off the published tax ' +
-            'roll; everywhere else the address still names the county and you type the value ' +
-            'in. From there this prices the promulgated title insurance ' +
+            'Start typing the address and pick the property. ' +
+            (statewide
+              ? 'Anywhere in Florida the assessed value arrives with it, off the published tax ' +
+                'roll — from the county’s own roll where the appraiser publishes one, and from ' +
+                'the state’s everywhere else. '
+              : `In ${valueCountyCount} of Florida’s 67 counties the assessed value arrives ` +
+                'with it, off the published tax roll; everywhere else the address still names ' +
+                'the county and you type the value in. ') +
+            'From there this prices the promulgated title insurance ' +
             'premium, the documentary stamp tax and the recording charges — and the county ' +
             'decides the stamp rate, which is 60 cents per $100 in Miami-Dade and 70 everywhere ' +
             'else. Assessed value is a tax figure and usually sits below what a property sells ' +
@@ -94,10 +103,12 @@ export default async function EstimatePage() {
       <div className="measure">
         <h2>Where the assessed value comes from</h2>
         <p>
-          In {valueCountyCount} counties picking a property fills the figure in, and the line under
-          the box says which office it came from, which parcel it belongs to and which year&rsquo;s
-          roll it is on. Nothing is estimated on the way: what you see is what the roll says. Those
-          counties are {`${valueCounties}.`}
+          Picking a property fills the figure in, and the line under the box says which office it
+          came from, which parcel it belongs to and which year&rsquo;s roll it is on. Nothing is
+          estimated on the way: what you see is what the roll says.{' '}
+          {statewide
+            ? `In ${valueCountyCount} counties the figure is the appraiser's own, read straight off the roll they publish: ${valueCounties}. Everywhere else it is the Department of Revenue's copy of that county's roll, found by where the address stands.`
+            : `The counties that can do it are ${valueCounties}.`}
         </p>
         <p>
           It arrives two ways. A handful of appraisers publish their certified roll as an open data
@@ -112,13 +123,11 @@ export default async function EstimatePage() {
           rather than the figure for the house next door.
         </p>
         <p>
-          In the rest of Florida the list is built from the{' '}
-          <a href="https://geocoding.geo.census.gov/geocoder/" rel="nofollow">
-            U.S. Census Bureau geocoder
-          </a>
-          , which knows addresses and counties and nothing about value. There the box stays yours to
-          fill in and the link beside it goes to the right property appraiser. We would rather leave
-          it empty than fill it from a data broker&rsquo;s copy of a roll we cannot cite.
+          {statewide
+            ? 'Addresses in the rest of Florida are found with a commercial geocoder, which is the only thing that knows every front door in the state. It is used for one thing — where the building is — and only when it says it has the building rather than a guess at where along the block the number falls. Everything with a figure attached to it still comes off a published roll.'
+            : 'In the rest of Florida the list is built from the U.S. Census Bureau geocoder, which knows addresses and counties and nothing about value. There the box stays yours to fill in and the link beside it goes to the right property appraiser.'}{' '}
+          We would rather leave the box empty than fill it from a data broker&rsquo;s copy of a roll
+          we cannot cite.
         </p>
 
         <h2>What the county changes, and what it does not</h2>

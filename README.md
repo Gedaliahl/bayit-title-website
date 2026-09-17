@@ -322,8 +322,32 @@ because each needs its own request shape.
 Everywhere else the dropdown comes from the **U.S. Census Bureau geocoder** —
 free, keyless, statewide; it names the county the address falls in, which beats
 the place-name guess in `lib/florida-places.ts`, and knows nothing about value.
-There the assessed-value box stays the reader's to fill, with the link to their
-property appraiser beside it.
+
+### The statewide geocoder, and the last forty-five counties
+
+Set `ARCGIS_API_KEY` and every Florida address can be searched and priced,
+including in counties that publish nothing of their own. `lib/geocoder.ts` asks
+Esri's World Geocoding Service for the address and the Department of Revenue's
+roll for the figure at the point it comes back with. Without the key the file
+does nothing and the page says so — twenty-two counties rather than all of them.
+
+The key is why it works and the key is not the interesting part. **`Addr_type`
+is.** Esri says which kind of answer it is giving: `PointAddress` and
+`Subaddress` mean it has the building, `StreetAddress` and `StreetName` mean it
+is interpolating along a block the way the Census geocoder does. Only the first
+kind is allowed to produce a figure, so the difference between a geocoder that
+knows an address and one that is guessing is a field to read rather than a
+judgement to make. Measured on real addresses in counties with no roll of their
+own: about half geocode to a rooftop, and those price at around 80%, with the
+rest declining — a point on a driveway, or a parcel the state roll has not
+caught up with.
+
+Two terms of the cheaper geocode are kept by the code rather than by whoever
+holds the key: suggestions are free and the geocode that follows one is billed,
+so typing goes to `/suggest` and only a picked address is geocoded; and the
+geocode is requested `forStorage=false`, so that response is never cached and
+nothing from it is written down. The address itself is still not kept — see
+below.
 
 ### A parcel found by location has to prove it is the right parcel
 
@@ -374,15 +398,18 @@ projection, it answers in well under a second. It is stored in EPSG:3086 and
 reprojects a latitude and longitude slowly enough to matter — 44 seconds against
 0.4 on a cold cache — so `lib/florida-albers.ts` projects the point first.
 
-Rejected: a commercial aggregator, which would cover the state but leave no
-figure on the page able to name the office it came from; and a ring of probes
-around a geocoded address, because the Census geocoder interpolates along a
+Rejected: a commercial aggregator of *values*, which would cover the state but
+leave no figure on the page able to name the office it came from. Buying
+addresses is a different trade — the geocoder is asked where a building is, and
+every figure still comes off a published roll. Also rejected: a ring of probes
+around a Census-geocoded address, because that geocoder interpolates along a
 block and can be 200 metres out, not 20.
 
 ### The address is not kept
 
 `/api/property-search` and `/api/parcel-value` write nothing, notify nobody and
-set no cookie. Both are POSTs so the address stays out of request logs, and
+set no cookie. With a key configured the address is also sent to Esri, which the
+privacy policy says in its own words. Both are POSTs so the address stays out of request logs, and
 their rate limits are counted in process rather than in the database — the
 opposite of the form endpoints, because the first of them fires while somebody
 types. The privacy policy says all of this in its own words.
