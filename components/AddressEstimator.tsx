@@ -78,7 +78,8 @@ export function AddressEstimator({
   const [valueOrigin, setValueOrigin] = useState<ValueOrigin>('typed');
   /** Orange and Duval need a second request before there is a figure to show. */
   const [lookingUpValue, setLookingUpValue] = useState(false);
-  const [valueMissed, setValueMissed] = useState(false);
+  /** 'declined' — the roll says that is not the parcel; 'unavailable' — it did not answer. */
+  const [valueMissed, setValueMissed] = useState<'declined' | 'unavailable' | null>(null);
 
   // Taking a suggestion rewrites the address box, which would otherwise look
   // exactly like typing and send the rewritten address straight back to the
@@ -148,7 +149,7 @@ export function AddressEstimator({
     setActiveIndex(-1);
     setSearching(false);
     setParcel(suggestion);
-    setValueMissed(false);
+    setValueMissed(null);
     setChosenCounty(
       counties.some((entry) => entry.slug === suggestion.countySlug)
         ? suggestion.countySlug
@@ -212,7 +213,7 @@ export function AddressEstimator({
         }),
       });
 
-      const payload = response.ok ? await response.json() : { value: null };
+      const payload = response.ok ? await response.json() : { value: null, unavailable: true };
 
       if (payload.value) {
         const value = payload.value as ParcelValue;
@@ -227,12 +228,13 @@ export function AddressEstimator({
         }
         applyValue(value);
       }
-      // A null is the parcel layer declining to confirm that what is under
-      // that point is the property that was picked. It is said out loud rather
-      // than left as an empty box that looks like nothing happened.
-      else setValueMissed(true);
+      // A null is the parcel layer either declining to confirm that what is
+      // under that point is the property that was picked, or not answering at
+      // all. Both leave the box empty and they are not the same thing to a
+      // reader, so the box says which.
+      else setValueMissed(payload.unavailable ? 'unavailable' : 'declined');
     } catch {
-      setValueMissed(true);
+      setValueMissed('unavailable');
     } finally {
       setLookingUpValue(false);
     }
@@ -330,7 +332,7 @@ export function AddressEstimator({
                   setParcel(null);
                   setRecord(null);
                   setValueOrigin('typed');
-                  setValueMissed(false);
+                  setValueMissed(null);
                 }
               }}
               onKeyDown={onAddressKeyDown}
@@ -451,11 +453,13 @@ export function AddressEstimator({
                 </>
               ) : county?.propertyAppraiserUrl ? (
                 <>
-                  {valueMissed
-                    ? 'The roll would not confirm a parcel at that address, so this one is yours to fill in. Look it up on the '
-                    : valueCounty
-                      ? 'Pick the property above and this fills itself in, or look the parcel up on the '
-                      : 'Look the parcel up on the '}
+                  {valueMissed === 'unavailable'
+                    ? 'The state’s parcel service did not answer just then — pick the property again, or look it up on the '
+                    : valueMissed === 'declined'
+                      ? 'The roll would not confirm a parcel at that address, so this one is yours to fill in. Look it up on the '
+                      : valueCounty
+                        ? 'Pick the property above and this fills itself in, or look the parcel up on the '
+                        : 'Look the parcel up on the '}
                   <a href={county.propertyAppraiserUrl} rel="nofollow noopener" target="_blank">
                     {county.name} Property Appraiser
                   </a>{' '}

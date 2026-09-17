@@ -41,17 +41,17 @@ describe.skipIf(!geocoderConfigured())('with a key configured', () => {
       const suggestions = await suggestAddresses(typed);
       if (suggestions.length === 0) continue;
 
-      const value = await resolveParcelValue(
+      const result = await resolveParcelValue(
         { kind: 'esri', magicKey: suggestions[0].magicKey },
         suggestions[0].text.split(',')[0],
         '',
         null,
       );
 
-      if (value?.assessedValue || value?.justValue) {
+      if (result.status === 'found') {
         priced += 1;
-        expect(value!.countyName).toBe(county);
-        expect(value!.sourceName).toContain('Florida Department of Revenue');
+        expect(result.value.countyName).toBe(county);
+        expect(result.value.sourceName).toContain('Florida Department of Revenue');
       }
     }
 
@@ -68,12 +68,12 @@ describe.skipIf(!geocoderConfigured())('with a key configured', () => {
     const geocoded = await geocodeSuggestion(suggestions[0].magicKey);
     if (!geocoded || geocoded.rooftop) return;
 
-    const value = await resolveParcelValue(
+    const result = await resolveParcelValue(
       { kind: 'esri', magicKey: suggestions[0].magicKey },
       suggestions[0].text.split(',')[0],
       '',
       null,
     );
-    expect(value).toBeNull();
+    expect(result.status).toBe('declined');
   });
 }, 300_000);

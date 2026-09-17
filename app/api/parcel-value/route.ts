@@ -100,19 +100,27 @@ export async function POST(request: Request) {
   }
 
   try {
-    const value = await resolveParcelValue(
+    const result = await resolveParcelValue(
       parsed.data.lookup as ValueLookup,
       parsed.data.address,
       parsed.data.countyName,
       parsed.data.parcelId ?? null,
     );
 
-    // A null here is not a failure: it is the layer declining to confirm that
-    // the parcel under that point is the property that was picked. The page
-    // says so and leaves the box to the reader.
-    return NextResponse.json({ value }, { headers: { 'cache-control': 'no-store' } });
+    // Three outcomes, and the page says something different about each. A
+    // decline is the check working — the parcel under that point is not the
+    // property that was picked — and belongs to the reader to work around. An
+    // unavailable is somebody else's server being slow, and is worth another
+    // go, so the page says which it was rather than blaming the address.
+    return NextResponse.json(
+      {
+        value: result.status === 'found' ? result.value : null,
+        unavailable: result.status === 'unavailable',
+      },
+      { headers: { 'cache-control': 'no-store' } },
+    );
   } catch (error) {
     console.error('[api/parcel-value] failed:', error);
-    return NextResponse.json({ value: null });
+    return NextResponse.json({ value: null, unavailable: true });
   }
 }

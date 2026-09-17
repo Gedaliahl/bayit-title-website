@@ -116,6 +116,20 @@ export type ValueLookup =
    */
   | { kind: 'esri'; magicKey: string };
 
+/**
+ * How a lookup ended, which the page says three different things about.
+ *
+ * 'declined' and 'unavailable' both leave the box empty and are not the same
+ * thing: the first is the roll answering that the parcel under that point is
+ * not the property that was picked, which is the check working; the second is
+ * the roll not answering at all, which is a slow afternoon on somebody else's
+ * server and worth trying again.
+ */
+export type ParcelValueResult =
+  | { status: 'found'; value: ParcelValue }
+  | { status: 'declined' }
+  | { status: 'unavailable' };
+
 /** What a lookup comes back with: the figures, and where they are from. */
 export interface ParcelValue {
   address: string;
@@ -595,16 +609,27 @@ const STATEWIDE_SOURCE_URL =
 /** The roll is a year's work; a lookup against it can have longer than a keystroke. */
 const VALUE_TIMEOUT_MS = 9_000;
 
-/** The second attempt, which is the one that usually lands. */
-const VALUE_RETRY_TIMEOUT_MS = 15_000;
+/**
+ * The second attempt, which is the one that usually lands: the request that
+ * timed out on this end went on to warm the service's cache on the other.
+ */
+const VALUE_RETRY_TIMEOUT_MS = 20_000;
 
 const STATEWIDE_OUT_FIELDS = 'PARCEL_ID,PHY_ADDR1,JV,AV_SD,ASMNT_YR,CO_NO';
 
+/**
+ * The roll did not answer, as distinct from answering that there is no parcel
+ * at that point. Its first query about a place can take longer than anybody
+ * will wait, and telling a reader we could not confirm their address when the
+ * truth is that a server was slow sends them off to look up a figure they
+ * would have been given.
+ */
+const UNAVAILABLE = Symbol('statewide roll did not answer');
+type RollAnswer = Record<string, unknown> | null | typeof UNAVAILABLE;
+
 /** Which parcel covers this point. Fast only in the layer's own projection. */
-async function parcelAtPoint(
-  point: { lat: number; lon: number } | null,
-): Promise<Record<string, unknown> | null> {
-  if (!point || !isInFlorida(point.lon, point.lat)) return null;
+async function parcelAtPoint(point: { lat: number; lon: number } | null): Promise<RollAnswer> {
+  if (!point || !isInFlorida(point.lon, point.lat)) return UNAVAILABLE;
 
   const { x, y } = toFloridaAlbers(point.lon, point.lat);
 
@@ -636,7 +661,7 @@ async function parcelAtPoint(
     if (payload && !payload.error) return payload.features?.[0]?.attributes ?? null;
   }
 
-  return null;
+  return UNAVAILABLE;
 }
 
 /**
@@ -651,7 +676,7 @@ async function parcelAtPoint(
  * Revenue does. Punctuation is dropped, and where that finds nothing the
  * section-township-range reordering Orange County uses is tried as well.
  */
-async function parcelById(parcelId: string): Promise<Record<string, unknown> | null> {
+async function parcelById(parcelId: string): Promise<RollAnswer> {
   const plain = parcelId.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
   if (plain.length < 5) return null;
 
@@ -801,7 +826,7 @@ export async function resolveParcelValue(
   address: string,
   countyName: string,
   parcelId: string | null = null,
-): Promise<ParcelValue | null> {
+): Promise<ParcelValueResult> {
   // The statewide geocoder answers with an address as well as a point, and the
   // address it answers with is the one to check the parcel against: it is what
   // the geocoder believes it found, rather than what the reader half-typed.
@@ -810,9 +835,10 @@ export async function resolveParcelValue(
   // An interpolated match is a guess at where along a block a number falls. The
   // Census geocoder makes the same guess for free, and it is wrong often enough
   // that no figure is better than the one it would produce.
-  if (lookup.kind === 'esri' && !geocoded?.rooftop) return null;
+  if (lookup.kind === 'esri' && !geocoded) return { status: 'unavailable' };
+  if (lookup.kind === 'esri' && !geocoded!.rooftop) return { status: 'declined' };
 
-  const attributes =
+  const found =
     lookup.kind === 'parcel'
       ? await parcelById(lookup.parcelId)
       : await parcelAtPoint(
@@ -825,7 +851,9 @@ export async function resolveParcelValue(
                 : await jacksonvillePoint(lookup.magicKey),
         );
 
-  if (!attributes) return null;
+  if (found === UNAVAILABLE) return { status: 'unavailable' };
+  const attributes = found;
+  if (!attributes) return { status: 'declined' };
 
   const rollParcelId = str(attributes.PARCEL_ID);
   const rollAddress = str(attributes.PHY_ADDR1);
@@ -840,11 +868,11 @@ export async function resolveParcelValue(
       (addressesAgree(address, rollAddress) ||
         (geocoded !== null && addressesAgree(geocoded.address, rollAddress))));
 
-  if (!confirmed) return null;
+  if (!confirmed) return { status: 'declined' };
 
   const assessed = num(attributes.AV_SD);
   const just = num(attributes.JV);
-  if (!assessed && !just) return null;
+  if (!assessed && !just) return { status: 'declined' };
 
   // Which county published this figure is the roll's own answer — CO_NO on the
   // row — rather than the caller's, because a statewide geocoder's suggestion
@@ -855,6 +883,8 @@ export async function resolveParcelValue(
     countyByName(geocoded?.countyName);
 
   return {
+    status: 'found',
+    value: {
     // The address the figure is filed under, which on a corner lot is not
     // always the one that was typed.
     address: formatAddressForDisplay(rollAddress ?? address),
@@ -864,8 +894,9 @@ export async function resolveParcelValue(
     assessedValue: assessed,
     justValue: just,
     rollYear: num(attributes.ASMNT_YR),
-    sourceName: `${county?.name ?? countyName} roll as published by the Florida Department of Revenue`,
-    sourceUrl: STATEWIDE_SOURCE_URL,
+      sourceName: `${county?.name ?? countyName} roll as published by the Florida Department of Revenue`,
+      sourceUrl: STATEWIDE_SOURCE_URL,
+    },
   };
 }
 

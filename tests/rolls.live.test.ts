@@ -132,13 +132,13 @@ describe.each(COUNTY_ROLLS.map((roll) => [roll.countyName, roll] as const))(
           continue;
         }
 
-        const value = await resolveParcelValue(
+        const result = await resolveParcelValue(
           suggestion.valueLookup!,
           suggestion.address,
           suggestion.countyName,
           suggestion.parcelId,
         );
-        if (value && (value.assessedValue || value.justValue)) priced += 1;
+        if (result.status === 'found') priced += 1;
       }
 
       // Not all of them: a lookup that declines is the check working, and an
