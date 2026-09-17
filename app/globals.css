@@ -398,9 +398,9 @@ th {
 
 /* Below this width the list collapses behind the Menu button above.
    58rem, measured rather than picked: the five links and the call to action
-   come to 629px, the wordmark 194px, and with the 24px gap and the frame's
-   48px of padding the whole masthead needs 895px to sit on one row. At the
-   root font size 58rem is 928px, which clears that by 33px — the slack for a
+   come to 623px, the wordmark 194px, and with the 24px gap and the frame's
+   48px of padding the whole masthead needs 889px to sit on one row. At the
+   root font size 58rem is 928px, which clears that by 39px — the slack for a
    wider wordmark before the mark image decodes.
    It was 54rem while the nav carried four links, and 62rem before that at
    seven: back then it wrapped to two rows of links on top of dropping below

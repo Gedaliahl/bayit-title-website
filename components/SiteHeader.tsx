@@ -10,9 +10,9 @@ import { SiteNav, type NavItem } from '@/components/SiteNav';
  *
  * The first four are the things a visitor arrives wanting — the problem they
  * searched for, what we do about it, whether we close in their county, and what
- * it costs — plus the one thing we want them to do. ABOUT is set in capitals
- * because it was asked for that way; the label is the literal string, since
- * nothing in the nav styling transforms case.
+ * it costs — plus the one thing we want them to do. Every label is written in
+ * the case it is meant to appear in, since nothing in the nav styling
+ * transforms case.
  *
  * What is not here is still reachable and still in the sitemap: /partners,
  * /team, /reviews, /quote, /calculator and /contact all sit in the footer, and
@@ -25,7 +25,7 @@ const NAV: NavItem[] = [
   { href: '/services', label: 'Services' },
   { href: '/counties', label: 'Counties' },
   { href: '/estimate', label: 'Estimate' },
-  { href: '/about', label: 'ABOUT' },
+  { href: '/about', label: 'About' },
 ];
 
 const ACTION: NavItem = { href: '/order', label: 'Open an order' };
