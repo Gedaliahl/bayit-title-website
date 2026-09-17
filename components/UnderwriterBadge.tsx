@@ -3,10 +3,10 @@ import Image from 'next/image';
 import { underwriterLine } from '@/lib/site';
 
 /**
- * The underwriter credit, carried at the top of the homepage hero so it is on
- * screen before anyone scrolls. The first question a buyer, a lender or a
- * co-operating agent asks a title agency is who actually insures the policy,
- * and answering it above the fold is worth the one line it takes.
+ * The underwriter credit, carried under the homepage figure strip. Who actually
+ * insures the policy is the same kind of statement as the counties count and
+ * the review rating beside it — a checkable fact about the agency rather than a
+ * claim — so it reads as the last line of that strip.
  *
  * The mark is the underwriter's own corporate lockup, shown as the credit an
  * appointed agent may carry. It is decorative in the accessibility sense — the
@@ -24,10 +24,8 @@ export function UnderwriterBadge() {
         className="underwriter__mark"
         // The stylesheet sets the mark 30px tall, so it renders about 130px
         // wide; without this, next/image would size the srcset from the 472px
-        // intrinsic width and ship a needlessly large file at the top of the
-        // page it is trying not to slow down.
+        // intrinsic width and ship a needlessly large file for the slot.
         sizes="130px"
-        priority
       />
       <span className="underwriter__line">{underwriterLine}</span>
     </p>

@@ -51,7 +51,6 @@ export default async function HomePage() {
       <section className="section hero">
         <div className="frame hero__inner">
           <div>
-            <UnderwriterBadge />
             <h1>Got a Florida deal to close? We make the title and closing simple.</h1>
             <p className="hero__lede">
               We search title, examine what comes back, issue policies, hold the escrow and run
@@ -92,6 +91,12 @@ export default async function HomePage() {
           ) : null}
 
           {quote ? <FeaturedQuote review={quote} /> : null}
+        </div>
+
+        {/* The section's width and gutter live on `frame`, which the grid above
+            carries; the credit needs its own. */}
+        <div className="frame">
+          <UnderwriterBadge />
         </div>
       </section>
 
