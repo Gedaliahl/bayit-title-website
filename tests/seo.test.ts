@@ -4,7 +4,14 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { metaDescription, formatLongDate, formatReviewDate, siteVerification } from '@/lib/seo';
+import {
+  metaDescription,
+  formatLongDate,
+  formatReviewDate,
+  indexingAllowed,
+  siteVerification,
+} from '@/lib/seo';
+import { site } from '@/lib/site';
 
 describe('meta descriptions', () => {
   it('leaves a short answer alone', () => {
@@ -102,5 +109,48 @@ describe('proving we own the domain', () => {
   it('treats a variable set to whitespace as unset', () => {
     vi.stubEnv('GOOGLE_SITE_VERIFICATION', '   ');
     expect(siteVerification()).toBeUndefined();
+  });
+});
+
+/**
+ * Which deployment crawlers are invited into is a decision about the firm's
+ * search presence, not implementation detail. Until the domain cuts over, the
+ * old site is the one ranking for these terms, and a crawlable copy of every
+ * page on a vercel.app host competes with it. Getting this wrong in either
+ * direction is expensive and silent, so both directions are pinned here.
+ */
+describe('which deployment crawlers are invited into', () => {
+  const canonicalHost = new URL(site.url).host;
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('says no off Vercel, where nothing is served to the public', () => {
+    expect(indexingAllowed()).toBe(false);
+  });
+
+  it('says no on a preview, whatever the production domain is', () => {
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost);
+    expect(indexingAllowed()).toBe(false);
+  });
+
+  it('says no while production still answers on a vercel.app host', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', 'bayit-title-website.vercel.app');
+    expect(indexingAllowed()).toBe(false);
+  });
+
+  it('says yes once the real domain is the production domain', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost);
+    expect(indexingAllowed()).toBe(true);
+  });
+
+  it('ignores the case Vercel happens to report the host in', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost.toUpperCase());
+    expect(indexingAllowed()).toBe(true);
   });
 });

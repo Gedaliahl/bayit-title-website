@@ -192,6 +192,23 @@ Both scripts are served from this origin under `/_vercel/`. Nothing calls a
 third party and nothing sets a cookie, so the site needs no consent banner to
 count a pageview and a future CSP has no outside host to name.
 
+### Which deployment search engines are allowed into
+
+**Only the one serving www.bayittitle.com.** Every other deployment — a preview,
+and the production deployment for as long as it answers on a `*.vercel.app`
+host — returns `Disallow: /` for everything and a `noindex, nofollow` meta tag,
+and names no sitemap.
+
+The reason is the cutover. Until the domain moves, the old site is the one
+ranking for these terms, and a fully crawlable second copy of every page is a
+duplicate competing with it and splitting the signals between the two.
+
+`lib/seo.ts` derives this from `VERCEL_PROJECT_PRODUCTION_URL`, the host Vercel
+serves this project's production deployment on. **Attaching the domain to the
+Vercel project is what turns indexing on**, on the next deploy, with nothing to
+remember on the day — which is the point of deriving it rather than reading a
+flag, since a flag nobody remembers leaves the real site invisible.
+
 ### Search Console and Bing
 
 `GOOGLE_SITE_VERIFICATION` and `BING_SITE_VERIFICATION` emit the ownership meta
@@ -206,8 +223,8 @@ DNS TXT method and leave `GOOGLE_SITE_VERIFICATION` unset — it verifies the
 whole domain including subdomains. Bing can import an already-verified Search
 Console property, which skips its token too.
 
-`robots.txt` already points at `sitemap.xml`, so submission is the only step
-left once a property exists.
+`robots.txt` points at `sitemap.xml` once the domain is attached (see above), so
+submission is the only step left after that.
 
 ## Structured data
 

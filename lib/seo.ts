@@ -38,6 +38,39 @@ function resolveSiteUrl(): string {
 export const SITE_URL = resolveSiteUrl();
 
 /**
+ * Whether this deployment is the one the public is meant to find.
+ *
+ * The domain has not cut over. Until it does, this codebase answers on a
+ * *.vercel.app hostname while the old site still serves www.bayittitle.com, and
+ * a second fully crawlable copy of every page is a duplicate of the site it is
+ * meant to replace — competing with it for its own search terms and splitting
+ * the signals between the two. So only the deployment actually answering for
+ * the canonical host invites crawlers; every other one is closed to them.
+ *
+ * `VERCEL_PROJECT_PRODUCTION_URL` is the host Vercel serves this project's
+ * production deployment on, and it becomes the real domain the moment that
+ * domain is attached to the project. The cutover therefore turns indexing on by
+ * itself. That is the whole point of deriving this rather than reading a flag:
+ * a flag is a thing somebody has to remember on the day, and forgetting it
+ * leaves the real site invisible.
+ *
+ * Off Vercel — a local build, a CI build — nothing is being served to the
+ * public, so the answer is no.
+ */
+export function indexingAllowed(): boolean {
+  if (process.env.VERCEL_ENV !== 'production') return false;
+
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (!productionHost) return false;
+
+  try {
+    return productionHost.toLowerCase() === new URL(site.url).host.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+/**
  * A verification token as the dashboards hand it over.
  *
  * Google and Bing both present the token inside a ready-made `<meta>` tag, and
