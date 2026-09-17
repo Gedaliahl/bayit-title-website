@@ -57,11 +57,8 @@ export default async function HomePage() {
               what it is and what clearing it takes, in writing, the same day.
             </p>
             <p className="hero__actions">
-              <Link href="/order" className="btn btn--primary">
-                Open a title order
-              </Link>
-              <Link href="/quote" className="btn btn--quiet">
-                Request a quote
+              <Link href="/estimate" className="btn btn--primary">
+                How much will it cost?
               </Link>
             </p>
           </div>
