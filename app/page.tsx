@@ -58,7 +58,7 @@ export default async function HomePage() {
               what it is and what clearing it takes, in writing, the same day.
             </p>
             <p className="hero__actions">
-              <Link href="/estimate" className="btn btn--primary btn--icon">
+              <Link href="/estimate" className="btn btn--primary btn--icon btn--caps">
                 <svg
                   className="btn__icon"
                   viewBox="0 0 24 24"
@@ -69,9 +69,9 @@ export default async function HomePage() {
                   strokeLinejoin="round"
                   aria-hidden="true"
                 >
-                  <rect x="5" y="2.5" width="14" height="19" rx="2" />
-                  <path d="M8 6.5h8v3H8z" />
-                  <path d="M9 13h.01M12 13h.01M15 13h.01M9 17h.01M12 17h.01M15 17h.01" />
+                  <rect x="4" y="3" width="16" height="18" rx="4" />
+                  <path d="M8 8h8" />
+                  <path d="M9 13h0M15 13h0M9 17h0M15 17h0" />
                 </svg>
                 How Much Will It Cost?
                 <svg

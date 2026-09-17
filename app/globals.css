@@ -288,9 +288,17 @@ th {
 }
 
 .btn__icon {
-  width: 1.125em;
-  height: 1.125em;
+  width: 1.25em;
+  height: 1.25em;
   flex: none;
+}
+
+/* Set in caps, which needs the tracking opened up to stay readable at this
+   size. The label stays sentence case in the markup so the text a reader
+   copies, or a screen reader spells out, is the ordinary sentence. */
+.btn--caps {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .btn[disabled] {
