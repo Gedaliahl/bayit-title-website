@@ -1506,6 +1506,42 @@ ul.estimate-caveat {
   margin-top: 0.625rem;
 }
 
+/* The homepage quote rotates through the best reviews, ten seconds each
+   (components/RotatingQuote.tsx). All of them are laid into one grid cell, so
+   the strip is as tall as the longest of them and a change of quote never
+   moves the page. The one on show is the only one visible, which is also what
+   a reader without JavaScript — or a printer — gets: the server render marks
+   the first, and nothing here depends on the script having run. */
+.quote-rotator {
+  display: grid;
+}
+
+.quote-rotator__slide {
+  grid-area: 1 / 1;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  /* Out before in: the leaving quote clears before the next is drawn, so two
+     paragraphs of text are never half-visible on top of each other. Visibility
+     is transitioned alongside opacity so it holds until the fade finishes
+     rather than cutting the text on the first frame. */
+  transition: opacity 340ms ease, visibility 340ms;
+}
+
+.quote-rotator__slide--current {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 460ms ease 340ms, visibility 0s 340ms;
+}
+
+/* The component does not rotate at all under this, so this only catches a
+   reader who turns motion down while the strip is on screen. */
+@media (prefers-reduced-motion: reduce) {
+  .quote-rotator__slide {
+    transition: none;
+  }
+}
+
 /* The underwriter credit, under the figure strip. It belongs with the counties
    count and the review rating because it is the same kind of statement — a
    checkable fact about the agency rather than a claim — and it has to read as a

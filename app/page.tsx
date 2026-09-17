@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
-import { getFeaturedReviews, getReviewSnapshot, type Review } from '@/lib/reviews';
+import { getBestReviews, getReviewSnapshot } from '@/lib/reviews';
 import { getCounties } from '@/lib/locations';
 import { officeHoursLine, site } from '@/lib/site';
 import { CountUp } from '@/components/CountUp';
@@ -24,27 +24,22 @@ export const metadata: Metadata = {
 
 /**
  * The quote sits in two columns of a four-column strip, so a long review would
- * push it out of shape. Take the first review the office has featured that
- * fits — `getFeaturedReviews` already returns them in the site's own order —
- * rather than cutting a reviewer's words down to the space available.
+ * push it out of shape: ask for the reviews that fit rather than cutting a
+ * reviewer's words down to the space available. The strip rotates through the
+ * best five — see components/RotatingQuote.tsx for the ten seconds each.
  */
 const QUOTE_BUDGET = 240;
-
-function quotable(reviews: Review[]): Review | null {
-  const withBody = reviews.filter((review) => review.body);
-  return withBody.find((review) => (review.body?.length ?? 0) <= QUOTE_BUDGET) ?? withBody[0] ?? null;
-}
+const QUOTE_COUNT = 5;
 
 export default async function HomePage() {
-  const [docs, snapshot, counties, featured] = await Promise.all([
+  const [docs, snapshot, counties, quotes] = await Promise.all([
     getAllDocs('title-problems'),
     getReviewSnapshot(),
     getCounties(),
-    getFeaturedReviews(),
+    getBestReviews({ limit: QUOTE_COUNT, maxBodyLength: QUOTE_BUDGET }),
   ]);
 
   const recent = docs.slice(0, 6);
-  const quote = quotable(featured);
 
   return (
     <>
@@ -117,7 +112,7 @@ export default async function HomePage() {
             </div>
           ) : null}
 
-          {quote ? <FeaturedQuote review={quote} /> : null}
+          <FeaturedQuote reviews={quotes} />
         </div>
 
         {/* The section's width and gutter live on `frame`, which the grid above

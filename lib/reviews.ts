@@ -123,7 +123,24 @@ export async function getReviewsByTags(tags: string[], limit = 2): Promise<Revie
     .map((entry) => entry.review);
 }
 
-export async function getFeaturedReviews(limit = 3): Promise<Review[]> {
-  const all = await getReviews();
-  return all.filter((review) => review.isFeatured).slice(0, limit);
+/**
+ * The best reviews the site has, in its own order — anything the office has
+ * featured first, then the reviews with substance behind them, which is what
+ * `getReviews` already returns. The homepage rotates through the first few.
+ *
+ * `maxBodyLength` is a caller's space, not a rule about reviews: a review
+ * longer than it is pushed to the back of the set rather than dropped, so a
+ * caller asking for five still gets five when only two short ones exist. No
+ * review is ever cut to fit.
+ */
+export async function getBestReviews({
+  limit = 5,
+  maxBodyLength,
+}: { limit?: number; maxBodyLength?: number } = {}): Promise<Review[]> {
+  const withBody = (await getReviews()).filter((review) => review.body);
+  if (maxBodyLength === undefined) return withBody.slice(0, limit);
+
+  const fits = (review: Review) => (review.body?.length ?? 0) <= maxBodyLength;
+
+  return [...withBody.filter(fits), ...withBody.filter((review) => !fits(review))].slice(0, limit);
 }

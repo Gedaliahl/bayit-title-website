@@ -1,4 +1,4 @@
-import { AnimatedStars } from '@/components/AnimatedStars';
+import { RotatingQuote, type Quote } from '@/components/RotatingQuote';
 import type { Review } from '@/lib/reviews';
 import { formatReviewDate } from '@/lib/seo';
 
@@ -57,27 +57,35 @@ export function ReviewPullQuote({ review }: { review: Review }) {
 }
 
 /**
- * The review set beside the figures on the homepage. The stars belong to this
- * one review and are drawn above it for that reason — one at a time, as the
- * figure strip comes into view, so they land with the counts beside them; the
- * attribution line underneath follows the same rules as every other review on
- * the site.
+ * The review set beside the figures on the homepage, rotating through the best
+ * reviews the site has — ten seconds each, in the site's own order, so the
+ * strip is not one quote standing in for ninety-two.
+ *
+ * The dates are formatted here rather than in the browser: `formatReviewDate`
+ * reads the machine's timezone, and a date formatted twice can land on two
+ * different days. The stars belong to whichever review is showing and are
+ * drawn above it for that reason — one at a time, as the figure strip comes
+ * into view, so they land with the counts beside them; the attribution line
+ * underneath follows the same rules as every other review on the site.
  */
-export function FeaturedQuote({ review }: { review: Review }) {
-  if (!review.body) return null;
+export function FeaturedQuote({ reviews }: { reviews: Review[] }) {
+  const quotes: Quote[] = reviews.flatMap((review) => {
+    if (!review.body) return [];
+    const date = formatReviewDate(review.publishedAt);
 
-  const date = formatReviewDate(review.publishedAt);
+    return [
+      {
+        id: review.id,
+        rating: review.rating,
+        body: review.body,
+        attribution: `${review.authorName}${date ? ` · ${date}` : ''} · Google review`,
+      },
+    ];
+  });
 
-  return (
-    <figure className="figures__quote">
-      <AnimatedStars rating={review.rating} />
-      <blockquote>&ldquo;{review.body}&rdquo;</blockquote>
-      <figcaption className="review__attribution">
-        {review.authorName}
-        {date ? ` · ${date}` : ''} · Google review
-      </figcaption>
-    </figure>
-  );
+  if (quotes.length === 0) return null;
+
+  return <RotatingQuote quotes={quotes} />;
 }
 
 /**

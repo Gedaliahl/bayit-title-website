@@ -184,3 +184,49 @@ describe('pulling a relevant review onto a page', () => {
     expect(await getReviewsByTags(['permits'], 1)).toHaveLength(1);
   });
 });
+
+describe('the reviews the homepage rotates through', () => {
+  const long = (length: number) => 'x'.repeat(length);
+
+  it('takes the office’s featured picks first, up to the limit', async () => {
+    const { client } = fakeClient({
+      data: [
+        row({ id: 'plain-a', is_featured: false, published_at: '2026-04-01' }),
+        row({ id: 'featured', is_featured: true, published_at: '2020-01-01' }),
+        row({ id: 'plain-b', is_featured: false, published_at: '2026-03-01' }),
+      ],
+      error: null,
+    });
+    getServiceClient.mockReturnValue(client);
+
+    const { getBestReviews } = await import('@/lib/reviews');
+
+    // Featured ahead of a newer review, then the rest of the site's own order.
+    expect((await getBestReviews()).map((review) => review.id)).toEqual([
+      'featured',
+      'plain-a',
+      'plain-b',
+    ]);
+    expect(await getBestReviews({ limit: 1 })).toHaveLength(1);
+  });
+
+  it('holds a review too long for the space behind the ones that fit', async () => {
+    const { client } = fakeClient({
+      data: [
+        row({ id: 'long', body: long(300) }),
+        row({ id: 'short', body: long(100) }),
+      ],
+      error: null,
+    });
+    getServiceClient.mockReturnValue(client);
+
+    const { getBestReviews } = await import('@/lib/reviews');
+    const picked = await getBestReviews({ maxBodyLength: 240 });
+
+    // Relevance puts the longer review first; the strip cannot hold it, so it
+    // goes behind the one that fits — and is still offered rather than dropped,
+    // because a short rotation is worse than a quote that runs long.
+    expect(picked.map((review) => review.id)).toEqual(['short', 'long']);
+    expect(await getBestReviews({ limit: 1, maxBodyLength: 240 })).toHaveLength(1);
+  });
+});
