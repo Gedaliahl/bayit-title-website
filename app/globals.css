@@ -374,15 +374,18 @@ th {
   color: var(--ink);
 }
 
-/* Seven links and a call to action wrap to four rows on a phone, which put
-   half an iPhone SE's screen between the top of the page and the first word of
-   it. Below this width the list collapses behind the button above.
-   62rem rather than the phone widths alone: measured across the range, the nav
-   wraps to two rows of links on top of dropping below the wordmark from about
-   737px up to roughly 1000px — a 168px header on an iPad in portrait, which is
-   the same problem the button exists to solve. From 62rem to about 72rem it is
-   one tidy row under the wordmark, and above that it sits beside it. */
-@media (max-width: 62rem) {
+/* Below this width the list collapses behind the Menu button above.
+   54rem, measured rather than picked: the four links and the call to action
+   come to 569px, the wordmark 195px, and with the 24px gap and the frame's
+   48px of padding the whole masthead needs 836px to sit on one row. At the
+   root font size 54rem is 864px, which clears that by 28px — the slack for a
+   wider wordmark before the mark image decodes.
+   The number was 62rem when the nav carried seven links: back then it wrapped
+   to two rows of links on top of dropping below the wordmark anywhere from
+   about 737px to 1000px, a 168px header on an iPad in portrait. Cutting the
+   nav to four links is what bought the 128px back, so a landscape phone and
+   every tablet now get the real row instead of the button. */
+@media (max-width: 54rem) {
   .nav__toggle {
     display: inline-flex;
   }
@@ -418,7 +421,7 @@ th {
 
 /* No scripting, no button worth showing: the panel could never be opened, so
    the nav stays as it was — wrapped and long, but every link reachable. */
-@media (max-width: 62rem) and (scripting: none) {
+@media (max-width: 54rem) and (scripting: none) {
   .nav__toggle {
     display: none;
   }

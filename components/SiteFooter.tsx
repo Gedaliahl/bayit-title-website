@@ -49,6 +49,12 @@ export function SiteFooter() {
               <li>
                 <Link href="/partners">For realtors and mortgage brokers</Link>
               </li>
+              {/* About and the team came off the masthead when it was cut to
+                  four links. The footer is now the only site-wide link to
+                  /about, so it is not optional here. */}
+              <li>
+                <Link href="/about">About Bayit Title</Link>
+              </li>
               <li>
                 <Link href="/team">Our team</Link>
               </li>
