@@ -50,10 +50,7 @@ export default async function HomePage() {
       <section className="section hero">
         <div className="frame hero__inner">
           <div>
-            <p className="eyebrow">
-              {site.address.city}, Florida
-            </p>
-            <h1>A title agency that tells you what the search actually says.</h1>
+            <h1>Got a Florida deal to close? We make the title and closing simple.</h1>
             <p className="hero__lede">
               We search title, examine what comes back, issue policies, hold the escrow and run
               the closing — anywhere in Florida. When something turns up on a file, we tell you
