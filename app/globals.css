@@ -1268,9 +1268,19 @@ ul.estimate-caveat {
 
 /* ---------- the example file card ---------- */
 /* An example, labelled as one. It shows the order of work on a file, so the
-   step a reader is about to ask about has a name before they call. */
+   step a reader is about to ask about has a name before they call.
+
+   A disc walks the rail on a loop, carrying the icon of the step it has
+   reached: file, search, key, house. Each row owns its own disc and animates
+   it across its own height — a row is exactly one dot-to-dot span — so the
+   walk lands on every dot without anything measuring the card in JavaScript.
+   The rules below are the finished state; the keyframes rewind it to empty and
+   play it forward, which is why a reader who has asked for less motion sees a
+   complete timeline rather than a blank one. */
 
 .filecard {
+  /* One full walk, then it starts again. */
+  --file-loop: 14s;
   background: var(--paper);
   border: 1px solid var(--rule);
   border-radius: var(--radius-card);
@@ -1301,6 +1311,7 @@ ul.estimate-caveat {
 }
 
 .filestep__rail {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1311,14 +1322,51 @@ ul.estimate-caveat {
   height: 14px;
   border-radius: 50%;
   background: var(--accent);
+  border: 2px solid var(--accent);
   margin-top: 5px;
   flex: none;
 }
 
 .filestep__line {
+  position: relative;
   flex: 1;
   width: 2px;
+  background: var(--rule-card);
+}
+
+/* The gold the disc leaves behind it. */
+.filestep__line::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 100%;
   background: var(--accent);
+}
+
+/* The disc that walks the rail. The dot it starts on sits 12px below the top
+   of the row and the disc is 28px, so -2px centres it; the next row's dot is
+   one row height further down, which is where the travel ends. */
+.filestep__disc {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+  box-shadow: 0 0 0 3px var(--paper), 0 4px 14px rgba(47, 36, 8, 0.12);
+  opacity: 0;
+}
+
+/* Where the walk ends, so this is the disc on show when it is not running. */
+.filestep--s4 .filestep__disc {
+  opacity: 1;
 }
 
 .filestep__body {
@@ -1338,35 +1386,328 @@ ul.estimate-caveat {
   color: var(--ink-muted);
 }
 
-.filestep__now {
-  font-size: 0.71875rem;
-  font-weight: 500;
-  color: var(--accent-deep);
-  margin-left: 0.375rem;
-}
-
-/* Steps that have not happened yet on the example file: the same rail, drawn
-   in the rule colour so the eye stops at the step in progress. */
-.filestep--todo .filestep__dot,
-.filestep--todo .filestep__line {
-  background: var(--rule-card);
-}
-
-.filestep--now .filestep__dot {
-  background: var(--paper);
-  border: 3px solid var(--accent);
-}
-
-.filestep--now .filestep__line {
-  background: var(--rule-card);
-}
-
-.filestep--todo .filestep__body p {
-  color: var(--ink-faint);
-}
-
 .filestep:last-child .filestep__body {
   padding-bottom: 0;
+}
+
+/* Each row plays the same four parts a quarter of a loop apart: the disc lands
+   on the dot, the dot fills, the step brightens, then the disc walks to the
+   next dot with the rail filling behind it. Written out a row at a time rather
+   than driven by a delay, because what a row has filled has to stay filled to
+   the end of the loop and rewind with every other row when it starts again. */
+.filestep__dot,
+.filestep__line::after,
+.filestep__body,
+.filestep__disc {
+  animation-duration: var(--file-loop);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.filestep--s1 .filestep__dot {
+  animation-name: filestep-dot-1;
+}
+
+.filestep--s1 .filestep__line::after {
+  animation-name: filestep-line-1;
+}
+
+.filestep--s1 .filestep__body {
+  animation-name: filestep-body-1;
+}
+
+.filestep--s1 .filestep__disc {
+  animation-name: filestep-disc-1;
+}
+
+.filestep--s2 .filestep__dot {
+  animation-name: filestep-dot-2;
+}
+
+.filestep--s2 .filestep__line::after {
+  animation-name: filestep-line-2;
+}
+
+.filestep--s2 .filestep__body {
+  animation-name: filestep-body-2;
+}
+
+.filestep--s2 .filestep__disc {
+  animation-name: filestep-disc-2;
+}
+
+.filestep--s3 .filestep__dot {
+  animation-name: filestep-dot-3;
+}
+
+.filestep--s3 .filestep__line::after {
+  animation-name: filestep-line-3;
+}
+
+.filestep--s3 .filestep__body {
+  animation-name: filestep-body-3;
+}
+
+.filestep--s3 .filestep__disc {
+  animation-name: filestep-disc-3;
+}
+
+.filestep--s4 .filestep__dot {
+  animation-name: filestep-dot-4;
+}
+
+.filestep--s4 .filestep__body {
+  animation-name: filestep-body-4;
+}
+
+.filestep--s4 .filestep__disc {
+  animation-name: filestep-disc-4;
+}
+
+/* The disc: hidden until the walk reaches this row, a small pop as it lands,
+   then a wait on the dot before it carries the icon down to the next one. */
+@keyframes filestep-disc-1 {
+  0% {
+    opacity: 0;
+    top: -2px;
+  }
+  3%,
+  11% {
+    opacity: 1;
+    top: -2px;
+  }
+  24.99% {
+    opacity: 1;
+    top: calc(100% - 2px);
+  }
+  25%,
+  100% {
+    opacity: 0;
+    top: calc(100% - 2px);
+  }
+}
+
+@keyframes filestep-disc-2 {
+  0%,
+  24.99% {
+    opacity: 0;
+    top: -2px;
+    transform: scale(1.15);
+  }
+  25% {
+    opacity: 1;
+    top: -2px;
+    transform: scale(1.15);
+  }
+  28%,
+  36% {
+    opacity: 1;
+    top: -2px;
+    transform: none;
+  }
+  49.99% {
+    opacity: 1;
+    top: calc(100% - 2px);
+  }
+  50%,
+  100% {
+    opacity: 0;
+    top: calc(100% - 2px);
+  }
+}
+
+@keyframes filestep-disc-3 {
+  0%,
+  49.99% {
+    opacity: 0;
+    top: -2px;
+    transform: scale(1.15);
+  }
+  50% {
+    opacity: 1;
+    top: -2px;
+    transform: scale(1.15);
+  }
+  53%,
+  61% {
+    opacity: 1;
+    top: -2px;
+    transform: none;
+  }
+  74.99% {
+    opacity: 1;
+    top: calc(100% - 2px);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    top: calc(100% - 2px);
+  }
+}
+
+/* The last one has nowhere to walk to: it lands, waits out the loop and fades
+   so the rewind to an empty timeline happens with nothing on the rail. */
+@keyframes filestep-disc-4 {
+  0%,
+  74.99% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  78%,
+  97% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+/* The dots: an empty ring until the disc lands on them, gold from then on. */
+@keyframes filestep-dot-1 {
+  0% {
+    background: var(--paper);
+    border-color: var(--rule-card);
+  }
+  2%,
+  100% {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+@keyframes filestep-dot-2 {
+  0%,
+  25% {
+    background: var(--paper);
+    border-color: var(--rule-card);
+  }
+  27%,
+  100% {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+@keyframes filestep-dot-3 {
+  0%,
+  50% {
+    background: var(--paper);
+    border-color: var(--rule-card);
+  }
+  52%,
+  100% {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+@keyframes filestep-dot-4 {
+  0%,
+  75% {
+    background: var(--paper);
+    border-color: var(--rule-card);
+  }
+  77%,
+  100% {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+/* The rail: drawn gold under the disc as it travels, and left that way. */
+@keyframes filestep-line-1 {
+  0%,
+  11% {
+    height: 0;
+  }
+  25%,
+  100% {
+    height: 100%;
+  }
+}
+
+@keyframes filestep-line-2 {
+  0%,
+  36% {
+    height: 0;
+  }
+  50%,
+  100% {
+    height: 100%;
+  }
+}
+
+@keyframes filestep-line-3 {
+  0%,
+  61% {
+    height: 0;
+  }
+  75%,
+  100% {
+    height: 100%;
+  }
+}
+
+/* The step itself, held back until the file has reached it. */
+@keyframes filestep-body-1 {
+  0% {
+    opacity: 0.45;
+  }
+  3%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes filestep-body-2 {
+  0%,
+  25% {
+    opacity: 0.45;
+  }
+  28%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes filestep-body-3 {
+  0%,
+  50% {
+    opacity: 0.45;
+  }
+  53%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes filestep-body-4 {
+  0%,
+  75% {
+    opacity: 0.45;
+  }
+  78%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Asked for less motion: no walk at all. The rules above already describe the
+   finished timeline, so what is left is every step reached and the disc resting
+   on the last dot. */
+@media (prefers-reduced-motion: reduce) {
+  .filestep__dot,
+  .filestep__line::after,
+  .filestep__body,
+  .filestep__disc {
+    animation: none;
+  }
 }
 
 /* ---------- services ticker ---------- */

@@ -244,10 +244,18 @@ This sequence is fixed and is the core of the site:
 - **Split hero** (`.hero__inner`) — copy left, the example file card right at
   `27.5rem`, stacking below `62rem`.
 - **Example file card** (`.filecard` / `.filestep`) — rounded, shadowed panel
-  holding the four steps of a file with a dot-and-rail timeline: gold for steps
-  passed, a ringed dot for the step in progress, `--rule-card` and `--ink-faint`
-  for the step still to come. It is labelled "Example file" because it is a
-  sequence, not a schedule.
+  holding the four steps of a file on a dot-and-rail timeline, walked by a
+  gold-wash disc: it rests on a dot, then travels to the next one carrying that
+  step's icon — file, magnifying glass, key, house. A dot is an empty
+  `--rule-card` ring until the disc lands on it and fills it gold, the rail
+  fills behind the disc as it goes, and a step's text sits at 45% until the
+  file has reached it. Fourteen seconds top to bottom, then it rewinds and
+  starts again. No JavaScript: every row animates across its own height, and a
+  row is exactly one dot-to-dot span, so nothing has to be measured. For a
+  reader who has asked for less motion the animation is off and the card
+  renders its finished state — every dot gold, every step at full contrast,
+  the disc resting on the last dot. It is labelled "Example file" because it is
+  a sequence, not a schedule.
 - **Services ticker** (`.ticker`) — full-bleed band of pill cards, one per
   headline transaction type (Residential, Commercial, Refinance, 1031 Exchange,
   FIRPTA), scrolling left over 46s. The run repeats four times so it fills a
