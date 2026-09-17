@@ -55,10 +55,9 @@ export default async function HomePage() {
             </p>
             <h1>A title agency that tells you what the search actually says.</h1>
             <p className="hero__lede">
-              We search title, examine what comes back, issue policies as an agent for{' '}
-              {site.underwriter}, hold the escrow and run the closing — anywhere in Florida. When
-              something turns up on a file, we tell you what it is and what clearing it takes, in
-              writing, the same week.
+              We search title, examine what comes back, issue policies, hold the escrow and run
+              the closing — anywhere in Florida. When something turns up on a file, we tell you
+              what it is and what clearing it takes, in writing, the same day.
             </p>
             <p className="hero__actions">
               <Link href="/order" className="btn btn--primary">
