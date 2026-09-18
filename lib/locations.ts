@@ -107,6 +107,23 @@ export const getLocations = cache(async (): Promise<Location[]> => {
   }));
 });
 
+/**
+ * Where in the state a county is, for the label on its card.
+ *
+ * Only the counties that get a card — the ones lib/site.ts calls priority. It
+ * is a region name rather than a claim about the office, so it does not belong
+ * in the locations table beside the clerk and appraiser facts that are checked
+ * against a public record.
+ */
+export const COUNTY_REGIONS: Record<string, string> = {
+  'broward-county': 'South Florida',
+  'palm-beach-county': 'South Florida',
+  'miami-dade-county': 'South Florida',
+  'hillsborough-county': 'Tampa Bay',
+  'orange-county': 'Central Florida',
+  'duval-county': 'Northeast Florida',
+};
+
 export async function getCounties(): Promise<Location[]> {
   return (await getLocations()).filter((location) => location.kind === 'county');
 }

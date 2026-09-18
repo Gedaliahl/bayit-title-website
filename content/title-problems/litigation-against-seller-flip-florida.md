@@ -10,11 +10,14 @@ related:
   - "judgment-against-seller-before-closing-florida"
   - "buying-property-bankruptcy-estate-florida"
 pending_confirmation:
+  - "LT-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Only if a lis pendens is recorded\") — drafted from this page, not yet reviewed"
   - "LT-01 (Bayit Title): Typical timeline (quick fact) — needed from the team"
   - "LT-04 (underwriter/form): What we examine differently where a seller acquired recently"
   - "LT-05 (Bayit Title): The four file details the finished page needs (search result, claim, requirement to close, duration)"
   - "LT-06 (Bayit Title): Our actual practice where a seller is in active litigation, including where we decline"
   - "LT-08 (underwriter/form): First American's position on pending litigation / recorded lis pendens, and whether it differs by relief sought"
+verdict:
+  short: "Only if a lis pendens is recorded"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers purchasing from a seller who acquired recently, and anyone buying from a party in active litigation."

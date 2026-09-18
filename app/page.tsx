@@ -147,7 +147,7 @@ export default async function HomePage() {
 
       <section className="frame section">
         <div className="section__head">
-          <h2 style={{ marginTop: 0, marginBottom: 0 }}>Title problems, written out</h2>
+          <h2>Title problems, written out</h2>
           <Link href="/title-problems" className="section__head-link">
             All title problem pages →
           </Link>

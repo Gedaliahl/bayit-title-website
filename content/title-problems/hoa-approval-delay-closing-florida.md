@@ -10,8 +10,11 @@ related:
   - "non-standard-purchase-contract-florida-closing"
   - "open-permits-before-closing-florida"
 pending_confirmation:
+  - "HA-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? It can delay it\") — drafted from this page, not yet reviewed"
   - "HA-01 (Bayit Title): Range we actually see from complete application to approval, and fastest documented turnaround"
   - "HA-04 (Bayit Title): A specific composite example from our files — application to approval turnaround"
+verdict:
+  short: "It can delay it"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers and sellers in any community where the association has approval rights over a transfer — most condominiums and many HOAs."

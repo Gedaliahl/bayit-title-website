@@ -10,8 +10,29 @@ related:
   - "open-permits-before-closing-florida"
   - "litigation-against-seller-flip-florida"
 pending_confirmation:
+  - "JG-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Rarely\"), the four verdict-card rows, and the five steps — drafted from this page, not yet reviewed"
   - "JG-01 (Bayit Title): How long a payoff and release typically takes once the judgment creditor is identified"
   - "JG-05 (underwriter/form): Form of identity affidavit First American accepts for a name-match judgment"
+verdict:
+  headline: "Rarely — if it is found early."
+  short: "Rarely"
+  rows:
+    - [ "Who resolves it", "The seller, from proceeds" ]
+    - [ "Timeline", "3–10 business days for a written payoff" ]
+    - [ "Cost to buyer", "Usually none" ]
+    - [ "Needs a lawyer?", "Only if disputed, or homestead is contested" ]
+steps:
+  - title: "The search returns it"
+    body: "A hit in the county's official records, matched on the seller's name."
+  - title: "Same person?"
+    body: "Confirmed or ruled out with an affidavit of identity the underwriter accepts."
+  - title: "Does it attach?"
+    body: "Certified copy, address, dates — and whether the property is homestead."
+  - title: "Written payoff"
+    body: "From the creditor or counsel, good through a date, verified by phone."
+  - title: "Paid and satisfied"
+    body: "Paid from proceeds at closing; the creditor records a satisfaction."
+read_time: 7
 quick_facts:
   - term: "Who this affects"
     detail: "Any seller with a money judgment recorded against them, and the buyer relying on clear title."

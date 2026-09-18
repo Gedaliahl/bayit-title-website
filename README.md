@@ -99,6 +99,16 @@ related: ["slug-a"]
 quick_facts:
   - term: "Who this affects"
     detail: "..."
+verdict:                 # optional — the card beside the H1
+  headline: "Rarely — if it is found early."
+  short: "Rarely"        # the index card's "STOPS THE CLOSING? …" label
+  rows:                  # [ term, detail ] pairs, in the order they read
+    - [ "Who resolves it", "The seller, from proceeds" ]
+    - [ "Timeline", "3–10 business days for a written payoff" ]
+steps:                   # optional — the cream band under the hero
+  - title: "The search returns it"
+    body: "A hit in the county's official records, matched on the seller's name."
+read_time: 7             # optional — omitted rather than estimated
 author: "shevy"          # required when status: reviewed
 reviewed_on: 2026-09-10  # required when status: reviewed
 next_review: 2027-09-10  # required when status: reviewed
@@ -111,6 +121,41 @@ an attorney → FAQ → related → byline → one quiet CTA. 600–1,800 words.
 The FAQ is parsed out of the Markdown for `FAQPage` JSON-LD, so it stays in sync
 with what the page actually says. An answer containing a `[VERIFY]` flag is
 excluded from the structured data.
+
+`verdict` and `steps` are both optional, and `verdict.headline` is optional
+inside `verdict`: a page can carry its index label before anyone has written and
+checked the sentence that goes above the fold. Where they are absent the card and
+the band are simply not rendered. Rows without a headline are a build error —
+a capless card is worse than none. A `[VERIFY]` flag written into either is
+counted and shown exactly as one in the body is, and a Markdown link in a
+`quick_facts` or `verdict` detail is rendered, so a statute citation there is a
+link rather than raw `[text](url)`.
+
+### The interior page system
+
+Everything below the home page is assembled from one set of parts, in
+`app/globals.css` and `components/`:
+
+```
+<SiteHeader>
+<section .page-hero>      headline and lede | <Verdict> card — the answer, first
+<StepBand>                cream band: what happens, in order
+<div .cols>               <Rail> (sticky contents) | .detail
+<QuietCta variant="band">
+<SiteFooter>
+```
+
+The premise is that the reader's first question — does this stop my closing,
+what does a title agency actually do, does the county change the price — is
+answered in the card beside the headline before the page explains anything.
+That card is server-rendered into the first HTML, because it is the block a
+search snippet and an assistant both quote.
+
+`lib/content.ts` splits a body at its `## ` headings so the template can lay each
+one out: the questions become a `<details>` list, "How Bayit Title handles this"
+becomes a callout on its own ground, and the rail links to the rest by heading id.
+Both are derived from the heading text rather than from a markup convention, so
+an author writes the same Markdown they always did.
 
 ## Voice
 
@@ -522,6 +567,16 @@ Carried forward from `docs/HANDOFF.md`, still open:
   practice. They are tracked per page in a `pending_confirmation` front-matter
   list, which the build enforces the same way it enforces `[VERIFY]`. Review
   pack: `docs/review/verify-fill-review.pdf`
+- The verdict cards are only partly filled. Every library page carries a
+  `verdict.short` — the label the index card leads with — and each one is in that
+  page's `pending_confirmation` list awaiting a reviewer. Only
+  `judgment-against-seller-before-closing-florida` has the four card rows and the
+  five steps; the other seven render without the card or the band until somebody
+  who can answer for the practice writes them. Nothing is guessed to fill a gap.
+- Two of the six priority counties have no recording office in the locations
+  table, so their cards on `/counties` show a name and no line under it. Palm
+  Beach and Miami-Dade need a `clerk_name` read off each office's own site and
+  dated, the way `supabase/seed/locations_recording_offices.sql` does the rest.
 - Which team members hold Florida *online* notary registrations is still open,
   and is the one flag that must come from the commission record
 - `rate_tables` has a seed (`supabase/seed/rate_tables.sql`, statutory figures
