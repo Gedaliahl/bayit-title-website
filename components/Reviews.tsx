@@ -58,7 +58,7 @@ export function ReviewPullQuote({ review }: { review: Review }) {
 
 /**
  * The review set beside the figures on the homepage, rotating through the best
- * reviews the site has — five seconds each, in the site's own order, so the
+ * reviews the site has — four seconds each, in the site's own order, so the
  * strip is not one quote standing in for ninety-two.
  *
  * The dates are formatted here rather than in the browser: `formatReviewDate`

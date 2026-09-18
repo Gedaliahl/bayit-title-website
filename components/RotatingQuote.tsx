@@ -20,8 +20,8 @@ export interface Quote {
   attribution: string;
 }
 
-/** Five seconds on each review. */
-const HOLD_MS = 5_000;
+/** Four seconds on each review. */
+const HOLD_MS = 4_000;
 
 /**
  * The review beside the figures on the homepage, rotating through the best
@@ -35,7 +35,7 @@ const HOLD_MS = 5_000;
  * still take them to any of the others — and pauses while the pointer or the
  * keyboard focus is on the strip, so a review is never swapped out from under
  * someone mid-sentence. Clicking a dot stops the rotation for good: a reader
- * who has picked a review should not be moved off it five seconds later, and
+ * who has picked a review should not be moved off it four seconds later, and
  * that makes the dots the stop control the auto-advance needs.
  */
 export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; holdMs?: number }) {
@@ -107,8 +107,8 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
           </div>
         ) : null}
 
-        {/* Five of ninety-two are on show here. The arrow reads the way every
-            other onward link on the site does. */}
+        {/* Eighteen of ninety-two are on show here. The arrow reads the way
+            every other onward link on the site does. */}
         <Link href="/reviews" className="quote-rotator__all">
           Read all Google reviews &rarr;
         </Link>

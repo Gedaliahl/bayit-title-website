@@ -26,11 +26,11 @@ export const metadata: Metadata = {
  * The quote sits in two columns of a four-column strip, so a long review would
  * push it out of shape: ask for the reviews that fit rather than cutting a
  * reviewer's words down to the space available. The strip rotates through the
- * best five — see components/RotatingQuote.tsx for the five seconds each and
- * the dots under the quote.
+ * best eighteen — see components/RotatingQuote.tsx for the four seconds each
+ * and the dot per review under the quote.
  */
 const QUOTE_BUDGET = 240;
-const QUOTE_COUNT = 5;
+const QUOTE_COUNT = 18;
 
 export default async function HomePage() {
   const [docs, snapshot, counties, quotes] = await Promise.all([

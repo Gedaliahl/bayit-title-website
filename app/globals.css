@@ -1853,7 +1853,7 @@ ul.estimate-caveat {
   margin-top: 0.625rem;
 }
 
-/* The homepage quote rotates through the best reviews, five seconds each
+/* The homepage quote rotates through the best reviews, four seconds each
    (components/RotatingQuote.tsx). All of them are laid into one grid cell, so
    the strip is as tall as the longest of them and a change of quote never
    moves the page. The one on show is the only one visible, which is also what
@@ -1872,7 +1872,7 @@ ul.estimate-caveat {
      paragraphs of text are never half-visible on top of each other. Visibility
      is transitioned alongside opacity so it holds until the fade finishes
      rather than cutting the text on the first frame. The pair runs in 660ms,
-     inside a five-second hold, so a quote is still on show far longer than it
+     inside a four-second hold, so a quote is still on show far longer than it
      is on its way in or out. */
   transition: opacity 260ms ease, visibility 260ms;
 }
@@ -1883,17 +1883,17 @@ ul.estimate-caveat {
   transition: opacity 400ms ease 260ms, visibility 0s 260ms;
 }
 
-/* One dot per review, under the quote: which of the five is showing, and the
-   way to any of the others. They are the stop control for the auto-advance as
-   well — clicking one ends the rotation (components/RotatingQuote.tsx).
+/* One dot per review, under the quote: which of the eighteen is showing, and
+   the way to any of the others. They are the stop control for the auto-advance
+   as well — clicking one ends the rotation (components/RotatingQuote.tsx).
 
    The dots are 8px with 16px between them, so the 24px target each one gets
-   below meets its neighbour without overlapping it. */
-/* The dots and the way on to the rest of the reviews share a line under the
-   quote: the dots under the text they belong to, the link out at the far edge
-   of the quote's own columns. The line wraps, because on a narrow screen the
-   strip is one column wide and the sentence would otherwise sit on top of the
-   dots; a wrapped link falls back to the left, under them. */
+   below meets its neighbour without overlapping it — across a wrapped row as
+   well as along one, which is why the row gap matches the gap between dots. */
+/* Eighteen dots take a line of their own: at that count they fill the quote's
+   own columns, so the way on to the rest of the reviews follows underneath
+   rather than sharing the line. The dots wrap in turn on a narrow screen,
+   where the strip is one column wide. */
 .quote-rotator__foot {
   display: flex;
   flex-wrap: wrap;
@@ -1905,12 +1905,14 @@ ul.estimate-caveat {
 
 .quote-rotator__dots {
   display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
   gap: 1rem;
 }
 
 /* Quiet until it is wanted: the same treatment the section head links get, at
-   the size of the attribution line above it, so five reviews on show do not
-   read as an advertisement for ninety-two. */
+   the size of the attribution line above it, so eighteen reviews on show do
+   not read as an advertisement for ninety-two. */
 .quote-rotator__all {
   font-size: 0.8125rem;
   font-weight: 600;
@@ -1936,7 +1938,7 @@ ul.estimate-caveat {
 }
 
 /* The dot a finger or a stylus has to hit is 24px square; the one an eye sees
-   stays 8px, because five of those beside a quote should read as a position
+   stays 8px, because eighteen of those beside a quote should read as a position
    indicator rather than as a row of buttons. */
 .quote-rotator__dot::after {
   content: '';
