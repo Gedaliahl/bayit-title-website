@@ -110,7 +110,7 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
         {/* Five of ninety-two are on show here. The arrow reads the way every
             other onward link on the site does. */}
         <Link href="/reviews" className="quote-rotator__all">
-          Read all Google reviews &rarr;
+          Read Google reviews &rarr;
         </Link>
       </div>
     </div>
