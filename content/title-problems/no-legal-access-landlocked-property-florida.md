@@ -10,9 +10,12 @@ related:
   - "open-permits-before-closing-florida"
   - "judgment-against-seller-before-closing-florida"
 pending_confirmation:
+  - "AC-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Yes, until access is insured\") — drafted from this page, not yet reviewed"
   - "AC-01 (Bayit Title): How long it has taken us to resolve an access exception by recorded easement, neighbour cooperating"
   - "AC-02 (Bayit Title): Cost of a recorded easement, survey sketch and legal description"
   - "AC-03 (underwriter/form): Standard access exception language in our commitments; is an endorsement available?"
+verdict:
+  short: "Yes, until access is insured"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers of interior parcels, acreage, flag lots, and anything reached across land someone else owns."

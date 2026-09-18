@@ -10,9 +10,12 @@ related:
   - "hoa-approval-delay-closing-florida"
   - "open-permits-before-closing-florida"
 pending_confirmation:
+  - "NS-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? No\") — drafted from this page, not yet reviewed"
   - "NS-01 (Bayit Title): Typical timeline and cost impact (quick facts) — needed from the team"
   - "NS-02 (Bayit Title): The specific provisions we check first on a non-standard contract, in order"
   - "NS-03 (Bayit Title): The three file details the finished page needs"
+verdict:
+  short: "No"
 quick_facts:
   - term: "Who this affects"
     detail: "Parties using an attorney-drafted, out-of-state, builder, or heavily addended contract rather than a standard Florida form."

@@ -10,10 +10,13 @@ related:
   - "litigation-against-seller-flip-florida"
   - "judgment-against-seller-before-closing-florida"
 pending_confirmation:
+  - "BK-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Until the order is final\") — drafted from this page, not yet reviewed"
   - "BK-01 (Bayit Title): How sale-order entry, objection and appeal periods shape a closing schedule on our files"
   - "BK-02 (Bayit Title): Whether these files typically carry additional search or examination cost"
   - "BK-03 (underwriter/form): Specific items we require from a bankruptcy sale order before closing, and what the underwriter requires"
   - "BK-05 (underwriter/form): How a closed prior bankruptcy in the chain is examined and what documentation clears it"
+verdict:
+  short: "Until the order is final"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers and investors purchasing from a Chapter 7 trustee or a Chapter 11 or 13 debtor in possession."

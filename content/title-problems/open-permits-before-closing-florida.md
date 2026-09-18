@@ -10,12 +10,15 @@ related:
   - "judgment-against-seller-before-closing-florida"
   - "non-standard-purchase-contract-florida-closing"
 pending_confirmation:
+  - "OP-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Sometimes\") — drafted from this page, not yet reviewed"
   - "OP-01 (Bayit Title): Typical time to close out an open permit, by municipality"
   - "OP-02 (Bayit Title): What a permit close-out costs — re-inspection, after-the-fact permit, contractor"
   - "OP-03 (Bayit Title): Is a municipal lien search ordered on every purchase, or only on request?"
   - "OP-04 (underwriter/form): How the standard FAR/BAR contract allocates responsibility for open permits, and which paragraph"
   - "OP-05 (Bayit Title): The actual close-out routes we have used and how long each took"
   - "OP-06 (underwriter/form): First American's coverage position on open permits and code enforcement, and any endorsement"
+verdict:
+  short: "Sometimes"
 quick_facts:
   - term: "Who this affects"
     detail: "Buyers, sellers and listing agents on any property where work was done — additions, roofs, water heaters, windows, pools, electrical panels."

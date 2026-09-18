@@ -1,7 +1,7 @@
 import { formatLongDate } from '@/lib/seo';
 
 /** Marks `[VERIFY: ...]` flags in rendered HTML so they read as flags, not copy. */
-function markVerifyFlags(html: string): string {
+export function markVerifyFlags(html: string): string {
   return html.replace(
     /\[VERIFY:?([^\]]*)\]/g,
     (_match, note: string) =>
@@ -9,10 +9,20 @@ function markVerifyFlags(html: string): string {
   );
 }
 
-export function Prose({ html }: { html: string }) {
+/**
+ * Rendered Markdown.
+ *
+ * `library` is the reading column a whole page body is set in. `detail` is one
+ * section of that body, rendered on its own beside the contents rail: wider,
+ * and without the rule its headings carry in the library layout, because there
+ * the template draws the rule between sections instead.
+ */
+export function Prose({ html, variant = 'library' }: { html: string; variant?: 'library' | 'detail' }) {
+  if (!html.trim()) return null;
+
   return (
     <div
-      className="prose"
+      className={variant === 'detail' ? 'prose prose--detail' : 'prose'}
       // Markdown authored in this repo and reviewed before merge.
       dangerouslySetInnerHTML={{ __html: markVerifyFlags(html) }}
     />
@@ -39,6 +49,25 @@ export function VerifyText({ text }: { text: string }) {
         );
       })}
     </>
+  );
+}
+
+/**
+ * One line of a quick-facts box or a verdict row.
+ *
+ * Front-matter carries Markdown, so where the line has been rendered the
+ * rendered version is what the reader sees — otherwise a statute citation shows
+ * as `[Fla. Stat. § 55.03](https://…)`. Plain text is still handled, so a fact
+ * assembled in a page rather than read off a file needs no rendering step.
+ */
+export function FactDetail({ fact }: { fact: { detail: string; html?: string } }) {
+  if (!fact.html) return <VerifyText text={fact.detail} />;
+
+  return (
+    <span
+      // Markdown authored in this repo's front-matter and reviewed before merge.
+      dangerouslySetInnerHTML={{ __html: markVerifyFlags(fact.html) }}
+    />
   );
 }
 
@@ -117,15 +146,18 @@ export function Byline({
   credential,
   reviewedOn,
   nextReview,
+  withAvatar = false,
 }: {
   authorName: string;
   authorRole: string;
   credential: string | null;
   reviewedOn: string;
   nextReview: string;
+  /** Initials disc beside the credit, for the interior article template. */
+  withAvatar?: boolean;
 }) {
-  return (
-    <div className="byline">
+  const body = (
+    <>
       Reviewed by <strong>{authorName}</strong>, {authorRole}
       {credential ? `, ${credential}` : ''}.
       <br />
@@ -133,6 +165,26 @@ export function Byline({
       <br />
       Florida title practice changes. If a fee, form or timeline on this page no longer matches what
       you are seeing, tell us and we will correct it.
+    </>
+  );
+
+  if (!withAvatar) return <div className="byline">{body}</div>;
+
+  return (
+    <div className="byline byline--avatar">
+      <span className="avatar" aria-hidden="true">
+        {initials(authorName)}
+      </span>
+      <p>{body}</p>
     </div>
   );
+}
+
+/** First letters of the first and last name — the disc is decorative either way. */
+export function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+  const first = parts[0][0];
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+  return `${first}${last}`.toUpperCase();
 }

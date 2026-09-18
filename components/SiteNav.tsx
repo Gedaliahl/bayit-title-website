@@ -75,7 +75,17 @@ export function SiteNav({
           <Link
             key={item.href}
             href={item.href}
-            aria-current={pathname === item.href ? 'page' : undefined}
+            // A library article is inside the section its nav item names, so the
+            // mark stays on "Title problems" while the reader is on one of its
+            // pages. `page` only where the link is the page itself; `true`
+            // where it is an ancestor of it, which is what the attribute is for.
+            aria-current={
+              pathname === item.href
+                ? 'page'
+                : pathname.startsWith(`${item.href}/`)
+                  ? 'true'
+                  : undefined
+            }
           >
             {item.label}
           </Link>

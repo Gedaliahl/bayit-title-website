@@ -4,20 +4,27 @@ import { site } from '@/lib/site';
 /**
  * One quiet CTA per page. Specific about what happens next rather than urgent
  * about acting now.
+ *
+ * Two shapes. `inset` is the panel that sits at the end of a reading column,
+ * which is what most of the site wants. `band` is the interior-page system's:
+ * the last full-width thing before the footer, on its own ground, so the page
+ * ends on an offer rather than trailing off.
  */
 export function QuietCta({
   text = 'If this is on a file you are working on, send us the address and the contract date and we will tell you what the search shows.',
   action = 'Open an order',
   href = '/order',
+  variant = 'inset',
 }: {
   text?: string;
   action?: string;
   href?: string;
+  variant?: 'inset' | 'band';
 }) {
-  return (
-    <aside className="cta">
+  const body = (
+    <>
       <p>{text}</p>
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <div className="cta__actions">
         <Link href={href} className="btn btn--primary">
           {action}
         </Link>
@@ -25,6 +32,16 @@ export function QuietCta({
           {site.phoneDisplay}
         </a>
       </div>
-    </aside>
+    </>
   );
+
+  if (variant === 'band') {
+    return (
+      <aside className="cta cta--band">
+        <div className="frame cta__inner">{body}</div>
+      </aside>
+    );
+  }
+
+  return <aside className="cta">{body}</aside>;
 }

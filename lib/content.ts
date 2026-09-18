@@ -9,6 +9,8 @@ import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkHtml from 'remark-html';
 
+import { isFaqHeading } from './faq';
+
 export const CLUSTERS = [
   'liens',
   'family',
@@ -43,6 +45,90 @@ export const CLUSTER_LABELS: Record<Cluster, string> = {
  */
 export type DocStatus = 'draft' | 'reviewed';
 
+/**
+ * The one-line caption beside a cluster heading on the index. It says what the
+ * cluster covers in the reader's terms, which the label alone does not: "Liens
+ * and encumbrances" names a category, "Recorded against the property or the
+ * seller" says which pile a file belongs in. Optional, because a cluster with
+ * no page in it never renders and a new one should not block the build.
+ */
+export const CLUSTER_CAPTIONS: Partial<Record<Cluster, string>> = {
+  liens: 'Recorded against the property or the seller',
+  distressed: 'Where a court order is a title document',
+  process: 'Contracts, signings and who does what',
+  'property-type': 'Condominiums, HOAs, new construction',
+  survey: 'What the survey shows versus what the record supports',
+};
+
+/**
+ * The direct answer, as the reader's first question rather than as prose: does
+ * this stop the closing, who fixes it, how long, what it costs, is a lawyer
+ * needed. It renders as the card beside the H1, above the fold, in the first
+ * HTML the server sends — which is what a snippet or an assistant reads.
+ *
+ * `short` is the same verdict at index length, so the card for this page in the
+ * library reads "STOPS THE CLOSING? RARELY" without opening it.
+ */
+/** A term and its detail — a quick fact, or a row of the verdict card. */
+export interface KeyFact {
+  term: string;
+  detail: string;
+  /**
+   * `detail`, rendered.
+   *
+   * These lines carry Markdown, and the statute links in them are the whole
+   * point of the fact: "statutory interest runs under Fla. Stat. § 55.03" is
+   * only checkable if the citation is a link. Rendered at build time beside the
+   * body so a reader is never shown the raw `[text](url)`.
+   */
+  html?: string;
+}
+
+export interface Verdict {
+  /**
+   * One sentence, in the cap of the card. A `<p>`, never a heading.
+   *
+   * Optional, and the card is hidden without it. A page can carry its index
+   * label before anyone has written and checked the sentence that goes above
+   * the fold, and a card capped with a guess is worse than no card: it is the
+   * first thing a reader sees and the line an assistant quotes.
+   */
+  headline?: string;
+  /** Two or three words for the index card label. */
+  short: string;
+  /** Key/value rows. Optional: a page with no confirmed rows shows the cap alone. */
+  rows: KeyFact[];
+}
+
+/** One card in the "what happens, in order" band. */
+export interface Step {
+  title: string;
+  body: string;
+}
+
+/**
+ * A `## ` heading and the body under it, rendered on its own so the page can
+ * lay each one out differently — a callout for our own practice, a disclosure
+ * list for the questions — and so the rail can link to it by id.
+ */
+export interface DocSection {
+  /** Slug of the heading text; the anchor the rail links to. */
+  id: string;
+  /** The heading, as plain text. */
+  title: string;
+  /** The body under the heading, rendered. Empty for a section with no prose. */
+  html: string;
+  kind: SectionKind;
+}
+
+/**
+ * How a section is laid out. Derived from the heading rather than from a new
+ * markup convention, because every page already uses the same two headings for
+ * these two things and an author should not have to learn a container syntax to
+ * keep that working.
+ */
+export type SectionKind = 'prose' | 'practice' | 'faq';
+
 export interface DocFrontMatter {
   status: DocStatus;
   title: string;
@@ -68,12 +154,24 @@ export interface DocFrontMatter {
    */
   pending_confirmation?: string[];
   /** Quick-facts box: who this affects, typical timeline, documents, cost impact. */
-  quick_facts?: { term: string; detail: string }[];
+  quick_facts?: KeyFact[];
+  /**
+   * The answer to "does this stop the closing?", rendered beside the H1.
+   * Optional: a page written before the field existed renders without the card
+   * rather than with an empty one, and the hero falls back to one column.
+   */
+  verdict?: Verdict;
+  /** The order the work happens in. Optional; the step band is hidden without it. */
+  steps?: Step[];
+  /** Minutes, for the hero meta row. Omitted rather than estimated. */
+  read_time?: number;
 }
 
 export interface Doc extends DocFrontMatter {
   /** Rendered HTML for the body, front-matter stripped. */
   html: string;
+  /** The same body, split at its `## ` headings so each part can be laid out. */
+  sections: DocSection[];
   /** Raw Markdown body, used to detect unresolved [VERIFY] flags. */
   raw: string;
   /** Every `[VERIFY: ...]` flag on the page — answer, quick facts and body. */
@@ -131,16 +229,37 @@ export function findVerifyFlags(text: string): string[] {
  * distrust both.
  */
 function flaggableText(
-  data: { direct_answer?: unknown; quick_facts?: unknown },
+  data: { direct_answer?: unknown; quick_facts?: unknown; verdict?: unknown; steps?: unknown },
   body: string,
 ): string {
   const facts = Array.isArray(data.quick_facts)
     ? (data.quick_facts as { term?: string; detail?: string }[])
     : [];
 
+  const verdict = (data.verdict ?? {}) as { headline?: unknown; short?: unknown; rows?: unknown };
+  // Called twice with the same field in two shapes: once on the raw
+  // front-matter, where a row is the `[term, detail]` pair an author wrote, and
+  // once on the normalised page, where it is a `{ term, detail }`. Both have to
+  // be read, because a flag written into either has to be counted.
+  const rows = (Array.isArray(verdict.rows) ? verdict.rows : []).map((row) =>
+    Array.isArray(row)
+      ? row.map((cell) => String(cell ?? '')).join(' ')
+      : `${(row as KeyFact)?.term ?? ''} ${(row as KeyFact)?.detail ?? ''}`,
+  );
+  const steps = Array.isArray(data.steps)
+    ? (data.steps as { title?: string; body?: string }[])
+    : [];
+
   return [
     String(data.direct_answer ?? ''),
     ...facts.map((fact) => `${fact.term ?? ''} ${fact.detail ?? ''}`),
+    // The verdict card is the most prominent block on the page and the one an
+    // assistant is most likely to quote, so an unresolved fact written into it
+    // has to count the same as one written into the body.
+    String(verdict.headline ?? ''),
+    String(verdict.short ?? ''),
+    ...rows,
+    ...steps.map((step) => `${step.title ?? ''} ${step.body ?? ''}`),
     body,
   ].join('\n');
 }
@@ -211,7 +330,70 @@ function assertFrontMatter(
     quick_facts: (data.quick_facts as DocFrontMatter['quick_facts']) ?? [],
     review_tags: (data.review_tags as string[]) ?? [],
     related: (data.related as string[]) ?? [],
+    ...(data.verdict === undefined ? {} : { verdict: assertVerdict(data.verdict, file) }),
+    ...(data.steps === undefined ? {} : { steps: assertSteps(data.steps, file) }),
   };
+}
+
+/**
+ * The verdict card, checked rather than trusted.
+ *
+ * It is the first thing on the page and the block a search engine or an
+ * assistant lifts, so a half-written one is worse than none at all: a card
+ * whose cap says nothing, or whose rows have lost their labels, answers the
+ * reader's first question wrongly and does it above the fold. A malformed one
+ * fails the build.
+ *
+ * Rows are written as pairs in the front-matter, which is how they read on the
+ * page — `[ "Who resolves it", "The seller, from proceeds" ]` — and are turned
+ * into terms and details here.
+ */
+function assertVerdict(value: unknown, file: string): Verdict {
+  const raw = value as { headline?: unknown; short?: unknown; rows?: unknown };
+
+  if (raw?.headline !== undefined && (typeof raw.headline !== 'string' || !raw.headline.trim())) {
+    throw new Error(`${file}: verdict.headline must be a non-empty string when it is set.`);
+  }
+  if (typeof raw?.short !== 'string' || raw.short.trim() === '') {
+    throw new Error(`${file}: verdict.short must be a non-empty string — the index card label.`);
+  }
+
+  const rows = (Array.isArray(raw.rows) ? raw.rows : []).map((row, index) => {
+    const pair = Array.isArray(row) ? row : [];
+    const [term, detail] = pair;
+    if (typeof term !== 'string' || typeof detail !== 'string' || !term.trim() || !detail.trim()) {
+      throw new Error(
+        `${file}: verdict.rows[${index}] must be a [term, detail] pair of non-empty strings.`,
+      );
+    }
+    return { term: term.trim(), detail: detail.trim() };
+  });
+
+  // Rows with no headline would render as a capless card, so they travel
+  // together: a page either has the sentence or has neither.
+  if (rows.length > 0 && !raw.headline) {
+    throw new Error(`${file}: verdict.rows are set without a verdict.headline to cap them.`);
+  }
+
+  return {
+    ...(raw.headline ? { headline: String(raw.headline).trim() } : {}),
+    short: raw.short.trim(),
+    rows,
+  };
+}
+
+function assertSteps(value: unknown, file: string): Step[] {
+  if (!Array.isArray(value)) {
+    throw new Error(`${file}: steps must be a list of { title, body }.`);
+  }
+
+  return value.map((entry, index) => {
+    const step = entry as { title?: unknown; body?: unknown };
+    if (typeof step?.title !== 'string' || typeof step.body !== 'string') {
+      throw new Error(`${file}: steps[${index}] must have a string title and body.`);
+    }
+    return { title: step.title.trim(), body: step.body.trim() };
+  });
 }
 
 function countWords(text: string): number {
@@ -224,6 +406,113 @@ async function toHtml(markdown: string): Promise<string> {
     .use(remarkHtml, { sanitize: false })
     .process(markdown);
   return String(processed);
+}
+
+/**
+ * One line of front-matter, rendered as Markdown without a paragraph around it.
+ *
+ * `remark-html` wraps a lone line in `<p>`, which would put a block inside the
+ * `<dd>` of a definition row and break its baseline against the term beside it.
+ */
+async function toInlineHtml(markdown: string): Promise<string> {
+  const rendered = (await toHtml(markdown)).trim();
+  const single = /^<p>([\s\S]*)<\/p>$/.exec(rendered);
+  return (single ? single[1] : rendered).trim();
+}
+
+/** Renders the Markdown in every key/value line the page shows. */
+async function renderFacts(facts: KeyFact[]): Promise<KeyFact[]> {
+  return Promise.all(
+    facts.map(async (fact) => ({ ...fact, html: await toInlineHtml(fact.detail) })),
+  );
+}
+
+/** A heading, as an anchor: the id the rail links to and the URL a reader shares. */
+function headingId(heading: string): string {
+  return (
+    heading
+      .toLowerCase()
+      // Curly quotes and the straight ones survive `\w`, and a heading here is
+      // as often a quoted sentence as a phrase. Strip them before slugifying so
+      // "“The seller’s agent says not to worry about it.”" does not become a
+      // string of hyphens.
+      .replace(/[‘’“”'"]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'section'
+  );
+}
+
+/** Heading text with its Markdown emphasis, links and code removed. */
+function headingText(markdown: string): string {
+  return markdown
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[*_`]/g, '')
+    .trim();
+}
+
+/** Our own practice, which the page sets apart from the law it has just explained. */
+const PRACTICE_HEADING = /\bhandles this\b/i;
+
+/**
+ * Splits a body at its `## ` headings.
+ *
+ * The page template needs the parts, not the blob: the rail links to each one
+ * by id, the questions render as a disclosure list, and the section describing
+ * what this office does is set in a callout so a reader can see where the law
+ * stops and our practice starts. Splitting the Markdown and rendering each part
+ * separately — rather than cutting up the rendered HTML — keeps that off the
+ * critical path of a regular expression run over markup.
+ *
+ * Anything before the first heading is kept as a leading section with no title,
+ * so a body that opens with a paragraph does not lose it.
+ */
+async function splitSections(markdown: string): Promise<DocSection[]> {
+  const lines = markdown.split('\n');
+  const parts: { title: string; body: string[] }[] = [];
+  let fenced = false;
+
+  for (const line of lines) {
+    if (/^\s*(```|~~~)/.test(line)) fenced = !fenced;
+
+    const heading = fenced ? null : /^##\s+(.+?)\s*#*\s*$/.exec(line);
+    if (heading && !line.startsWith('###')) {
+      parts.push({ title: headingText(heading[1]), body: [] });
+      continue;
+    }
+
+    if (parts.length === 0) {
+      if (line.trim() === '') continue;
+      parts.push({ title: '', body: [] });
+    }
+    parts[parts.length - 1].body.push(line);
+  }
+
+  const used = new Map<string, number>();
+
+  return Promise.all(
+    parts.map(async (part) => {
+      // Two headings can slugify the same way — the same question asked in two
+      // sections of a long page. A duplicate id makes one of the rail's links
+      // scroll to the wrong place, so the second one is numbered.
+      const base = part.title ? headingId(part.title) : 'introduction';
+      const seen = used.get(base) ?? 0;
+      used.set(base, seen + 1);
+
+      return {
+        id: seen === 0 ? base : `${base}-${seen + 1}`,
+        title: part.title,
+        html: await toHtml(part.body.join('\n').trim()),
+        kind: sectionKind(part.title),
+      };
+    }),
+  );
+}
+
+function sectionKind(title: string): SectionKind {
+  if (!title) return 'prose';
+  if (isFaqHeading(title)) return 'faq';
+  if (PRACTICE_HEADING.test(title)) return 'practice';
+  return 'prose';
 }
 
 function collectionDir(collection: Collection): string {
@@ -269,9 +558,17 @@ export async function getDoc(collection: Collection, slug: string): Promise<Doc 
     );
   }
 
+  const [quickFacts, verdictRows] = await Promise.all([
+    renderFacts(frontMatter.quick_facts ?? []),
+    renderFacts(frontMatter.verdict?.rows ?? []),
+  ]);
+
   return {
     ...frontMatter,
+    quick_facts: quickFacts,
+    ...(frontMatter.verdict ? { verdict: { ...frontMatter.verdict, rows: verdictRows } } : {}),
     html: await toHtml(content),
+    sections: await splitSections(content),
     raw: content,
     verifyFlags: findVerifyFlags(flaggableText(frontMatter, content)),
     collection,

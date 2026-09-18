@@ -9,6 +9,16 @@ export interface FaqItem {
 
 const FAQ_HEADING = /^##\s+(faq|common questions|questions we get|frequently asked)/i;
 
+/**
+ * Whether a `## ` heading opens the FAQ. Exported so the page template and the
+ * JSON-LD agree on which section that is: the template renders it as a
+ * disclosure list from `extractFaq` rather than as prose, and a section counted
+ * as an FAQ here but not there would be rendered twice.
+ */
+export function isFaqHeading(heading: string): boolean {
+  return FAQ_HEADING.test(`## ${heading.trim()}`);
+}
+
 /** Strips Markdown emphasis, links and inline code down to plain text for JSON-LD. */
 function toPlainText(markdown: string): string {
   return markdown
