@@ -10,9 +10,12 @@ related:
   - "non-standard-purchase-contract-florida-closing"
   - "buying-property-bankruptcy-estate-florida"
 pending_confirmation:
+  - "FS-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? No\") — drafted from this page, not yet reviewed"
   - "FS-01 (Bayit Title): How far ahead we ask to know about an out-of-country signer, and scheduling lead time per route"
   - "FS-02 (Bayit Title): Consular fees, apostille costs, courier costs where wet ink is required"
   - "FS-05 (underwriter/form): First American's position on RON for out-of-country signers"
+verdict:
+  short: "No"
 quick_facts:
   - term: "Who this affects"
     detail: "Any seller, buyer or borrower who will not be physically in the United States on the signing date."

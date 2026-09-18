@@ -9,8 +9,11 @@
   --accent-deep: #6b4f0c;  /* links, labels, chip text */
   --accent-dark: #2f2408;  /* the one dark button, in the masthead */
   --accent-wash: #f7efdc;  /* chips, icon discs, answer panel ground */
+  --accent-light: #d3a93a; /* the gold that reads on the dark brown, and only there */
+  --accent-dark-hover: #46360f;
   --flag: #6f1d2b;         /* unresolved facts and form errors only */
 
+  --ink-body: #333;        /* lede and disclosure answers, one step off the body ink */
   --ink-muted: #555;
   --ink-faint: #8a8070;
   --rule: #e8e4db;         /* chrome and section rules */
@@ -22,8 +25,12 @@
 
   --radius: 6px;
   --radius-card: 12px;
+  --radius-verdict: 16px;
   --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.08);
   --shadow-pill: 0 4px 14px rgba(47, 36, 8, 0.06);
+  /* Barely there. The verdict card has to sit above the page without becoming
+     the kind of floating panel that reads as an advertisement. */
+  --shadow-verdict: 0 8px 24px rgba(47, 36, 8, 0.06);
 
   --measure: 34rem;        /* reading column */
   --wide: 77.5rem;         /* page frame */
@@ -47,6 +54,15 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* The contents rail links into the page it is beside, and a jump cut loses
+     the reader's place. Asked for less motion, it jumps. */
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -263,7 +279,7 @@ th {
 }
 
 .btn--dark:hover {
-  background: #46360f;
+  background: var(--accent-dark-hover);
   color: var(--paper);
 }
 
@@ -464,8 +480,9 @@ th {
   }
 }
 
-/* The link for the page you are already on. */
-.nav a[aria-current='page'] {
+/* The link for the page you are already on, and for the section it sits in. */
+.nav a[aria-current='page'],
+.nav a[aria-current='true'] {
   border-bottom-color: var(--accent);
 }
 
@@ -592,6 +609,45 @@ th {
   }
 }
 
+/* In the rail the box is 15rem wide, so the two-column dl has nowhere to go:
+   the term sits above its detail and the pairs are spaced instead of ruled. */
+.quick-facts--rail {
+  border-top-width: 1px;
+  border-top-color: var(--rule-card);
+  padding: 1.125rem 1.25rem;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.quick-facts__title {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin: 0 0 0.875rem;
+}
+
+.quick-facts--rail dl {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.quick-facts--rail dt {
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 34rem) {
+  .quick-facts--rail dl {
+    gap: 0.75rem;
+  }
+  .quick-facts--rail dd {
+    margin-bottom: 0;
+  }
+}
+
 /* ---------- verify flags ---------- */
 /* Deliberately visible. An unresolved fact must be obvious to the licensed
    reviewer and must never be quietly filled in. */
@@ -658,7 +714,7 @@ th {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
   gap: 1.25rem;
   list-style: none;
   padding: 0;
@@ -689,6 +745,18 @@ th {
   gap: 1.5rem;
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
+}
+
+.section__head h2 {
+  margin: 0;
+}
+
+/* The line beside a heading that says what the section covers. */
+.caption {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
 }
 
 .section__head-link {
@@ -899,6 +967,12 @@ th {
 .cta p {
   margin: 0;
   max-width: 32ch;
+}
+
+.cta__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 /* ---------- forms ---------- */
@@ -2025,6 +2099,7 @@ ul.estimate-caveat {
   .figures__quote {
     grid-column: span 1;
   }
+}
 
 /* ---------- address suggestions ---------- */
 /* The dropdown under the estimator's address box. It is positioned rather than
@@ -2109,3 +2184,970 @@ ul.estimate-caveat {
   font-size: 0.8125rem;
   letter-spacing: 0.02em;
   color: var(--ink-muted);}
+
+/* ---------- breadcrumbs ---------- */
+/* Where this page sits, said once, quietly. The separators are decorative: the
+   list itself is what a screen reader walks, and the current page is marked
+   rather than linked. */
+
+.crumbs {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.crumbs li {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.crumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.crumbs a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* ---------- the interior page system ---------- */
+/* Every page below the home page answers the reader's first question before it
+   explains anything: a split hero with the answer in a card beside the
+   headline, a band of the steps in order, then the detail beside a rail that
+   says what is in it. The classes below are that system, and the five interior
+   templates are assembled from them rather than each carrying its own layout.
+
+   `.page-hero` rather than `.hero`, which the home page already owns. */
+
+.page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+  gap: 4rem;
+  align-items: start;
+  padding-block: clamp(2.5rem, 5vw, 3.5rem) clamp(2.5rem, 5vw, 4rem);
+}
+
+.page-hero__copy {
+  min-width: 0;
+}
+
+.page-hero h1 {
+  font-size: clamp(2.125rem, 1.35rem + 3vw, 3.125rem);
+  line-height: 1.12;
+  margin: 2rem 0 1.5rem;
+}
+
+.page-hero__lede {
+  font-size: 1.1875rem;
+  line-height: 1.55;
+  color: var(--ink-body);
+  max-width: 38rem;
+  margin: 0 0 1.75rem;
+}
+
+/* Who reviewed it, when, how long it takes to read. A row rather than a stack,
+   because on this page they are one credential rather than three facts. */
+.page-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.page-hero__meta > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-hero__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+
+/* ---------- verdict card ---------- */
+/* The direct answer, as the reader's question rather than as prose. It is in
+   the first HTML the server sends on purpose: this is the block a search
+   engine's snippet and an assistant's answer are both lifted from. */
+
+.verdict {
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-verdict);
+  overflow: hidden;
+  box-shadow: var(--shadow-verdict);
+  min-width: 0;
+}
+
+.verdict__cap {
+  background: var(--accent-dark);
+  color: var(--accent-wash);
+  padding: 1.25rem 1.5rem;
+}
+
+.verdict__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+  margin: 0 0 0.25rem;
+}
+
+/* A `<p>`, never a heading: the page has one h1 and this is not it. */
+.verdict__headline {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.verdict__rows {
+  margin: 0;
+  padding: 0.375rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+}
+
+.verdict__row {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.verdict__row:last-child {
+  border-bottom: 0;
+}
+
+.verdict__rows dt {
+  color: var(--ink-muted);
+  min-width: 0;
+}
+
+.verdict__rows dd {
+  margin: 0;
+  font-weight: 600;
+  min-width: 0;
+}
+
+/* The index's card is a router rather than an answer: the same shell, with the
+   rows as links into the page below. */
+.verdict__links {
+  padding: 0.375rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+}
+
+.verdict__link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.verdict__link:last-child {
+  border-bottom: 0;
+}
+
+.verdict__link:hover {
+  color: var(--accent);
+}
+
+.verdict__link strong {
+  font-weight: 600;
+}
+
+.verdict__link-sub {
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+}
+
+.verdict__link-arrow {
+  color: var(--accent);
+}
+
+.verdict__foot {
+  padding: 1rem 1.5rem 1.375rem;
+  background: var(--band);
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.verdict__prompt {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.verdict__action {
+  display: inline-block;
+  padding: 0.6875rem 1.125rem;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.verdict__action:hover {
+  background: var(--accent-deep);
+  color: var(--paper);
+}
+
+/* ---------- step band ---------- */
+/* What happens, in order. A reader with a live file wants to know which of
+   these they are standing in, which a paragraph cannot show them. */
+
+.band {
+  background: var(--band);
+  border-block: 1px solid var(--rule);
+}
+
+.band__inner {
+  padding-block: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.band__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.band__head h2 {
+  margin: 0;
+  font-size: var(--step-3);
+}
+
+.band__caption {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.band__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--band-columns, 4), minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.band__grid--3 { --band-columns: 3; }
+
+/* Where the whole card is the link, the list item is only the grid cell: it
+   stretches so cards in a row match height and the footer link sits on the
+   bottom edge of each. */
+.band__grid--links > li {
+  display: flex;
+}
+
+.band__grid--links .step-card {
+  flex: 1;
+}
+.band__grid--5 { --band-columns: 5; }
+
+.step-card {
+  background: var(--paper);
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step-card__label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.625rem;
+}
+
+.step-card__title {
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 0.375rem;
+}
+
+.step-card__title--serif {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+
+.step-card__body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* The counties band: the whole card is the link to the county's page. */
+.step-card--link {
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 120ms ease;
+}
+
+.step-card--link:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.step-card__more {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+/* ---------- rail and detail ---------- */
+
+.cols {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 5rem;
+  align-items: start;
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.cols--tight {
+  gap: 4rem;
+}
+
+.rail {
+  position: sticky;
+  top: 1.5rem;
+  display: grid;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.rail__label {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0 0 0.75rem;
+}
+
+.rail__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.rail__link {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0 0.4rem 0.875rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: border-left-color 120ms ease, color 120ms ease;
+}
+
+.rail__link:hover,
+.rail__link.is-active {
+  border-left-color: var(--accent);
+  color: var(--ink);
+}
+
+.rail__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.detail {
+  min-width: 0;
+  display: grid;
+  gap: 3.5rem;
+}
+
+/* One rule between sections rather than a rule under every heading: the reader
+   is being shown where one answer ends, not given a ruled page. */
+.detail > * + * {
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+/* A callout carries its own ground and edge, so a rule above it as well reads
+   as a mistake. */
+.detail > * + .callout {
+  padding-top: 1.75rem;
+  border-top: 0;
+}
+
+/* The byline is already separated by its own hairline at a tighter measure. */
+.detail > [id] {
+  scroll-margin-top: 1.5rem;
+}
+
+.detail > .byline {
+  margin-top: 0;
+  padding-top: 1.25rem;
+}
+
+/* The article template's column is one argument read top to bottom, so the
+   whole of it — headings, cards and all — is held to the reading measure. The
+   other four pages put card grids and county lists in this column, which want
+   the width, so there only the prose is measured. */
+.detail--narrow {
+  max-width: 40rem;
+}
+
+/* The index's clusters are a set of equals rather than one argument in parts,
+   so they are spaced without being ruled off from each other. */
+.detail--plain > * + * {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* A section's own heading, set by the template rather than by the Markdown, so
+   the library body's heading rhythm does not apply to it. */
+.detail h2 {
+  font-size: var(--step-3);
+  margin: 0 0 0.75rem;
+}
+
+.detail .section__head h2 {
+  margin: 0;
+}
+
+/* Prose, then a grid of cards, then more prose: one gap between the runs. The
+   pairs are named rather than set with a blanket `* + *`, which would also push
+   a heading away from the paragraph it introduces. */
+.detail .prose--detail + .card-grid,
+.detail .prose--detail + .num-cards,
+.detail .prose--detail + .callout,
+.detail .card-grid + .prose--detail,
+.detail .num-cards + .prose--detail,
+.detail .callout + .prose--detail {
+  margin-top: 1.25rem;
+}
+
+/* ---------- prose in the detail column ---------- */
+
+.prose--detail {
+  max-width: 40rem;
+}
+
+.prose--detail > :last-child {
+  margin-bottom: 0;
+}
+
+/* The section's own heading is rendered by the template, so the rules the
+   library body carries on every h2 would double up here. */
+.prose--detail h2 {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* A numbered list in this column is a short sequence of named things — the
+   three questions a judgment has to answer, the clauses a non-standard contract
+   is read for — so each item is a card with its number set in the display face
+   rather than a run of hanging indents. */
+.prose--detail ol {
+  list-style: none;
+  counter-reset: num-card;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+/* Positioned rather than laid out in a grid: Markdown gives a list item a
+   `<strong>` and then a bare run of text, and in a grid the number, the strong
+   and the run each become a separate cell — which sets the body one word wide
+   in the number's column. */
+.prose--detail ol > li {
+  counter-increment: num-card;
+  position: relative;
+  padding: 1.125rem 1.25rem 1.125rem 3.75rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.prose--detail ol > li + li {
+  margin-top: 0;
+}
+
+.prose--detail ol > li::before {
+  content: counter(num-card);
+  position: absolute;
+  left: 1.25rem;
+  top: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.prose--detail ol > li > strong:first-child {
+  display: block;
+  font-size: var(--step-0);
+  color: var(--ink);
+  margin-bottom: 0.25rem;
+}
+
+/* ---------- numbered cards, authored ---------- */
+
+.num-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.num-card {
+  padding: 1.125rem 1.25rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.num-card__number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--accent);
+  margin-bottom: 0.625rem;
+}
+
+.num-card__title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.num-card__body {
+  color: var(--ink-muted);
+}
+
+/* ---------- callout ---------- */
+/* Where the page stops explaining Florida law and starts describing what this
+   office does. Different ground, so a reader can tell the two apart. */
+
+.callout {
+  padding: 1.75rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  background: var(--band);
+  max-width: 40rem;
+}
+
+.callout__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin: 0 0 0.6rem;
+}
+
+.callout h2 {
+  font-size: var(--step-2);
+  margin: 0 0 0.75rem;
+}
+
+.callout > :last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- the questions ---------- */
+/* Native `<details>`: the answers are in the HTML whether or not they are open,
+   so a crawler reads all of them and a reader with no scripting can open them. */
+
+.faq {
+  display: grid;
+  border-top: 1px solid var(--rule);
+  max-width: 40rem;
+}
+
+.faq details {
+  border-bottom: 1px solid var(--rule);
+}
+
+.faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 1rem 0;
+  font-weight: 600;
+  font-size: var(--step-0);
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary:hover {
+  color: var(--accent);
+}
+
+.faq__plus {
+  flex: none;
+  color: var(--accent);
+  font-size: 1.375rem;
+  line-height: 1;
+  font-weight: 400;
+  transition: transform 160ms ease;
+}
+
+.faq details[open] .faq__plus {
+  transform: rotate(45deg);
+}
+
+.faq p {
+  margin: 0 0 1.25rem;
+  color: var(--ink-body);
+}
+
+/* ---------- link cards ---------- */
+
+.card-grid--narrow {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+
+.card-grid--fit {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  height: 100%;
+  padding: 1.5rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 120ms ease;
+}
+
+.card-link:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.card-link--tight {
+  gap: 0.5rem;
+  padding: 1.25rem;
+}
+
+.card-link__eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.card-link__eyebrow--deep {
+  letter-spacing: 0.08em;
+  color: var(--accent-deep);
+}
+
+.card-link__title {
+  font-weight: 600;
+  font-size: 1.15625rem;
+  line-height: 1.3;
+}
+
+.card-link__title--small {
+  font-size: var(--step-0);
+}
+
+.card-link__body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.card-link__body--small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.card-link__meta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* A plain bordered card that is not a link: what we handle, how a signing can
+   happen. Same edge as the link cards so the column reads as one set. */
+.flat-card {
+  padding: 1.25rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+}
+
+.flat-card__title {
+  font-weight: 600;
+  margin: 0 0 0.375rem;
+}
+
+.flat-card__body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* Three labelled facts with no card around them: where, how, when. */
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.5rem 2.5rem;
+}
+
+.fact-grid__label {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin: 0 0 0.5rem;
+}
+
+.fact-grid p:last-child {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ---------- initials avatar ---------- */
+/* CSS rather than a photograph. The page carries licence numbers a reader can
+   check; a stock headshot would be the only unverifiable thing on it. */
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  flex: none;
+}
+
+.avatar--large {
+  width: 3rem;
+  height: 3rem;
+  font-size: var(--step-0);
+}
+
+.byline--avatar {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.byline--avatar p {
+  margin: 0;
+}
+
+.team-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.team-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+}
+
+.team-card__name {
+  font-weight: 600;
+  margin: 0;
+}
+
+.team-card__role {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  margin: 0.1rem 0 0;
+}
+
+.team-card__credential {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0.375rem 0 0;
+}
+
+/* ---------- the rest of Florida ---------- */
+/* All 67, so the reader can see their county on the list rather than infer it
+   from "and the rest of the state". */
+
+.county-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.35rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.county-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.county-list a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.county-list__priority {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ---------- the quiet CTA, as a band ---------- */
+/* The inset panel is still right inside a reading column. At the foot of an
+   interior page the CTA is the last full-width thing before the footer, so it
+   takes the page's width and its own ground. */
+
+.cta--band {
+  margin-top: 0;
+  padding: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--rule);
+  display: block;
+}
+
+.cta--band .cta__inner {
+  padding-block: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem 3rem;
+}
+
+.cta--band p {
+  max-width: 38rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+/* The band's ground is the wash, so the ghost button's hover has to leave it
+   rather than land on it. */
+.cta--band .btn--quiet:hover {
+  background: var(--paper);
+}
+
+/* ---------- interior system, narrow ---------- */
+
+@media (max-width: 62rem) {
+  .page-hero,
+  .cols {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  /* Above the detail rather than beside it, and no longer pinned: a rail that
+     follows the reader down a single column is just a lump of links in the way. */
+  .rail {
+    position: static;
+  }
+
+  .band__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 40rem) {
+  .band__grid,
+  .num-cards,
+  .team-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The card keeps its 8rem label column until there is no room for one. */
+  .verdict__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+}

@@ -22,6 +22,11 @@ export const site = {
     inTitleSince: '2017',    // never write "Florida licensed since 2017"
     linkedin: 'https://www.linkedin.com/in/shevy-lowenstein-25404922a/',
   },
+  // Where a reader checks the two licence numbers above for themselves. The
+  // About page puts this at the top of the page rather than in a footnote: the
+  // agency's whole argument is that nothing here has to be taken on trust.
+  dfsLicenseeSearchUrl: 'https://licenseesearch.fldfs.com/',
+
   underwriter: 'First American Title Insurance Company',
   underwriterAppointedSince: '2021-12-09',
 
