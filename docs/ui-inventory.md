@@ -277,7 +277,7 @@ This sequence is fixed and is the core of the site:
   also the stop control the auto-advance needs; the pointer or the keyboard
   focus resting on the strip holds it meanwhile. At eighteen the dots fill the
   quote's two columns, so they take a line of their own and wrap within it on a
-  narrow screen, with "Read all Google reviews →" following underneath and
+  narrow screen, with "Read Google reviews →" following underneath and
   linking to `/reviews` — the section head treatment at `0.8125rem`. The whole
   strip degrades to the counties figure alone if Supabase is unreachable.
 - **Underwriter credit** (`.underwriter`) — under the figure strip, above a
