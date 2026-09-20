@@ -115,19 +115,22 @@ citation.
 ### Cited on a page, not recorded in this pass
 
 Found by the same diff. None is necessarily wrong; none was sourced here, so
-none should be treated as confirmed. Confirm each against the provision or give
-it a flag on its page.
+none should be treated as confirmed. Each now carries a flag on its own page, so
+no page can reach `reviewed` while one is outstanding.
 
-| Provision | Page | For |
-|---|---|---|
-| § 55.03 | `judgment` | Post-judgment interest, CFO-set rate, annual adjustment |
-| § 48.23(2), (3) | `litigation` | One-year expiry; the court's control and discharge power — flagged `LT-10` |
-| ch. 713 | `litigation` | Construction liens, as the carve-out from the one-year rule |
-| § 162.09 | `open-permits` | Recorded code enforcement lien; no foreclosure against homestead |
-| § 201.02 | `non-standard-purchase-contract` | Documentary stamps, the Miami-Dade rate and surtax — flagged `NS-04` |
-| § 117.201(10), § 117.215, § 117.225, § 117.265 | `mobile-and-remote-signings` | Online notary definition, effect of a part II notarization, registration requirements, identity proofing |
-| 11 U.S.C. § 363(f), § 554 | `bankruptcy` | Free-and-clear grounds; abandonment |
-| Fla. Const. art. X, § 4(c) | `non-standard-purchase-contract` | Spousal joinder on homestead |
+| Provision | Page | For | Flag |
+|---|---|---|---|
+| § 55.03 | `judgment` | Post-judgment interest, CFO-set rate, annual adjustment | `JG-06` |
+| § 48.23(2), (3); ch. 713 | `litigation` | One-year expiry; the court's control and discharge power; the construction-lien carve-out | `LT-10` |
+| § 162.09 | `open-permits` | Recorded code enforcement lien; no foreclosure against homestead | `OP-07` |
+| § 201.02 | `non-standard-purchase-contract` | Documentary stamps, the Miami-Dade rate and surtax | `NS-04` |
+| Fla. Const. art. X, § 4(c) | `non-standard-purchase-contract` | Spousal joinder on homestead | `NS-05` |
+| § 117.201(10), § 117.215, § 117.225, § 117.265 | `mobile-and-remote-signings` | Online notary definition, effect of a part II notarization, registration requirements, identity proofing | `SG-09` |
+| 11 U.S.C. § 363(f), § 554 | `bankruptcy` | Free-and-clear grounds; abandonment | `BK-06` |
+
+These are cheap to clear — each is one provision, open and read — but they are
+not clearable by anyone working from memory or a summary, which is the whole
+reason they are flags rather than a note.
 
 | Page | Question | Where the brief says to look |
 |---|---|---|

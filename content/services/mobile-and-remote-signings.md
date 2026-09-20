@@ -14,6 +14,7 @@ pending_confirmation:
   - "SG-04 (Bayit Title): Which team members hold Florida online notary commissions, or which RON platform and whose commission"
   - "SG-05 (Bayit Title): Our practice for confirming lender and underwriter acceptance of RON before scheduling, and whether the platform we use is on our underwriter's approved list"
   - "SG-08 (Bayit Title): Our fee practice for mobile signings and RON"
+  - "SG-09 (Bayit Title): Confirm the four chapter 117 sections cited here that the Category A sourcing never recorded — § 117.201(10) (online notary definition), § 117.215 (a part II notarization satisfying a notarization requirement), § 117.225 (registration: course, $25,000 bond, $25,000 E&O) and § 117.265 (credential analysis and knowledge-based identity proofing)"
 quick_facts:
   - term: "Who this is for"
     detail: "Any buyer, seller or borrower on a Florida closing we are handling."

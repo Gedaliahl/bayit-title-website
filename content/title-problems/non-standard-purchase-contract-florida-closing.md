@@ -15,6 +15,7 @@ pending_confirmation:
   - "NS-02 (Bayit Title): The specific provisions we check first on a non-standard contract, in order"
   - "NS-03 (Bayit Title): The three file details the finished page needs"
   - "NS-04 (Bayit Title): Verify the documentary stamp figures against Fla. Stat. § 201.02 — the statewide rate, the Miami-Dade rate and the surtax carve-out were drafted rather than sourced"
+  - "NS-05 (Bayit Title): Confirm that Fla. Const. art. X, § 4(c) is the subsection requiring spousal joinder in a conveyance or mortgage of homestead. The Category A sourcing recorded § 4(a) for judgment liens; (c) is cited here and was not recorded"
 verdict:
   short: "No"
 quick_facts:

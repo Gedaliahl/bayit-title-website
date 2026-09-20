@@ -17,7 +17,7 @@ pending_confirmation:
   - "LT-06 (Bayit Title): Our actual practice where a seller is in active litigation, including where we decline"
   - "LT-08 (Bayit Title): Our practice for putting a pending-litigation position to the underwriter in writing before closing"
   - "LT-09 (attorney): The fair nexus standard for discharging a lis pendens and the burden allocation — case law rather than statute. A Florida Supreme Court case was cited here and has been removed pending confirmation; counsel should say whether it belongs on the page"
-  - "LT-10 (Bayit Title): Confirm the § 48.23 subsections — (3) is cited for the court's control and discharge power and (2) for the one-year expiry; the Category A sourcing recorded both propositions but not the subsection numbers"
+  - "LT-10 (Bayit Title): Confirm the § 48.23 subsections — (3) is cited for the court's control and discharge power and (2) for the one-year expiry; the Category A sourcing recorded both propositions but not the subsection numbers. Same for the chapter 713 reference used as the construction-lien carve-out"
 verdict:
   short: "Only if a lis pendens is recorded"
 quick_facts:
