@@ -13,7 +13,7 @@ pending_confirmation:
   - "FS-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? No\") — drafted from this page, not yet reviewed"
   - "FS-01 (Bayit Title): How far ahead we ask to know about an out-of-country signer, and scheduling lead time per route"
   - "FS-02 (Bayit Title): Consular fees, apostille costs, courier costs where wet ink is required"
-  - "FS-05 (underwriter/form): First American's position on RON for out-of-country signers"
+  - "FS-05 (Bayit Title): Our practice for confirming lender and underwriter acceptance in writing before an out-of-country RON signing is scheduled"
 verdict:
   short: "No"
 quick_facts:
@@ -49,9 +49,7 @@ On document types, the only act part II carves out is solemnising the rites of m
 
 Two practical limits apply regardless of what the statute permits. The lender has to accept a remotely notarized document, and so does the underwriter. Both positions should be confirmed in writing before the signing is scheduled.
 
-First American approves RON transactions "subject to state laws and all other First American underwriting guidelines and requirements," and publishes the platforms it accepts — Blend, Docutech, DocVerify, Nexsys, NotaryCam, NotaryLive, Pavaso, ProNotary, Proof, Qualia, Signix, Simplifile, SimplySecureSign, Snapdocs and Stavvy — along with any vendor on the MISMO RON Certified Providers list and platforms that integrate with those vendors.
-
-That published position does not carve out a signer located outside the United States, so the Florida analysis above governs. We still put the specific file to our agency representative before scheduling, because in practice a lender's own overlay is more often the binding constraint than the underwriter's position.
+Neither position follows from the statute. That the notary is in Florida and the act is authorised under Florida law does not settle whether a given underwriter will accept a signing where the seller is overseas, or whether a particular lender will. So we put the specific file to our agency representative and to the lender before anything is scheduled — the country the signer will be in, the platform, the documents — and we get the answer in writing.
 
 ## Route two: a US consulate or embassy
 

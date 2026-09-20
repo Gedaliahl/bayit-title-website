@@ -13,7 +13,7 @@ pending_confirmation:
   - "AC-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Yes, until access is insured\") — drafted from this page, not yet reviewed"
   - "AC-01 (Bayit Title): How long it has taken us to resolve an access exception by recorded easement, neighbour cooperating"
   - "AC-02 (Bayit Title): Cost of a recorded easement, survey sketch and legal description"
-  - "AC-03 (underwriter/form): Standard access exception language in our commitments; is an endorsement available?"
+  - "AC-03 (Bayit Title): The standard access exception language on the commitment forms we issue — quote it from a file rather than describing it"
 verdict:
   short: "Yes, until access is insured"
 quick_facts:

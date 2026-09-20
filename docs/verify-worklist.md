@@ -24,11 +24,14 @@
 > | **First American / the form** | 10 | Drafted from public secondary sources because the authoritative one is not public. Not First American's stated position. |
 > | **Only Bayit Title knows** | 31 | Invented placeholders. Timelines, costs and practice statements about your own files. Assume every number is wrong. |
 >
-> One flag was deliberately **not** answered: `SG-04`, which team members hold
+> Two flags were deliberately **not** answered, and they are the two `[VERIFY]`
+> markers left in `content/`. The first is `SG-04`, which team members hold
 > Florida *online* notary registrations under Fla. Stat. § 117.225. It is a
 > licensing claim and it was not guessed. The two commissions in the brief
 > (HH 795313, HH 817398) are standard commissions under part I of ch. 117 and
-> are not the same thing. It is the only `[VERIFY]` marker left in `content/`.
+> are not the same thing. The second is on the `judgment` page: how a judgment
+> against one spouse interacts with property held as tenants by the entireties,
+> which turns on case law rather than a statute and needs an attorney.
 >
 > The triage below is kept because it still says who can answer what.
 
@@ -143,7 +146,24 @@ statute.
 
 ---
 
-## Category B — First American only (~8 flags)
+## Category B — First American only — **mostly dissolved 2026-09-20**
+
+> Nine of these flags were rewritten into Category C on 20 September 2026. The
+> pages they sat on do not assert an underwriting position — they defer to one,
+> in terms, which is the correct posture for a public page and needs our own
+> practice statement rather than a bulletin. What the flags had asked for was a
+> general rule that a representative would not give in the abstract anyway.
+>
+> Two passages were cut in the same pass: the signings and foreign-seller pages
+> had reproduced First American's published RON language and its list of
+> approved platforms from a public page rather than from a supplied bulletin,
+> and the foreign-seller page inferred a position on overseas signers from First
+> American's silence. See `docs/outstanding-questions.md`.
+>
+> The list below is kept as the questions to ask about a **live file**, which is
+> the form in which they can actually be answered. None of them now blocks a
+> page.
+
 
 These are underwriting positions. They cannot be sourced from the public web,
 and a wrong one is a coverage problem rather than a content error. The brief
@@ -222,7 +242,9 @@ commission records, and nowhere else.
 1. **Category C timelines and practice** — an afternoon with someone who works
    the files. Clears over half the flags and adds the specificity that makes
    these pages worth reading.
-2. **One email to the First American rep** — clears Category B.
+2. ~~**One email to the First American rep**~~ — Category B mostly dissolved on
+   2026-09-20; the pages defer to the underwriter rather than assert a position,
+   so nothing here blocks publication. Ask about live files as they come.
 3. ~~**Category A**~~ — done. What remains of it is the entireties question
    (an attorney's, not a citation's) and the FAR/BAR form.
 4. **Recover the two incomplete files** or drop those pages.
