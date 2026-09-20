@@ -134,6 +134,46 @@ One thing the replies did establish is that underwriters maintain approved-platf
 lists, so `SG-04` and the platform question should be settled in the same sitting:
 whichever platform we use has to be one our underwriter accepts.
 
+## The Category A diff, 20 September 2026
+
+Every fact in the `verify-worklist.md` Category A table was checked against how
+it actually reads on the page that carries it. Eleven of the thirteen came
+through intact — the judgment lien mechanism (certified copy, lienholder's
+address, 10 years extendable once by 10, never past 20 from entry), homestead
+under art. X § 4(a) with its three exceptions and the acreage rather than value
+limit, the two ways of necessity and § 704.04's compensation route, RON under
+§§ 117.209(3)–(4) and 117.201(6), the foreign acknowledgment forms with the
+apostille correctly placed outside the statute, § 689.111 on powers of attorney
+and spousal joinder, FIRPTA's rate and thresholds, and the three federal
+bankruptcy provisions. Each quotes or closely tracks the source it cites.
+
+Four places had drifted.
+
+1. **A Florida Supreme Court case was being cited as settled law, unflagged.**
+   The `litigation` page gave the fair nexus standard for discharging a lis
+   pendens, with the burden allocation, citing *Medical Facilities Development,
+   Inc. v. Little Arch Creek Properties, Inc.*, 675 So. 2d 915 (Fla. 1996). That
+   is case law, and this project's rule is that case law means counsel rather
+   than a citation — the same rule that kept the entireties question open. It
+   appeared in no Category A sourcing and in no flag. The proposition stays,
+   stated as the phrase the case law uses; the citation is removed pending
+   confirmation, and `LT-09` asks counsel whether it belongs. It is the second
+   attorney question on the project.
+2. **Two § 48.23 subsections were drafted in.** The page cites (3) for the
+   court's control and discharge power and (2) for the one-year expiry. The
+   Category A sourcing recorded both propositions without subsection numbers, so
+   the numbers came from somewhere unrecorded. `LT-10`.
+3. **§ 689.01 without § 695.03**, on the contract page — fixed in the pass
+   above. The cumulative point was already sourced and had not reached that page.
+4. **§ 718.112(2)(i) against (2)(k)** for one fee cap — fixed in the pass above,
+   `HA-05`. The estoppel aggregate caps ($750 and $2,500) are page-only figures
+   beyond what the sourcing recorded, now `HA-06`.
+
+The pattern worth noticing: the drift is not in the facts that were researched.
+It is in the specifics added around them afterwards — a subsection letter, a
+reporter citation, an aggregate figure — which read as though they came from the
+same sourcing pass and did not.
+
 ## If you do want to put something to the representative
 
 Ask about a live file, not about policy in general. A rep will give a position on

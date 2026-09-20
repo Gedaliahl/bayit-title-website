@@ -16,6 +16,8 @@ pending_confirmation:
   - "LT-05 (Bayit Title): The four file details the finished page needs (search result, claim, requirement to close, duration)"
   - "LT-06 (Bayit Title): Our actual practice where a seller is in active litigation, including where we decline"
   - "LT-08 (Bayit Title): Our practice for putting a pending-litigation position to the underwriter in writing before closing"
+  - "LT-09 (attorney): The fair nexus standard for discharging a lis pendens and the burden allocation — case law rather than statute. A Florida Supreme Court case was cited here and has been removed pending confirmation; counsel should say whether it belongs on the page"
+  - "LT-10 (Bayit Title): Confirm the § 48.23 subsections — (3) is cited for the court's control and discharge power and (2) for the one-year expiry; the Category A sourcing recorded both propositions but not the subsection numbers"
 verdict:
   short: "Only if a lis pendens is recorded"
 quick_facts:
@@ -83,7 +85,9 @@ Yes, but only a judge can do it. Where the action is not founded on a duly recor
 
 The route is a motion to discharge or dissolve in the action itself, decided under [Fla. Stat. § 48.23](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0048/Sections/0048.23.html)(3), which gives the court the same control over a lis pendens that it has over an injunction.
 
-At the hearing the burden is on the party who recorded it. Where the action is not founded on a duly recorded instrument or a chapter 713 construction lien, that party must show a **fair nexus** between the property and the dispute in the lawsuit — the standard the Florida Supreme Court set in *Medical Facilities Development, Inc. v. Little Arch Creek Properties, Inc.*, 675 So. 2d 915 (Fla. 1996). If the nexus is shown, the notice stands, and the court has discretion to require a bond to protect the owner. If it is not, the notice is discharged.
+At the hearing the burden is on the party who recorded it. Where the action is not founded on a duly recorded instrument or a chapter 713 construction lien, what that party has to show is a connection between the property and the dispute in the lawsuit — a **fair nexus**, in the phrase the case law uses. If it is shown, the notice stands, and the court has discretion to require a bond to protect the owner. If it is not, the notice is discharged.
+
+How that standard applies to a particular complaint is argued by counsel, not assessed by a title agency. It is one of the clearest reasons a buyer on a file like this needs their own.
 
 The other routes are quicker and do not involve a judge: the party who recorded it records a voluntary withdrawal, usually as part of a settlement, or the notice simply expires by operation of § 48.23(2) one year after the action commenced.
 

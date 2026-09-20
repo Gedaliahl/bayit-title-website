@@ -14,6 +14,7 @@ pending_confirmation:
   - "HA-01 (Bayit Title): Range we actually see from complete application to approval, and fastest documented turnaround"
   - "HA-04 (Bayit Title): A specific composite example from our files — application to approval turnaround; the one on the page now is invented and marked as such"
   - "HA-05 (Bayit Title): Confirm the § 718.112(2) subsection letter for the $150 transfer fee cap against the current statute — the front matter had cited (2)(i) and the body (2)(k)"
+  - "HA-06 (Bayit Title): Confirm the estoppel aggregate fee caps ($750 for 25 units or fewer, $2,500 above 100) against § 718.116(8) — the Category A sourcing recorded that aggregate caps exist but not these figures"
 verdict:
   short: "It can delay it"
 quick_facts:
