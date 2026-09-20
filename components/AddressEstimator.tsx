@@ -543,6 +543,23 @@ export function AddressEstimator({
           </span>
         </label>
 
+        {input.reissue ? (
+          <div className="field">
+            <label htmlFor="estimator-prior-policy">What the previous policy insured</label>
+            <span className="field__hint" id="estimator-prior-policy-hint">
+              The face amount of the old owner&rsquo;s policy. The reissue rate reaches that far;
+              anything above it is at the original rate. Leave it empty and the figure reads low.
+            </span>
+            <input
+              id="estimator-prior-policy"
+              inputMode="numeric"
+              aria-describedby="estimator-prior-policy-hint"
+              value={displayAmount(input.priorPolicyAmount)}
+              onChange={(event) => set('priorPolicyAmount', parseAmount(event.target.value))}
+            />
+          </div>
+        ) : null}
+
         {isPurchase && surtaxApplies ? (
           <label className="calc__check">
             <input

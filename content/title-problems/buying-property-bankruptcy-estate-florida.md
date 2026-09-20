@@ -13,8 +13,8 @@ pending_confirmation:
   - "BK-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Until the order is final\") — drafted from this page, not yet reviewed"
   - "BK-01 (Bayit Title): The federal sequence is now cited on the page — 21 days' notice, objections at least 7 days out, a 14-day stay, 14 days to appeal. Still open: what we schedule a closing against, whether we add a buffer, and whether we ask for the stay to be waived in the order"
   - "BK-02 (Bayit Title): Whether these files typically carry additional search or examination cost"
-  - "BK-03 (underwriter/form): Specific items we require from a bankruptcy sale order before closing, and what the underwriter requires"
-  - "BK-05 (underwriter/form): How a closed prior bankruptcy in the chain is examined and what documentation clears it"
+  - "BK-03 (Bayit Title): The items we require from a bankruptcy sale order before closing — our own checklist"
+  - "BK-05 (Bayit Title): The docket documents we pull on a closed prior bankruptcy in the chain; the page already leaves the clearance route as a file-specific legal and underwriting question"
 verdict:
   short: "Until the order is final"
 quick_facts:

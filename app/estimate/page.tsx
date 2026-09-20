@@ -177,6 +177,14 @@ export default async function EstimatePage() {
           Not sure? Tick it and untick it. The difference is what it is worth digging the old policy
           out for, and we will check the rule against your file if you ask.
         </p>
+        <p className="muted">
+          Tick it and a second box appears, asking what the previous policy insured for. It is worth
+          filling in. The reissue rate reaches only as far as the old policy did; under{' '}
+          <a href={PREMIUM_RULE.url}>R. 69O-186.003(2)(c)</a> anything above that amount is charged
+          at the original schedule. Leave it empty and the whole figure is rated as reissue, which
+          reads low on a property worth more now than when it was last insured — which is most of
+          them.
+        </p>
 
         <h2>What happens to the address you typed</h2>
         <p>

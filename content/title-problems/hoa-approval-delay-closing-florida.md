@@ -37,6 +37,10 @@ Because the documents usually give it a window that long, and quoting the maximu
 
 That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorisation, or the interview that has not been scheduled.
 
+## Does Florida cap how long the association can take?
+
+## Does Florida cap how long the association can take?
+
 It does not, and that is the answer people find hardest to believe. Neither chapter 718 for condominiums nor chapter 720 for homeowners’ associations puts a deadline on approving a transfer, and neither says what happens if the association simply takes its time. The window in your contract comes from the declaration and the bylaws, not from the Legislature — so read those, because they are the only deadline there is.
 
 What the statutes do cap is the **fee**. For a condominium, an association may not charge anything for a transfer unless it is required to approve the transfer and a fee is provided for in the declaration, articles or bylaws, and then it "may not exceed $150 per applicant" ([Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html)) — with spouses, or a parent and dependent children, counting as one applicant. Chapter 720 sets no equivalent cap for homeowners’ associations, which is worth knowing before a fee is assumed to be improper.

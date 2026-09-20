@@ -135,6 +135,24 @@ export function PremiumCalculator({
           </span>
         </label>
 
+        {input.reissue ? (
+          <div className="field">
+            <label htmlFor="prior-policy">What the previous policy insured</label>
+            <span className="field__hint" id="prior-policy-hint">
+              The face amount of the old owner&rsquo;s policy. The reissue rate reaches that far;
+              anything above it is at the original rate. Leave it empty if you do not have the
+              policy to hand and the figure will read low.
+            </span>
+            <input
+              id="prior-policy"
+              inputMode="numeric"
+              aria-describedby="prior-policy-hint"
+              value={displayAmount(input.priorPolicyAmount)}
+              onChange={(event) => set('priorPolicyAmount', parseAmount(event.target.value))}
+            />
+          </div>
+        ) : null}
+
         {asksAboutSurtax ? (
           <label className="calc__check">
             <input

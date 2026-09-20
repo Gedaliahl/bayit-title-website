@@ -72,11 +72,14 @@
 > | **First American / the form** | 10 | Drafted from public secondary sources because the authoritative one is not public. Not First American's stated position. |
 > | **Only Bayit Title knows** | 31 | Invented placeholders. Timelines, costs and practice statements about your own files. Assume every number is wrong. |
 >
-> One flag was deliberately **not** answered: `SG-04`, which team members hold
+> Two flags were deliberately **not** answered, and they are the two `[VERIFY]`
+> markers left in `content/`. The first is `SG-04`, which team members hold
 > Florida *online* notary registrations under Fla. Stat. § 117.225. It is a
 > licensing claim and it was not guessed. The two commissions in the brief
 > (HH 795313, HH 817398) are standard commissions under part I of ch. 117 and
-> are not the same thing. It is the only `[VERIFY]` marker left in `content/`.
+> are not the same thing. The second is on the `judgment` page: how a judgment
+> against one spouse interacts with property held as tenants by the entireties,
+> which turns on case law rather than a statute and needs an attorney.
 >
 > The triage below is kept because it still says who can answer what.
 
@@ -137,21 +140,102 @@ write these from memory or from a search-engine summary**; open the statute.
 Each was answered from the primary source and cited in the page. What they
 turned out to say, in short:
 
-| Question | Answer now on the page |
-|---|---|
-| Judgment lien mechanism and duration | Certified copy recorded, with the lienholder's address; 10 years, extendable once by 10; never past 20 from entry (§§ 55.10, 55.081) |
-| Homestead vs. judgment liens | Fla. Const. art. X, § 4(a) — no judgment is a lien, except taxes, purchase/improvement/repair, and labor on the realty; limit is 160 acres / half an acre, not value |
-| Lis pendens | § 48.23 — contents and effect; 1 year where the action is not on a recorded instrument or construction lien; court may control, discharge or bond it |
-| Landlocked access | § 704.01(1) implied grant; § 704.01(2) statutory way of necessity, limited to dwelling, agricultural, timber or stockraising use; § 704.04 sends a contested one to circuit court with compensation |
-| Association approval deadline | **There isn't one.** Neither ch. 718 nor ch. 720 caps it; the declaration does. Condo approval fee capped at $150 per applicant (§ 718.112(2)(k)); ch. 720 sets no equivalent cap |
-| Estoppel certificate | 10 business days; binding 30 days (hand/electronic) or 35 (mail); $250, plus $150 delinquent and $100 expedited, with aggregate caps; no fee at all if late (§ 718.116(8), § 720.30851) |
-| Remedy when an association is late | Loses the fee, and § 720.30851 allows a summary proceeding with attorney fees |
-| Deed execution | Two subscribing witnesses (§ 689.01(1)) **and** acknowledgment for recording (§ 695.03) — cumulative, not alternative |
-| RON for a signer abroad | Allowed. The notary must be in Florida, the signer need not be (§ 117.209(3), (4)); a foreign passport is acceptable ID for a principal outside the US (§ 117.201(6)); only matrimony is excluded |
-| Foreign acknowledgment | § 695.03(3) accepts a foreign notary with an official seal, a civil-law notary, a commissioner of deeds, or a US consular officer. **The apostille is not in the statute** — it is an underwriter/clerk practice |
-| Power of attorney | Executed in the same manner as a deed; does not dispense with spousal joinder on homestead (§ 689.111) |
-| FIRPTA | 15% of the amount realised; no withholding at $300,000 or less and 10% to $1,000,000 where the buyer takes it as a residence; Forms 8288, 8288-A, 8288-B (26 U.S.C. § 1445) |
-| Bankruptcy sale order | 14-day stay (FRBP 6004(h)), 14 days to appeal (FRBP 8002(a)(1)), and a good faith purchaser is protected on reversal unless the sale was stayed (11 U.S.C. § 363(m)) |
+| Question | Answer now on the page | Read from |
+|---|---|---|
+| Judgment lien mechanism and duration | Certified copy recorded, with the lienholder's address; 10 years, extendable once by 10; never past 20 from entry (§§ 55.10, 55.081) | § 55.10; § 55.081 — `judgment` |
+| Homestead vs. judgment liens | Fla. Const. art. X, § 4(a) — no judgment is a lien, except taxes, purchase/improvement/repair, and labor on the realty; limit is 160 acres / half an acre, not value | Fla. Const. art. X, § 4(a) — `judgment` |
+| Lis pendens | § 48.23 — contents and effect; 1 year where the action is not on a recorded instrument or construction lien; court may control, discharge or bond it | § 48.23 — `litigation`. The (2) and (3) subsections on the page are not from this pass: `LT-10` |
+| Landlocked access | § 704.01(1) implied grant; § 704.01(2) statutory way of necessity, limited to dwelling, agricultural, timber or stockraising use; § 704.04 sends a contested one to circuit court with compensation | § 704.01(1); § 704.01(2); § 704.04 — `no-legal-access` |
+| Association approval deadline | **There isn't one.** Neither ch. 718 nor ch. 720 caps it; the declaration does. Condo approval fee capped at $150 per applicant (§ 718.112(2)(k)); ch. 720 sets no equivalent cap | ch. 718; ch. 720; § 718.112(2)(k) — `hoa-approval-delay`. Subsection letter unconfirmed: `HA-05` |
+| Estoppel certificate | 10 business days; binding 30 days (hand/electronic) or 35 (mail); $250, plus $150 delinquent and $100 expedited, with aggregate caps; no fee at all if late (§ 718.116(8), § 720.30851) | § 718.116(8); § 720.30851 — `hoa-approval-delay`. The $750 / $2,500 aggregates are not from this pass: `HA-06` |
+| Remedy when an association is late | Loses the fee, and § 720.30851 allows a summary proceeding with attorney fees | § 720.30851 — `hoa-approval-delay` |
+| Deed execution | Two subscribing witnesses (§ 689.01(1)) **and** acknowledgment for recording (§ 695.03) — cumulative, not alternative | § 689.01(1); § 695.03 — `foreign-seller`, and `non-standard-purchase-contract` from 2026-09-20 |
+| RON for a signer abroad | Allowed. The notary must be in Florida, the signer need not be (§ 117.209(3), (4)); a foreign passport is acceptable ID for a principal outside the US (§ 117.201(6)); only matrimony is excluded | § 117.209(1), (3), (4); § 117.201(6) — `foreign-seller`, `mobile-and-remote-signings` |
+| Foreign acknowledgment | § 695.03(3) accepts a foreign notary with an official seal, a civil-law notary, a commissioner of deeds, or a US consular officer. **The apostille is not in the statute** — it is an underwriter/clerk practice | § 695.03(3) — `foreign-seller` |
+| Power of attorney | Executed in the same manner as a deed; does not dispense with spousal joinder on homestead (§ 689.111) | § 689.111 — `foreign-seller` |
+| FIRPTA | 15% of the amount realised; no withholding at $300,000 or less and 10% to $1,000,000 where the buyer takes it as a residence; Forms 8288, 8288-A, 8288-B (26 U.S.C. § 1445) | 26 U.S.C. § 1445 — `foreign-seller` |
+| Bankruptcy sale order | 14-day stay (FRBP 6004(h)), 14 days to appeal (FRBP 8002(a)(1)), and a good faith purchaser is protected on reversal unless the sale was stayed (11 U.S.C. § 363(m)) | FRBP 6004(h); FRBP 8002(a)(1); 11 U.S.C. § 363(m) — `bankruptcy` |
+
+> **Re-verified against the primary sources, 20 September 2026.** Every row below
+> was read against the statute, rule or constitutional text itself, fetched from
+> the Florida Senate's published statutes, the Florida Constitution and Cornell
+> LII. **All thirteen are correct as stated on the pages.** Three came through
+> with the statute's own words tightened onto the page (part I of chapter 713 in
+> the lis pendens standard; knowledge-based authentication as one conforming
+> method of identity proofing rather than the only one; documentary stamps, see
+> below). The exercise also cleared eight of the flags raised by the 20 September
+> diff, and found one real error the diff had only suspected.
+>
+> **The error:** the contract page attributed the Miami-Dade documentary stamp
+> rate and the surtax to § 201.02. Section 201.02 contains neither — no mention
+> of Miami-Dade, of a surtax, or of any rate but 70 cents. The surtax is
+> § 201.031 and § 125.0167, which caps it at 45 cents per $100 (a ceiling, not a
+> figure) and exempts a document conveying only a single-family residence. The
+> page now cites those. The separate Miami-Dade deed rate appears in none of the
+> three sections and has been taken off the page: `NS-04`.
+>
+> Two near-misses worth recording, because both were caught only by reading
+> further than the first subsection. § 718.116 appeared at first to contain no
+> estoppel provision at all — an artifact of a truncated fetch; (8) is the
+> estoppel subsection and is correct. And § 55.03(1) alone would have made the
+> page's "adjusts annually on 1 January" look wrong, since (1) sets the rate
+> quarterly; § 55.03(3) supplies the annual adjustment and the page is exactly
+> right.
+
+**The third column is the point of the table.** It names the provision each
+answer was actually read from, and the page that now carries it. A specific that
+is on a page but not in this column did not come from this pass — which is how
+the 20 September diff found four that had drifted in afterwards and inherited
+the authority of the sourced sentence beside them. Anything added here later
+should name its provision at the same time, or it is a drafted fact wearing a
+citation.
+
+### Cited on a page, not recorded in this pass
+
+Found by the 20 September diff, then read against the primary sources the same
+day. **All are confirmed except the Miami-Dade deed rate**, and their flags are
+cleared. What each turned out to say:
+
+- **§ 55.03** — (1) the Chief Financial Officer sets the rate quarterly; (3) the
+  rate is established when the judgment is obtained and adjusts annually on
+  1 January. The page states both correctly. `JG-06` cleared.
+- **§ 48.23(2), (3)** — (2) is the one-year expiry from commencement, unless the
+  action is founded on a duly recorded instrument or a lien claimed under part I
+  of chapter 713; (3) is the court's power to control and discharge the notice as
+  it would grant and dissolve injunctions. Both subsections correct. `LT-10`
+  cleared. The bond the page mentions is not in the text — it comes from the
+  injunction analogy, which is where `LT-09` still sits.
+- **§ 162.09(3)** — a certified copy of an order imposing a fine may be recorded
+  and thereafter constitutes a lien; no lien under that part may be foreclosed on
+  homestead. `OP-07` cleared.
+- **§ 201.02** — 70 cents per $100, confirmed. Nothing else. See the note above.
+- **Fla. Const. art. X, § 4(c)** — "The owner of homestead real estate, joined by
+  the spouse if married, may alienate the homestead by mortgage, sale or gift."
+  `NS-05` cleared.
+- **§ 117.201(10), § 117.215, § 117.225, § 117.265** — the online notary
+  definition; that a part II notarization satisfies a notarization requirement;
+  registration requiring a current commission, a course, a $25,000 bond and
+  $25,000 errors and omissions cover; and credential analysis plus identity
+  proofing. `SG-09` cleared.
+- **11 U.S.C. § 363(f), § 554** — (f) has exactly five grounds, as the page says;
+  § 554(a) is abandonment of burdensome or inconsequential property. `BK-06`
+  cleared.
+
+Sign-off on the pages remains the team's. This records what the sources say, not
+that anyone has approved the pages.
+
+| Provision | Page | For | Flag |
+|---|---|---|---|
+| § 55.03 | `judgment` | Post-judgment interest, CFO-set rate, annual adjustment | confirmed |
+| § 48.23(2), (3); part I of ch. 713 | `litigation` | One-year expiry; the court's control and discharge power; the construction-lien carve-out | confirmed |
+| § 162.09(3) | `open-permits` | Recorded code enforcement lien; no foreclosure against homestead | confirmed |
+| § 201.02; § 201.031; § 125.0167 | `non-standard-purchase-contract` | 70 cents per $100; the surtax and its 45-cent ceiling. Miami-Dade deed rate unsourced | `NS-04` |
+| Fla. Const. art. X, § 4(c) | `non-standard-purchase-contract` | Spousal joinder on homestead | confirmed |
+| § 117.201(10), § 117.215, § 117.225, § 117.265 | `mobile-and-remote-signings` | Online notary definition, effect of a part II notarization, registration requirements, identity proofing | confirmed |
+| 11 U.S.C. § 363(f), § 554 | `bankruptcy` | Free-and-clear grounds (five); abandonment | confirmed |
+
+They were cheap to clear, and none of them was clearable from memory — which is
+why they were flags and not a note.
 
 | Page | Question | Where the brief says to look |
 |---|---|---|
@@ -174,7 +258,25 @@ turned out to say, in short:
 | signings | RON statutory basis and limits | ch. 117 |
 | bankruptcy | Appeal period for a sale order, effect of a stay, good-faith purchaser finding | (federal — see gaps below) |
 
-### Gaps in the project's own source list
+### Gaps in the project's own source list — **closed 2026-09-20**
+
+> The brief's source list has been extended to cover every chapter the site
+> actually cites. Diffing the two turned up **seven** gaps rather than the five
+> guessed at below: ch. 48 (lis pendens), ch. 55 (judgment liens and interest)
+> and ch. 704 (easements) as expected, plus the Florida Constitution art. X, § 4,
+> which two pages cite, and three the earlier reading missed because they
+> arrived through the rate modules and the open-permits page rather than through
+> a draft — ch. 28 (clerk service charges), ch. 125 (the discretionary surtax)
+> and ch. 162 (code enforcement liens). The federal sources were absent as
+> described. All were read against the primary text before being added.
+>
+> Worth keeping in view: the brief says "cite only from these", so for six days
+> the site was citing seven sources its own operating instructions did not
+> authorise. Nothing cited was wrong — every one of them verified — but the rule
+> and the work had drifted apart, and the rule is the thing that catches
+> fabrication.
+
+
 
 Six of the questions above have **no corresponding source** in
 `claude-project-brief.md`. That list should be extended before this work starts:
@@ -195,7 +297,24 @@ statute.
 
 ---
 
-## Category B — First American only (~8 flags)
+## Category B — First American only — **mostly dissolved 2026-09-20**
+
+> Nine of these flags were rewritten into Category C on 20 September 2026. The
+> pages they sat on do not assert an underwriting position — they defer to one,
+> in terms, which is the correct posture for a public page and needs our own
+> practice statement rather than a bulletin. What the flags had asked for was a
+> general rule that a representative would not give in the abstract anyway.
+>
+> Two passages were cut in the same pass: the signings and foreign-seller pages
+> had reproduced First American's published RON language and its list of
+> approved platforms from a public page rather than from a supplied bulletin,
+> and the foreign-seller page inferred a position on overseas signers from First
+> American's silence. See `docs/outstanding-questions.md`.
+>
+> The list below is kept as the questions to ask about a **live file**, which is
+> the form in which they can actually be answered. None of them now blocks a
+> page.
+
 
 These are underwriting positions. They cannot be sourced from the public web,
 and a wrong one is a coverage problem rather than a content error. The brief
@@ -286,7 +405,9 @@ commission records, and nowhere else.
    these pages worth reading. **Started 2026-09-20 with open permits**, which
    took one round of four short answers; the other eight pages are the same
    shape of work.
-2. **One email to the First American rep** — clears Category B.
+2. ~~**One email to the First American rep**~~ — Category B mostly dissolved on
+   2026-09-20; the pages defer to the underwriter rather than assert a position,
+   so nothing here blocks publication. Ask about live files as they come.
 3. ~~**Category A**~~ — done. What remains of it is the entireties question
    (an attorney's, not a citation's) and the FAR/BAR form.
 4. **Recover the two incomplete files** or drop those pages.

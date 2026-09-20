@@ -72,7 +72,9 @@ Length follows the topic: 600–1,800 words. Never pad.
 
 ## Source list — cite only from these
 
-- **Florida Statutes** (leg.state.fl.us / Online Sunshine): ch. 627 part VI (title insurance), ch. 695 (recording), ch. 697, ch. 701 (mortgage satisfactions), ch. 712 (MRTA), ch. 713 (construction liens), ch. 718 (condominiums), ch. 720 (HOAs), ch. 733 (probate administration), ch. 732 (intestate succession/homestead), ch. 197 (tax deeds), ch. 201 (documentary stamp tax), ch. 199 (intangible tax), ch. 117 (notaries/RON), ch. 689 (conveyances).
+- **Florida Statutes** (leg.state.fl.us / Online Sunshine): ch. 627 part VI (title insurance), ch. 695 (recording), ch. 697, ch. 701 (mortgage satisfactions), ch. 712 (MRTA), ch. 713 (construction liens), ch. 718 (condominiums), ch. 720 (HOAs), ch. 733 (probate administration), ch. 732 (intestate succession/homestead), ch. 197 (tax deeds), ch. 201 (documentary stamp tax), ch. 199 (intangible tax), ch. 117 (notaries/RON), ch. 689 (conveyances), ch. 28 (clerk service charges and recording fees), ch. 48 (lis pendens), ch. 55 (judgment liens and post-judgment interest), ch. 125 (the discretionary surtax on documents), ch. 162 (code enforcement liens), ch. 704 (easements and ways of necessity).
+- **Florida Constitution**, art. X, § 4 (homestead: the exemption from forced sale, and spousal joinder on alienation).
+- **Federal**, for bankruptcy sales and foreign sellers: 11 U.S.C. (the Bankruptcy Code), the Federal Rules of Bankruptcy Procedure, and 26 U.S.C. § 1445 (FIRPTA). These are not Florida title practice and a page resting on them should say so.
 - **Florida Administrative Code** 69O-186 (title insurance rates and forms).
 - **Florida OIR** promulgated title insurance rate schedule.
 - **Florida DFS** licensee search; **FL Dept. of State** notary search.
@@ -82,6 +84,14 @@ Length follows the topic: 600–1,800 words. Never pad.
 - **ALTA** for policy form names and Best Practices.
 
 Cite statutes as `Fla. Stat. § 627.7842` on first use, linked to Online Sunshine. Never cite a statute number from memory without the team confirming it — mark `[VERIFY]` instead.
+
+**The six chapters, the Constitution and the federal sources above were added on
+20 September 2026**, because the site was already citing all of them and this
+list did not authorise any of them. Every one was read against the primary text
+before being added — see `docs/verify-worklist.md`. The lesson is the list's
+own: a source list that is narrower than the work silently turns "cite only from
+these" into a rule nobody can follow, so when a draft needs a chapter that is not
+here, the chapter gets added after somebody reads it, rather than cited quietly.
 
 ## Drafting workflow
 

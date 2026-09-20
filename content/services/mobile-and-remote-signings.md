@@ -12,7 +12,7 @@ pending_confirmation:
   - "SG-02 (Bayit Title): Whether mobile signing or RON carries a separate fee, and how it appears on the closing statement"
   - "SG-03 (Bayit Title): How far we travel for a mobile signing, signing service outside the three counties, scheduling notice"
   - "SG-04 (Bayit Title): Which team members hold Florida online notary commissions, or which RON platform and whose commission"
-  - "SG-05 (underwriter/form): First American's current position on RON, and any document types excluded"
+  - "SG-05 (Bayit Title): Our practice for confirming lender and underwriter acceptance of RON before scheduling, and whether the platform we use is on our underwriter's approved list"
   - "SG-08 (Bayit Title): Our fee practice for mobile signings and RON"
 quick_facts:
   - term: "Who this is for"
@@ -49,9 +49,9 @@ The act has to be performed by a notary who holds a current Florida notary commi
 
 Two things decide whether RON can be used on a given file, and neither is up to the signer: the lender has to accept remotely notarized documents, and so does the underwriter. We confirm both before scheduling rather than after.
 
-First American approves RON "subject to state laws and all other First American underwriting guidelines and requirements," and publishes the platforms it accepts — Blend, Docutech, DocVerify, Nexsys, NotaryCam, NotaryLive, Pavaso, ProNotary, Proof, Qualia, Signix, Simplifile, SimplySecureSign, Snapdocs and Stavvy — together with any vendor on the MISMO RON Certified Providers list and platforms that integrate with those vendors.
+Underwriters also keep their own lists of approved RON platforms, so the platform matters as much as the acceptance does. We confirm that the platform a file will use is one our underwriter accepts before the session is booked.
 
-The exclusions that bite in practice come from the statute rather than the underwriter. Solemnising marriage is outside RON under [Fla. Stat. § 117.209](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html)(1). Wills, trusts with testamentary aspects, health care advance directives and powers of attorney carry the extra screening requirements in [Fla. Stat. § 117.285](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.285.html), and electronic witnessing is not valid where the principal is a vulnerable adult as defined in s. 415.102.
+The exclusions written into the statute apply whatever the lender and the underwriter allow. Solemnising marriage is outside RON under [Fla. Stat. § 117.209](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html)(1). Wills, trusts with testamentary aspects, health care advance directives and powers of attorney carry the extra screening requirements in [Fla. Stat. § 117.285](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.285.html), and electronic witnessing is not valid where the principal is a vulnerable adult as defined in s. 415.102.
 
 ## Which one should we use?
 
@@ -79,7 +79,7 @@ Usually yes. A buyer signing in the office and a seller signing remotely is comm
 
 A device with a camera and microphone, a stable connection, and valid identification for the verification step.
 
-The statute sets the floor, and every approved platform implements it. Under [Fla. Stat. § 117.265](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.265.html), unless the notary has personal knowledge of the signer, identity is established by all three of: the signer presenting a government-issued identification credential remotely over the audio-video link; **credential analysis** of that credential; and **identity proofing** in the form of knowledge-based authentication — a short set of questions generated from public and proprietary data, answered within a time limit.
+The statute sets the floor, and every approved platform implements it. Under [Fla. Stat. § 117.265](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.265.html), unless the notary has personal knowledge of the signer, identity is established by all three of: the signer presenting a government-issued identification credential remotely over the audio-video link; **credential analysis** of that credential; and **identity proofing**, by knowledge-based authentication — a short set of questions generated from public and proprietary data, answered within a time limit — or another method conforming to the chapter.
 
 For a signer outside the United States, a passport issued by a foreign government without a US immigration stamp may be used as the credential.
 

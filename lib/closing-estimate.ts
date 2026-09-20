@@ -14,6 +14,7 @@ import {
   PREMIUM_RULE,
   REISSUE_SCHEDULE,
   originalPremium,
+  reissueExcessNote,
   reissuePremium,
   simultaneousLoanPremium,
 } from './promulgated-premium';
@@ -39,6 +40,12 @@ export interface EstimateInput {
   loanAmount: number;
   /** The rule's reissue conditions are met — see REISSUE_CONDITIONS. */
   reissue: boolean;
+  /**
+   * What the previous policy insured for, which R. 69O-186.003(2)(c) needs: the
+   * reissue schedule reaches only that far and the excess is at original rates.
+   * 0 means nobody has told us, and the line says so.
+   */
+  priorPolicyAmount: number;
   /** Miami-Dade only: the surtax is not charged on a single-family residence. */
   singleFamilyResidence: boolean;
   deedPages: number;
@@ -70,6 +77,7 @@ export const DEFAULTS: EstimateInput = {
   price: 500_000,
   loanAmount: 400_000,
   reissue: false,
+  priorPolicyAmount: 0,
   singleFamilyResidence: true,
   deedPages: 2,
   mortgagePages: 12,
@@ -78,12 +86,15 @@ export const DEFAULTS: EstimateInput = {
 /**
  * The reissue conditions, as a seller or an owner meets them in practice.
  *
- * R. 69O-186.003(2)(b) lists a fourth condition — unimproved land except for
- * roads, drainage and utilities — which is deliberately not printed here. It
- * almost never decides one of our files, and a reader working out whether the
- * reissue rate applies to a house is better served by three conditions they
- * might actually meet. Ask us on a land file and we will check the rule
- * against it.
+ * The rule's shape is a precondition and then a choice. R. 69O-186.003(2)(b)
+ * requires a previous owner's policy insuring the seller or mortgagor, with
+ * copies retained by both the agent and the underwriter — that is the first
+ * item below and it is required in every case. It then lists three alternatives,
+ * any one of which will do. The first of those three, unimproved land except for
+ * roads, bridges, drainage and utilities, is deliberately not printed: it almost
+ * never decides one of our files, and a reader working out whether the reissue
+ * rate applies to a house is better served by the two they might meet. Ask us on
+ * a land file and we will check the rule against it.
  */
 export const REISSUE_CONDITIONS = [
   'The owner’s or the seller’s own title was insured, and both we and the underwriter keep a copy of that policy.',
@@ -108,6 +119,7 @@ export function estimate(input: EstimateInput): Estimate {
     transaction,
     countySlug,
     reissue,
+    priorPolicyAmount,
     singleFamilyResidence,
     deedPages,
     mortgagePages,
@@ -124,10 +136,12 @@ export function estimate(input: EstimateInput): Estimate {
   if (isPurchase && price > 0) {
     premiumLines.push({
       label: `Owner’s policy, ${reissue ? 'reissue rate' : 'original rate'}`,
-      value: reissue ? reissuePremium(price) : originalPremium(price),
+      value: reissue ? reissuePremium(price, priorPolicyAmount) : originalPremium(price),
       cite: scheduleCite,
       sourceUrl: PREMIUM_RULE.url,
-      note: 'Written for the full insurable value of the property.',
+      note: reissue
+        ? `Written for the full insurable value of the property. ${reissueExcessNote(price, priorPolicyAmount)}`
+        : 'Written for the full insurable value of the property.',
     });
 
     if (loan > 0) {
@@ -147,10 +161,12 @@ export function estimate(input: EstimateInput): Estimate {
   if (!isPurchase && loan > 0) {
     premiumLines.push({
       label: `Lender’s policy, ${reissue ? 'reissue rate' : 'original rate'}`,
-      value: reissue ? reissuePremium(loan) : originalPremium(loan),
+      value: reissue ? reissuePremium(loan, priorPolicyAmount) : originalPremium(loan),
       cite: scheduleCite,
       sourceUrl: PREMIUM_RULE.url,
-      note: 'A refinance has no owner’s policy to issue alongside, so there is no $25 rate here.',
+      note: reissue
+        ? `A refinance has no owner’s policy to issue alongside, so there is no $25 rate here. ${reissueExcessNote(loan, priorPolicyAmount)}`
+        : 'A refinance has no owner’s policy to issue alongside, so there is no $25 rate here.',
     });
   }
 

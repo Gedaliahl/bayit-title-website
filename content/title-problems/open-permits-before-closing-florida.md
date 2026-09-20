@@ -15,7 +15,7 @@ pending_confirmation:
   - "OP-02 (Bayit Title): Answered — no reliable flat fee, and the file is scoped before an estimate is given. The municipal fees that are published are now cited from the municipalities' own schedules. Still open: whether the page should carry them, and what the contractor and design-professional side of a close-out costs"
   - "OP-04 (underwriter/form): How the standard FAR/BAR contract allocates responsibility for open permits, and which paragraph"
   - "OP-05 (Bayit Title): Answered — the close-out routes are confirmed. Still open: whether we use a contractor affidavit or a municipal amnesty programme, which the draft claimed and the team did not name"
-  - "OP-06 (underwriter/form): First American's coverage position on open permits and code enforcement, and any endorsement"
+  - "OP-06 (Bayit Title): Check the building-and-zoning exclusion this page relies on against the owner's policy form we actually issue"
 verdict:
   short: "Sometimes"
 quick_facts:

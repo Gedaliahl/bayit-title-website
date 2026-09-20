@@ -12,7 +12,7 @@ related:
 pending_confirmation:
   - "JG-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Rarely\"), the four verdict-card rows, and the five steps — drafted from this page, not yet reviewed"
   - "JG-01 (Bayit Title): Answered in part from the statute — § 701.04(3) gives the creditor 60 days from payment to record the satisfaction. Still open: how long a payoff and release actually takes on our files, and whether the drafted three-to-ten business days for the written payoff itself is right"
-  - "JG-05 (underwriter/form): Form of identity affidavit First American accepts for a name-match judgment"
+  - "JG-05 (Bayit Title): The supporting detail we assemble as standard on an identity affidavit, and our practice of obtaining the underwriter's written sign-off before closing"
 verdict:
   headline: "Rarely — if it is found early."
   short: "Rarely"
