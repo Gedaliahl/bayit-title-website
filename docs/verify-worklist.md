@@ -1,5 +1,50 @@
 # VERIFY worklist
 
+> ## Update, 20 September 2026 — the first answers are back
+>
+> The team answered the four open-permit questions. What they said is now on
+> `content/title-problems/open-permits-before-closing-florida.md`, and what the
+> draft had invented has come off it:
+>
+> - **Municipal lien search** — ordered on every file, not on request. This is
+>   what the page already said. **Closed**, and out of that page's
+>   `pending_confirmation`.
+> - **Timeline** — two weeks in the ordinary case. The six-to-twelve week and
+>   three-month figures were invented and are gone; what makes a file longer is
+>   now named (permit type, jurisdiction, work status, inspections outstanding,
+>   whether a licensed contractor or design professional is needed) instead of
+>   guessed at. **Still open:** how long a complicated close-out actually runs,
+>   and whether municipality matters enough to name.
+> - **Cost** — there is no reliable flat fee; the file is scoped before an
+>   estimate is given. The invented $75–$200 re-inspection fee and the "often
+>   double" after-the-fact multiple are gone. **Still open:** whether the page
+>   may publish any figure at all, even a re-inspection range. A page that gives
+>   no order of magnitude sends the reader to ask an agent instead.
+> - **Close-out routes** — five routes confirmed, plus a referral to an attorney
+>   or another qualified professional where a file is not a clearance step at
+>   all. **Still open:** whether the contractor affidavit / municipal amnesty
+>   route the draft claimed is one we use; the team did not name it.
+>
+> Counted from the front-matter rather than from this document, the nine drafts
+> now carry **41** `pending_confirmation` entries: **31** only the team can
+> answer, **10** need First American or the licensed form. Of the 31, eight are
+> verdict labels awaiting sign-off and **23 are substantive** — three on open
+> permits (all three now answered with a follow-up attached), three each on the
+> non-standard contract and litigation pages, two each on bankruptcy, foreign
+> seller, HOA approval and access, one on judgments, and five on the signings
+> page.
+>
+> Open permits still cannot publish: `OP-04` and `OP-06` are the First American
+> email, and the verdict label needs sign-off.
+>
+> One contradiction surfaced while editing and was left alone because `OP-04`
+> settles it: the page's `direct_answer` says an open permit is "normally the
+> seller's to resolve," while the body says the close-out is the buyer's under
+> FAR/BAR "AS IS" paragraph 12(c) and the seller only cooperates. One of the two
+> is wrong.
+
+---
+
 > ## Status: all 62 flags have been drafted in
 >
 > As of 11 September 2026 every flag below has been researched and answered in
@@ -35,7 +80,9 @@
 ---
 
 Every unresolved fact across the nine content drafts, triaged by **who can
-answer it**. 62 flags at the start; **49 now**.
+answer it**. 62 flags at the start; **49 now**, of which one — the municipal
+lien search question — was answered by the team on 20 September 2026 and three
+more were answered with a follow-up left open (see the update at the top).
 
 **Category A is done** (2026-09-14). The public-record questions were answered
 from the statute, the rule or the federal source itself, and every figure or
@@ -170,13 +217,14 @@ One request to your rep covers most of this. It is probably the single highest
 
 ---
 
-## Category C — Only Bayit Title knows (~36 flags)
+## Category C — Only Bayit Title knows (23 substantive questions, plus 8 verdict labels)
 
 **This is the bulk of the work, and none of it is research.** No external source
 exists. One person who works the files can clear most of these in an afternoon.
 
 ### Our timelines — what we actually see
-- Open permit close-out, by municipality
+- ~~Open permit close-out, by municipality~~ — **answered 2026-09-20**: two
+  weeks in the ordinary case. What a complicated one runs is still open
 - HOA application to approval; and the fastest turnaround we have documented
 - Judgment payoff and release, once the creditor is identified
 - Resolving an access exception by recorded easement
@@ -184,7 +232,9 @@ exists. One person who works the files can clear most of these in an afternoon.
 - How a bankruptcy sale order's dates shape a closing schedule
 
 ### Our costs
-- Permit close-out: re-inspection, after-the-fact permit, contractor
+- ~~Permit close-out: re-inspection, after-the-fact permit, contractor~~ —
+  **answered 2026-09-20**: no reliable flat fee; the file is scoped first.
+  Whether any figure may be published at all is still open
 - Recorded easement: survey sketch and legal description
 - Consular fees, apostille, courier where wet ink is required
 - Whether mobile signing or RON carries a separate fee, and how it appears on
@@ -192,7 +242,11 @@ exists. One person who works the files can clear most of these in an afternoon.
 - Whether bankruptcy files carry additional search or examination cost
 
 ### Our practice
-- Is a municipal lien search ordered on every purchase, or only on request?
+- ~~Is a municipal lien search ordered on every purchase, or only on request?~~
+  — **answered 2026-09-20**: every file. Closed
+- ~~The close-out routes we actually work~~ — **answered 2026-09-20**: five
+  routes, plus a referral where the file is not a clearance step. Whether we use
+  a contractor affidavit or a municipal amnesty programme is still open
 - What we check first on a non-standard contract, in order
 - What we examine differently where a seller acquired recently
 - What we do where a seller is in active litigation, including where we decline
@@ -221,7 +275,9 @@ commission records, and nowhere else.
 
 1. **Category C timelines and practice** — an afternoon with someone who works
    the files. Clears over half the flags and adds the specificity that makes
-   these pages worth reading.
+   these pages worth reading. **Started 2026-09-20 with open permits**, which
+   took one round of four short answers; the other eight pages are the same
+   shape of work.
 2. **One email to the First American rep** — clears Category B.
 3. ~~**Category A**~~ — done. What remains of it is the entireties question
    (an attorney's, not a citation's) and the FAR/BAR form.
