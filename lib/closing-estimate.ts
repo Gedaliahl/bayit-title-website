@@ -12,9 +12,9 @@
 import {
   ORIGINAL_SCHEDULE,
   PREMIUM_RULE,
-  REISSUE_EXCESS_CAVEAT,
   REISSUE_SCHEDULE,
   originalPremium,
+  reissueExcessNote,
   reissuePremium,
   simultaneousLoanPremium,
 } from './promulgated-premium';
@@ -40,6 +40,12 @@ export interface EstimateInput {
   loanAmount: number;
   /** The rule's reissue conditions are met — see REISSUE_CONDITIONS. */
   reissue: boolean;
+  /**
+   * What the previous policy insured for, which R. 69O-186.003(2)(c) needs: the
+   * reissue schedule reaches only that far and the excess is at original rates.
+   * 0 means nobody has told us, and the line says so.
+   */
+  priorPolicyAmount: number;
   /** Miami-Dade only: the surtax is not charged on a single-family residence. */
   singleFamilyResidence: boolean;
   deedPages: number;
@@ -71,6 +77,7 @@ export const DEFAULTS: EstimateInput = {
   price: 500_000,
   loanAmount: 400_000,
   reissue: false,
+  priorPolicyAmount: 0,
   singleFamilyResidence: true,
   deedPages: 2,
   mortgagePages: 12,
@@ -112,6 +119,7 @@ export function estimate(input: EstimateInput): Estimate {
     transaction,
     countySlug,
     reissue,
+    priorPolicyAmount,
     singleFamilyResidence,
     deedPages,
     mortgagePages,
@@ -128,11 +136,11 @@ export function estimate(input: EstimateInput): Estimate {
   if (isPurchase && price > 0) {
     premiumLines.push({
       label: `Owner’s policy, ${reissue ? 'reissue rate' : 'original rate'}`,
-      value: reissue ? reissuePremium(price) : originalPremium(price),
+      value: reissue ? reissuePremium(price, priorPolicyAmount) : originalPremium(price),
       cite: scheduleCite,
       sourceUrl: PREMIUM_RULE.url,
       note: reissue
-        ? `Written for the full insurable value of the property. ${REISSUE_EXCESS_CAVEAT}`
+        ? `Written for the full insurable value of the property. ${reissueExcessNote(price, priorPolicyAmount)}`
         : 'Written for the full insurable value of the property.',
     });
 
@@ -153,11 +161,11 @@ export function estimate(input: EstimateInput): Estimate {
   if (!isPurchase && loan > 0) {
     premiumLines.push({
       label: `Lender’s policy, ${reissue ? 'reissue rate' : 'original rate'}`,
-      value: reissue ? reissuePremium(loan) : originalPremium(loan),
+      value: reissue ? reissuePremium(loan, priorPolicyAmount) : originalPremium(loan),
       cite: scheduleCite,
       sourceUrl: PREMIUM_RULE.url,
       note: reissue
-        ? `A refinance has no owner’s policy to issue alongside, so there is no $25 rate here. ${REISSUE_EXCESS_CAVEAT}`
+        ? `A refinance has no owner’s policy to issue alongside, so there is no $25 rate here. ${reissueExcessNote(loan, priorPolicyAmount)}`
         : 'A refinance has no owner’s policy to issue alongside, so there is no $25 rate here.',
     });
   }

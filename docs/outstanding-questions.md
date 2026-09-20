@@ -203,21 +203,40 @@ Miami-Dade deed rate that I could not source from § 201.02, § 201.031 or
 § 125.0167 comes from **§ 201.0205**, which the module had cited all along. The
 contract page now cites it too and the flag is closed.
 
-### One real bug
+### One real bug — found 20 September, fixed the same day
 
-**The calculator under-quotes a reissue.** R. 69O-186.003(2)(c) provides that
+**The calculator under-quoted every reissue.** R. 69O-186.003(2)(c) provides that
 "any amount of new insurance, in the aggregate, in excess of the amount under the
 previous policy shall be computed at the original owner's or leasehold rates".
-`reissuePremium` applies the reissue brackets to the whole liability instead, and
-nothing on the site asks what the previous policy was insured for. On a $500,000
-sale with a $300,000 prior policy that is $1,530 against $1,930 — **$400 low**,
-on a figure published as something a Loan Estimate can be built from.
+`reissuePremium` applied the reissue brackets to the whole liability instead, and
+nothing on the site asked what the previous policy was insured for. On a $500,000
+sale with a $300,000 prior policy that was $1,530 against $1,930 — **$400 low**,
+on a figure published as something a Loan Estimate can be built from, and low in
+the common direction, since most properties are worth more now than when they
+were last insured.
 
-This is disclosed rather than fixed, because fixing it properly needs an input
-that does not exist yet. Every line that prints a reissue figure now carries
-`REISSUE_EXCESS_CAVEAT`, and the estimate page says it in full. **The real fix is
-a prior-policy-amount field**, which is a product decision rather than a
-correction, so it is left here rather than taken.
+It is now modelled. `reissuePremium(liability, priorPolicyAmount)` rates the
+layer up to the old policy at the reissue schedule and the excess at the
+original one, both estimate modules pass the amount through, and the calculator
+and the address estimator each show a "What the previous policy insured" field
+when the reissue box is ticked. Leaving it empty still rates the whole liability
+as reissue, and the line says so rather than implying a complete figure.
+`tests/reissue-excess.test.ts` pins the arithmetic, the $100 minimum across the
+split, and both notes.
+
+**One interpretive choice inside it, worth putting to the underwriter.** The rule
+says the excess is rated at original rates "in the aggregate". That is read here
+as the excess sitting where it falls in the original schedule once the whole
+liability is considered — for the example above, the $300,000-to-$500,000 band at
+$5.00 per thousand. The alternative reading rates the excess as though it were a
+fresh policy starting again at the first bracket, which would make it $100,000 at
+$5.75 plus $100,000 at $5.00, and the answer $2,005 rather than $1,930. The
+aggregate wording is what decides it, and the contrast with (5)(a) — which says
+"the amount ... in excess" with no aggregate language and is computed the other
+way in `simultaneousLoanPremium` — is the reason the two are not treated alike.
+**A $75 question on this example, and one a rep can settle in a sentence.** If
+the answer is the other reading, `reissuePremium` is the only function to
+change.
 
 ### Smaller
 

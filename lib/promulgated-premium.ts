@@ -93,30 +93,55 @@ export function originalPremium(liability: number): number {
 }
 
 /**
- * What it costs where the rule's reissue conditions are met — on the whole
- * liability.
+ * What it costs where the rule's reissue conditions are met, in two layers.
  *
- * This is not the complete rule. R. 69O-186.003(2)(c) provides that "any amount
- * of new insurance, in the aggregate, in excess of the amount under the previous
- * policy shall be computed at the original owner's or leasehold rates", so only
- * the layer up to the old policy is rated here; the excess belongs at the
- * original schedule. Applying it needs the amount of the previous policy, which
- * nothing on this site asks for, so a reissue figure on a property now worth
- * more than it was last insured for reads low. Every caller states that on the
- * line — see REISSUE_EXCESS_CAVEAT.
+ * R. 69O-186.003(2)(c): "Any amount of new insurance, in the aggregate, in
+ * excess of the amount under the previous policy shall be computed at the
+ * original owner's or leasehold rates, as provided in subsection (1)." So the
+ * reissue schedule reaches only as far as the old policy did, and the rest is
+ * charged at the original schedule.
+ *
+ * "In the aggregate" decides where the excess sits in the schedule. It is rated
+ * where it falls once the whole liability is considered, rather than as a fresh
+ * policy starting again at the first bracket: on a $500,000 sale over a $300,000
+ * policy that is the $300,000-to-$500,000 band at $5.00 per thousand, not
+ * $100,000 at $5.75 plus $100,000 at $5.00. The two readings differ by $75 here.
+ * Compare (5)(a), which says "the amount ... in excess" without "in the
+ * aggregate" and is rated the other way in simultaneousLoanPremium — the
+ * difference in wording is the reason they are computed differently. If a file
+ * comes back rated the other way, this is the function to change.
+ *
+ * priorPolicyAmount of 0 means nobody has told us, in which case the whole
+ * liability goes at the reissue schedule and the caller says so on the line.
  */
-export function reissuePremium(liability: number): number {
-  return premium(liability, REISSUE);
+export function reissuePremium(liability: number, priorPolicyAmount = 0): number {
+  if (liability <= 0) return 0;
+
+  const prior = Math.max(0, priorPolicyAmount);
+  if (prior <= 0 || liability <= prior) return premium(liability, REISSUE);
+
+  const upToPrior = premium(prior, REISSUE, 0);
+  const excess = premium(liability, ORIGINAL, 0) - premium(prior, ORIGINAL, 0);
+
+  return Math.max(MINIMUM_PREMIUM, toCents(upToPrior + excess));
 }
 
-/**
- * Printed wherever a reissue figure is shown, because the figure is incomplete
- * without it. See reissuePremium.
- */
-export const REISSUE_EXCESS_CAVEAT =
-  'Rated here on the whole amount. Under R. 69O-186.003(2)(c) anything above the previous ' +
-  'policy is rated at the original schedule instead, and we do not ask what that policy was — ' +
-  'so on a property worth more now than when it was last insured, the real figure is higher.';
+/** Said on a reissue line where nobody has told us what the old policy insured. */
+export const REISSUE_EXCESS_UNKNOWN =
+  'Rated here on the whole amount, because the previous policy amount has not been entered. ' +
+  'Under R. 69O-186.003(2)(c) anything above that amount belongs at the original schedule, so ' +
+  'on a property worth more now than when it was last insured the real figure is higher.';
+
+/** What a reissue line should say about how it was split. */
+export function reissueExcessNote(liability: number, priorPolicyAmount: number): string {
+  if (priorPolicyAmount <= 0) return REISSUE_EXCESS_UNKNOWN;
+
+  if (liability <= priorPolicyAmount) {
+    return `All of it sits inside the ${formatMoney(priorPolicyAmount)} the previous policy insured, so all of it is at the reissue rate.`;
+  }
+
+  return `The first ${formatMoney(priorPolicyAmount)} is at the reissue rate. R. 69O-186.003(2)(c) puts the ${formatMoney(liability - priorPolicyAmount)} above the previous policy at the original rate.`;
+}
 
 function schedule(brackets: Bracket[], cite: string, sourceUrl: string): CitedFigure[] {
   return brackets.map((bracket, index) => {

@@ -30,9 +30,9 @@ import { DEFAULTS as CLOSING_DEFAULTS, type EstimateGroup, type EstimateLine } f
 import {
   ORIGINAL_SCHEDULE,
   PREMIUM_RULE,
-  REISSUE_EXCESS_CAVEAT,
   REISSUE_SCHEDULE,
   originalPremium,
+  reissueExcessNote,
   reissuePremium,
   simultaneousLoanPremium,
 } from './promulgated-premium';
@@ -59,6 +59,8 @@ export interface AssessedInput {
   loanAmount: number;
   /** The rule's reissue conditions are met — see REISSUE_CONDITIONS. */
   reissue: boolean;
+  /** R. 69O-186.003(2)(c) — see EstimateInput.priorPolicyAmount. */
+  priorPolicyAmount: number;
   /** Miami-Dade only: the surtax is not charged on a single-family residence. */
   singleFamilyResidence: boolean;
 }
@@ -78,6 +80,7 @@ export const ASSESSED_DEFAULTS: AssessedInput = {
   assessedValue: 0,
   loanAmount: 0,
   reissue: false,
+  priorPolicyAmount: 0,
   singleFamilyResidence: true,
 };
 
@@ -120,8 +123,10 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
 
   const premiumLines: EstimateLine[] = [];
 
-  const ownerRate = input.reissue ? reissuePremium : originalPremium;
-  const otherRate = input.reissue ? originalPremium : reissuePremium;
+  const ownerRate = (amount: number) =>
+    input.reissue ? reissuePremium(amount, input.priorPolicyAmount) : originalPremium(amount);
+  const otherRate = (amount: number) =>
+    input.reissue ? originalPremium(amount) : reissuePremium(amount, input.priorPolicyAmount);
   const rateCite = input.reissue ? REISSUE_SCHEDULE[0].cite : ORIGINAL_SCHEDULE[0].cite;
 
   let alternate = 0;
@@ -135,7 +140,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
       note:
         'A policy is written for the full insurable value — in a sale, the price. Assessed value ' +
         'is usually lower, so read this as a floor.' +
-        (input.reissue ? ` ${REISSUE_EXCESS_CAVEAT}` : ''),
+        (input.reissue ? ` ${reissueExcessNote(coverage, input.priorPolicyAmount)}` : ''),
     });
     alternate += otherRate(coverage);
 
@@ -164,7 +169,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
       note:
         'A refinance is rated on the loan, not on the value of the property, so the assessed ' +
         'value does not enter into it. It has no owner’s policy alongside, so there is no $25 rate.' +
-        (input.reissue ? ` ${REISSUE_EXCESS_CAVEAT}` : ''),
+        (input.reissue ? ` ${reissueExcessNote(loan, input.priorPolicyAmount)}` : ''),
     });
     alternate += otherRate(loan);
   }
