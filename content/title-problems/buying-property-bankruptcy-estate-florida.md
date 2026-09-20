@@ -15,7 +15,6 @@ pending_confirmation:
   - "BK-02 (Bayit Title): Whether these files typically carry additional search or examination cost"
   - "BK-03 (Bayit Title): The items we require from a bankruptcy sale order before closing — our own checklist"
   - "BK-05 (Bayit Title): The docket documents we pull on a closed prior bankruptcy in the chain; the page already leaves the clearance route as a file-specific legal and underwriting question"
-  - "BK-06 (Bayit Title): Confirm 11 U.S.C. § 363(f) — described here as having five grounds for a free-and-clear sale — and 11 U.S.C. § 554 on abandonment. Both are cited on this page but neither was recorded in the Category A sourcing, which covered only 6004(h), 8002(a)(1) and § 363(m)"
 verdict:
   short: "Until the order is final"
 quick_facts:

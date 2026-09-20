@@ -17,7 +17,6 @@ pending_confirmation:
   - "OP-04 (underwriter/form): How the standard FAR/BAR contract allocates responsibility for open permits, and which paragraph"
   - "OP-05 (Bayit Title): The actual close-out routes we have used and how long each took"
   - "OP-06 (Bayit Title): Check the building-and-zoning exclusion this page relies on against the owner's policy form we actually issue"
-  - "OP-07 (Bayit Title): Confirm § 162.09 against the statute — that a certified copy of an order imposing a fine may be recorded and then constitutes a lien, and that such a lien may not be foreclosed against constitutional homestead. Cited on this page but not recorded in the Category A sourcing"
 verdict:
   short: "Sometimes"
 quick_facts:

@@ -104,6 +104,32 @@ turned out to say, in short:
 | FIRPTA | 15% of the amount realised; no withholding at $300,000 or less and 10% to $1,000,000 where the buyer takes it as a residence; Forms 8288, 8288-A, 8288-B (26 U.S.C. § 1445) | 26 U.S.C. § 1445 — `foreign-seller` |
 | Bankruptcy sale order | 14-day stay (FRBP 6004(h)), 14 days to appeal (FRBP 8002(a)(1)), and a good faith purchaser is protected on reversal unless the sale was stayed (11 U.S.C. § 363(m)) | FRBP 6004(h); FRBP 8002(a)(1); 11 U.S.C. § 363(m) — `bankruptcy` |
 
+> **Re-verified against the primary sources, 20 September 2026.** Every row below
+> was read against the statute, rule or constitutional text itself, fetched from
+> the Florida Senate's published statutes, the Florida Constitution and Cornell
+> LII. **All thirteen are correct as stated on the pages.** Three came through
+> with the statute's own words tightened onto the page (part I of chapter 713 in
+> the lis pendens standard; knowledge-based authentication as one conforming
+> method of identity proofing rather than the only one; documentary stamps, see
+> below). The exercise also cleared eight of the flags raised by the 20 September
+> diff, and found one real error the diff had only suspected.
+>
+> **The error:** the contract page attributed the Miami-Dade documentary stamp
+> rate and the surtax to § 201.02. Section 201.02 contains neither — no mention
+> of Miami-Dade, of a surtax, or of any rate but 70 cents. The surtax is
+> § 201.031 and § 125.0167, which caps it at 45 cents per $100 (a ceiling, not a
+> figure) and exempts a document conveying only a single-family residence. The
+> page now cites those. The separate Miami-Dade deed rate appears in none of the
+> three sections and has been taken off the page: `NS-04`.
+>
+> Two near-misses worth recording, because both were caught only by reading
+> further than the first subsection. § 718.116 appeared at first to contain no
+> estoppel provision at all — an artifact of a truncated fetch; (8) is the
+> estoppel subsection and is correct. And § 55.03(1) alone would have made the
+> page's "adjusts annually on 1 January" look wrong, since (1) sets the rate
+> quarterly; § 55.03(3) supplies the annual adjustment and the page is exactly
+> right.
+
 **The third column is the point of the table.** It names the provision each
 answer was actually read from, and the page that now carries it. A specific that
 is on a page but not in this column did not come from this pass — which is how
@@ -114,23 +140,50 @@ citation.
 
 ### Cited on a page, not recorded in this pass
 
-Found by the same diff. None is necessarily wrong; none was sourced here, so
-none should be treated as confirmed. Each now carries a flag on its own page, so
-no page can reach `reviewed` while one is outstanding.
+Found by the 20 September diff, then read against the primary sources the same
+day. **All are confirmed except the Miami-Dade deed rate**, and their flags are
+cleared. What each turned out to say:
+
+- **§ 55.03** — (1) the Chief Financial Officer sets the rate quarterly; (3) the
+  rate is established when the judgment is obtained and adjusts annually on
+  1 January. The page states both correctly. `JG-06` cleared.
+- **§ 48.23(2), (3)** — (2) is the one-year expiry from commencement, unless the
+  action is founded on a duly recorded instrument or a lien claimed under part I
+  of chapter 713; (3) is the court's power to control and discharge the notice as
+  it would grant and dissolve injunctions. Both subsections correct. `LT-10`
+  cleared. The bond the page mentions is not in the text — it comes from the
+  injunction analogy, which is where `LT-09` still sits.
+- **§ 162.09(3)** — a certified copy of an order imposing a fine may be recorded
+  and thereafter constitutes a lien; no lien under that part may be foreclosed on
+  homestead. `OP-07` cleared.
+- **§ 201.02** — 70 cents per $100, confirmed. Nothing else. See the note above.
+- **Fla. Const. art. X, § 4(c)** — "The owner of homestead real estate, joined by
+  the spouse if married, may alienate the homestead by mortgage, sale or gift."
+  `NS-05` cleared.
+- **§ 117.201(10), § 117.215, § 117.225, § 117.265** — the online notary
+  definition; that a part II notarization satisfies a notarization requirement;
+  registration requiring a current commission, a course, a $25,000 bond and
+  $25,000 errors and omissions cover; and credential analysis plus identity
+  proofing. `SG-09` cleared.
+- **11 U.S.C. § 363(f), § 554** — (f) has exactly five grounds, as the page says;
+  § 554(a) is abandonment of burdensome or inconsequential property. `BK-06`
+  cleared.
+
+Sign-off on the pages remains the team's. This records what the sources say, not
+that anyone has approved the pages.
 
 | Provision | Page | For | Flag |
 |---|---|---|---|
-| § 55.03 | `judgment` | Post-judgment interest, CFO-set rate, annual adjustment | `JG-06` |
-| § 48.23(2), (3); ch. 713 | `litigation` | One-year expiry; the court's control and discharge power; the construction-lien carve-out | `LT-10` |
-| § 162.09 | `open-permits` | Recorded code enforcement lien; no foreclosure against homestead | `OP-07` |
-| § 201.02 | `non-standard-purchase-contract` | Documentary stamps, the Miami-Dade rate and surtax | `NS-04` |
-| Fla. Const. art. X, § 4(c) | `non-standard-purchase-contract` | Spousal joinder on homestead | `NS-05` |
-| § 117.201(10), § 117.215, § 117.225, § 117.265 | `mobile-and-remote-signings` | Online notary definition, effect of a part II notarization, registration requirements, identity proofing | `SG-09` |
-| 11 U.S.C. § 363(f), § 554 | `bankruptcy` | Free-and-clear grounds; abandonment | `BK-06` |
+| § 55.03 | `judgment` | Post-judgment interest, CFO-set rate, annual adjustment | confirmed |
+| § 48.23(2), (3); part I of ch. 713 | `litigation` | One-year expiry; the court's control and discharge power; the construction-lien carve-out | confirmed |
+| § 162.09(3) | `open-permits` | Recorded code enforcement lien; no foreclosure against homestead | confirmed |
+| § 201.02; § 201.031; § 125.0167 | `non-standard-purchase-contract` | 70 cents per $100; the surtax and its 45-cent ceiling. Miami-Dade deed rate unsourced | `NS-04` |
+| Fla. Const. art. X, § 4(c) | `non-standard-purchase-contract` | Spousal joinder on homestead | confirmed |
+| § 117.201(10), § 117.215, § 117.225, § 117.265 | `mobile-and-remote-signings` | Online notary definition, effect of a part II notarization, registration requirements, identity proofing | confirmed |
+| 11 U.S.C. § 363(f), § 554 | `bankruptcy` | Free-and-clear grounds (five); abandonment | confirmed |
 
-These are cheap to clear — each is one provision, open and read — but they are
-not clearable by anyone working from memory or a summary, which is the whole
-reason they are flags rather than a note.
+They were cheap to clear, and none of them was clearable from memory — which is
+why they were flags and not a note.
 
 | Page | Question | Where the brief says to look |
 |---|---|---|
