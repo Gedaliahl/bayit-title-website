@@ -1,5 +1,18 @@
 # VERIFY worklist
 
+> ## Correction, 20 September 2026 (night) — an inherited e-recording claim
+>
+> `e_recording_available` defaulted to `true`, so the 61 counties seeded today
+> without naming the field rendered "We e-record in this county" on their pages
+> for about a day. That is a statement about our practice nobody had made. The
+> 61 rows are now null, the default is null
+> (`supabase/migrations/20260920_locations_e_recording_default_null.sql`), and
+> both seeds name the field. The six priority counties keep the `true` the
+> earlier seeds set deliberately. **Still open:** whether we in fact e-record in
+> each of the other 61 counties — only the team can say.
+
+---
+
 > ## Update, 20 September 2026 (evening) — payer customs from published sources
 >
 > `customary_owner_policy_payer` is now set for 17 counties: the three the team
