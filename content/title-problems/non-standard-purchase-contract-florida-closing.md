@@ -14,6 +14,7 @@ pending_confirmation:
   - "NS-01 (Bayit Title): Typical timeline and cost impact (quick facts) — needed from the team"
   - "NS-02 (Bayit Title): The specific provisions we check first on a non-standard contract, in order"
   - "NS-03 (Bayit Title): The three file details the finished page needs"
+  - "NS-04 (Bayit Title): Verify the documentary stamp figures against Fla. Stat. § 201.02 — the statewide rate, the Miami-Dade rate and the surtax carve-out were drafted rather than sourced"
 verdict:
   short: "No"
 quick_facts:
@@ -92,11 +93,11 @@ No. We can tell you how it affects what we are being asked to do, and where it c
 
 The parties can contract as they like, but the deed, execution and recording requirements are Florida's regardless of what form the contract took.
 
-Four recur often enough to be worth naming.
+Four Florida requirements catch out-of-state forms often enough to be worth naming.
 
-**Execution formalities.** [Fla. Stat. § 689.01](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0689/Sections/0689.01.html) requires the deed to be signed in the presence of **two subscribing witnesses**. Most states do not require witnesses at all, and a form drafted elsewhere will not prompt for them. This is caught at signing, but it is caught only because someone is looking for it.
+**Execution formalities.** [Fla. Stat. § 689.01(1)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0689/Sections/0689.01.html) requires the deed to be signed in the presence of **two subscribing witnesses**, and [§ 695.03](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0695/Sections/0695.03.html) separately requires an acknowledgment before it can be recorded. The two are cumulative rather than alternative: a properly witnessed deed still has to be acknowledged. Most states require neither, and a form drafted elsewhere will prompt for neither. This is caught at signing, but only because someone is looking for it.
 
-**Spousal joinder on homestead.** [Article X, section 4(c)](https://www.flsenate.gov/Laws/Constitution#A10S04) of the Florida Constitution requires the owner's spouse to join in a conveyance or mortgage of homestead property **even where the spouse is not on title**. A deed of homestead without the spouse's joinder is void, not merely voidable, and no title insurer will insure around it. Out-of-state forms routinely have no marital status question and no place for a joining spouse to sign.
+**Spousal joinder on homestead.** [Article X, section 4(c)](https://www.flsenate.gov/Laws/Constitution#A10S04) of the Florida Constitution requires the owner's spouse to join in a conveyance or mortgage of homestead property **even where the spouse is not on title**. What follows from a deed that lacks that joinder is a legal question for the seller's counsel rather than one this page should answer. What is not in doubt is that the joinder is a requirement, and that it is not something waived at the closing table. Out-of-state forms routinely have no marital status question and no place for a joining spouse to sign, which is why marital status is asked when the file opens rather than at signing.
 
 **Documentary stamp tax.** Under [Fla. Stat. § 201.02](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0200-0299/0201/Sections/0201.02.html) the tax on a deed is $0.70 per $100 of consideration, or fraction of it, statewide — except Miami-Dade, which charges $0.60 per $100 plus, on anything other than a single-family residence, a $0.45 per $100 surtax. A contract drafted in a state with no transfer tax, or a flat one, tends to be silent on who pays it, and silence on a Florida closing statement is a conversation nobody wants on closing day.
 

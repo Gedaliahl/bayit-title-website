@@ -12,7 +12,8 @@ related:
 pending_confirmation:
   - "HA-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? It can delay it\") — drafted from this page, not yet reviewed"
   - "HA-01 (Bayit Title): Range we actually see from complete application to approval, and fastest documented turnaround"
-  - "HA-04 (Bayit Title): A specific composite example from our files — application to approval turnaround"
+  - "HA-04 (Bayit Title): A specific composite example from our files — application to approval turnaround; the one on the page now is invented and marked as such"
+  - "HA-05 (Bayit Title): Confirm the § 718.112(2) subsection letter for the $150 transfer fee cap against the current statute — the front matter had cited (2)(i) and the body (2)(k)"
 verdict:
   short: "It can delay it"
 quick_facts:
@@ -23,7 +24,7 @@ quick_facts:
   - term: "Typical timeline"
     detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. The shortest turnaround we have documented is three business days."
   - term: "Cost impact"
-    detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(i)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $250, plus up to $100 for delivery within three business days and up to $150 where amounts are delinquent."
+    detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $250, plus up to $100 for delivery within three business days and up to $150 where amounts are delinquent."
 ---
 
 ## Is association approval a title problem?
@@ -37,6 +38,8 @@ The distinction matters because it changes who can fix it. A title requirement i
 Because the documents usually give it a window that long, and quoting the maximum is safer for the person answering the phone than quoting the likely time.
 
 That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorisation, or the interview that has not been scheduled.
+
+## Does Florida cap how long the association can take?
 
 It does not, and that is the answer people find hardest to believe. Neither chapter 718 for condominiums nor chapter 720 for homeowners’ associations puts a deadline on approving a transfer, and neither says what happens if the association simply takes its time. The window in your contract comes from the declaration and the bylaws, not from the Legislature — so read those, because they are the only deadline there is.
 
@@ -55,6 +58,8 @@ Getting a genuinely complete package in on the first attempt, and knowing before
 - Confirmation of who at the management company actually reviews it.
 
 A package that goes in complete and is chased by someone who knows which item is outstanding tends to close a great deal faster than the quoted window.
+
+*Placeholder — the example below is invented. None of it comes from a file. Replace it with a real turnaround of ours, or delete the paragraph.*
 
 A composite, drawn from several files rather than one: a Broward condominium quoted 30 days. The application went in on a Monday with the current form, both fees paid by cashier's cheque as that association required, the executed contract with every addendum, and the background authorisation signed by both buyers. The management company confirmed receipt as complete on the Tuesday, the interview was held that Friday, and the certificate of approval issued the following Wednesday — nine days against a quoted thirty.
 

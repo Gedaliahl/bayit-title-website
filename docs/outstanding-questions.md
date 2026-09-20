@@ -83,6 +83,45 @@ It is the only outward-facing blocker left on any of the nine pages.
   should a title agency's public page state any of it? Flag anything that should
   come out rather than be corrected.
 
+## The other two pages
+
+`hoa-approval-delay-closing-florida` and
+`non-standard-purchase-contract-florida-closing` were never on the seven —
+nothing on them needed the underwriter. The same pass was run over them on
+20 September 2026, looking for what the page asserts against what it can
+support. It found four things:
+
+- **The HOA page cited two different subsections for the same fee cap** — the
+  front matter said § 718.112(2)(i), the body § 718.112(2)(k). Aligned to (2)(k),
+  which is what the Category A sourcing recorded, with `HA-05` added to confirm
+  the letter against the current statute. Chapter 718 has been renumbered
+  recently enough that this is worth a look rather than an assumption.
+- **The HOA page presented an invented file history as a real composite** — a
+  Broward condominium, nine days against a quoted thirty, cashier's cheques,
+  an interview on the Friday. None of it came from a file. It now carries the
+  same placeholder marker the litigation page uses, and `HA-04` says so.
+- **A paragraph on the HOA page answered a heading that was never written.** It
+  began "It does not, and that is the answer people find hardest to believe"
+  with nothing above it posing the question. Given its heading.
+- **The contract page made a legal conclusion and a categorical claim about
+  every underwriter in one sentence**: that a homestead deed without spousal
+  joinder "is void, not merely voidable, and no title insurer will insure around
+  it." The first half is a case-law conclusion of the same kind as the entireties
+  question; the second is a statement about what every underwriter will do. Both
+  are cut. The constitutional requirement stays, the consequence goes to the
+  seller's counsel, and the page now says what we do about it — ask marital
+  status when the file opens.
+
+Two smaller repairs on the contract page: the execution-formalities item cited
+the witness requirement without the acknowledgment that goes with it, so a
+reader would have thought two witnesses were enough (§ 689.01(1) and § 695.03
+are cumulative — that was already in the Category A sourcing and had not reached
+this page), and `NS-04` was added to check the documentary stamp figures against
+§ 201.02, since the rate, the Miami-Dade rate and the surtax carve-out were
+drafted rather than sourced.
+
+Neither page gained an outward-facing blocker. Both remain Category C only.
+
 ### One that is neither
 
 `SG-04` on the signings page — which team members hold a Florida **online**
