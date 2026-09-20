@@ -18,6 +18,20 @@ export interface Location {
   taxCollectorUrl: string | null;
   /** Who customarily pays for the owner's policy. Null until verified. */
   customaryOwnerPolicyPayer: string | null;
+  /**
+   * Whose published statement the custom is. Custom is not law and, unless
+   * the team stated it from its own files, not this office's observation, so
+   * the page says whose it is and when it was read. Null where the team set
+   * the payer directly.
+   */
+  customaryOwnerPolicyPayerSourceName: string | null;
+  customaryOwnerPolicyPayerSourceUrl: string | null;
+  customaryOwnerPolicyPayerCheckedOn: string | null;
+  /**
+   * A sentence where one word will not do. Monroe: the custom depends on
+   * where in the Keys the property is, so `payer` is null and this says why.
+   */
+  customaryOwnerPolicyDetail: string | null;
   eRecordingAvailable: boolean | null;
   /**
    * What this county's recording office publishes about how long recording
@@ -48,6 +62,10 @@ function fallbackCounties(): Location[] {
     propertyAppraiserUrl: null,
     taxCollectorUrl: null,
     customaryOwnerPolicyPayer: null,
+    customaryOwnerPolicyPayerSourceName: null,
+    customaryOwnerPolicyPayerSourceUrl: null,
+    customaryOwnerPolicyPayerCheckedOn: null,
+    customaryOwnerPolicyDetail: null,
     eRecordingAvailable: null,
     recordingTurnaround: null,
     recordingTurnaroundSourceUrl: null,
@@ -64,7 +82,7 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     .from('locations')
     // Single string literal on purpose — see the note in lib/reviews.ts.
     .select(
-      'slug, kind, name, parent_county_slug, is_priority, clerk_name, clerk_url, property_appraiser_url, tax_collector_url, customary_owner_policy_payer, e_recording_available, recording_turnaround, recording_turnaround_source_url, recording_turnaround_checked_on, notes',
+      'slug, kind, name, parent_county_slug, is_priority, clerk_name, clerk_url, property_appraiser_url, tax_collector_url, customary_owner_policy_payer, customary_owner_policy_payer_source_name, customary_owner_policy_payer_source_url, customary_owner_policy_payer_checked_on, customary_owner_policy_detail, e_recording_available, recording_turnaround, recording_turnaround_source_url, recording_turnaround_checked_on, notes',
     )
     .order('is_priority', { ascending: false })
     .order('name');
@@ -99,6 +117,10 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     propertyAppraiserUrl: row.property_appraiser_url,
     taxCollectorUrl: row.tax_collector_url,
     customaryOwnerPolicyPayer: row.customary_owner_policy_payer,
+    customaryOwnerPolicyPayerSourceName: row.customary_owner_policy_payer_source_name,
+    customaryOwnerPolicyPayerSourceUrl: row.customary_owner_policy_payer_source_url,
+    customaryOwnerPolicyPayerCheckedOn: row.customary_owner_policy_payer_checked_on,
+    customaryOwnerPolicyDetail: row.customary_owner_policy_detail,
     eRecordingAvailable: row.e_recording_available,
     recordingTurnaround: row.recording_turnaround,
     recordingTurnaroundSourceUrl: row.recording_turnaround_source_url,
@@ -140,19 +162,93 @@ export const COUNTY_REGIONS: Record<string, string> = {
  * which is why it sits beside the region label rather than in the table.
  */
 export const COUNTY_MARKETS: Record<string, string> = {
-  'broward-county': 'Fort Lauderdale',
-  'palm-beach-county': 'West Palm Beach and Boca Raton',
-  'miami-dade-county': 'Miami',
-  'hillsborough-county': 'Tampa',
-  'pinellas-county': 'St. Petersburg and Clearwater',
-  'orange-county': 'Orlando',
-  'polk-county': 'Lakeland',
-  'duval-county': 'Jacksonville',
+  'alachua-county': 'Gainesville',
+  'baker-county': 'Macclenny',
+  'bay-county': 'Panama City',
+  'bradford-county': 'Starke',
   'brevard-county': 'Melbourne and Palm Bay',
-  'lee-county': 'Fort Myers and Cape Coral',
+  'broward-county': 'Fort Lauderdale',
+  'calhoun-county': 'Blountstown',
+  'charlotte-county': 'Punta Gorda and Port Charlotte',
+  'citrus-county': 'Inverness and Crystal River',
+  'clay-county': 'Orange Park',
   'collier-county': 'Naples',
+  'columbia-county': 'Lake City',
+  'desoto-county': 'Arcadia',
+  'dixie-county': 'Cross City',
+  'duval-county': 'Jacksonville',
+  'escambia-county': 'Pensacola',
+  'flagler-county': 'Palm Coast',
+  'franklin-county': 'Apalachicola',
+  'gadsden-county': 'Quincy',
+  'gilchrist-county': 'Trenton',
+  'glades-county': 'Moore Haven',
+  'gulf-county': 'Port St. Joe',
+  'hamilton-county': 'Jasper',
+  'hardee-county': 'Wauchula',
+  'hendry-county': 'LaBelle and Clewiston',
+  'hernando-county': 'Spring Hill and Brooksville',
+  'highlands-county': 'Sebring',
+  'hillsborough-county': 'Tampa',
+  'holmes-county': 'Bonifay',
+  'indian-river-county': 'Vero Beach',
+  'jackson-county': 'Marianna',
+  'jefferson-county': 'Monticello',
+  'lafayette-county': 'Mayo',
+  'lake-county': 'Clermont and Leesburg',
+  'lee-county': 'Fort Myers and Cape Coral',
+  'leon-county': 'Tallahassee',
+  'levy-county': 'Chiefland and Williston',
+  'liberty-county': 'Bristol',
+  'madison-county': 'Madison',
+  'manatee-county': 'Bradenton',
+  'marion-county': 'Ocala',
+  'martin-county': 'Stuart',
+  'miami-dade-county': 'Miami',
+  'monroe-county': 'Key West',
+  'nassau-county': 'Fernandina Beach',
+  'okaloosa-county': 'Fort Walton Beach and Destin',
+  'okeechobee-county': 'Okeechobee',
+  'orange-county': 'Orlando',
+  'osceola-county': 'Kissimmee',
+  'palm-beach-county': 'West Palm Beach and Boca Raton',
+  'pasco-county': 'New Port Richey and Wesley Chapel',
+  'pinellas-county': 'St. Petersburg and Clearwater',
+  'polk-county': 'Lakeland',
+  'putnam-county': 'Palatka',
+  'st-johns-county': 'St. Augustine',
+  'st-lucie-county': 'Port St. Lucie',
+  'santa-rosa-county': 'Milton and Navarre',
   'sarasota-county': 'Sarasota',
+  'seminole-county': 'Sanford and Altamonte Springs',
+  'sumter-county': 'The Villages',
+  'suwannee-county': 'Live Oak',
+  'taylor-county': 'Perry',
+  'union-county': 'Lake Butler',
+  'volusia-county': 'Daytona Beach and Deltona',
+  'wakulla-county': 'Crawfordville',
+  'walton-county': 'Santa Rosa Beach and DeFuniak Springs',
+  'washington-county': 'Chipley',
 };
+
+/**
+ * Who records, where the table does not name the office.
+ *
+ * Fla. Stat. § 28.222(1): "The clerk of the circuit court shall be the
+ * recorder of all instruments that he or she may be required or authorized by
+ * law to record in the county where he or she is clerk." Read from Online
+ * Sunshine on 2026-09-20. Broward and Orange are the two counties where the
+ * duty sits elsewhere, and both have their office named in the table, so the
+ * fallback is only ever used where the statute's default holds.
+ */
+export const RECORDER_STATUTE = {
+  cite: 'Fla. Stat. § 28.222(1)',
+  url: 'https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.222.html',
+} as const;
+
+export function recorderName(county: Pick<Location, 'name' | 'clerkName'>): string {
+  return county.clerkName ?? `${county.name} Clerk of the Circuit Court`;
+}
 
 /** "Title company in Hillsborough County, FL: Tampa closings" — the page title's shape. */
 export function countyPageTitle(county: Pick<Location, 'slug' | 'name'>): string {

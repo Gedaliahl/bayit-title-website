@@ -213,11 +213,16 @@ export default async function HomePage() {
             long recording takes all differ by county.
           </p>
           <ul className="linklist">
-            {counties.map((county) => (
-              <li key={county.slug}>
-                <Link href={`/counties/${county.slug}`}>{county.name}</Link>
-              </li>
-            ))}
+            {counties
+              .filter((county) => county.isPriority)
+              .map((county) => (
+                <li key={county.slug}>
+                  <Link href={`/counties/${county.slug}`}>{county.name}</Link>
+                </li>
+              ))}
+            <li>
+              <Link href="/counties">All {site.floridaCounties} counties</Link>
+            </li>
           </ul>
           <p>
             Want a number before you call?{' '}

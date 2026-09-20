@@ -139,6 +139,10 @@ export type Database = {
           clerk_url: string | null;
           created_at: string;
           customary_owner_policy_payer: string | null;
+          customary_owner_policy_payer_source_name: string | null;
+          customary_owner_policy_payer_source_url: string | null;
+          customary_owner_policy_payer_checked_on: string | null;
+          customary_owner_policy_detail: string | null;
           e_recording_available: boolean | null;
           id: string;
           is_priority: boolean;
@@ -159,6 +163,10 @@ export type Database = {
           clerk_url?: string | null;
           created_at?: string;
           customary_owner_policy_payer?: string | null;
+          customary_owner_policy_payer_source_name?: string | null;
+          customary_owner_policy_payer_source_url?: string | null;
+          customary_owner_policy_payer_checked_on?: string | null;
+          customary_owner_policy_detail?: string | null;
           e_recording_available?: boolean | null;
           id?: string;
           is_priority?: boolean;

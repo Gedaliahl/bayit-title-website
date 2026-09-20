@@ -66,9 +66,11 @@ describe('county markets and regions', () => {
     expect(countyPageTitle({ slug: 'hillsborough-county', name: 'Hillsborough County' })).toBe(
       'Title company in Hillsborough County, FL: Tampa closings',
     );
-    // A county with no market entry still gets a title, without a dangling colon.
-    expect(countyPageTitle({ slug: 'levy-county', name: 'Levy County' })).toBe(
-      'Title company in Levy County, FL',
+    // Every county has a market entry, so the title always names the place.
+    expect(Object.keys(COUNTY_MARKETS)).toHaveLength(FLORIDA_COUNTIES.length);
+    // A slug with no entry still gets a title, without a dangling colon.
+    expect(countyPageTitle({ slug: 'nowhere-county', name: 'Nowhere County' })).toBe(
+      'Title company in Nowhere County, FL',
     );
   });
 });

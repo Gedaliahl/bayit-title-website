@@ -84,7 +84,9 @@ function countyNote(county: Location): string | null {
 export default async function CountiesPage() {
   const counties = await getCounties();
   const priority = counties.filter((county) => county.isPriority);
-  const others = counties.filter((county) => !county.isPriority);
+  // The band carries the counties with a region label — the next six by
+  // volume. The other fifty-five are linked from the full list below.
+  const others = counties.filter((county) => !county.isPriority && COUNTY_REGIONS[county.slug]);
   const bySlug = new Map(counties.map((county) => [county.slug, county]));
   const countyName = (slug: string) =>
     bySlug.get(slug)?.name ?? FLORIDA_COUNTIES.find((county) => county.slug === slug)?.name ?? slug;
@@ -168,7 +170,7 @@ export default async function CountiesPage() {
             <div className="band__head">
               <h2>More county pages</h2>
               <span className="band__caption">
-                The same figures, cited the same way, for the next {others.length} counties
+                The same figures, cited the same way, for the next {others.length} counties by volume
               </span>
             </div>
             <ul className="band__grid band__grid--3 band__grid--links">
@@ -260,8 +262,8 @@ export default async function CountiesPage() {
             <div className="section__head">
               <h2>Elsewhere in Florida</h2>
               <span className="caption">
-                County pages are being written. We close in all of them —{' '}
-                <a href={`tel:${site.phone}`}>call</a> for one not listed above.
+                Every county has a page. Each states what the statute and the rule set, and holds
+                back what only the recording office or this team can confirm.
               </span>
             </div>
             <ul className="county-list">
