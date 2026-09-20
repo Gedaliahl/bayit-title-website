@@ -30,6 +30,7 @@ import { DEFAULTS as CLOSING_DEFAULTS, type EstimateGroup, type EstimateLine } f
 import {
   ORIGINAL_SCHEDULE,
   PREMIUM_RULE,
+  REISSUE_EXCESS_CAVEAT,
   REISSUE_SCHEDULE,
   originalPremium,
   reissuePremium,
@@ -133,7 +134,8 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
       sourceUrl: PREMIUM_RULE.url,
       note:
         'A policy is written for the full insurable value — in a sale, the price. Assessed value ' +
-        'is usually lower, so read this as a floor.',
+        'is usually lower, so read this as a floor.' +
+        (input.reissue ? ` ${REISSUE_EXCESS_CAVEAT}` : ''),
     });
     alternate += otherRate(coverage);
 
@@ -161,7 +163,8 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
       sourceUrl: PREMIUM_RULE.url,
       note:
         'A refinance is rated on the loan, not on the value of the property, so the assessed ' +
-        'value does not enter into it. It has no owner’s policy alongside, so there is no $25 rate.',
+        'value does not enter into it. It has no owner’s policy alongside, so there is no $25 rate.' +
+        (input.reissue ? ` ${REISSUE_EXCESS_CAVEAT}` : ''),
     });
     alternate += otherRate(loan);
   }

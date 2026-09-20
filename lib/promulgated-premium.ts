@@ -92,10 +92,31 @@ export function originalPremium(liability: number): number {
   return premium(liability, ORIGINAL);
 }
 
-/** What it costs where the rule's reissue conditions are met. */
+/**
+ * What it costs where the rule's reissue conditions are met — on the whole
+ * liability.
+ *
+ * This is not the complete rule. R. 69O-186.003(2)(c) provides that "any amount
+ * of new insurance, in the aggregate, in excess of the amount under the previous
+ * policy shall be computed at the original owner's or leasehold rates", so only
+ * the layer up to the old policy is rated here; the excess belongs at the
+ * original schedule. Applying it needs the amount of the previous policy, which
+ * nothing on this site asks for, so a reissue figure on a property now worth
+ * more than it was last insured for reads low. Every caller states that on the
+ * line — see REISSUE_EXCESS_CAVEAT.
+ */
 export function reissuePremium(liability: number): number {
   return premium(liability, REISSUE);
 }
+
+/**
+ * Printed wherever a reissue figure is shown, because the figure is incomplete
+ * without it. See reissuePremium.
+ */
+export const REISSUE_EXCESS_CAVEAT =
+  'Rated here on the whole amount. Under R. 69O-186.003(2)(c) anything above the previous ' +
+  'policy is rated at the original schedule instead, and we do not ask what that policy was — ' +
+  'so on a property worth more now than when it was last insured, the real figure is higher.';
 
 function schedule(brackets: Bracket[], cite: string, sourceUrl: string): CitedFigure[] {
   return brackets.map((bracket, index) => {

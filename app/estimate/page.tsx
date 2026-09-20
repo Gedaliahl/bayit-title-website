@@ -177,6 +177,15 @@ export default async function EstimatePage() {
           Not sure? Tick it and untick it. The difference is what it is worth digging the old policy
           out for, and we will check the rule against your file if you ask.
         </p>
+        <p className="muted">
+          One limit worth knowing before you rely on a reissue figure. The rule rates the reissue
+          only up to the amount of the previous policy; under{' '}
+          <a href={PREMIUM_RULE.url}>R. 69O-186.003(2)(c)</a> anything above that is charged at the
+          original schedule. This page never asks what the old policy was insured for, so where a
+          property is worth more now than when it was last insured — which is most of them — the
+          reissue figure here is lower than the real one. Tell us the old policy amount and we will
+          work it out properly.
+        </p>
 
         <h2>What happens to the address you typed</h2>
         <p>

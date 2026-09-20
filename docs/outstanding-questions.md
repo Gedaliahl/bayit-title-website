@@ -174,6 +174,68 @@ It is in the specifics added around them afterwards — a subsection letter, a
 reporter citation, an aggregate figure — which read as though they came from the
 same sourcing pass and did not.
 
+## The published pages outside `content/`
+
+Checked 20 September 2026: `privacy`, `about`, `partners`, `calculator`,
+`estimate`, and the modules they price from — `lib/statutory-rates.ts`,
+`lib/promulgated-premium.ts`, `lib/closing-estimate.ts`,
+`lib/assessed-estimate.ts`.
+
+**The code is in much better shape than the drafts were.** Every figure in both
+rate modules carries a section-level citation, a source URL and a `CHECKED_ON`
+date, and every one of them verified against the primary text:
+
+- **§ 201.02(1)(a)** 70 cents; **§ 201.0205** the ch. 83-220 disapplication that
+  makes Miami-Dade 60; **§ 201.031** and **§ 125.0167** the surtax at a 45-cent
+  ceiling; **§ 201.08(1)(b)** 35 cents on mortgages, with the $2,450 cap
+  correctly confined to (1)(a) where it belongs; **§ 199.133(1)** 2 mills.
+- **§ 28.24(13)** recording, where the arithmetic is exactly right: (a) $5.00 +
+  (d)1. $1.00 + (e) $4.00 = $10.00 for the first page, and (b) $4.00 + (d)2.
+  $0.50 + (e) $4.00 = $8.50 after it.
+- **R. 69O-186.003**, fetched as the adopted rule text. All five original
+  brackets, all four reissue brackets, the $100 minimum, the $25 simultaneous
+  issue, the $200 new home floor, and the "any fraction of $100.00 as a full
+  $100.00" rounding — every one correct, and the rule is still the version
+  effective 27 January 2002 as the file says.
+
+`lib/statutory-rates.ts` also turned out to hold the answer to `NS-04`: the
+Miami-Dade deed rate that I could not source from § 201.02, § 201.031 or
+§ 125.0167 comes from **§ 201.0205**, which the module had cited all along. The
+contract page now cites it too and the flag is closed.
+
+### One real bug
+
+**The calculator under-quotes a reissue.** R. 69O-186.003(2)(c) provides that
+"any amount of new insurance, in the aggregate, in excess of the amount under the
+previous policy shall be computed at the original owner's or leasehold rates".
+`reissuePremium` applies the reissue brackets to the whole liability instead, and
+nothing on the site asks what the previous policy was insured for. On a $500,000
+sale with a $300,000 prior policy that is $1,530 against $1,930 — **$400 low**,
+on a figure published as something a Loan Estimate can be built from.
+
+This is disclosed rather than fixed, because fixing it properly needs an input
+that does not exist yet. Every line that prints a reissue figure now carries
+`REISSUE_EXCESS_CAVEAT`, and the estimate page says it in full. **The real fix is
+a prior-policy-amount field**, which is a product decision rather than a
+correction, so it is left here rather than taken.
+
+### Smaller
+
+- The comment describing the reissue conditions called unimproved land "a fourth
+  condition". The rule's (2)(b) is a precondition — a prior owner's policy, with
+  copies retained — followed by three alternatives, of which unimproved land is
+  the first. The user-facing list was already logically right; the comment
+  describing it was not. Corrected.
+- `app/partners/page.tsx` tells lenders that every figure is published "with the
+  rule or statute behind each figure, so your Loan Estimate can be built from a
+  source". True of everything except the reissue line above. Worth re-reading
+  once the prior-policy field exists.
+- The privacy policy holds up: no invented retention period, no GLBA or CCPA
+  claim it cannot support, and everything describing the site written from the
+  code. Its gap is the one the README already records — **it has never been
+  through a lawyer** — which is an omission rather than an overclaim, and is not
+  something this pass could close.
+
 ## If you do want to put something to the representative
 
 Ask about a live file, not about policy in general. A rep will give a position on
