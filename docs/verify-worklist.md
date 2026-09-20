@@ -206,7 +206,25 @@ why they were flags and not a note.
 | signings | RON statutory basis and limits | ch. 117 |
 | bankruptcy | Appeal period for a sale order, effect of a stay, good-faith purchaser finding | (federal — see gaps below) |
 
-### Gaps in the project's own source list
+### Gaps in the project's own source list — **closed 2026-09-20**
+
+> The brief's source list has been extended to cover every chapter the site
+> actually cites. Diffing the two turned up **seven** gaps rather than the five
+> guessed at below: ch. 48 (lis pendens), ch. 55 (judgment liens and interest)
+> and ch. 704 (easements) as expected, plus the Florida Constitution art. X, § 4,
+> which two pages cite, and three the earlier reading missed because they
+> arrived through the rate modules and the open-permits page rather than through
+> a draft — ch. 28 (clerk service charges), ch. 125 (the discretionary surtax)
+> and ch. 162 (code enforcement liens). The federal sources were absent as
+> described. All were read against the primary text before being added.
+>
+> Worth keeping in view: the brief says "cite only from these", so for six days
+> the site was citing seven sources its own operating instructions did not
+> authorise. Nothing cited was wrong — every one of them verified — but the rule
+> and the work had drifted apart, and the rule is the thing that catches
+> fabrication.
+
+
 
 Six of the questions above have **no corresponding source** in
 `claude-project-brief.md`. That list should be extended before this work starts:
