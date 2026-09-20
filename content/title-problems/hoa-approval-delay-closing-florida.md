@@ -22,7 +22,7 @@ quick_facts:
   - term: "Typical timeline"
     detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. The fastest turnaround we have documented is two days, and that was an emergency we pushed."
   - term: "Cost impact"
-    detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $250, plus up to $100 for delivery within three business days and up to $150 where amounts are delinquent."
+    detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $299, plus up to $119 for delivery within three business days and up to $179 where amounts are delinquent — the statute prints $250, $100 and $150 and directs the Department of Business and Professional Regulation to adjust them for inflation every five years, which it last did on 1 July 2022."
 ---
 
 ## Is association approval a title problem?
@@ -67,7 +67,7 @@ Here the Legislature is specific, and it says the same thing for both kinds of a
 
 - **10 business days** from a written or electronic request to issue the certificate.
 - It is **binding for 30 days** if hand delivered or sent electronically, **35 days** by regular mail. That is a closing date constraint: a certificate that expires before you close has to be reordered.
-- The fee may **not exceed $250** where the account is not delinquent, with **$150** more where it is, and **$100** more for delivery within 3 business days. For multiple units there are aggregate caps — $750 for 25 or fewer, rising to $2,500 above 100.
+- The fee may **not exceed $299** where the account is not delinquent, with **$179** more where it is, and **$119** more for delivery within 3 business days. Those are not the figures printed in the statute: it says $250, $150 and $100, and directs the Department of Business and Professional Regulation to adjust them every five years for inflation. The adjusted amounts, [published by the Department](https://www2.myfloridalicense.com/lsc/documents/ESTOPPEL_CERTIFICATE_FEES.pdf), have applied since 1 July 2022 and are next due for adjustment by 1 July 2027. For multiple units there are aggregate caps — $896 for 25 or fewer, rising to $2,985 above 100.
 - Miss the 10 business days and the association **may not charge a fee at all** for that certificate.
 
 Order it early. An estoppel that arrives late, or that arrives showing a balance nobody expected, moves closings.
