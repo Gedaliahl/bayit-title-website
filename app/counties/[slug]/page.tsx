@@ -9,6 +9,7 @@ import {
   getCounties,
   getLocation,
   recorderName,
+  type Location,
 } from '@/lib/locations';
 import { citiesInCounty } from '@/lib/florida-cities';
 import { getAllDocs, isPublishable } from '@/lib/content';
@@ -107,7 +108,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
   // words on turnaround. Most Florida counties publish nothing on turnaround,
   // and for those the flag stands.
   const openItems = [
-    ...(payer ? [] : ['Who customarily pays for the owner’s policy in this county']),
+    ...(payer || county.customaryOwnerPolicyDetail
+      ? []
+      : ['Who customarily pays for the owner’s policy in this county']),
     ...(county.clerkUrl ? [] : ['The recording office’s own page and fee schedule']),
     ...(county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk']),
   ];
@@ -146,11 +149,24 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <h2>Who pays for the owner&rsquo;s policy in {county.name}?</h2>
         {payer ? (
-          <p>
-            Custom in {county.name} is that the <strong>{payer}</strong> pays for the owner&rsquo;s
-            policy. Custom is not law. The purchase contract decides it, and in a negotiated deal
-            either side can end up paying. Read the contract before assuming which line it falls on.
-          </p>
+          <>
+            <p>
+              Custom in {county.name} is that the <strong>{payer}</strong> pays for the
+              owner&rsquo;s policy. Custom is not law. The purchase contract decides it, and in a
+              negotiated deal either side can end up paying. Read the contract before assuming which
+              line it falls on.
+            </p>
+            <PayerSource county={county} />
+          </>
+        ) : county.customaryOwnerPolicyDetail ? (
+          <>
+            <p>{county.customaryOwnerPolicyDetail}</p>
+            <p>
+              Custom is not law. The purchase contract decides it, and in a negotiated deal either
+              side can end up paying. Read the contract before assuming which line it falls on.
+            </p>
+            <PayerSource county={county} />
+          </>
         ) : (
           <p>
             Local custom for this county has not been confirmed against a source we are willing to
@@ -393,5 +409,41 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         />
       </div>
     </div>
+  );
+}
+
+/**
+ * Whose statement the custom is. A county custom is not law and, unless the
+ * team stated it from its own files, not this office's observation either, so
+ * the page names the publisher it is repeating and the date it was read.
+ */
+function PayerSource({
+  county,
+}: {
+  county: Pick<
+    Location,
+    | 'customaryOwnerPolicyPayerSourceName'
+    | 'customaryOwnerPolicyPayerSourceUrl'
+    | 'customaryOwnerPolicyPayerCheckedOn'
+  >;
+}) {
+  const name = county.customaryOwnerPolicyPayerSourceName;
+  if (!name) return null;
+
+  return (
+    <p className="muted">
+      That is the custom as published by{' '}
+      {county.customaryOwnerPolicyPayerSourceUrl ? (
+        <a href={county.customaryOwnerPolicyPayerSourceUrl} rel="nofollow">
+          {name}
+        </a>
+      ) : (
+        name
+      )}
+      {county.customaryOwnerPolicyPayerCheckedOn
+        ? `, read on ${formatLongDate(county.customaryOwnerPolicyPayerCheckedOn)}`
+        : ''}
+      . It is a report of what is usual, not a rule, and not a promise about your contract.
+    </p>
   );
 }

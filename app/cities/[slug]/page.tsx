@@ -101,7 +101,9 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
 
   const openItems = [
     `Where the ${city.name} building department publishes permit and code enforcement records`,
-    ...(payer ? [] : [`Who customarily pays for the owner’s policy in ${county.name}`]),
+    ...(payer || county.customaryOwnerPolicyDetail
+      ? []
+      : [`Who customarily pays for the owner’s policy in ${county.name}`]),
   ];
 
   return (
@@ -166,6 +168,11 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             and in a negotiated deal either side can end up paying. Read the contract before assuming
             which line it falls on.
           </p>
+        ) : county.customaryOwnerPolicyDetail ? (
+          <p>
+            {county.customaryOwnerPolicyDetail} Custom is not law: the purchase contract decides it.
+            Read the contract before assuming which line it falls on.
+          </p>
         ) : (
           <p>
             Local custom for {county.name} has not been confirmed against a source we are willing to
@@ -173,6 +180,22 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             event. Ask us on a specific file and we will tell you what we are seeing.
           </p>
         )}
+        {county.customaryOwnerPolicyPayerSourceName ? (
+          <p className="muted">
+            That is the custom as published by{' '}
+            {county.customaryOwnerPolicyPayerSourceUrl ? (
+              <a href={county.customaryOwnerPolicyPayerSourceUrl} rel="nofollow">
+                {county.customaryOwnerPolicyPayerSourceName}
+              </a>
+            ) : (
+              county.customaryOwnerPolicyPayerSourceName
+            )}
+            {county.customaryOwnerPolicyPayerCheckedOn
+              ? `, read on ${formatLongDate(county.customaryOwnerPolicyPayerCheckedOn)}`
+              : ''}
+            . It is a report of what is usual, not a rule, and not a promise about your contract.
+          </p>
+        ) : null}
 
         <h2>Documentary stamp tax on a {city.name} sale</h2>
         <p>

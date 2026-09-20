@@ -1,5 +1,24 @@
 # VERIFY worklist
 
+> ## Update, 20 September 2026 (evening) — payer customs from published sources
+>
+> `customary_owner_policy_payer` is now set for 17 counties: the three the team
+> set, plus fourteen written from published sources where at least two
+> independent publishers name the county
+> (`supabase/seed/locations_payer_customs.sql`; evidence in
+> `docs/county-payer-custom.md`). Each value carries its source and read date,
+> and the page says whose statement it is repeating.
+>
+> **Still open, and why:** the other 48 counties have only one county-by-county
+> source, a lender's 2021 chart that shows four buyer-pay counties while The
+> Fund's survey it cites counts 22. Martin's sources conflict (buyer vs
+> seller). Monroe varies within the county and carries a sentence instead of a
+> value. The fastest way to clear all of these is the team stating what its
+> own files show, county by county — or a Fund member reading the survey's
+> county map behind the thefund.com login.
+
+---
+
 > ## Update, 20 September 2026 (later) — every county has a page
 >
 > The remaining fifty-five counties were seeded

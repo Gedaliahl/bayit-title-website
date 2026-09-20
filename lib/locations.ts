@@ -18,6 +18,20 @@ export interface Location {
   taxCollectorUrl: string | null;
   /** Who customarily pays for the owner's policy. Null until verified. */
   customaryOwnerPolicyPayer: string | null;
+  /**
+   * Whose published statement the custom is. Custom is not law and, unless
+   * the team stated it from its own files, not this office's observation, so
+   * the page says whose it is and when it was read. Null where the team set
+   * the payer directly.
+   */
+  customaryOwnerPolicyPayerSourceName: string | null;
+  customaryOwnerPolicyPayerSourceUrl: string | null;
+  customaryOwnerPolicyPayerCheckedOn: string | null;
+  /**
+   * A sentence where one word will not do. Monroe: the custom depends on
+   * where in the Keys the property is, so `payer` is null and this says why.
+   */
+  customaryOwnerPolicyDetail: string | null;
   eRecordingAvailable: boolean | null;
   /**
    * What this county's recording office publishes about how long recording
@@ -48,6 +62,10 @@ function fallbackCounties(): Location[] {
     propertyAppraiserUrl: null,
     taxCollectorUrl: null,
     customaryOwnerPolicyPayer: null,
+    customaryOwnerPolicyPayerSourceName: null,
+    customaryOwnerPolicyPayerSourceUrl: null,
+    customaryOwnerPolicyPayerCheckedOn: null,
+    customaryOwnerPolicyDetail: null,
     eRecordingAvailable: null,
     recordingTurnaround: null,
     recordingTurnaroundSourceUrl: null,
@@ -64,7 +82,7 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     .from('locations')
     // Single string literal on purpose — see the note in lib/reviews.ts.
     .select(
-      'slug, kind, name, parent_county_slug, is_priority, clerk_name, clerk_url, property_appraiser_url, tax_collector_url, customary_owner_policy_payer, e_recording_available, recording_turnaround, recording_turnaround_source_url, recording_turnaround_checked_on, notes',
+      'slug, kind, name, parent_county_slug, is_priority, clerk_name, clerk_url, property_appraiser_url, tax_collector_url, customary_owner_policy_payer, customary_owner_policy_payer_source_name, customary_owner_policy_payer_source_url, customary_owner_policy_payer_checked_on, customary_owner_policy_detail, e_recording_available, recording_turnaround, recording_turnaround_source_url, recording_turnaround_checked_on, notes',
     )
     .order('is_priority', { ascending: false })
     .order('name');
@@ -99,6 +117,10 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     propertyAppraiserUrl: row.property_appraiser_url,
     taxCollectorUrl: row.tax_collector_url,
     customaryOwnerPolicyPayer: row.customary_owner_policy_payer,
+    customaryOwnerPolicyPayerSourceName: row.customary_owner_policy_payer_source_name,
+    customaryOwnerPolicyPayerSourceUrl: row.customary_owner_policy_payer_source_url,
+    customaryOwnerPolicyPayerCheckedOn: row.customary_owner_policy_payer_checked_on,
+    customaryOwnerPolicyDetail: row.customary_owner_policy_detail,
     eRecordingAvailable: row.e_recording_available,
     recordingTurnaround: row.recording_turnaround,
     recordingTurnaroundSourceUrl: row.recording_turnaround_source_url,
