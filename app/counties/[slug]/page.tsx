@@ -2,7 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { COUNTY_MARKETS, countyPageTitle, getCounties, getLocation } from '@/lib/locations';
+import {
+  COUNTY_MARKETS,
+  RECORDER_STATUTE,
+  countyPageTitle,
+  getCounties,
+  getLocation,
+  recorderName,
+} from '@/lib/locations';
 import { citiesInCounty } from '@/lib/florida-cities';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
@@ -95,10 +102,15 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
   const deedStamps = deedStampTax(county.slug);
   const surtax = discretionarySurtax(county.slug);
 
-  const openItems =
-    // Cleared only where the recording office publishes a statement of its own.
-    // Most Florida counties publish nothing, and for those the flag stands.
-    county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk'];
+  // Each is cleared only where a source clears it: the team stating the custom
+  // it sees on its files, the recording office's own page, the office's own
+  // words on turnaround. Most Florida counties publish nothing on turnaround,
+  // and for those the flag stands.
+  const openItems = [
+    ...(payer ? [] : ['Who customarily pays for the owner’s policy in this county']),
+    ...(county.clerkUrl ? [] : ['The recording office’s own page and fee schedule']),
+    ...(county.recordingTurnaround ? [] : ['Typical recording turnaround at this clerk']),
+  ];
 
   return (
     <div className="frame section">
@@ -250,7 +262,25 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         <h2>Recording</h2>
         <p>
           Deeds and mortgages are recorded with the{' '}
-          {county.clerkName ?? `${county.name} Clerk of Court`}.
+          {county.clerkUrl ? (
+            <a href={county.clerkUrl} rel="nofollow">
+              {recorderName(county)}
+            </a>
+          ) : (
+            recorderName(county)
+          )}
+          {county.clerkName ? (
+            '.'
+          ) : (
+            <>
+              , which is the recorder in every Florida county unless the county has placed the duty
+              elsewhere —{' '}
+              <a href={RECORDER_STATUTE.url} rel="nofollow">
+                {RECORDER_STATUTE.cite}
+              </a>
+              . We have not yet linked this office&rsquo;s own recording page here.
+            </>
+          )}
           {county.eRecordingAvailable
             ? ' We e-record in this county, so a document usually posts without a courier trip.'
             : ''}{' '}
@@ -289,7 +319,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           <>
             <p>
               On turnaround, the{' '}
-              {county.clerkName ?? `${county.name} Clerk of Court`} publishes this:
+              {recorderName(county)} publishes this:
             </p>
             <blockquote>
               {county.recordingTurnaround}

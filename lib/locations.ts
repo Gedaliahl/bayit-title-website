@@ -140,19 +140,93 @@ export const COUNTY_REGIONS: Record<string, string> = {
  * which is why it sits beside the region label rather than in the table.
  */
 export const COUNTY_MARKETS: Record<string, string> = {
-  'broward-county': 'Fort Lauderdale',
-  'palm-beach-county': 'West Palm Beach and Boca Raton',
-  'miami-dade-county': 'Miami',
-  'hillsborough-county': 'Tampa',
-  'pinellas-county': 'St. Petersburg and Clearwater',
-  'orange-county': 'Orlando',
-  'polk-county': 'Lakeland',
-  'duval-county': 'Jacksonville',
+  'alachua-county': 'Gainesville',
+  'baker-county': 'Macclenny',
+  'bay-county': 'Panama City',
+  'bradford-county': 'Starke',
   'brevard-county': 'Melbourne and Palm Bay',
-  'lee-county': 'Fort Myers and Cape Coral',
+  'broward-county': 'Fort Lauderdale',
+  'calhoun-county': 'Blountstown',
+  'charlotte-county': 'Punta Gorda and Port Charlotte',
+  'citrus-county': 'Inverness and Crystal River',
+  'clay-county': 'Orange Park',
   'collier-county': 'Naples',
+  'columbia-county': 'Lake City',
+  'desoto-county': 'Arcadia',
+  'dixie-county': 'Cross City',
+  'duval-county': 'Jacksonville',
+  'escambia-county': 'Pensacola',
+  'flagler-county': 'Palm Coast',
+  'franklin-county': 'Apalachicola',
+  'gadsden-county': 'Quincy',
+  'gilchrist-county': 'Trenton',
+  'glades-county': 'Moore Haven',
+  'gulf-county': 'Port St. Joe',
+  'hamilton-county': 'Jasper',
+  'hardee-county': 'Wauchula',
+  'hendry-county': 'LaBelle and Clewiston',
+  'hernando-county': 'Spring Hill and Brooksville',
+  'highlands-county': 'Sebring',
+  'hillsborough-county': 'Tampa',
+  'holmes-county': 'Bonifay',
+  'indian-river-county': 'Vero Beach',
+  'jackson-county': 'Marianna',
+  'jefferson-county': 'Monticello',
+  'lafayette-county': 'Mayo',
+  'lake-county': 'Clermont and Leesburg',
+  'lee-county': 'Fort Myers and Cape Coral',
+  'leon-county': 'Tallahassee',
+  'levy-county': 'Chiefland and Williston',
+  'liberty-county': 'Bristol',
+  'madison-county': 'Madison',
+  'manatee-county': 'Bradenton',
+  'marion-county': 'Ocala',
+  'martin-county': 'Stuart',
+  'miami-dade-county': 'Miami',
+  'monroe-county': 'Key West',
+  'nassau-county': 'Fernandina Beach',
+  'okaloosa-county': 'Fort Walton Beach and Destin',
+  'okeechobee-county': 'Okeechobee',
+  'orange-county': 'Orlando',
+  'osceola-county': 'Kissimmee',
+  'palm-beach-county': 'West Palm Beach and Boca Raton',
+  'pasco-county': 'New Port Richey and Wesley Chapel',
+  'pinellas-county': 'St. Petersburg and Clearwater',
+  'polk-county': 'Lakeland',
+  'putnam-county': 'Palatka',
+  'st-johns-county': 'St. Augustine',
+  'st-lucie-county': 'Port St. Lucie',
+  'santa-rosa-county': 'Milton and Navarre',
   'sarasota-county': 'Sarasota',
+  'seminole-county': 'Sanford and Altamonte Springs',
+  'sumter-county': 'The Villages',
+  'suwannee-county': 'Live Oak',
+  'taylor-county': 'Perry',
+  'union-county': 'Lake Butler',
+  'volusia-county': 'Daytona Beach and Deltona',
+  'wakulla-county': 'Crawfordville',
+  'walton-county': 'Santa Rosa Beach and DeFuniak Springs',
+  'washington-county': 'Chipley',
 };
+
+/**
+ * Who records, where the table does not name the office.
+ *
+ * Fla. Stat. § 28.222(1): "The clerk of the circuit court shall be the
+ * recorder of all instruments that he or she may be required or authorized by
+ * law to record in the county where he or she is clerk." Read from Online
+ * Sunshine on 2026-09-20. Broward and Orange are the two counties where the
+ * duty sits elsewhere, and both have their office named in the table, so the
+ * fallback is only ever used where the statute's default holds.
+ */
+export const RECORDER_STATUTE = {
+  cite: 'Fla. Stat. § 28.222(1)',
+  url: 'https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.222.html',
+} as const;
+
+export function recorderName(county: Pick<Location, 'name' | 'clerkName'>): string {
+  return county.clerkName ?? `${county.name} Clerk of the Circuit Court`;
+}
 
 /** "Title company in Hillsborough County, FL: Tampa closings" — the page title's shape. */
 export function countyPageTitle(county: Pick<Location, 'slug' | 'name'>): string {

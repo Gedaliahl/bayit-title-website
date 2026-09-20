@@ -80,8 +80,9 @@ licensed review it has not had.
 ## Counties, cities and cost pages
 
 County pages are generated from the `locations` table (`supabase/seed/`), one
-per row of `kind = 'county'`. The six priority counties get a card on the home
-page; the rest are listed under "More county pages" on `/counties`. A county
+per row of `kind = 'county'`, and every one of the 67 counties has a row. The
+six priority counties get a card on the home page; the next six by volume get
+a card on `/counties`; the rest are linked from the full list there. A county
 page states only what the repository can cite: the promulgated premium, the
 statutory taxes and recording charges, the recording office, and the office's
 own words on turnaround. Local custom on who pays for the owner's policy is

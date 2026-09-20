@@ -1,5 +1,37 @@
 # VERIFY worklist
 
+> ## Update, 20 September 2026 (later) — every county has a page
+>
+> The remaining fifty-five counties were seeded
+> (`supabase/seed/locations_all_counties.sql`), so `/counties/[slug]` now
+> renders for all 67. A row with only a name renders a page that states what
+> the statute and the OIR rule set for that county and withholds, in a banner,
+> the three things only a source can clear. Sixteen counties also carry their
+> recording office's name and page, and fourteen its own words on turnaround,
+> all from `docs/county-recording-turnaround.md`. Where the table names no
+> recorder the page names the clerk of the circuit court and cites
+> Fla. Stat. § 28.222(1), read from Online Sunshine on 2026-09-20.
+>
+> Open for the team, per county, and shown on the page until cleared:
+>
+> - **Who customarily pays for the owner's policy** — set for Broward,
+>   Miami-Dade and Palm Beach only. Every other county says "not confirmed".
+> - **The recording office's own page** (`clerk_name`, `clerk_url`) for the 39
+>   counties the turnaround document did not cover. The Florida Court Clerks &
+>   Comptrollers directory and the Department of Revenue's appraiser list both
+>   refused automated reading, so these were not filled from a directory.
+> - **The property appraiser's site** (`property_appraiser_url`) for every
+>   county outside the twelve already set; the estimate page offers no link
+>   without it.
+> - **Whether we e-record** in each county.
+>
+> Also open: the market names in `COUNTY_MARKETS` (`lib/locations.ts`) are the
+> largest city or county seat of each county and appear in the page title.
+> They are geography, not a claim about the office, but a wrong one is public;
+> read the list once.
+
+---
+
 > ## Update, 20 September 2026 — county and city pages, and two cost pages
 >
 > Six county pages were added (Pinellas, Lee, Collier, Sarasota, Polk,

@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { FLORIDA_CITIES, cityBySlug, cityPageTitle, citiesInCounty } from '@/lib/florida-cities';
-import { getCounties, getLocation } from '@/lib/locations';
+import { getCounties, getLocation, recorderName } from '@/lib/locations';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
 import { formatLongDate } from '@/lib/seo';
@@ -97,7 +97,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   const deedStamps = deedStampTax(county.slug);
   const surtax = discretionarySurtax(county.slug);
   const isHome = city.name === site.address.city;
-  const recorder = county.clerkName ?? `${county.name} Clerk of Court`;
+  const recorder = recorderName(county);
 
   const openItems = [
     `Where the ${city.name} building department publishes permit and code enforcement records`,
