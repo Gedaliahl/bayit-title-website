@@ -14,7 +14,10 @@
 > - **`docs/review/verify-fill-review.pdf`** is the review pack: every inserted
 >   passage, highlighted by where the answer came from, with its source, what
 >   still needs confirming, and a sign-off box.
-> - All nine pages remain `status: draft`. Nothing reached the public site.
+> - Seven of the nine pages remain `status: draft`. Two are now `reviewed`
+>   and live: `hoa-approval-delay-closing-florida` and
+>   `non-standard-purchase-contract-florida-closing`, signed off by Shevy
+>   Lowenstein on 20 September 2026 (see the note at the foot of this file).
 >
 > How the 62 came out:
 >
@@ -177,7 +180,6 @@ exists. One person who works the files can clear most of these in an afternoon.
 
 ### Our timelines — what we actually see
 - Open permit close-out, by municipality
-- HOA application to approval; and the fastest turnaround we have documented
 - Judgment payoff and release, once the creditor is identified
 - Resolving an access exception by recorded easement
 - Scheduling lead time for each signing route
@@ -193,7 +195,6 @@ exists. One person who works the files can clear most of these in an afternoon.
 
 ### Our practice
 - Is a municipal lien search ordered on every purchase, or only on request?
-- What we check first on a non-standard contract, in order
 - What we examine differently where a seller acquired recently
 - What we do where a seller is in active litigation, including where we decline
 - Items we require from a bankruptcy sale order
@@ -201,13 +202,18 @@ exists. One person who works the files can clear most of these in an afternoon.
   outside the three counties
 - How much notice we ask for each signing type
 
-### Two pages that need their underlying file back
-`litigation-against-seller-flip-florida` and
-`non-standard-purchase-contract-florida-closing` are marked incomplete in the
-drafts themselves. They were written from a description that omitted the title
-mechanics. They need: what the search returned, what was recorded, what was
-required to close, how long it took. Without that they should stay unpublished —
-they are the two weakest pages and no amount of research fixes them.
+### One page that still needs its underlying file back
+`litigation-against-seller-flip-florida` is marked incomplete in the draft
+itself. It was written from a description that omitted the title mechanics. It
+needs: what the search returned, what was recorded, what was required to close,
+how long it took. Without that it should stay unpublished — no amount of
+research fixes it.
+
+`non-standard-purchase-contract-florida-closing` was in the same position and is
+now published **without** a worked example. The placeholder section that stood in
+for one was deleted rather than filled, because the file detail supplied in
+review was incomplete. The page stands on its general content. If the addendum
+terms from that file come back, the section is worth restoring.
 
 ### One licensing statement — do not guess
 **Which team members hold Florida online notary commissions**, or which RON
@@ -229,3 +235,21 @@ commission records, and nowhere else.
 
 Pages closest to publishable once C is done: `open-permits`,
 `hoa-approval-delay`, `no-legal-access`.
+
+---
+
+## Sign-off, 20 September 2026 — Shevy Lowenstein
+
+Two pages were reviewed and released. What the review changed:
+
+| Item | Answer |
+|---|---|
+| **HA-01** | 30 days is the window associations quote. The drafted range from a complete application stands as written. Fastest documented turnaround is **two days**, and that was an emergency we pushed — the drafted "three business days" was wrong. |
+| **HA-04** | **No such file.** The composite application-to-approval example was deleted. Associations we deal with do not require cashier's cheques, so that detail was wrong twice over. |
+| **NS-01** | Usually no change to the timeline; a bespoke contract adds complexity at the closing end. **No additional charges.** |
+| **NS-02** | The provisions we check first, in the order drafted, are correct. |
+| **NS-03** | Answer incomplete — the changes were in the addendum. Section deleted rather than published from placeholder text. |
+| **Statute** | § 718.112(2)**(k)** is the correct cite for the $150 per-applicant condominium transfer fee cap. The quick-facts box said (2)(i) and was corrected to match the body. |
+
+`HA-V1` and `NS-V1`, the index-card verdict labels, were confirmed by the same
+sign-off: both pages were read in full and released as they stood.
