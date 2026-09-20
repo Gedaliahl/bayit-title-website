@@ -11,11 +11,10 @@ related:
   - "non-standard-purchase-contract-florida-closing"
 pending_confirmation:
   - "OP-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Sometimes\") — drafted from this page, not yet reviewed"
-  - "OP-01 (Bayit Title): Typical time to close out an open permit, by municipality"
-  - "OP-02 (Bayit Title): What a permit close-out costs — re-inspection, after-the-fact permit, contractor"
-  - "OP-03 (Bayit Title): Is a municipal lien search ordered on every purchase, or only on request?"
+  - "OP-01 (Bayit Title): Answered in part — two weeks in the ordinary case. Still open: how long a complicated close-out runs, and whether the page should name per-municipality differences"
+  - "OP-02 (Bayit Title): Answered — no reliable flat fee, and the file is scoped before an estimate is given. Still open: whether the page may publish any figure at all, such as a typical re-inspection range"
   - "OP-04 (underwriter/form): How the standard FAR/BAR contract allocates responsibility for open permits, and which paragraph"
-  - "OP-05 (Bayit Title): The actual close-out routes we have used and how long each took"
+  - "OP-05 (Bayit Title): Answered — the close-out routes are confirmed. Still open: whether we use a contractor affidavit or a municipal amnesty programme, which the draft claimed and the team did not name"
   - "OP-06 (underwriter/form): First American's coverage position on open permits and code enforcement, and any endorsement"
 verdict:
   short: "Sometimes"
@@ -25,9 +24,9 @@ quick_facts:
   - term: "Where it shows up"
     detail: "The municipal lien search, not the title search."
   - term: "Typical timeline"
-    detail: "Where the work will pass as built, two to four weeks to schedule and pass a re-inspection. Where the permit has expired and has to be renewed or re-pulled first, six to twelve weeks. An after-the-fact permit on unpermitted work, with plans and a design professional, can run three months or more. Turnaround varies by municipality and by how backed up its inspection calendar is."
+    detail: "Two weeks in the ordinary case — where the work will pass as built and what is outstanding is scheduling the final inspection and having it signed off. Where it is more complicated than that, the time depends on the permit type, the jurisdiction, whether the work is finished, which inspections are outstanding, and whether a licensed contractor or design professional has to be brought in. We establish those before giving anyone a date."
   - term: "Cost impact"
-    detail: "A re-inspection fee is typically $75 to $200. Renewing an expired permit is commonly a percentage of the original permit fee. An after-the-fact permit is usually charged at a multiple of the ordinary fee — often double — and the real cost is the contractor and any design professional needed to bring the work to a passing condition, which is the item that varies most."
+    detail: "There is no reliable flat fee that applies to every open permit. What a close-out costs depends on the permit type, the jurisdiction, the status of the work, the inspections required, and whether a licensed contractor or design professional is needed. We determine those before giving a client an estimate, rather than quoting a figure that will not hold."
 ---
 
 ## What is an open permit?
@@ -58,14 +57,17 @@ The practical risk is what happens after closing. An unresolved open permit foll
 
 ## What does it take to close one out?
 
-It depends on what the permit was for and how old it is. In the simplest case a final inspection is scheduled, the inspector passes it, and the permit closes. In harder cases the work no longer meets current code, the original contractor is gone, or the permit has expired and has to be renewed or re-pulled before anyone can inspect anything.
+It depends on what the permit was for, how old it is, and what the municipality still has outstanding. In the simplest case a final inspection is scheduled, the inspector passes it, and the permit closes — about two weeks, most of it waiting for an inspection slot. Where the work no longer meets current code, the original contractor is gone, or the permit was never pulled at all, it takes longer and the route changes.
 
-Four routes, roughly in order of how often they work:
+Every file is different, but a close-out happens in one of these ways:
 
-- **Call the final inspection.** The permit is still live and the work will pass. Schedule, inspect, close. Two to four weeks, most of it waiting for an inspection slot.
-- **Renew or re-pull the expired permit, then inspect.** The permit lapsed before the final was called. The municipality reinstates it or requires a new one under the original scope, and only then can anyone inspect. Six to twelve weeks.
-- **After-the-fact permit.** The work was never permitted at all. Plans, sometimes a design professional, a fee charged at a penalty multiple, then inspection. Three months or more, and this is the route that can require the work to be opened up or redone.
-- **Contractor affidavit or municipal close-out programme.** Some municipalities will close an old permit on an affidavit from a licensed contractor, or run an amnesty for permits over a certain age. Where it is available it is the fastest route, and whether it is available is a question for that building department.
+- **The seller or the contractor completes the outstanding inspections.** The permit is live, the work will pass, and what is missing is the inspection nobody called.
+- **The municipality closes the permit on the documentation already in its file.** Where the record is enough to close it, nothing has to be opened up or re-inspected.
+- **An after-the-fact permit, or legalisation of the work.** The work was never permitted. Plans, fees and inspection follow, and this is the route that can require the work to be opened up or redone.
+- **Corrective work, then inspection.** The work will not pass as built, so something changes before the inspector comes back.
+- **An escrow or other contractual arrangement**, where that is appropriate and permitted by the underwriter and the applicable requirements. This lets the transaction close; it does not close the permit, which still has to be closed afterwards.
+
+Some situations are not a clearance step at all. Where a file is one of those, we refer it to an attorney or another qualified professional rather than working it as a title item.
 
 ## How Bayit Title handles this
 
