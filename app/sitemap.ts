@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 
 import { getAllDocs } from '@/lib/content';
 import { getCounties } from '@/lib/locations';
+import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { team } from '@/lib/team';
 import { absoluteUrl } from '@/lib/seo';
 import { PRIVACY_PUBLISHED } from '@/lib/privacy';
@@ -32,6 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/quote'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/calculator'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
     { url: absoluteUrl('/estimate'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs/buyer'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs/seller'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
     { url: absoluteUrl('/partners'), lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     // Same rule as a draft content page: nothing unreviewed is listed for crawlers.
     ...(PRIVACY_PUBLISHED
@@ -68,6 +71,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
+    // A city page renders only when its county has a row, so the list is the
+    // cities whose county is in the table — the same rule the route follows.
+    ...FLORIDA_CITIES.filter((city) => counties.some((county) => county.slug === city.countySlug)).map(
+      (city) => ({
+        url: absoluteUrl(`/cities/${city.slug}`),
+        lastModified: now,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      }),
+    ),
     ...team.map((member) => ({
       url: absoluteUrl(`/team/${member.slug}`),
       lastModified: now,

@@ -120,9 +120,47 @@ export const COUNTY_REGIONS: Record<string, string> = {
   'palm-beach-county': 'South Florida',
   'miami-dade-county': 'South Florida',
   'hillsborough-county': 'Tampa Bay',
+  'pinellas-county': 'Tampa Bay',
   'orange-county': 'Central Florida',
+  'polk-county': 'Central Florida',
   'duval-county': 'Northeast Florida',
+  'brevard-county': 'Space Coast',
+  'lee-county': 'Southwest Florida',
+  'collier-county': 'Southwest Florida',
+  'sarasota-county': 'Southwest Florida',
 };
+
+/**
+ * The place a reader names when they mean the county.
+ *
+ * A search is "title company Tampa", not "title company Hillsborough County",
+ * so the county page's title carries the market the county is known by. This
+ * is the name of the largest city or pair of cities in the county — a fact
+ * about where people live, not a claim about the office or its volume there,
+ * which is why it sits beside the region label rather than in the table.
+ */
+export const COUNTY_MARKETS: Record<string, string> = {
+  'broward-county': 'Fort Lauderdale',
+  'palm-beach-county': 'West Palm Beach and Boca Raton',
+  'miami-dade-county': 'Miami',
+  'hillsborough-county': 'Tampa',
+  'pinellas-county': 'St. Petersburg and Clearwater',
+  'orange-county': 'Orlando',
+  'polk-county': 'Lakeland',
+  'duval-county': 'Jacksonville',
+  'brevard-county': 'Melbourne and Palm Bay',
+  'lee-county': 'Fort Myers and Cape Coral',
+  'collier-county': 'Naples',
+  'sarasota-county': 'Sarasota',
+};
+
+/** "Title company in Hillsborough County, FL: Tampa closings" — the page title's shape. */
+export function countyPageTitle(county: Pick<Location, 'slug' | 'name'>): string {
+  const market = COUNTY_MARKETS[county.slug];
+  return market
+    ? `Title company in ${county.name}, FL: ${market} closings`
+    : `Title company in ${county.name}, FL`;
+}
 
 export async function getCounties(): Promise<Location[]> {
   return (await getLocations()).filter((location) => location.kind === 'county');

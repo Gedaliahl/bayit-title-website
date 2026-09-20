@@ -5,8 +5,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { COUNTY_REGIONS, getCounties, type Location } from '@/lib/locations';
+import { COUNTY_MARKETS, COUNTY_REGIONS, getCounties, type Location } from '@/lib/locations';
 import { FLORIDA_COUNTIES, countySlugFor } from '@/lib/florida-counties';
+import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { deedStampTax, discretionarySurtax } from '@/lib/statutory-rates';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -15,11 +16,11 @@ import { Verdict } from '@/components/Verdict';
 import { Rail } from '@/components/Rail';
 
 export const metadata: Metadata = {
-  title: 'Counties we close in',
+  title: 'Florida title company by county and city',
   description:
-    'We close throughout Florida, with most files in Broward, Palm Beach, Miami-Dade, ' +
-    'Hillsborough, Orange and Duval. What differs county to county: who customarily pays for the ' +
-    'owner’s policy, recording, and clerk practice.',
+    'A Florida title company closing in all 67 counties, with most files in Broward, Palm Beach, ' +
+    'Miami-Dade, Hillsborough, Orange and Duval. County and city pages: who customarily pays for ' +
+    'the owner’s policy, the deed stamp rate, recording, and what a policy costs.',
   alternates: { canonical: '/counties' },
 };
 
@@ -83,7 +84,10 @@ function countyNote(county: Location): string | null {
 export default async function CountiesPage() {
   const counties = await getCounties();
   const priority = counties.filter((county) => county.isPriority);
+  const others = counties.filter((county) => !county.isPriority);
   const bySlug = new Map(counties.map((county) => [county.slug, county]));
+  const countyName = (slug: string) =>
+    bySlug.get(slug)?.name ?? FLORIDA_COUNTIES.find((county) => county.slug === slug)?.name ?? slug;
 
   return (
     <div>
@@ -158,10 +162,41 @@ export default async function CountiesPage() {
         </section>
       ) : null}
 
+      {others.length > 0 ? (
+        <section className="band">
+          <div className="frame band__inner">
+            <div className="band__head">
+              <h2>More county pages</h2>
+              <span className="band__caption">
+                The same figures, cited the same way, for the next {others.length} counties
+              </span>
+            </div>
+            <ul className="band__grid band__grid--3 band__grid--links">
+              {others.map((county) => {
+                const market = COUNTY_MARKETS[county.slug];
+                return (
+                  <li key={county.slug}>
+                    <Link href={`/counties/${county.slug}`} className="step-card step-card--link">
+                      {COUNTY_REGIONS[county.slug] ? (
+                        <span className="step-card__label">{COUNTY_REGIONS[county.slug]}</span>
+                      ) : null}
+                      <span className="step-card__title step-card__title--serif">{county.name}</span>
+                      {market ? <span className="step-card__body">{market}</span> : null}
+                      <span className="step-card__more">County page →</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
       <div className="frame cols">
         <Rail
           label="The detail"
           items={[
+            { id: 'cities', label: 'Cities' },
             { id: 'changes', label: 'What changes county to county' },
             { id: 'same', label: 'What does not' },
             { id: 'elsewhere', label: 'Elsewhere in Florida' },
@@ -169,6 +204,23 @@ export default async function CountiesPage() {
         />
 
         <div className="detail">
+          <section id="cities">
+            <div className="section__head">
+              <h2>Cities</h2>
+              <span className="caption">
+                Each city page carries its county’s figures and adds the place.
+              </span>
+            </div>
+            <ul className="linklist">
+              {FLORIDA_CITIES.map((city) => (
+                <li key={city.slug}>
+                  <Link href={`/cities/${city.slug}`}>Title company in {city.name}</Link>{' '}
+                  <span className="muted">— {countyName(city.countySlug)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           <section id="changes">
             <h2>What changes county to county</h2>
             <ol className="num-cards">
