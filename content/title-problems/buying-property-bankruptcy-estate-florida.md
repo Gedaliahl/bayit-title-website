@@ -11,7 +11,7 @@ related:
   - "judgment-against-seller-before-closing-florida"
 pending_confirmation:
   - "BK-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Until the order is final\") — drafted from this page, not yet reviewed"
-  - "BK-01 (Bayit Title): How sale-order entry, objection and appeal periods shape a closing schedule on our files"
+  - "BK-01 (Bayit Title): The federal sequence is now cited on the page — 21 days' notice, objections at least 7 days out, a 14-day stay, 14 days to appeal. Still open: what we schedule a closing against, whether we add a buffer, and whether we ask for the stay to be waived in the order"
   - "BK-02 (Bayit Title): Whether these files typically carry additional search or examination cost"
   - "BK-03 (underwriter/form): Specific items we require from a bankruptcy sale order before closing, and what the underwriter requires"
   - "BK-05 (underwriter/form): How a closed prior bankruptcy in the chain is examined and what documentation clears it"
@@ -23,7 +23,7 @@ quick_facts:
   - term: "The core document"
     detail: "The bankruptcy court's order authorising the sale, plus the motion and notice behind it."
   - term: "Typical timeline"
-    detail: "Plan on the sale order being entered, then a further 14 days before closing, because Fed. R. Bankr. P. 6004(h) stays a sale order for 14 days after entry unless the court orders otherwise. Where the order waives that stay — many do, expressly — closing can follow entry directly. Getting the motion and the proposed order in front of us before the hearing, rather than after, is what keeps this on schedule."
+    detail: "The dates are set before the order exists: a proposed sale outside the ordinary course needs at least 21 days' notice under Fed. R. Bankr. P. 2002(a)(2), and objections are due at least 7 days before the date set for the sale under Fed. R. Bankr. P. 6004(b). Then plan on the sale order being entered and a further 14 days before closing, because Fed. R. Bankr. P. 6004(h) stays a sale order for 14 days after entry unless the court orders otherwise. Where the order waives that stay — many do, expressly — closing can follow entry directly. Getting the motion and the proposed order in front of us before the hearing, rather than after, is what keeps this on schedule."
   - term: "Cost impact"
     detail: "The title insurance premium is set by the promulgated Florida rate schedule and does not change because a seller is in bankruptcy. What can add cost is the extra work: pulling and reviewing the docket, the motion, the notice and the entered order, and any additional searches the underwriter requires on the debtor and the estate."
 ---
@@ -57,7 +57,11 @@ At minimum the questions being answered are these:
 - **What happens to the liens?** Whether the sale is free and clear, and if so which interests that covers and which it does not.
 - **Has the time to appeal run?** Closing before it has can expose the buyer if the order is disturbed.
 
-Three federal provisions set the shape of this, and they are worth reading in order.
+Five federal provisions set the shape of this, and they are worth reading in order. The first two run before the order exists, which is why a sale date is set earlier than buyers expect.
+
+**The sale needs 21 days' notice.** [Fed. R. Bankr. P. 2002(a)(2)](https://www.law.cornell.edu/rules/frbp/rule_2002) requires at least 21 days' notice by mail of a proposed sale of property of the estate other than in the ordinary course of business, unless the court shortens the time or directs another method of giving notice.
+
+**Objections are due at least 7 days before the sale date.** [Fed. R. Bankr. P. 6004(b)](https://www.law.cornell.edu/rules/frbp/rule_6004): an objection to a proposed use, sale or lease of property must be filed and served at least 7 days before the date set for the proposed action, or within the time set by the court. Whether anybody objected, and what happened to the objection, is part of reading the docket rather than the order alone.
 
 **The order is stayed for 14 days.** [Fed. R. Bankr. P. 6004(h)](https://www.law.cornell.edu/rules/frbp/rule_6004): "Unless the court orders otherwise, an order authorizing the use, sale, or lease of property (other than cash collateral) is stayed for 14 days after the order is entered." Sale orders frequently waive that stay in terms — which is why the order has to be read rather than assumed.
 

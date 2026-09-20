@@ -11,7 +11,7 @@ related:
   - "litigation-against-seller-flip-florida"
 pending_confirmation:
   - "JG-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Rarely\"), the four verdict-card rows, and the five steps — drafted from this page, not yet reviewed"
-  - "JG-01 (Bayit Title): How long a payoff and release typically takes once the judgment creditor is identified"
+  - "JG-01 (Bayit Title): Answered in part from the statute — § 701.04(3) gives the creditor 60 days from payment to record the satisfaction. Still open: how long a payoff and release actually takes on our files, and whether the drafted three-to-ten business days for the written payoff itself is right"
   - "JG-05 (underwriter/form): Form of identity affidavit First American accepts for a name-match judgment"
 verdict:
   headline: "Rarely — if it is found early."
@@ -39,7 +39,7 @@ quick_facts:
   - term: "Where it shows up"
     detail: "The title search, in the official records of the county."
   - term: "Typical timeline"
-    detail: "Three to ten business days for a written payoff once the creditor or their counsel is identified. Institutional creditors are usually at the short end; an individual creditor without counsel, or an assigned judgment whose current holder has to be traced, is where this runs long."
+    detail: "Three to ten business days for a written payoff once the creditor or their counsel is identified. Institutional creditors are usually at the short end; an individual creditor without counsel, or an assigned judgment whose current holder has to be traced, is where this runs long. The release side has a statutory outer limit rather than an estimate: [Fla. Stat. § 701.04(3)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0701/Sections/0701.04.html) gives the creditor 60 days from full payment to get a satisfaction recorded."
   - term: "Cost impact"
     detail: "Usually paid from the seller's proceeds at closing. The payoff is higher than the recorded face amount: Florida judgments bear statutory post-judgment interest under [Fla. Stat. § 55.03](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0055/Sections/0055.03.html), at a rate the Chief Financial Officer sets quarterly and which adjusts annually on 1 January, and costs may have been added. We work from a written payoff good through a stated date, never from the recorded amount."
 ---
@@ -79,6 +79,10 @@ If homestead is the reason a judgment is not being paid at closing, that positio
 ## How does it get cleared?
 
 Most often it is paid from the seller's proceeds at closing, and the creditor records a satisfaction. That requires a written payoff from the judgment creditor or their counsel — good through a specific date, with the figure and the wiring or delivery instructions confirmed directly with the source.
+
+Recording the satisfaction is the creditor's own obligation, and it carries a deadline. Under [Fla. Stat. § 701.04(3)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0701/Sections/0701.04.html), within 60 days after a lien or judgment has been fully paid, the creditor or assignee — or, for a judgment, the attorney of record — must execute an instrument acknowledging satisfaction, have it acknowledged or proven, send it for recording in the official records of the proper county, and send the recorded satisfaction back to whoever made the payment. The prevailing party in a civil action to enforce that is entitled to attorney fees and costs.
+
+Sixty days is the limit the statute allows, not a closing timetable. Where a judgment is paid from the seller's proceeds, the satisfaction is usually recorded after the closing rather than at it — which is what makes the deadline, and the attorney-fee provision behind it, worth knowing about when a satisfaction does not appear.
 
 Where the judgment does not belong to this seller, the route is different: an affidavit establishing that the debtor is a different person, in a form the underwriter will accept.
 

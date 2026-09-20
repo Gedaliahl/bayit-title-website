@@ -12,7 +12,7 @@ related:
 pending_confirmation:
   - "FS-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? No\") — drafted from this page, not yet reviewed"
   - "FS-01 (Bayit Title): How far ahead we ask to know about an out-of-country signer, and scheduling lead time per route"
-  - "FS-02 (Bayit Title): Consular fees, apostille costs, courier costs where wet ink is required"
+  - "FS-02 (Bayit Title): The consular fee is now cited (22 CFR 22.1, item 41 — $50 per seal). That section carries a temporary amendment running to 31 December 2026 and must be rechecked before this page publishes. Still open: apostille and legalisation costs by country, and courier costs — the drafted $60 to $150 each way is not from a source"
   - "FS-05 (underwriter/form): First American's position on RON for out-of-country signers"
 verdict:
   short: "No"
@@ -24,7 +24,7 @@ quick_facts:
   - term: "Typical timeline"
     detail: "Remote online notarization can usually be scheduled within two to three business days. A consular appointment should be assumed to take four to eight weeks from first enquiry at many posts. A local notary abroad plus apostille runs two to four weeks, with three to seven days of courier time each way where wet-ink originals have to travel."
   - term: "Cost impact"
-    detail: "A US consular notarial act is $50 per notarial service under the State Department's consular fee schedule. Apostille and legalisation fees are set by the issuing country and vary widely. International courier for wet-ink originals typically runs $60 to $150 each way."
+    detail: "A US consular notarial act is $50 per seal under item 41 of the State Department's schedule of fees, [22 CFR 22.1](https://www.law.cornell.edu/cfr/text/22/22.1), and each additional seal provided at the same time in the same transaction is charged at the same rate — so a signing with several documents is several fees, not one. Apostille and legalisation fees are set by the issuing country and vary widely. International courier for wet-ink originals typically runs $60 to $150 each way."
 ---
 
 ## Why is this harder than it sounds?
@@ -58,6 +58,8 @@ That published position does not carve out a signer located outside the United S
 A US consular officer can take an acknowledgment. This is well-established and widely accepted, and it avoids questions about foreign notarial forms.
 
 The cost is scheduling. Appointment availability varies enormously by post, and in some countries the wait is long enough to drive the closing date by itself. The signed originals then have to travel back, which adds courier time.
+
+The fee itself is fixed and public: item 41 of [22 CFR 22.1](https://www.law.cornell.edu/cfr/text/22/22.1) sets a consular notarial service at $50 for the first seal, and each additional seal provided at the same time in connection with the same transaction at $50 as well. A deed, an affidavit and a FIRPTA certificate signed at one appointment are three seals.
 
 ## Route three: a local notary abroad
 

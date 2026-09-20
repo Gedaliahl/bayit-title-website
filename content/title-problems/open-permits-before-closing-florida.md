@@ -12,7 +12,7 @@ related:
 pending_confirmation:
   - "OP-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Sometimes\") — drafted from this page, not yet reviewed"
   - "OP-01 (Bayit Title): Answered in part — two weeks in the ordinary case. Still open: how long a complicated close-out runs, and whether the page should name per-municipality differences"
-  - "OP-02 (Bayit Title): Answered — no reliable flat fee, and the file is scoped before an estimate is given. Still open: whether the page may publish any figure at all, such as a typical re-inspection range"
+  - "OP-02 (Bayit Title): Answered — no reliable flat fee, and the file is scoped before an estimate is given. The municipal fees that are published are now cited from the municipalities' own schedules. Still open: whether the page should carry them, and what the contractor and design-professional side of a close-out costs"
   - "OP-04 (underwriter/form): How the standard FAR/BAR contract allocates responsibility for open permits, and which paragraph"
   - "OP-05 (Bayit Title): Answered — the close-out routes are confirmed. Still open: whether we use a contractor affidavit or a municipal amnesty programme, which the draft claimed and the team did not name"
   - "OP-06 (underwriter/form): First American's coverage position on open permits and code enforcement, and any endorsement"
@@ -26,7 +26,7 @@ quick_facts:
   - term: "Typical timeline"
     detail: "Two weeks in the ordinary case — where the work will pass as built and what is outstanding is scheduling the final inspection and having it signed off. Where it is more complicated than that, the time depends on the permit type, the jurisdiction, whether the work is finished, which inspections are outstanding, and whether a licensed contractor or design professional has to be brought in. We establish those before giving anyone a date."
   - term: "Cost impact"
-    detail: "There is no reliable flat fee that applies to every open permit. What a close-out costs depends on the permit type, the jurisdiction, the status of the work, the inspections required, and whether a licensed contractor or design professional is needed. We determine those before giving a client an estimate, rather than quoting a figure that will not hold."
+    detail: "There is no reliable flat fee that applies to every open permit. What a close-out costs depends on the permit type, the jurisdiction, the status of the work, the inspections required, and whether a licensed contractor or design professional is needed. We determine those before giving a client an estimate, rather than quoting a figure that will not hold. The municipal charges are published and are the small part: a re-inspection is $79 in Boca Raton, and $50, $100 and $200 for a first, second and third in unincorporated Palm Beach County."
 ---
 
 ## What is an open permit?
@@ -66,6 +66,10 @@ Every file is different, but a close-out happens in one of these ways:
 - **An after-the-fact permit, or legalisation of the work.** The work was never permitted. Plans, fees and inspection follow, and this is the route that can require the work to be opened up or redone.
 - **Corrective work, then inspection.** The work will not pass as built, so something changes before the inspector comes back.
 - **An escrow or other contractual arrangement**, where that is appropriate and permitted by the underwriter and the applicable requirements. This lets the transaction close; it does not close the permit, which still has to be closed afterwards.
+
+What any of that costs is not one number, and the part that is published is the smallest part of it. Boca Raton charges $79 for a re-inspection and caps the renewal or reapplication of an expired permit at the original permit fee or $182 ([user fee schedule](https://myboca.us/DocumentCenter/View/6645/User-Fee-Schedule-2025-2026-PDF), effective 1 October 2025). Unincorporated Palm Beach County charges $50 for a first re-inspection, $100 for a second and $200 for a third, and $67 for an individual open permit search ([fee schedule](https://discover.pbcgov.org/pzb/PDF/Fees.pdf), as printed 2 March 2026). Every municipality publishes its own and the figures move, so the schedule in force on the day is the one that governs.
+
+What no schedule contains is the work itself — the contractor, and a design professional where the route needs one. That is why the permit type, the jurisdiction, the status of the work and the inspections outstanding get established before anyone is given an estimate.
 
 Some situations are not a clearance step at all. Where a file is one of those, we refer it to an attorney or another qualified professional rather than working it as a title item.
 

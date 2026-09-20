@@ -12,7 +12,7 @@ related:
 pending_confirmation:
   - "AC-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Yes, until access is insured\") — drafted from this page, not yet reviewed"
   - "AC-01 (Bayit Title): How long it has taken us to resolve an access exception by recorded easement, neighbour cooperating"
-  - "AC-02 (Bayit Title): Cost of a recorded easement, survey sketch and legal description"
+  - "AC-02 (Bayit Title): The recording charge is now cited from § 28.24. Still open: what the survey sketch and legal description cost — the drafted $500 to $1,500 is not from a source"
   - "AC-03 (underwriter/form): Standard access exception language in our commitments; is an endorsement available?"
 verdict:
   short: "Yes, until access is insured"
@@ -24,7 +24,7 @@ quick_facts:
   - term: "Typical timeline"
     detail: "Four to eight weeks where the neighbouring owner is willing from the start. Most of that is the survey sketch and legal description, and the neighbour's own decision-making. Where the neighbouring parcel is owned by an estate, a trust or an entity, add the time it takes to establish who can sign."
   - term: "Cost impact"
-    detail: "A survey sketch and legal description for the easement area typically runs $500 to $1,500 depending on the parcel. Preparing and recording the easement instrument is modest by comparison — recording fees are statutory and charged per page. The cost that is not on this list is whatever the neighbouring owner asks for the easement itself, which is a negotiation rather than a fee."
+    detail: "A survey sketch and legal description for the easement area typically runs $500 to $1,500 depending on the parcel. Preparing and recording the easement instrument is modest by comparison. Recording is a statutory charge, not a quote: the service charges in [Fla. Stat. § 28.24](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.24.html) come to the $10 first page and $8.50 for each additional page that clerks publish, with $1 more for each name beyond the first four, so a short easement records for something in the region of $10 to $30. The cost that is not on this list is whatever the neighbouring owner asks for the easement itself, which is a negotiation rather than a fee."
 ---
 
 ## What does "legal access" actually mean?
