@@ -142,10 +142,10 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 1. `open-permits-before-closing-florida` — municipal lien search vs title search
 2. `judgment-against-seller-before-closing-florida` — why "don't worry" isn't a status report
 3. `litigation-against-seller-flip-florida` — **incomplete**, story lacked the title mechanics
-4. `hoa-approval-delay-closing-florida` — 30-day minimum done in 3; strongest page
+4. `hoa-approval-delay-closing-florida` — **reviewed and published** 2026-09-20; a quoted 30 days done in 2 on an emergency
 5. `foreign-seller-signing-from-abroad-florida` — highest search potential
 6. `no-legal-access-landlocked-property-florida` — legal vs physical access; the Schedule B-II discovery
-7. `non-standard-purchase-contract-florida-closing` — **weakest**, needs the actual changed terms
+7. `non-standard-purchase-contract-florida-closing` — **reviewed and published** 2026-09-20, without a worked example; the changed terms would still strengthen it
 8. `buying-property-bankruptcy-estate-florida` — the court's sale order is a title document
 
 **1 service page** in `content/services/`: `mobile-and-remote-signings`
@@ -182,7 +182,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 
 - `rate_tables` empty, but nothing is waiting on it: the calculator and the county pages read the rule and the statutes from `lib/`
 - Six pages make First American coverage statements that are unverified
-- Timeline data is placeholder on every library page
+- Timeline data is placeholder on every library page except the two published 2026-09-20
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer, Chaya
 - No usable photography — nothing in the Instagram feed works at hero size
 - Google Business Profile API rejected; reapply from a bayittitle.com address
