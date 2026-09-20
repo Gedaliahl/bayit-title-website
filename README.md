@@ -77,6 +77,24 @@ named licensed agent standing behind the page.
 So: an unreviewed page cannot reach the public site, and a page cannot claim a
 licensed review it has not had.
 
+## Counties, cities and cost pages
+
+County pages are generated from the `locations` table (`supabase/seed/`), one
+per row of `kind = 'county'`. The six priority counties get a card on the home
+page; the rest are listed under "More county pages" on `/counties`. A county
+page states only what the repository can cite: the promulgated premium, the
+statutory taxes and recording charges, the recording office, and the office's
+own words on turnaround. Local custom on who pays for the owner's policy is
+printed only where `customary_owner_policy_payer` has been set by the team.
+
+City pages (`/cities/[slug]`) come from `lib/florida-cities.ts`. A city owns one
+fact — which county it is in — and renders that county's figures. A city whose
+county has no row does not render, so seed the county first.
+
+`/closing-costs/buyer` and `/closing-costs/seller` are built from the same rate
+libraries. What no rule sets (our fees, the contract's default allocations) is
+named on the page as withheld rather than numbered.
+
 ## Content
 
 ```

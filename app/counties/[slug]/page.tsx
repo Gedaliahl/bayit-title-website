@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { getCounties, getLocation } from '@/lib/locations';
-import { getAllDocs } from '@/lib/content';
+import { COUNTY_MARKETS, countyPageTitle, getCounties, getLocation } from '@/lib/locations';
+import { citiesInCounty } from '@/lib/florida-cities';
+import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
 import { formatLongDate } from '@/lib/seo';
 import { site } from '@/lib/site';
@@ -55,11 +56,19 @@ export async function generateMetadata({
   const county = await getLocation(slug);
   if (!county) return {};
 
+  const market = COUNTY_MARKETS[county.slug];
+  const payer = county.customaryOwnerPolicyPayer;
+
   return {
-    title: `Title and closing in ${county.name}`,
+    title: countyPageTitle(county),
     description:
-      `How a closing works in ${county.name}, Florida: who customarily pays for the owner’s ` +
-      `policy, how recording works, and what ${site.name} does on a ${county.name} file.`,
+      `${site.legalName} is a Florida title company closing in ${county.name}` +
+      (market ? `, including ${market}` : '') +
+      `. Title insurance, escrow and closings for residential and commercial property, ` +
+      (payer
+        ? `who customarily pays for the owner’s policy here (the ${payer}), `
+        : 'who customarily pays for the owner’s policy, ') +
+      'the deed stamp rate, recording, and what a policy costs at every price.',
     alternates: { canonical: `/counties/${county.slug}` },
   };
 }
@@ -70,7 +79,10 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
   if (!county) notFound();
 
   const [docs, reviews] = await Promise.all([getAllDocs('title-problems'), getReviews()]);
-  const localDocs = docs.filter((doc) => doc.counties.includes(county.slug));
+  // A draft is unreachable in production, so a link to one is a link to a 404.
+  const localDocs = docs.filter((doc) => isPublishable(doc) && doc.counties.includes(county.slug));
+  const cities = citiesInCounty(county.slug);
+  const market = COUNTY_MARKETS[county.slug];
   const localReviews = reviews.filter((review) => review.countySlug === county.slug).slice(0, 3);
 
   const payer = county.customaryOwnerPolicyPayer;
@@ -98,11 +110,17 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             { name: county.name, path: `/counties/${county.slug}` },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Title and closing in {county.name}</h1>
+        <h1 style={{ marginTop: '1.5rem' }}>
+          Title insurance and closings in {county.name}
+        </h1>
 
         <AnswerPanel
           text={
-            `${site.legalName} closes in ${county.name} from our office in ${site.address.city}. ` +
+            `${site.legalName} is a Florida title company closing in ${county.name}` +
+            (market ? `, ${market} included,` : '') +
+            ` from our office in ${site.address.city}: residential and commercial title, ` +
+            'escrow and settlement, with signings in our office, wherever the signer is, or by ' +
+            'remote online notarization. ' +
             (payer
               ? `In ${county.name} the owner’s title policy is customarily paid for by the ${payer}, ` +
                 'though the contract controls and the parties can agree otherwise. '
@@ -291,6 +309,24 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
               that week.
             </p>
           </>
+        ) : null}
+
+        {cities.length > 0 ? (
+          <section>
+            <h2>Cities in {county.name} we have written about</h2>
+            <p>
+              The premium, the taxes and the recording office are the county&rsquo;s, so the
+              figures on these pages are the ones above. What each page adds is the place: how a
+              signing happens there and what a municipal lien search has to cover.
+            </p>
+            <ul className="linklist">
+              {cities.map((city) => (
+                <li key={city.slug}>
+                  <Link href={`/cities/${city.slug}`}>Title company in {city.name}</Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         ) : null}
 
         <h2>How Bayit Title handles a {county.name} file</h2>

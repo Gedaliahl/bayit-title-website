@@ -80,6 +80,12 @@ export function SiteFooter() {
                 <Link href="/calculator">Premium calculator</Link>
               </li>
               <li>
+                <Link href="/closing-costs/buyer">Buyer closing costs</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs/seller">Seller closing costs</Link>
+              </li>
+              <li>
                 <Link href="/contact">Contact us</Link>
               </li>
               {/* Linked only once reviewed. A footer link to a 404 is worse

@@ -3,6 +3,7 @@
 
 import { getAllDocs } from '@/lib/content';
 import { getCounties } from '@/lib/locations';
+import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { absoluteUrl } from '@/lib/seo';
 import { site, footerCredentialLine } from '@/lib/site';
 
@@ -64,7 +65,22 @@ export async function GET() {
     '',
     '## Counties',
     '',
+    'Each county page states who customarily pays for the owner’s policy where that custom has been',
+    'confirmed, the deed stamp rate, the recording office, and the promulgated premium at every price.',
+    '',
     ...counties.map((county) => `- [${county.name}](${absoluteUrl(`/counties/${county.slug}`)})`),
+    '',
+    '## Cities',
+    '',
+    'A city page carries its county’s figures and adds how a signing happens there and what a',
+    'municipal lien search covers.',
+    '',
+    ...FLORIDA_CITIES.filter((city) => counties.some((county) => county.slug === city.countySlug)).map(
+      (city) => {
+        const county = counties.find((entry) => entry.slug === city.countySlug)!;
+        return `- [${city.name}](${absoluteUrl(`/cities/${city.slug}`)}): ${county.name}`;
+      },
+    ),
     '',
     '## About',
     '',
@@ -78,6 +94,8 @@ export async function GET() {
     '',
     `- [Estimate title insurance from a property address](${absoluteUrl('/estimate')}): prices the promulgated premium off the county and the assessed value on the property appraiser's record. Assessed value is a tax figure and usually sits below the price a policy would be written at, so the result is a floor, not a quote.`,
     `- [Premium and closing cost calculator](${absoluteUrl('/calculator')}): promulgated premium, documentary stamp tax, intangible tax and recording charges from a price and a loan amount, each cited to the rule or statute that sets it.`,
+    `- [Buyer closing costs in Florida](${absoluteUrl('/closing-costs/buyer')}): the mortgage stamp tax, intangible tax and recording the statute sets, the promulgated premium, and the fees no rule sets, each cited.`,
+    `- [Seller closing costs in Florida](${absoluteUrl('/closing-costs/seller')}): the deed stamp tax at the county's rate, the owner's policy where custom puts it on the seller, the reissue rate, payoffs and balances, each cited.`,
     `- [Request a quote](${absoluteUrl('/quote')}): for the lines that are not promulgated — settlement fee, search, endorsements.`,
     '',
     '---',

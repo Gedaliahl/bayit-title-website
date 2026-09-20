@@ -1,5 +1,35 @@
 # VERIFY worklist
 
+> ## Update, 20 September 2026 — county and city pages, and two cost pages
+>
+> Six county pages were added (Pinellas, Lee, Collier, Sarasota, Polk,
+> Brevard — `supabase/seed/locations_next_counties.sql`), ten city pages
+> (`lib/florida-cities.ts`, `/cities/[slug]`) and two closing-cost pages
+> (`/closing-costs/buyer`, `/closing-costs/seller`). Every figure on them is
+> read off `lib/promulgated-premium.ts`, `lib/statutory-rates.ts` or the
+> `locations` table, so nothing new was asserted. What the pages *withhold*,
+> and show a banner for, only the team can supply:
+>
+> - **Who customarily pays for the owner's policy** in Hillsborough, Orange,
+>   Duval, Pinellas, Lee, Collier, Sarasota, Polk and Brevard. Broward and
+>   Miami-Dade (buyer) and Palm Beach (seller) are already in the table. This is
+>   the most-searched county question and every unconfirmed county says "not
+>   confirmed" until `customary_owner_policy_payer` is set. Do not fill it from
+>   general knowledge; state what the office sees on its files.
+> - **Whether we e-record** in the six new counties. The county page reads
+>   `e_recording_available` as "we e-record in this county", a statement about
+>   our practice, so it is null until the team says so.
+> - **Brevard's property appraiser URL.** bcpao.us sits behind a bot wall and
+>   could not be read, so the estimate page offers Brevard no link. Confirm the
+>   URL by hand and set `property_appraiser_url`.
+> - **Where each city's building department publishes permit and code
+>   records**, for the municipal lien search paragraph on every city page.
+> - **Our settlement and search fees** on each side, and **how the standard
+>   Florida contract forms allocate each line by default**, for the two
+>   closing-cost pages. Both pages name these as withheld rather than guessing.
+
+---
+
 > ## Update, 20 September 2026 — the first answers are back
 >
 > The team answered the four open-permit questions. What they said is now on
