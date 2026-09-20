@@ -3,7 +3,7 @@ status: draft
 title: "What happens if there's an open permit on the property before closing?"
 slug: "open-permits-before-closing-florida"
 cluster: "liens"
-direct_answer: "An open permit is a building permit the municipality never closed out, usually because a final inspection was never called. It does not appear on a title search, because it is a municipal record rather than a recorded one. It surfaces on a municipal lien search, and it is normally the seller's to resolve before closing."
+direct_answer: "An open permit is a building permit the municipality never closed out, usually because no final inspection was called. It is a municipal record: a municipal lien search finds it, a title search does not. The contract decides who resolves it: the seller, up to a Permit Limit, on the standard FAR/BAR form; the buyer on the \"AS IS\" form."
 counties: ["broward-county", "palm-beach-county", "miami-dade-county"]
 review_tags: ["permits", "municipal-lien-search", "clearing-title"]
 related:
@@ -13,7 +13,7 @@ pending_confirmation:
   - "OP-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Sometimes\") — drafted from this page, not yet reviewed"
   - "OP-01 (Bayit Title): Answered in part — two weeks in the ordinary case. Still open: how long a complicated close-out runs, and whether the page should name per-municipality differences"
   - "OP-02 (Bayit Title): Answered — no reliable flat fee, and the file is scoped before an estimate is given. The municipal fees that are published are now cited from the municipalities' own schedules. Still open: whether the page should carry them, and what the contractor and design-professional side of a close-out costs"
-  - "OP-04 (underwriter/form): How the standard FAR/BAR contract allocates responsibility for open permits, and which paragraph"
+  - "OP-04 (Bayit Title): The allocation on both forms is now read from the published FR/Bar-7 and ASIS-7x redlines (standard: seller up to the Permit Limit under 9(a)(iii) and 12; AS IS: buyer, seller cooperates under 12(c)) — see docs/go-live-status.md. Still open: confirm the paragraph references against the executed form the office actually sees on files"
   - "OP-05 (Bayit Title): Answered — the close-out routes are confirmed. Still open: whether we use a contractor affidavit or a municipal amnesty programme, which the draft claimed and the team did not name"
   - "OP-06 (Bayit Title): Check the building-and-zoning exclusion this page relies on against the owner's policy form we actually issue"
 verdict:
@@ -51,7 +51,7 @@ On the FAR/BAR "AS IS" Residential Contract, the provision is **paragraph 12(c)*
 
 That allocation is the default, and it is the one most surprises come from: a buyer who assumed the seller would fix it, reading paragraph 12(c) for the first time in the last week before closing. It is also freely negotiable, and on many files it is negotiated — by addendum, by a credit, or by an escrow holdback against the close-out.
 
-The standard FAR/BAR Residential Contract, the non-"AS IS" form, treats condition differently, so which form the parties signed changes the answer. We read the executed contract rather than assume the form.
+The standard FAR/BAR Residential Contract, the non-"AS IS" form, allocates it the other way. Paragraph 9(a)(iii) sets a **Permit Limit** — a dollar figure or a percentage of the purchase price, 1.5% if left blank — and paragraph 12 requires the seller, up to that limit and no later than five days before closing, to have open and expired permits closed and to obtain and close permits for unpermitted work. If the cost runs past the limit, either side can elect to absorb the excess or take a credit, or terminate. So which form the parties signed changes the answer. We read the executed contract rather than assume the form.
 
 The practical risk is what happens after closing. An unresolved open permit follows the property, not the seller. A new owner can find themselves needing to close out work they did not do, sometimes for a contractor they never hired, occasionally under a code that has changed since.
 

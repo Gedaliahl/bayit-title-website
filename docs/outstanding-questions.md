@@ -1,5 +1,11 @@
 # What still needs someone outside the office
 
+> **20 September 2026, later the same day:** the go-live question was put and
+> answered in [`go-live-status.md`](./go-live-status.md), which settles from
+> primary sources several of the items below (OP-04, LT-09/LT-10, FS-02,
+> the bankruptcy cites, FIRPTA, OP-06, HA-05/HA-06) and records the research
+> on the entireties question for counsel. Read that file first.
+
 Updated 20 September 2026. This replaces an earlier version of this file that
 put eleven questions to the First American agency representative. Most of those
 questions turned out not to need asking.
