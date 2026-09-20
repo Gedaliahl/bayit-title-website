@@ -105,11 +105,13 @@ export function originalPremium(liability: number): number {
  * where it falls once the whole liability is considered, rather than as a fresh
  * policy starting again at the first bracket: on a $500,000 sale over a $300,000
  * policy that is the $300,000-to-$500,000 band at $5.00 per thousand, not
- * $100,000 at $5.75 plus $100,000 at $5.00. The two readings differ by $75 here.
+ * $100,000 at $5.75 plus $100,000 at $5.00. The two readings differ by $75 there.
  * Compare (5)(a), which says "the amount ... in excess" without "in the
  * aggregate" and is rated the other way in simultaneousLoanPremium — the
- * difference in wording is the reason they are computed differently. If a file
- * comes back rated the other way, this is the function to change.
+ * difference in wording is the reason they are computed differently.
+ *
+ * Confirmed by the team on 20 September 2026: the excess is rated at its
+ * position in the aggregate schedule, which is what this function does.
  *
  * priorPolicyAmount of 0 means nobody has told us, in which case the whole
  * liability goes at the reissue schedule and the caller says so on the line.

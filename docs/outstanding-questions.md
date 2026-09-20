@@ -224,19 +224,23 @@ as reissue, and the line says so rather than implying a complete figure.
 `tests/reissue-excess.test.ts` pins the arithmetic, the $100 minimum across the
 split, and both notes.
 
-**One interpretive choice inside it, worth putting to the underwriter.** The rule
-says the excess is rated at original rates "in the aggregate". That is read here
-as the excess sitting where it falls in the original schedule once the whole
-liability is considered — for the example above, the $300,000-to-$500,000 band at
-$5.00 per thousand. The alternative reading rates the excess as though it were a
-fresh policy starting again at the first bracket, which would make it $100,000 at
-$5.75 plus $100,000 at $5.00, and the answer $2,005 rather than $1,930. The
-aggregate wording is what decides it, and the contrast with (5)(a) — which says
-"the amount ... in excess" with no aggregate language and is computed the other
-way in `simultaneousLoanPremium` — is the reason the two are not treated alike.
-**A $75 question on this example, and one a rep can settle in a sentence.** If
-the answer is the other reading, `reissuePremium` is the only function to
-change.
+**The interpretive choice inside it has been answered.** The rule says the excess
+is rated at original rates "in the aggregate", and there were two ways to read
+that: the excess sitting where it falls in the schedule once the whole liability
+is considered, or the excess starting again at the first bracket as though it
+were a fresh policy. On the example above that is $1,930 against $2,005.
+
+Confirmed by the team on 20 September 2026: **the excess is rated at its position
+in the aggregate schedule** — the tiers it occupies given the total new
+liability — not as a standalone layer from the first bracket. That is what
+`reissuePremium` already did, so nothing changed in the code; the answer is
+recorded here and in the function's own comment so the next person does not have
+to re-derive it. The contrast with (5)(a), which omits the aggregate wording and
+is computed the other way in `simultaneousLoanPremium`, holds.
+
+Noted for provenance: this is the team's confirmation, not a written underwriter
+bulletin. It is the reading the rule's wording supports and the one the site now
+prices on.
 
 ### Smaller
 
