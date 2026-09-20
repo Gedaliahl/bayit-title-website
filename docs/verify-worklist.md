@@ -88,21 +88,46 @@ write these from memory or from a search-engine summary**; open the statute.
 Each was answered from the primary source and cited in the page. What they
 turned out to say, in short:
 
-| Question | Answer now on the page |
-|---|---|
-| Judgment lien mechanism and duration | Certified copy recorded, with the lienholder's address; 10 years, extendable once by 10; never past 20 from entry (§§ 55.10, 55.081) |
-| Homestead vs. judgment liens | Fla. Const. art. X, § 4(a) — no judgment is a lien, except taxes, purchase/improvement/repair, and labor on the realty; limit is 160 acres / half an acre, not value |
-| Lis pendens | § 48.23 — contents and effect; 1 year where the action is not on a recorded instrument or construction lien; court may control, discharge or bond it |
-| Landlocked access | § 704.01(1) implied grant; § 704.01(2) statutory way of necessity, limited to dwelling, agricultural, timber or stockraising use; § 704.04 sends a contested one to circuit court with compensation |
-| Association approval deadline | **There isn't one.** Neither ch. 718 nor ch. 720 caps it; the declaration does. Condo approval fee capped at $150 per applicant (§ 718.112(2)(k)); ch. 720 sets no equivalent cap |
-| Estoppel certificate | 10 business days; binding 30 days (hand/electronic) or 35 (mail); $250, plus $150 delinquent and $100 expedited, with aggregate caps; no fee at all if late (§ 718.116(8), § 720.30851) |
-| Remedy when an association is late | Loses the fee, and § 720.30851 allows a summary proceeding with attorney fees |
-| Deed execution | Two subscribing witnesses (§ 689.01(1)) **and** acknowledgment for recording (§ 695.03) — cumulative, not alternative |
-| RON for a signer abroad | Allowed. The notary must be in Florida, the signer need not be (§ 117.209(3), (4)); a foreign passport is acceptable ID for a principal outside the US (§ 117.201(6)); only matrimony is excluded |
-| Foreign acknowledgment | § 695.03(3) accepts a foreign notary with an official seal, a civil-law notary, a commissioner of deeds, or a US consular officer. **The apostille is not in the statute** — it is an underwriter/clerk practice |
-| Power of attorney | Executed in the same manner as a deed; does not dispense with spousal joinder on homestead (§ 689.111) |
-| FIRPTA | 15% of the amount realised; no withholding at $300,000 or less and 10% to $1,000,000 where the buyer takes it as a residence; Forms 8288, 8288-A, 8288-B (26 U.S.C. § 1445) |
-| Bankruptcy sale order | 14-day stay (FRBP 6004(h)), 14 days to appeal (FRBP 8002(a)(1)), and a good faith purchaser is protected on reversal unless the sale was stayed (11 U.S.C. § 363(m)) |
+| Question | Answer now on the page | Read from |
+|---|---|---|
+| Judgment lien mechanism and duration | Certified copy recorded, with the lienholder's address; 10 years, extendable once by 10; never past 20 from entry (§§ 55.10, 55.081) | § 55.10; § 55.081 — `judgment` |
+| Homestead vs. judgment liens | Fla. Const. art. X, § 4(a) — no judgment is a lien, except taxes, purchase/improvement/repair, and labor on the realty; limit is 160 acres / half an acre, not value | Fla. Const. art. X, § 4(a) — `judgment` |
+| Lis pendens | § 48.23 — contents and effect; 1 year where the action is not on a recorded instrument or construction lien; court may control, discharge or bond it | § 48.23 — `litigation`. The (2) and (3) subsections on the page are not from this pass: `LT-10` |
+| Landlocked access | § 704.01(1) implied grant; § 704.01(2) statutory way of necessity, limited to dwelling, agricultural, timber or stockraising use; § 704.04 sends a contested one to circuit court with compensation | § 704.01(1); § 704.01(2); § 704.04 — `no-legal-access` |
+| Association approval deadline | **There isn't one.** Neither ch. 718 nor ch. 720 caps it; the declaration does. Condo approval fee capped at $150 per applicant (§ 718.112(2)(k)); ch. 720 sets no equivalent cap | ch. 718; ch. 720; § 718.112(2)(k) — `hoa-approval-delay`. Subsection letter unconfirmed: `HA-05` |
+| Estoppel certificate | 10 business days; binding 30 days (hand/electronic) or 35 (mail); $250, plus $150 delinquent and $100 expedited, with aggregate caps; no fee at all if late (§ 718.116(8), § 720.30851) | § 718.116(8); § 720.30851 — `hoa-approval-delay`. The $750 / $2,500 aggregates are not from this pass: `HA-06` |
+| Remedy when an association is late | Loses the fee, and § 720.30851 allows a summary proceeding with attorney fees | § 720.30851 — `hoa-approval-delay` |
+| Deed execution | Two subscribing witnesses (§ 689.01(1)) **and** acknowledgment for recording (§ 695.03) — cumulative, not alternative | § 689.01(1); § 695.03 — `foreign-seller`, and `non-standard-purchase-contract` from 2026-09-20 |
+| RON for a signer abroad | Allowed. The notary must be in Florida, the signer need not be (§ 117.209(3), (4)); a foreign passport is acceptable ID for a principal outside the US (§ 117.201(6)); only matrimony is excluded | § 117.209(1), (3), (4); § 117.201(6) — `foreign-seller`, `mobile-and-remote-signings` |
+| Foreign acknowledgment | § 695.03(3) accepts a foreign notary with an official seal, a civil-law notary, a commissioner of deeds, or a US consular officer. **The apostille is not in the statute** — it is an underwriter/clerk practice | § 695.03(3) — `foreign-seller` |
+| Power of attorney | Executed in the same manner as a deed; does not dispense with spousal joinder on homestead (§ 689.111) | § 689.111 — `foreign-seller` |
+| FIRPTA | 15% of the amount realised; no withholding at $300,000 or less and 10% to $1,000,000 where the buyer takes it as a residence; Forms 8288, 8288-A, 8288-B (26 U.S.C. § 1445) | 26 U.S.C. § 1445 — `foreign-seller` |
+| Bankruptcy sale order | 14-day stay (FRBP 6004(h)), 14 days to appeal (FRBP 8002(a)(1)), and a good faith purchaser is protected on reversal unless the sale was stayed (11 U.S.C. § 363(m)) | FRBP 6004(h); FRBP 8002(a)(1); 11 U.S.C. § 363(m) — `bankruptcy` |
+
+**The third column is the point of the table.** It names the provision each
+answer was actually read from, and the page that now carries it. A specific that
+is on a page but not in this column did not come from this pass — which is how
+the 20 September diff found four that had drifted in afterwards and inherited
+the authority of the sourced sentence beside them. Anything added here later
+should name its provision at the same time, or it is a drafted fact wearing a
+citation.
+
+### Cited on a page, not recorded in this pass
+
+Found by the same diff. None is necessarily wrong; none was sourced here, so
+none should be treated as confirmed. Confirm each against the provision or give
+it a flag on its page.
+
+| Provision | Page | For |
+|---|---|---|
+| § 55.03 | `judgment` | Post-judgment interest, CFO-set rate, annual adjustment |
+| § 48.23(2), (3) | `litigation` | One-year expiry; the court's control and discharge power — flagged `LT-10` |
+| ch. 713 | `litigation` | Construction liens, as the carve-out from the one-year rule |
+| § 162.09 | `open-permits` | Recorded code enforcement lien; no foreclosure against homestead |
+| § 201.02 | `non-standard-purchase-contract` | Documentary stamps, the Miami-Dade rate and surtax — flagged `NS-04` |
+| § 117.201(10), § 117.215, § 117.225, § 117.265 | `mobile-and-remote-signings` | Online notary definition, effect of a part II notarization, registration requirements, identity proofing |
+| 11 U.S.C. § 363(f), § 554 | `bankruptcy` | Free-and-clear grounds; abandonment |
+| Fla. Const. art. X, § 4(c) | `non-standard-purchase-contract` | Spousal joinder on homestead |
 
 | Page | Question | Where the brief says to look |
 |---|---|---|
