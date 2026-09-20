@@ -126,15 +126,41 @@ export function metaDescription(text: string, max = 155): string {
   return lastStop > 60 ? cut.slice(0, lastStop + 1) : `${cut.replace(/\s+\S*$/, '')}…`;
 }
 
+/**
+ * A `YYYY-MM-DD` date from content, as a `Date` fixed to UTC midnight.
+ *
+ * Every date the site prints from a file — a review date, the day a rule was
+ * read — is a plain calendar day with no time and no zone. Parsing one in the
+ * build server's zone would shift the rendered day, and for a date near the
+ * first of a month it would shift the month with it, so the day is pinned to
+ * UTC here and every formatter below reads it back in UTC.
+ *
+ * It throws rather than returning an Invalid Date, because the alternative is
+ * the failure this replaced: `Invalid time value` raised from whichever
+ * consumer happened to run first, naming neither the field nor the file.
+ */
+export function parseContentDate(iso: string): Date {
+  const parsed = new Date(`${iso}T00:00:00Z`);
+  // The round trip is the check that matters. JS rolls an impossible day
+  // forward rather than rejecting it — 2026-09-31 parses happily as 1 October
+  // — so a typo in a hand-written constant would print a day that never was.
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== iso) {
+    throw new Error(`Expected a date as YYYY-MM-DD, got ${JSON.stringify(iso)}.`);
+  }
+  return parsed;
+}
+
 export function formatReviewDate(iso: string | null): string | null {
   if (!iso) return null;
-  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  return parseContentDate(iso).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 export function formatLongDate(iso: string): string {
-  // Front-matter dates are plain YYYY-MM-DD; parse as UTC so the rendered day
-  // does not shift with the build server's timezone.
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+  return parseContentDate(iso).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',

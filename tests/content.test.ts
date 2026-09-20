@@ -144,6 +144,89 @@ describe('the reviewed/VERIFY gate', () => {
   });
 });
 
+/**
+ * YAML resolves a bare `2026-09-20` to a Date and a quoted one to a string.
+ * Downstream every date is interpolated into an ISO string, so the unquoted
+ * spelling used to reach the sitemap as a Date and fail the production build
+ * with `Invalid time value` — from a file the error never named. The parser
+ * flattens both spellings, so these are the tests that keep it flat.
+ */
+describe('review dates', () => {
+  it('normalises an unquoted date, which YAML hands over as a Date', async () => {
+    writeDoc('unquoted', {
+      status: 'reviewed',
+      extra: 'author: "shevy"\nreviewed_on: 2026-09-20\nnext_review: 2027-09-20',
+    });
+
+    const { getDoc } = await loadContentModule();
+    const doc = await getDoc('title-problems', 'unquoted');
+
+    expect(doc?.reviewed_on).toBe('2026-09-20');
+    expect(doc?.next_review).toBe('2027-09-20');
+    expect(typeof doc?.reviewed_on).toBe('string');
+  });
+
+  it('reads a quoted date the same way', async () => {
+    writeDoc('quoted', {
+      status: 'reviewed',
+      extra: 'author: "shevy"\nreviewed_on: "2026-09-20"\nnext_review: "2027-09-20"',
+    });
+
+    const { getDoc } = await loadContentModule();
+    const doc = await getDoc('title-problems', 'quoted');
+
+    expect(doc?.reviewed_on).toBe('2026-09-20');
+    expect(doc?.next_review).toBe('2027-09-20');
+  });
+
+  it('survives the round trip the sitemap makes, for either spelling', async () => {
+    writeDoc('for-sitemap', {
+      status: 'reviewed',
+      extra: 'author: "shevy"\nreviewed_on: 2026-09-20\nnext_review: 2027-09-20',
+    });
+
+    const { getDoc } = await loadContentModule();
+    const { parseContentDate } = await import('@/lib/seo');
+    const doc = await getDoc('title-problems', 'for-sitemap');
+
+    expect(parseContentDate(doc!.reviewed_on!).toISOString()).toBe('2026-09-20T00:00:00.000Z');
+  });
+
+  it('refuses a date that is not YYYY-MM-DD', async () => {
+    writeDoc('bad-shape', {
+      status: 'reviewed',
+      extra: 'author: "shevy"\nreviewed_on: "September 20, 2026"\nnext_review: "2027-09-20"',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'bad-shape')).rejects.toThrow(
+      /reviewed_on must be a date as YYYY-MM-DD/,
+    );
+  });
+
+  it('refuses a day that does not exist', async () => {
+    writeDoc('no-such-day', {
+      status: 'reviewed',
+      extra: 'author: "shevy"\nreviewed_on: "2026-02-30"\nnext_review: "2027-09-20"',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'no-such-day')).rejects.toThrow(
+      /reviewed_on is "2026-02-30", which is not a real date/,
+    );
+  });
+
+  it('names the file and the field it choked on', async () => {
+    writeDoc('named', {
+      status: 'reviewed',
+      extra: 'author: "shevy"\nreviewed_on: "2026-09-20"\nnext_review: "next year"',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'named')).rejects.toThrow(/named\.md: next_review/);
+  });
+});
+
 describe('front-matter validation', () => {
   it('refuses a slug that disagrees with its filename', async () => {
     writeDoc('on-disk', { slug: 'in-front-matter' });

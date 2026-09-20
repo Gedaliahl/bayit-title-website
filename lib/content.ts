@@ -139,7 +139,9 @@ export interface DocFrontMatter {
   review_tags: string[];
   /** Present only on a reviewed page — the byline belongs to the reviewer. */
   author?: string;
+  /** `YYYY-MM-DD`, normalised by `assertDate` whether or not the author quoted it. */
   reviewed_on?: string;
+  /** `YYYY-MM-DD`, normalised by `assertDate` whether or not the author quoted it. */
   next_review?: string;
   related: string[];
   /** Optional one-line summary for index cards and meta descriptions. */
@@ -332,7 +334,58 @@ function assertFrontMatter(
     related: (data.related as string[]) ?? [],
     ...(data.verdict === undefined ? {} : { verdict: assertVerdict(data.verdict, file) }),
     ...(data.steps === undefined ? {} : { steps: assertSteps(data.steps, file) }),
+    ...(data.reviewed_on === undefined
+      ? {}
+      : { reviewed_on: assertDate(data.reviewed_on, 'reviewed_on', file) }),
+    ...(data.next_review === undefined
+      ? {}
+      : { next_review: assertDate(data.next_review, 'next_review', file) }),
   };
+}
+
+/**
+ * A front-matter date, normalised to the `YYYY-MM-DD` string its type claims.
+ *
+ * YAML resolves an unquoted `2026-09-20` to a JS `Date` and a quoted one to a
+ * string, so `DocFrontMatter.reviewed_on` was only a string some of the time.
+ * Every consumer interpolates it into an ISO string — `${reviewed_on}T00:00:00Z`
+ * — which turns a Date into "Sat Sep 20 2026 00:00:00 GMT+0000 (…)T00:00:00Z"
+ * and fails with `Invalid time value` from the sitemap, several steps from the
+ * file that caused it. Both spellings are accepted and flattened here, at the
+ * boundary, so nothing downstream has to know which one an author used.
+ *
+ * A date that is malformed or does not exist fails the build naming its field
+ * and its file, which is the whole point: a review date is the claim that a
+ * licensed person stood behind the page on a particular day.
+ */
+function assertDate(value: unknown, field: string, file: string): string {
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) {
+      throw new Error(`${file}: ${field} is not a usable date.`);
+    }
+    // YAML reads a bare date as UTC midnight, so the calendar day survives.
+    return value.toISOString().slice(0, 10);
+  }
+
+  if (typeof value !== 'string') {
+    throw new Error(
+      `${file}: ${field} must be a date as YYYY-MM-DD, got ${typeof value}.`,
+    );
+  }
+
+  const iso = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    throw new Error(`${file}: ${field} must be a date as YYYY-MM-DD, got "${iso}".`);
+  }
+  // A day that does not exist has to be caught by the round trip, not by an
+  // Invalid Date: JS rolls 2026-02-30 forward to 2026-03-02 and 2026-09-31 to
+  // 2026-10-01 without complaint. Only a month over 12 parses as invalid.
+  const parsed = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== iso) {
+    throw new Error(`${file}: ${field} is "${iso}", which is not a real date.`);
+  }
+
+  return iso;
 }
 
 /**

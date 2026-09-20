@@ -8,6 +8,7 @@ import {
   metaDescription,
   formatLongDate,
   formatReviewDate,
+  parseContentDate,
   indexingAllowed,
   siteVerification,
 } from '@/lib/seo';
@@ -152,5 +153,44 @@ describe('which deployment crawlers are invited into', () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost.toUpperCase());
     expect(indexingAllowed()).toBe(true);
+  });
+});
+
+/**
+ * A date in content is a calendar day, not an instant. Two things used to go
+ * wrong with that: the day was parsed in the build server's zone, so a review
+ * dated the 1st printed as the previous month anywhere west of UTC; and an
+ * impossible day was rolled forward instead of rejected, because JS reads
+ * 2026-09-31 as 1 October without complaint.
+ */
+describe('content dates', () => {
+  it('holds a calendar day to UTC, whatever zone the build runs in', () => {
+    const tz = process.env.TZ;
+    // Honolulu is UTC-10, so a UTC-midnight date lands on the previous day —
+    // and, on the first of a month, in the previous month.
+    process.env.TZ = 'Pacific/Honolulu';
+    try {
+      expect(formatReviewDate('2026-09-01')).toBe('September 2026');
+      expect(formatLongDate('2026-09-01')).toBe('September 1, 2026');
+    } finally {
+      process.env.TZ = tz;
+    }
+  });
+
+  it('parses a plain day to UTC midnight', () => {
+    expect(parseContentDate('2026-09-20').toISOString()).toBe('2026-09-20T00:00:00.000Z');
+  });
+
+  it('refuses a day that does not exist rather than rolling it forward', () => {
+    expect(() => parseContentDate('2026-09-31')).toThrow(/YYYY-MM-DD/);
+    expect(() => parseContentDate('2026-02-30')).toThrow(/YYYY-MM-DD/);
+  });
+
+  it('refuses a date that is not a plain day at all', () => {
+    expect(() => parseContentDate('September 20, 2026')).toThrow(/YYYY-MM-DD/);
+  });
+
+  it('still lets a missing review date through as nothing to print', () => {
+    expect(formatReviewDate(null)).toBeNull();
   });
 });

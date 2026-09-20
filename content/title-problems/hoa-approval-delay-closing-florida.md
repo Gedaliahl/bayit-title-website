@@ -7,8 +7,8 @@ direct_answer: "Association approval is a contract condition, not a title defect
 counties: ["broward-county", "palm-beach-county", "miami-dade-county"]
 review_tags: ["hoa", "condo", "association-approval", "estoppel"]
 author: "shevy"
-reviewed_on: "2026-09-20"
-next_review: "2027-09-20"
+reviewed_on: 2026-09-20
+next_review: 2027-09-20
 related:
   - "non-standard-purchase-contract-florida-closing"
   - "open-permits-before-closing-florida"

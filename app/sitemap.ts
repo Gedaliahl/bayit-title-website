@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 import { getAllDocs } from '@/lib/content';
 import { getCounties } from '@/lib/locations';
 import { team } from '@/lib/team';
-import { absoluteUrl } from '@/lib/seo';
+import { absoluteUrl, parseContentDate } from '@/lib/seo';
 import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -51,14 +51,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...problems.map((doc) => ({
       url: absoluteUrl(`/title-problems/${doc.slug}`),
       // The review date is the real last-modified: it is when a licensed person
-      // last stood behind the page.
-      lastModified: new Date(`${doc.reviewed_on!}T00:00:00Z`),
+      // last stood behind the page. Only a reviewed page reaches here, and the
+      // front-matter parser guarantees a reviewed page carries the date.
+      lastModified: parseContentDate(doc.reviewed_on!),
       changeFrequency: 'yearly' as const,
       priority: 0.8,
     })),
     ...services.map((doc) => ({
       url: absoluteUrl(`/services/${doc.slug}`),
-      lastModified: new Date(`${doc.reviewed_on!}T00:00:00Z`),
+      lastModified: parseContentDate(doc.reviewed_on!),
       changeFrequency: 'yearly' as const,
       priority: 0.7,
     })),

@@ -7,8 +7,8 @@ direct_answer: "A non-standard contract changes the closing because the closing 
 counties: []
 review_tags: ["contract", "closing-process", "deadlines"]
 author: "shevy"
-reviewed_on: "2026-09-20"
-next_review: "2027-09-20"
+reviewed_on: 2026-09-20
+next_review: 2027-09-20
 related:
   - "hoa-approval-delay-closing-florida"
   - "open-permits-before-closing-florida"
