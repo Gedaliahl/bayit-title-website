@@ -31,11 +31,13 @@ import {
 import { municipalRecord, withheldMunicipalFacts, type CityQuote } from '@/lib/municipal-records';
 import {
   ASSESSMENT_PRIORITY,
+  BOARD_MAY_REDUCE,
   CHECKED_ON as CODE_CHECKED_ON,
   CITY_MAY_RELEASE,
   CODE_FINE_LIMITS,
   FINE_ACCRUES,
   FINE_FACTORS,
+  HIGHER_LIMITS,
   LIEN_ATTACHES,
   ORDER_BINDS_PURCHASERS,
   RELEASE_COSTS,
@@ -282,9 +284,12 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           </p>
         )}
         <p>
-          The fines the hearing body may impose are capped by the statute, and the same caps apply
-          in every city:
+          The statute sets the fines the hearing body may impose. It sets a default set of limits
+          and lets a city of 50,000 people or more adopt a higher set by ordinance, and every city
+          with a page here is over that line, so which set {city.name} uses is a question of its
+          own ordinance:
         </p>
+        <StatuteWords quote={HIGHER_LIMITS} />
         <CitedFigures figures={CODE_FINE_LIMITS} />
 
         <h2>How does a {city.name} code violation become a lien?</h2>
@@ -322,8 +327,13 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         </p>
         <StatuteWords quote={CITY_MAY_RELEASE} />
         <p>
-          A request to reduce the fine speaks to the same factors the statute told the hearing body
-          to weigh when it set the fine, and a reduction is the city&rsquo;s decision, not a right:
+          The statute lets the hearing body reduce a fine, in one sentence, and says nothing that
+          makes a reduction a right:
+        </p>
+        <StatuteWords quote={BOARD_MAY_REDUCE} />
+        <p>
+          A request to reduce speaks to the same factors the statute told the hearing body to weigh
+          when it set the fine:
         </p>
         <StatuteWords quote={FINE_FACTORS} />
         <p>The city may add its recording and release costs to whatever is paid:</p>

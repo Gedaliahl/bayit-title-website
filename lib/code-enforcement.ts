@@ -34,25 +34,34 @@ export const URLS = {
   s180135: statute('0100-0199/0180/Sections/0180.135.html'),
 } as const;
 
-/** The fines a code enforcement board or special magistrate may impose. s. 162.09(2)(a). */
+/**
+ * The fines a code enforcement board or special magistrate may impose.
+ *
+ * Two sets of limits, both the statute's. Paragraph (2)(a) sets the defaults;
+ * paragraph (2)(d) lets a county or a city of 50,000 people or more adopt the
+ * higher set by a majority-plus-one vote of its governing body. Every city with
+ * a page here is over 50,000, so which set applies is the city's ordinance,
+ * not the statute — which is why both are printed and neither is asserted as
+ * the city's. Where a city publishes its own limits they are quoted on its page.
+ */
 export const CODE_FINE_LIMITS: CitedFigure[] = [
   {
     label: 'Daily fine, first violation',
-    amount: 'up to $250 per day',
-    cite: 'Fla. Stat. § 162.09(2)(a)',
+    amount: 'up to $250 per day; up to $1,000 per day where the city has adopted the higher limit',
+    cite: 'Fla. Stat. § 162.09(2)(a), (d)',
     sourceUrl: URLS.s16209,
     note: 'For each day the violation continues past the compliance date the order set. The costs of repairs the city made may be added.',
   },
   {
     label: 'Daily fine, repeat violation',
-    amount: 'up to $500 per day',
-    cite: 'Fla. Stat. § 162.09(2)(a)',
+    amount: 'up to $500 per day; up to $5,000 per day under the higher limit',
+    cite: 'Fla. Stat. § 162.09(2)(a), (d)',
     sourceUrl: URLS.s16209,
   },
   {
     label: 'Irreparable or irreversible violation',
-    amount: 'up to $5,000 per violation',
-    cite: 'Fla. Stat. § 162.09(2)(a)',
+    amount: 'up to $5,000 per violation; up to $15,000 under the higher limit',
+    cite: 'Fla. Stat. § 162.09(2)(a), (d)',
     sourceUrl: URLS.s16209,
     note: 'A one-time fine in place of a daily one, where the board finds the violation cannot be undone.',
   },
@@ -116,6 +125,21 @@ export const RELEASE_COSTS: StatuteQuote = {
   cite: 'Fla. Stat. § 162.10',
   sourceUrl: URLS.s16210,
   text: 'The local governing body shall be entitled to collect all costs incurred in recording and satisfying a valid lien.',
+};
+
+/** What lets a large city fine more than the defaults. */
+export const HIGHER_LIMITS: StatuteQuote = {
+  cite: 'Fla. Stat. § 162.09(2)(d)',
+  sourceUrl: URLS.s16209,
+  text:
+    'A county or a municipality having a population equal to or greater than 50,000 may adopt, by a vote of at least a majority plus one of the entire governing body of the county or municipality, an ordinance that gives code enforcement boards or special magistrates, or both, authority to impose fines in excess of the limits set forth in paragraph (a). Such fines shall not exceed $1,000 per day per violation for a first violation, $5,000 per day per violation for a repeat violation, and up to $15,000 per violation if the code enforcement board or special magistrate finds the violation to be irreparable or irreversible in nature.',
+};
+
+/** The one sentence a reduction request rests on. */
+export const BOARD_MAY_REDUCE: StatuteQuote = {
+  cite: 'Fla. Stat. § 162.09(2)(c)',
+  sourceUrl: URLS.s16209,
+  text: 'An enforcement board may reduce a fine imposed pursuant to this section.',
 };
 
 /** The factors the board weighs in setting a fine — the same ones a reduction request speaks to. */
