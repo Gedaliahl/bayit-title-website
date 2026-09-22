@@ -1231,27 +1231,26 @@ export function CalculatorPane({
                 +
               </span>
             </button>
-            {pagesOpen ? (
-              <div className="disclosure__body" id={`${listId}-pages`}>
-                <span className="field__hint">{FORM.pages.hint}</span>
-                <div className="two-up">
-                  {isPurchase ? (
-                    <PagesField
-                      id="deed-pages"
-                      label={FORM.pages.deed}
-                      value={deedPages}
-                      onChange={setDeedPages}
-                    />
-                  ) : null}
+            {/* Always in the page, so the button's aria-controls names something. */}
+            <div className="disclosure__body" id={`${listId}-pages`} hidden={!pagesOpen}>
+              <span className="field__hint">{FORM.pages.hint}</span>
+              <div className="two-up">
+                {isPurchase ? (
                   <PagesField
-                    id="mortgage-pages"
-                    label={FORM.pages.mortgage}
-                    value={mortgagePages}
-                    onChange={setMortgagePages}
+                    id="deed-pages"
+                    label={FORM.pages.deed}
+                    value={deedPages}
+                    onChange={setDeedPages}
                   />
-                </div>
+                ) : null}
+                <PagesField
+                  id="mortgage-pages"
+                  label={FORM.pages.mortgage}
+                  value={mortgagePages}
+                  onChange={setMortgagePages}
+                />
               </div>
-            ) : null}
+            </div>
           </div>
         ) : null}
       </form>

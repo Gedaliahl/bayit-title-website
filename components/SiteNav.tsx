@@ -12,6 +12,8 @@ export interface NavItem {
 /** The width the stylesheet collapses the nav below. The two must move together. */
 const COLLAPSED = '(max-width: 58rem)';
 
+const PANEL_ID = 'primary-nav';
+
 /**
  * The primary navigation, which is a plain row on a desktop and a disclosure
  * behind a Menu button on a phone.
@@ -59,8 +61,15 @@ export function SiteNav({
 
     // Escape is how a keyboard reader expects to put a disclosure away, and
     // focus goes back to the button that opened it rather than to the page top.
+    // Only from inside the menu: the panel pushes the page down rather than
+    // covering it, so a reader can be working in a field below it, and there
+    // Escape belongs to the field — closing an address list, say — not to us.
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      const focused = document.activeElement;
+      const inMenu =
+        focused === toggleRef.current || Boolean(focused && document.getElementById(PANEL_ID)?.contains(focused));
+      if (!inMenu) return;
       setOpen(false);
       toggleRef.current?.focus();
     };
@@ -104,7 +113,7 @@ export function SiteNav({
         // Controls the same element the label points at, so the button, the
         // panel and the screen reader all agree on what is being opened.
         aria-expanded={open}
-        aria-controls="primary-nav"
+        aria-controls={PANEL_ID}
         onClick={() => setOpen((current) => !current)}
       >
         {/* Drawn rather than typed: ☰ and ✕ fall back to whatever symbol font
@@ -120,7 +129,7 @@ export function SiteNav({
       </button>
 
       <nav
-        id="primary-nav"
+        id={PANEL_ID}
         className={open ? 'nav nav--open' : 'nav'}
         aria-label="Primary"
       >

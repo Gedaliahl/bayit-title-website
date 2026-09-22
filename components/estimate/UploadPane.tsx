@@ -19,6 +19,7 @@ import { contractQuoteSchema, fieldErrors, HONEYPOT_FIELD } from '@/lib/schemas'
 import {
   BOT_CHECK_BLOCKED,
   BotCheck,
+  focusAfterRemoval,
   Honeypot,
   outcomeUnknown,
   postJson,
@@ -76,6 +77,8 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
   const botCheck = useBotCheck();
   const uploads = useRef<AbortController | null>(null);
   const successRef = useRef<HTMLHeadingElement>(null);
+  const picker = useRef<HTMLInputElement>(null);
+  const fileList = useRef<HTMLUListElement>(null);
 
   const busy = status.kind === 'sending' || status.kind === 'uploading';
   useLeaveWarning(status.kind === 'uploading');
@@ -96,6 +99,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
   function removeFile(index: number) {
     setFiles((current) => current.filter((_, position) => position !== index));
     setRejected([]);
+    focusAfterRemoval(fileList, index, picker);
   }
 
   function clearError(field: string) {
@@ -107,11 +111,13 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
     });
   }
 
+  /** "Send another": the form comes back, and focus goes to where it starts. */
   function reset() {
     setFiles([]);
     setRejected([]);
     setErrors({});
     setStatus({ kind: 'idle' });
+    requestAnimationFrame(() => picker.current?.focus());
   }
 
   function fail(found: Record<string, string>, outcome: string) {
@@ -317,6 +323,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
                   {files.length > 0 ? UPLOAD.contract.dropSubMore : UPLOAD.contract.dropSub}
                 </span>
                 <input
+                  ref={picker}
                   id={`${id}-contract`}
                   name="documents"
                   type="file"
@@ -336,7 +343,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
               </label>
               {fieldError('documents')}
               {files.length > 0 ? (
-                <ul className="contract-files">
+                <ul className="contract-files" ref={fileList}>
                   {files.map((file, index) => (
                     <li key={`${file.name}-${file.size}`}>
                       <span className="contract-files__name">{file.name}</span>

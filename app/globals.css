@@ -2680,6 +2680,11 @@ legend {
   margin-top: 0.75rem;
 }
 
+/* The grid above would otherwise win over the hidden attribute. */
+.disclosure__body[hidden] {
+  display: none;
+}
+
 .disclosure__body .field label {
   font-size: 0.875rem;
 }

@@ -119,6 +119,23 @@ export function SelectField({
 }
 
 /**
+ * A removed file takes its button with it, and focus with the button. Focus
+ * goes to the next file's remove button instead, or the one before it, or the
+ * picker once the list is empty, so a keyboard reader stays where they were.
+ * Read after the render that removed it, which is when the list is current.
+ */
+export function focusAfterRemoval(
+  list: RefObject<HTMLElement | null>,
+  removed: number,
+  picker: RefObject<HTMLElement | null>,
+) {
+  requestAnimationFrame(() => {
+    const buttons = Array.from(list.current?.querySelectorAll('button') ?? []);
+    (buttons[removed] ?? buttons[removed - 1] ?? picker.current)?.focus();
+  });
+}
+
+/**
  * Attachments. Controlled from the form rather than read off the DOM at submit
  * time, because a person who picks three files and then one more expects four —
  * a plain multiple input would replace the set.
@@ -140,9 +157,13 @@ export function FileField({
   accept: string;
   disabled?: boolean;
 }) {
+  const picker = useRef<HTMLInputElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+
   return (
     <Wrapper {...props}>
       <input
+        ref={picker}
         id={props.name}
         name={props.name}
         type="file"
@@ -159,7 +180,7 @@ export function FileField({
       />
 
       {files.length > 0 ? (
-        <ul className="file-list">
+        <ul className="file-list" ref={list}>
           {files.map((file, index) => (
             <li key={`${file.name}-${file.size}-${index}`}>
               <span className="file-list__name">{file.name}</span>
@@ -167,7 +188,10 @@ export function FileField({
               <button
                 type="button"
                 className="file-list__remove"
-                onClick={() => onRemove(index)}
+                onClick={() => {
+                  onRemove(index);
+                  focusAfterRemoval(list, index, picker);
+                }}
                 disabled={disabled}
               >
                 Remove<span className="visually-hidden"> {file.name}</span>
