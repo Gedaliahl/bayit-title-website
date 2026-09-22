@@ -111,8 +111,8 @@ describe('page metadata', () => {
   it.each(all.map((route) => [route.path, route.metadata] as const))(
     '%s has a description a results page can show whole',
     (route, metadata) => {
-      // The homepage description carries the "excellence" wording, which is
-      // waiting on the firm's decision (D3) and is not rewritten until then.
+      // The homepage was left out of the production-readiness pass at the
+      // firm's request; its description, which runs long, is theirs to change.
       if (route === '/') return;
       expect(typeof metadata.description).toBe('string');
       expect((metadata.description as string).length).toBeLessThanOrEqual(DESCRIPTION_LIMIT);

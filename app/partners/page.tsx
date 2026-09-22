@@ -45,9 +45,9 @@ export default async function PartnersPage() {
 
         <AnswerPanel
           text={
-            'Your client’s closing is your reputation as much as ours, so the work here is held to ' +
-            'one standard: excellence, in the parts that decide whether your date holds. A named ' +
-            'processor and a named closer on every file from opening to recording. The title read ' +
+            'Your client’s closing is your reputation as much as ours, so here is how we handle the ' +
+            'parts that decide whether your date holds. A named processor and a named closer on ' +
+            'every file from opening to recording. The title read ' +
             'in the first week rather than the last. Problems put in writing with what it takes to ' +
             'clear them. Lender conditions answered by someone who can resolve them. And a phone ' +
             'answered by a person who already knows which file you mean.'
