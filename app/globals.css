@@ -1202,6 +1202,151 @@ legend {
   }
 }
 
+/* ---------- homepage sections below the fold ---------- */
+/* Two columns: the heading and what the section is about on the left, held in
+   view while the right column scrolls past; the cards, points or links on the
+   right. One narrow column under 58rem. */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+.split__head {
+  position: sticky;
+  top: 6rem;
+}
+
+.split__head .eyebrow {
+  margin-bottom: 0.75rem;
+}
+
+.split__head h2 {
+  margin: 0 0 1rem;
+}
+
+.split__head p:not(.eyebrow) {
+  color: var(--ink-body);
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.split__head .split__link {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0;
+}
+
+.split__body {
+  margin: 0;
+}
+
+.split__note {
+  margin: 1.5rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.card-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* A short list of claims, each on its own gold-ruled line. */
+.points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.points li {
+  position: relative;
+  padding: 1.25rem 1.5rem 1.25rem 3.5rem;
+  background: var(--paper);
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  line-height: 1.55;
+}
+
+.points li::before {
+  content: '';
+  position: absolute;
+  left: 1.5rem;
+  top: 1.6rem;
+  width: 0.9rem;
+  height: 0.5rem;
+  border-left: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* Stacked cards for a handful of items, each one a heading and a line. */
+.tiles {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.tiles .card h3 {
+  font-size: var(--step-1);
+}
+
+.tiles--numbered {
+  counter-reset: tile;
+}
+
+.tiles--numbered .card {
+  counter-increment: tile;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tiles--numbered .card::before {
+  content: counter(tile);
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--accent-wash);
+  color: var(--accent-deep);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.linklist--columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+@media (max-width: 58rem) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .split__head {
+    position: static;
+  }
+}
+
+@media (max-width: 40rem) {
+  .card-grid--two,
+  .linklist--columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* ---------- the example file card ---------- */
 /* An example, labelled as one. It shows the order of work on a file, so the
    step a reader is about to ask about has a name before they call.
