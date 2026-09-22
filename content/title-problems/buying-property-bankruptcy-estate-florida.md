@@ -1,20 +1,17 @@
 ---
-status: draft
+status: reviewed
 title: "We're buying from a bankruptcy estate. What does the title work need?"
 slug: "buying-property-bankruptcy-estate-florida"
 cluster: "distressed"
 direct_answer: "In a bankruptcy sale the court's order authorising the sale is a title document. The trustee's authority, the terms the order approves, whether liens are stripped or ride through, and whether the appeal period has run all come from that order — so it is read as carefully as the deed, and the closing is scheduled around it."
 counties: []
 review_tags: ["bankruptcy", "court-ordered-sale", "distressed", "clearing-title"]
+author: "shevy"
+reviewed_on: "2026-09-22"
+next_review: "2027-09-22"
 related:
   - "litigation-against-seller-flip-florida"
   - "judgment-against-seller-before-closing-florida"
-pending_confirmation:
-  - "BK-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Until the order is final\") — drafted from this page, not yet reviewed"
-  - "BK-01 (Bayit Title): The federal sequence is now cited on the page — 21 days' notice, objections at least 7 days out, a 14-day stay, 14 days to appeal. Still open: what we schedule a closing against, whether we add a buffer, and whether we ask for the stay to be waived in the order"
-  - "BK-02 (Bayit Title): Whether these files typically carry additional search or examination cost"
-  - "BK-03 (Bayit Title): The items we require from a bankruptcy sale order before closing — our own checklist"
-  - "BK-05 (Bayit Title): The docket documents we pull on a closed prior bankruptcy in the chain; the page already leaves the clearance route as a file-specific legal and underwriting question"
 verdict:
   short: "Until the order is final"
 quick_facts:
@@ -23,9 +20,9 @@ quick_facts:
   - term: "The core document"
     detail: "The bankruptcy court's order authorising the sale, plus the motion and notice behind it."
   - term: "Typical timeline"
-    detail: "The dates are set before the order exists: a proposed sale outside the ordinary course needs at least 21 days' notice under Fed. R. Bankr. P. 2002(a)(2), and objections are due at least 7 days before the date set for the sale under Fed. R. Bankr. P. 6004(b). Then plan on the sale order being entered and a further 14 days before closing, because Fed. R. Bankr. P. 6004(h) stays a sale order for 14 days after entry unless the court orders otherwise. Where the order waives that stay — many do, expressly — closing can follow entry directly. Getting the motion and the proposed order in front of us before the hearing, rather than after, is what keeps this on schedule."
+    detail: "The dates are set before the order exists: a proposed sale outside the ordinary course needs at least 21 days' notice under Fed. R. Bankr. P. 2002(a)(2), and objections are due at least 7 days before the date set for the sale under Fed. R. Bankr. P. 6004(b). Then plan on the sale order being entered and a further 14 days before closing, because Fed. R. Bankr. P. 6004(h) stays a sale order for 14 days after entry unless the court orders otherwise. Where the order waives that stay — many do, expressly — closing can follow entry directly. The closing date itself is not one we pick and pad: it is the date in the contract, as approved by the court. Getting the motion and the proposed order in front of us before the hearing, rather than after, is what keeps that date reachable."
   - term: "Cost impact"
-    detail: "The title insurance premium is set by the promulgated Florida rate schedule and does not change because a seller is in bankruptcy. What can add cost is the extra work: pulling and reviewing the docket, the motion, the notice and the entered order, and any additional searches the underwriter requires on the debtor and the estate."
+    detail: "The title insurance premium is set by the promulgated Florida rate schedule and does not change because a seller is in bankruptcy, and these files do not carry an additional search or examination charge with us. Reading the docket, the motion, the notice and the entered order is part of the file, not an extra. What the buyer should budget for is their own counsel, which on a court-ordered sale is not optional."
 ---
 
 ## Why is the court order the important document?
@@ -36,7 +33,7 @@ Everything that matters flows from it: who is authorised to sign, what is being 
 
 ## What is read in that order?
 
-We ask for a **certified or docket-stamped copy of the entered order**, together with the sale motion, the notice, the certificate of service and a current docket printout. The order is read for the following, and each of these is checked against the file rather than assumed:
+We ask for a **certified or docket-stamped copy of the entered order**, together with the sale motion, the notice, the certificate of service and a current docket printout. What we then require before closing is set by the case and by the order rather than by a fixed checklist — two bankruptcy sales rarely make the same demands. The order is read for the following, and each of these is checked against the file rather than assumed:
 
 - the case number, chapter, court and division, and that the debtor is the record owner;
 - the legal description of the property being sold, matching the commitment;
@@ -85,13 +82,13 @@ The question is always the same one: at the moment of the conveyance in the chai
 
 Filing a bankruptcy petition brings the debtor's property into the estate. So a deed signed by the debtor personally, during the case, may be void or voidable unless the property had been abandoned, exempted or released first, or the court authorised the conveyance. A deed signed before the petition, or after the case closed and the property revested, is a different matter.
 
-What we look for is the docket. The petition date and the discharge or closing date bracket the period that matters. Within it we want to see the schedules showing how the property was listed, any claim of exemption and whether it was allowed, any order abandoning the property under 11 U.S.C. § 554, any order authorising a sale, and the trustee's final report and the order closing the case. Where a deed in the chain falls inside that window and none of those documents explains it, the deed is a requirement rather than a curiosity.
+What we look for is the docket, and the document we pull from it is the final order — the order that disposed of the property and closed the case. The petition date and that order bracket the period that matters, and the order is what says whether the property was administered, abandoned under 11 U.S.C. § 554, exempted or sold, and therefore who had authority to convey it while the case was open. Where a deed in the chain falls inside that window and the final order does not explain it, the deed is a requirement rather than a curiosity, and more of the docket gets pulled.
 
 Where the case is old, the docket is thin, or the paper does not resolve it, the routes are a corrective deed from the trustee, a motion to reopen the case, or an underwriter's affirmative decision to insure over it. Which one is available is a legal question and an underwriting question, in that order.
 
 ## How Bayit Title handles this
 
-We ask for the motion, the notice and the entered order at the start of the file rather than at the end, because these files are scheduled around the order, not around anyone's preferred closing date. We read the order against the contract and tell both sides in writing where they differ. Where an appeal period has not run, we say so and what the options are, rather than closing into it quietly. Where the order does not clearly dispose of a recorded interest, we treat that interest as live until someone establishes otherwise.
+We ask for the motion, the notice and the entered order at the start of the file rather than at the end, because these files are scheduled around the order. The closing date comes from the contract as the court approved it, which is why the order and the contract get read against each other early rather than the week of closing. We read the order against the contract and tell both sides in writing where they differ. Where an appeal period has not run, we say so and what the options are, rather than closing into it quietly. Where the order does not clearly dispose of a recorded interest, we treat that interest as live until someone establishes otherwise.
 
 ## When should an attorney be involved?
 

@@ -1,19 +1,17 @@
 ---
-status: draft
+status: reviewed
 title: "The seller is overseas. How do they sign a Florida closing?"
 slug: "foreign-seller-signing-from-abroad-florida"
 cluster: "process"
 direct_answer: "A seller abroad has three routes: remote online notarization with a Florida-commissioned online notary, signing before a US consular officer, or signing before a local notary whose authority is evidenced in a form Florida will accept. Which one works depends on the country, the lender and the underwriter — and it should be settled early, not the week of closing."
 counties: []
 review_tags: ["remote-online-notarization", "ron", "foreign-seller", "mobile-signing"]
+author: "shevy"
+reviewed_on: "2026-09-22"
+next_review: "2027-09-22"
 related:
   - "non-standard-purchase-contract-florida-closing"
   - "buying-property-bankruptcy-estate-florida"
-pending_confirmation:
-  - "FS-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? No\") — drafted from this page, not yet reviewed"
-  - "FS-01 (Bayit Title): How far ahead we ask to know about an out-of-country signer, and scheduling lead time per route"
-  - "FS-02 (Bayit Title): The consular fee is now cited (22 CFR 22.1, item 41 — $50 per seal). That section carries a temporary amendment running to 31 December 2026 and must be rechecked before this page publishes. Still open: apostille and legalisation costs by country, and courier costs — the drafted $60 to $150 each way is not from a source"
-  - "FS-05 (Bayit Title): Our practice for confirming lender and underwriter acceptance in writing before an out-of-country RON signing is scheduled"
 verdict:
   short: "No"
 quick_facts:
@@ -22,9 +20,9 @@ quick_facts:
   - term: "The core issue"
     detail: "A Florida deed must be executed and notarized in a way Florida will accept for recording."
   - term: "Typical timeline"
-    detail: "Remote online notarization can usually be scheduled within two to three business days. A consular appointment should be assumed to take four to eight weeks from first enquiry at many posts. A local notary abroad plus apostille runs two to four weeks, with three to seven days of courier time each way where wet-ink originals have to travel."
+    detail: "We ask whether anyone will be signing from outside the country as soon as the file comes in, because the route decides the schedule. Remote online notarization is the quickest to arrange once the lender and the underwriter have accepted it in writing. A consular appointment is the slowest and the least predictable — availability is set by the post, not by the closing — and a local notary abroad adds the authentication step and the courier time each way where wet-ink originals have to travel. None of those is a queue we control, which is why the question is asked at intake rather than in the closing week."
   - term: "Cost impact"
-    detail: "A US consular notarial act is $50 per seal under item 41 of the State Department's schedule of fees, [22 CFR 22.1](https://www.law.cornell.edu/cfr/text/22/22.1), and each additional seal provided at the same time in the same transaction is charged at the same rate — so a signing with several documents is several fees, not one. Apostille and legalisation fees are set by the issuing country and vary widely. International courier for wet-ink originals typically runs $60 to $150 each way."
+    detail: "A US consular notarial act is $50 per seal under item 41 of the State Department's schedule of fees, [22 CFR 22.1](https://www.law.cornell.edu/cfr/text/22/22.1), and each additional seal provided at the same time in the same transaction is charged at the same rate — so a signing with several documents is several fees, not one. Apostille and legalisation fees are set by the issuing country and vary widely, and international courier for wet-ink originals is priced by the route. We do not publish a figure for either, because there is no figure that holds across countries. Ask us on the file and we will price the actual route."
 ---
 
 ## Why is this harder than it sounds?
@@ -47,9 +45,9 @@ The chapter contemplates the overseas signer expressly: [§ 117.201(6)](https://
 
 On document types, the only act part II carves out is solemnising the rites of matrimony (§ 117.209(1)). There is no statutory exclusion for a deed, a mortgage or a closing document.
 
-Two practical limits apply regardless of what the statute permits. The lender has to accept a remotely notarized document, and so does the underwriter. Both positions should be confirmed in writing before the signing is scheduled.
+Two practical limits apply regardless of what the statute permits. The lender has to accept a remotely notarized document, and so does the underwriter. Both positions are confirmed in writing before the signing is scheduled.
 
-Neither position follows from the statute. That the notary is in Florida and the act is authorised under Florida law does not settle whether a given underwriter will accept a signing where the seller is overseas, or whether a particular lender will. So we put the specific file to our agency representative and to the lender before anything is scheduled — the country the signer will be in, the platform, the documents — and we get the answer in writing.
+Neither position follows from the statute. That the notary is in Florida and the act is authorised under Florida law does not settle whether a given underwriter will accept a signing where the seller is overseas, or whether a particular lender will. So we put the specific file to our agency representative and to the lender as soon as we know an out-of-country signer is on it, and before anything is scheduled — the country the signer will be in, the platform, the documents — and we get the answer in writing.
 
 ## Route two: a US consulate or embassy
 
@@ -88,7 +86,7 @@ A foreign seller should be talking to a CPA or a tax attorney about FIRPTA early
 
 ## How Bayit Title handles this
 
-We ask on the first call whether anyone signing will be outside the country, because that single answer changes the schedule more than almost anything else on a file. We then confirm the route with the lender and the underwriter in writing before anything is scheduled, rather than finding out at signing that a document will not be accepted. We offer remote online notarization, in-office signing, and mobile signing wherever the signer is in the United States.
+We ask on the first call whether anyone signing will be outside the country, because that single answer changes the schedule more than almost anything else on a file. As soon as we have it, we put the route to the lender and the underwriter and get their acceptance in writing — before anything is scheduled, rather than finding out at signing that a document will not be accepted. We offer remote online notarization, in-office signing, and mobile signing wherever the signer is in the United States.
 
 ## When should an attorney be involved?
 
