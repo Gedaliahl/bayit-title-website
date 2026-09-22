@@ -902,10 +902,17 @@ main:focus {
 @media print {
   /* Where a link goes is the part of it paper can keep. In-page anchors are
      left alone: they point at something already on the sheet. */
-  .prose a[href]:not([href^='#'])::after {
+  .prose a[href^='http']::after,
+  .prose a[href^='/']::after {
     content: ' (' attr(href) ')';
     font-size: 0.85em;
     color: var(--ink-muted);
+  }
+
+  /* A path on its own leads nowhere on paper, so the site's own links carry
+     the domain in front. */
+  .prose a[href^='/']::after {
+    content: ' (www.bayittitle.com' attr(href) ')';
   }
 
   .prose .table-scroll {
@@ -2157,8 +2164,10 @@ legend {
   white-space: nowrap;
 }
 
-.quote-rotator__all:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .quote-rotator__all:hover {
+    text-decoration: underline;
+  }
 }
 
 .quote-rotator__dot {
@@ -2183,8 +2192,10 @@ legend {
   inset: -0.5rem;
 }
 
-.quote-rotator__dot:hover {
-  background: var(--ink-faint);
+@media (hover: hover) {
+  .quote-rotator__dot:hover {
+    background: var(--ink-faint);
+  }
 }
 
 .quote-rotator__dot--current {
@@ -2243,7 +2254,7 @@ legend {
   border-left: 1px solid var(--rule);
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 40rem) {
   .underwriter__line {
     padding-left: 0;
     border-left: 0;
@@ -2518,7 +2529,9 @@ legend {
   display: inline-flex;
   width: fit-content;
   max-width: 100%;
-  border: 1px solid var(--rule-card);
+  /* The group's only outline, so it takes the control border, as the
+     boxes beside it do. */
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -2548,7 +2561,27 @@ legend {
 }
 
 .seg__option + .seg__option span {
-  border-left: 1px solid var(--rule-card);
+  border-left: 1px solid var(--rule-strong);
+}
+
+/* On the narrowest phones the two halves share the width evenly rather than
+   each wrapping its label onto two lines. */
+@media (max-width: 22rem) {
+  .seg {
+    display: flex;
+    width: 100%;
+  }
+
+  .seg__option {
+    flex: 1;
+  }
+
+  .seg__option span {
+    flex: 1;
+    padding-inline: 0.5rem;
+    text-align: center;
+    white-space: nowrap;
+  }
 }
 
 .seg__option input:checked + span {
@@ -2722,7 +2755,7 @@ legend {
 
 /* On a phone the figure goes under the address rather than beside it, which
    otherwise squeezed the street to one word a line. */
-@media (max-width: 30rem) {
+@media (max-width: 40rem) {
   .combo__option {
     grid-template-columns: 1fr;
   }
@@ -2944,9 +2977,11 @@ legend {
   cursor: pointer;
 }
 
-.figure-card__actions button:hover {
-  border-color: var(--accent);
-  background: var(--accent-wash);
+@media (hover: hover) {
+  .figure-card__actions button:hover {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+  }
 }
 
 .figure-card__status {
@@ -3212,6 +3247,10 @@ legend {
   margin: 0;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  /* A rate is one figure. The global dd rule lets a long value break
+     anywhere, which here split "$5.00" into "$5.0" and "0" at 280px. */
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .schedule__note {
@@ -4258,9 +4297,11 @@ legend {
   text-decoration: none;
 }
 
-.team-card__name a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .team-card__name a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 .team-card__role {
