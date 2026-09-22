@@ -253,12 +253,23 @@ export function UploadMeter({
   total: number;
   onCancel: () => void;
 }) {
+  const line = `Sending ${name}${count > 1 ? ` (${position} of ${count})` : ''}`;
+
+  // A live region that arrives already holding its text is not read out, so
+  // the first file would pass in silence. The announcer mounts empty and is
+  // filled a moment later; the line on screen does not wait.
+  const [spoken, setSpoken] = useState('');
+  useEffect(() => {
+    const timer = setTimeout(() => setSpoken(line), 0);
+    return () => clearTimeout(timer);
+  }, [line]);
+
   return (
     <div className="upload-meter">
-      <p className="upload-meter__file" aria-live="polite">
-        Sending {name}
-        {count > 1 ? ` (${position} of ${count})` : ''}
+      <p className="visually-hidden" aria-live="polite">
+        {spoken}
       </p>
+      <p className="upload-meter__file">{line}</p>
       <progress className="upload-meter__bar" max={total || 1} value={sent} aria-label={`Upload of ${name}`} />
       <div className="upload-meter__foot">
         <span className="upload-meter__bytes">

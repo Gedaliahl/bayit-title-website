@@ -9,6 +9,9 @@ import { formatCents } from '@/lib/statutory-rates';
 /** Long enough for a reader to finish typing a figure, short enough to still feel like an answer. */
 const ANNOUNCE_AFTER_MS = 500;
 
+/** How long after the card appears a change is still the page arriving rather than the reader. */
+const SETTLE_MS = 1000;
+
 /** Where the phone's total bar sends the reader. */
 export const FIGURES_ID = 'estimate-figures';
 
@@ -51,11 +54,17 @@ export function FigureCard({
   const message = hasResult ? RESULT.announce(totalLabel, total) : RESULT.nothingYet;
 
   // Nothing is said on arrival: the reader has not changed anything yet, and
-  // the figures are on the page for anyone who goes to read them.
+  // the figures are on the page for anyone who goes to read them. Arrival
+  // lasts until the page has settled, because figures carried in the address
+  // bar are applied just after the first render. After that every change is
+  // said, including a change back to where the page started.
   const [spoken, setSpoken] = useState('');
-  const first = useRef(message);
+  const mountedAt = useRef<number | null>(null);
   useEffect(() => {
-    if (message === first.current) return;
+    mountedAt.current = Date.now();
+  }, []);
+  useEffect(() => {
+    if (mountedAt.current === null || Date.now() - mountedAt.current < SETTLE_MS) return;
     const timer = setTimeout(() => setSpoken(message), ANNOUNCE_AFTER_MS);
     return () => clearTimeout(timer);
   }, [message]);
