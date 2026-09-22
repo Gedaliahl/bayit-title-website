@@ -1,5 +1,7 @@
 // County and city data. Read at build time with the service role; falls back to
-// the canonical priority counties in lib/site.ts when Supabase is unconfigured.
+// the canonical priority counties in lib/site.ts when Supabase is unconfigured,
+// except on a build that is required to be complete — see
+// `requireCompleteLocations` below.
 import 'server-only';
 
 import { cache } from 'react';
@@ -74,9 +76,46 @@ function fallbackCounties(): Location[] {
   }));
 }
 
+/**
+ * Whether this build must have every county, or fail.
+ *
+ * The fallback is six counties. A build that takes it ships six county pages
+ * instead of sixty-seven, the other sixty-one return 404 and drop out of the
+ * sitemap, and nothing fails — one such deploy to production could de-index
+ * most of the county pages. So the production deployment refuses it, and so
+ * does any CI build that sets REQUIRE_LOCATIONS=1 to catch the problem before
+ * a deploy does. Development and preview builds keep the fallback, loudly, so
+ * the site still runs without credentials.
+ */
+export function requireCompleteLocations(): boolean {
+  return process.env.VERCEL_ENV === 'production' || process.env.REQUIRE_LOCATIONS === '1';
+}
+
+/**
+ * Says why this build does not have every county, and fails it if it must.
+ * `consequence` is what the reader of the site would get instead.
+ */
+function reportIncomplete(reason: string, consequence: string): void {
+  const message = `[locations] ${reason} ${consequence}`;
+  if (requireCompleteLocations()) {
+    throw new Error(
+      `${message} This build requires all ${site.floridaCounties} counties ` +
+        '(VERCEL_ENV=production or REQUIRE_LOCATIONS=1).',
+    );
+  }
+  console.warn(`${message} A production build would fail here.`);
+}
+
+const FALLBACK_CONSEQUENCE =
+  `Using the ${site.priorityCounties.length}-county fallback: every other county page ` +
+  'will 404 and be left out of the sitemap.';
+
 export const getLocations = cache(async (): Promise<Location[]> => {
   const supabase = getServiceClient();
-  if (!supabase) return fallbackCounties();
+  if (!supabase) {
+    reportIncomplete('Supabase is not configured.', FALLBACK_CONSEQUENCE);
+    return fallbackCounties();
+  }
 
   const { data, error } = await supabase
     .from('locations')
@@ -88,7 +127,10 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     .order('name');
 
   if (error || !data) {
-    if (error) console.warn(`[locations] fetch failed, using canonical fallback: ${error.message}`);
+    reportIncomplete(
+      `The locations fetch failed: ${error?.message ?? 'no data returned'}.`,
+      FALLBACK_CONSEQUENCE,
+    );
     return fallbackCounties();
   }
 
@@ -98,12 +140,23 @@ export const getLocations = cache(async (): Promise<Location[]> => {
   // rows were filtered out rather than absent: almost always the anon key in
   // place of the service role key, where RLS returns zero rows and no error.
   if (data.length === 0) {
-    console.warn(
-      '[locations] query returned zero rows, using canonical fallback. The table is seeded, ' +
-        'so this usually means SUPABASE_SERVICE_ROLE_KEY holds the anon key: RLS then filters ' +
-        'every row and reports no error.',
+    reportIncomplete(
+      'The query returned zero rows. The table is seeded, so this usually means ' +
+        'SUPABASE_SERVICE_ROLE_KEY holds the anon key: RLS then filters every row and reports no error.',
+      FALLBACK_CONSEQUENCE,
     );
     return fallbackCounties();
+  }
+
+  // A partial table is the same failure by degrees: every county missing from
+  // it is a page that 404s. Here the rows that did come back are kept, since
+  // they are real, and only a required build refuses them.
+  const countyRows = data.filter((row) => row.kind === 'county').length;
+  if (countyRows < site.floridaCounties) {
+    reportIncomplete(
+      `The locations table has ${countyRows} of the ${site.floridaCounties} counties.`,
+      'The missing county pages will 404.',
+    );
   }
 
   return data.map((row) => ({

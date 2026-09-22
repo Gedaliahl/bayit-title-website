@@ -86,6 +86,9 @@ export default async function CountiesPage() {
   // The band carries the six busiest counties. The other sixty-one are linked
   // from the full list below.
   const bySlug = new Map(counties.map((county) => [county.slug, county]));
+  // True on a complete build. A development build without Supabase has only the
+  // priority counties, and the caption must not promise the other sixty-one.
+  const everyCountyHasAPage = FLORIDA_COUNTIES.every((county) => bySlug.has(county.slug));
 
   return (
     <div>
@@ -210,8 +213,9 @@ export default async function CountiesPage() {
             <div className="section__head">
               <h2>Elsewhere in Florida</h2>
               <span className="caption">
-                Every county has a page. Each states what the statute and the rule set, and holds
-                back what only the recording office or this team can confirm.
+                {everyCountyHasAPage ? 'Every county has a page. ' : null}Each county page states
+                what the statute and the rule set, and holds back what only the recording office or
+                this team can confirm.
               </span>
             </div>
             <ul className="county-list">
