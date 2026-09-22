@@ -26,7 +26,6 @@ import { hashIp } from '@/lib/submissions';
 import { resolveParcelValue, type ValueLookup } from '@/lib/property-lookup';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 /**
  * The statewide roll can take nine seconds to answer and a retry twenty more,

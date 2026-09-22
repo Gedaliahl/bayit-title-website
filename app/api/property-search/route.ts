@@ -21,7 +21,6 @@ import { hashIp } from '@/lib/submissions';
 import { searchProperties, type OfferedSuggestion } from '@/lib/property-lookup';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 /** The search's own deadline is six seconds; this is the platform's backstop behind it. */
 export const maxDuration = 10;

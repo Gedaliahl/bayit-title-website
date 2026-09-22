@@ -3,6 +3,8 @@
 // Vercel sends `Authorization: Bearer <CRON_SECRET>` with every scheduled call.
 // Without the secret configured this refuses to run at all: an unauthenticated
 // endpoint that deletes documents is not something to leave open by accident.
+import { timingSafeEqual } from 'node:crypto';
+
 import { NextResponse } from 'next/server';
 
 import { purgeExpiredDocuments } from '@/lib/document-storage';
@@ -12,9 +14,17 @@ export const runtime = 'nodejs';
 // Listing every folder in the bucket is one request per folder.
 export const maxDuration = 300;
 
-export async function GET(request: Request) {
+/** Compared in constant time, so the answer's timing says nothing about how much of a guess was right. */
+function isCronCall(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+  if (!secret) return false;
+  const expected = Buffer.from(`Bearer ${secret}`);
+  const given = Buffer.from(request.headers.get('authorization') ?? '');
+  return given.length === expected.length && timingSafeEqual(given, expected);
+}
+
+export async function GET(request: Request) {
+  if (!isCronCall(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 

@@ -394,9 +394,11 @@ export const VALUE_COUNTY_SLUGS = VALUE_COUNTIES.map((county) => county.slug);
 
 /**
  * Single quotes are the only character that can end a string literal in these
- * services' SQL, and normalizeAddressText has already dropped everything that
- * is not a letter, a digit, a space, `#`, `/` or `-`. Doubling the quote is
- * belt to that braces: the input reaching here cannot contain one.
+ * services' SQL, and `%` and `_` are the two that would widen a LIKE into a
+ * wildcard, so the quote is doubled and the other two are dropped. The input
+ * reaching here has already been through normalizeAddressText, which drops
+ * everything that is not a letter, a digit, a space, `#`, `/` or `-`, so this
+ * is the second of two guards rather than the only one.
  */
 function sql(value: string): string {
   return value.replace(/'/g, "''").replace(/[%_]/g, '');
