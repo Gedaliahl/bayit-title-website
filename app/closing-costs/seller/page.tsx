@@ -11,7 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -41,11 +41,12 @@ import { QuietCta } from '@/components/QuietCta';
 
 export const metadata: Metadata = {
   title: 'Seller closing costs in Florida',
-  description:
-    'What a seller pays at a Florida closing: the documentary stamp tax on the deed (70¢ per $100, ' +
-    '60¢ in Miami-Dade), the owner’s policy where custom puts it on the seller, the mortgage payoff, ' +
-    'association and municipal balances. Each figure cited, with a worked example.',
+  description: metaDescription(
+    'Florida seller closing costs: deed stamp tax (70¢ per $100, 60¢ in Miami-Dade), the ' +
+      'owner’s policy where custom puts it on the seller, and the payoff.',
+  ),
   alternates: { canonical: '/closing-costs/seller' },
+  openGraph: { ...baseOpenGraph, url: '/closing-costs/seller' },
 };
 
 const STATEWIDE_SLUG = 'broward-county';
@@ -76,7 +77,7 @@ export default async function SellerClosingCostsPage() {
     {
       question: 'Does the seller pay for title insurance in Florida?',
       answer:
-        'In some counties custom puts the owner’s policy on the seller and in others on the buyer, and the contract can override custom either way. Where the seller pays, producing the prior owner’s policy can qualify the new one for the reissue rate, which is a lower schedule in the same rule.',
+        'In some counties custom puts the owner’s policy on the seller and in others on the buyer, and the contract can override custom either way. Whichever side pays, if the seller’s own title was insured and the prior policy can be produced, the new one can qualify for the reissue rate, which is a lower schedule in the same rule.',
     },
     {
       question: 'What does the seller pay to clear a mortgage?',
@@ -102,10 +103,11 @@ export default async function SellerClosingCostsPage() {
         <Breadcrumbs
           trail={[
             { name: 'Home', path: '/' },
+            { name: 'Closing costs', path: '/closing-costs' },
             { name: 'Seller closing costs', path: '/closing-costs/seller' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Seller closing costs in Florida</h1>
+        <h1 className="after-crumbs">Seller closing costs in Florida</h1>
 
         <AnswerPanel
           text={
@@ -123,7 +125,13 @@ export default async function SellerClosingCostsPage() {
             'How the standard Florida contract forms allocate each line by default',
           ]}
           variant="withheld"
+          scope="statewide"
         />
+
+        <p>
+          The other side of the same closing statement is on the{' '}
+          <Link href="/closing-costs/buyer">buyer closing costs</Link> page.
+        </p>
 
         <h2>Documentary stamp tax on the deed</h2>
         <p>
@@ -164,7 +172,7 @@ export default async function SellerClosingCostsPage() {
           </p>
         )}
         <p>
-          Where the seller pays, one thing in the rule moves the figure. If the seller&rsquo;s own
+          Whoever pays, the seller&rsquo;s history can lower the figure. If the seller&rsquo;s own
           title was insured and the prior policy can be produced, the new policy can qualify for
           the <strong>reissue rate</strong> in{' '}
           <a href={PREMIUM_RULE.url} rel="nofollow">
@@ -246,7 +254,7 @@ export default async function SellerClosingCostsPage() {
         </p>
 
         <QuietCta
-          text="Send us the contract and the payoff lender and we will itemise the seller’s side against the actual documents."
+          text="Send us the contract and the payoff lender and we will itemize the seller’s side against the actual documents."
           action="Request a quote"
           href="/quote"
         />

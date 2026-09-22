@@ -81,3 +81,91 @@ jobs:
       - name: Build for production
         if: ${{ !cancelled() }}
         run: npm run build
+
+  # The browser suite, against the production build: every route at fourteen
+  # widths, axe on every route, and the flows. Chromium on a desktop and a
+  # phone, WebKit on a phone, and a Firefox smoke run (playwright.config.ts).
+  e2e:
+    name: Browser tests
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium webkit firefox
+
+      - name: Build
+        run: npm run build
+
+      - name: Playwright
+        run: npm run test:e2e
+        env:
+          E2E_PREBUILT: '1'
+
+      - name: Keep the report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            e2e/.report/
+            e2e/.results/
+          retention-days: 14
+
+  # Lighthouse on four templates, as a phone. Accessibility and SEO fail the
+  # job; performance and best practices only warn, since a shared runner's
+  # timings move from one run to the next.
+  #
+  # A build that is not the production deployment answers robots noindex
+  # (indexingAllowed in lib/seo.ts), and the only way to switch that on is
+  # VERCEL_ENV=production, which also demands every county from Supabase and
+  # turns on Vercel Analytics. So lighthouserc.json skips the one audit that
+  # reads robots, is-crawlable, and SEO is scored on everything else.
+  lighthouse:
+    name: Lighthouse
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # The runner's own Chrome.
+      - name: Lighthouse CI
+        run: npm run lhci
+
+      - name: Keep the reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/reports/
+          retention-days: 14

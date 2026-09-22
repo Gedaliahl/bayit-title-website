@@ -1,10 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { track } from '@vercel/analytics';
 
-import { TextField, TextArea, SelectField, FileField, Honeypot } from './Field';
+import {
+  BOT_CHECK_BLOCKED,
+  BotCheck,
+  ErrorSummary,
+  FileField,
+  Honeypot,
+  outcomeUnknown,
+  postJson,
+  SelectField,
+  sendUploads,
+  TextArea,
+  TextField,
+  UploadMeter,
+  type UploadTicket,
+  useBotCheck,
+  useFieldErrors,
+  useLeaveWarning,
+  useSubmissionId,
+  withoutBlanks,
+} from './Field';
 import { useErrorFocus } from './useErrorFocus';
 import {
   ACCEPT_ATTRIBUTE,
@@ -14,7 +34,10 @@ import {
   MAX_TOTAL_BYTES,
   contentTypeFor,
   formatBytes,
+  screenFiles,
+  type Rejection,
 } from '@/lib/documents';
+import { fieldErrors, orderSchema } from '@/lib/schemas';
 import { site } from '@/lib/site';
 
 interface CountyOption {
@@ -22,205 +45,208 @@ interface CountyOption {
   label: string;
 }
 
-interface UploadTicket {
-  index: number;
-  name: string;
-  path: string;
-  contentType: string;
-  url: string;
-}
-
 type Status =
   | { kind: 'idle' }
   | { kind: 'sending' }
   /** The order is already saved by this point; only the documents are in flight. */
-  | { kind: 'uploading'; done: number; total: number }
-  | { kind: 'sent'; reference: string; attached: number; failed: number }
+  | { kind: 'uploading'; name: string; position: number; count: number; sent: number; total: number }
+  | { kind: 'sent'; reference: string; attached: number; missing: Rejection[] }
   | { kind: 'failed'; message: string };
 
-/**
- * Sends one file straight to Supabase Storage with the signed URL the server
- * minted. The bytes never touch this application.
- */
-async function uploadOne(ticket: UploadTicket, file: File): Promise<boolean> {
-  try {
-    const response = await fetch(ticket.url, {
-      method: 'PUT',
-      headers: {
-        // The stored type is the one the server derived from the extension,
-        // never what the browser guessed about the file.
-        'content-type': ticket.contentType,
-        'cache-control': 'max-age=3600',
-        'x-upsert': 'false',
-      },
-      body: file,
-    });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
+/** What the error summary calls each field, in the order the form shows them. */
+const FIELD_LABELS: Record<string, string> = {
+  ordered_by_name: 'Your name',
+  ordered_by_role: 'Your role',
+  ordered_by_email: 'Email',
+  ordered_by_phone: 'Phone',
+  property_address: 'Property address',
+  county_slug: 'County',
+  parcel_id: 'Parcel or folio number',
+  transaction_type: 'Type',
+  closing_method: 'Preferred signing',
+  purchase_price: 'Purchase price',
+  loan_amount: 'Loan amount',
+  closing_date_target: 'Target closing date',
+  lender_name: 'Lender',
+  buyer_name: 'Buyer',
+  seller_name: 'Seller',
+  lender_contact: 'Lender contact',
+  documents: 'Documents',
+  notes: 'Anything we should know',
+};
+
+const SCREEN_RULES = {
+  accepts: (name: string) => contentTypeFor(name) !== null,
+  typeLabel: ACCEPTED_LABEL,
+  maxFiles: MAX_FILES,
+  maxFileBytes: MAX_FILE_BYTES,
+  maxTotalBytes: MAX_TOTAL_BYTES,
+};
 
 export function OrderForm({ counties }: { counties: CountyOption[] }) {
   const pathname = usePathname();
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { errors, setErrors, clearOnInput } = useFieldErrors();
   const [files, setFiles] = useState<File[]>([]);
+  const [rejected, setRejected] = useState<Rejection[]>([]);
   const { formRef, reportFailure } = useErrorFocus();
+  const submission = useSubmissionId();
+  const botCheck = useBotCheck();
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLParagraphElement>(null);
+  const uploads = useRef<AbortController | null>(null);
 
   const busy = status.kind === 'sending' || status.kind === 'uploading';
+  useLeaveWarning(status.kind === 'uploading');
+
+  // The form is replaced by the confirmation, and focus would fall to the
+  // page. Put it on the confirmation, which also has it read out.
+  useEffect(() => {
+    if (status.kind === 'sent') successRef.current?.focus();
+  }, [status.kind]);
 
   /**
    * The same limits the Route Handler enforces, applied here so a file that
-   * will be refused is refused now rather than after an upload.
+   * will be refused is refused now rather than after an upload — and named,
+   * with the reason, rather than quietly left off the list.
    */
   function addFiles(added: File[]) {
-    const next = [...files];
-    const rejected: string[] = [];
-
-    for (const file of added) {
-      if (next.length >= MAX_FILES) {
-        rejected.push(`${file.name} — no more than ${MAX_FILES} documents`);
-        continue;
-      }
-      if (contentTypeFor(file.name) === null) {
-        rejected.push(`${file.name} — ${ACCEPTED_LABEL} only`);
-        continue;
-      }
-      if (file.size > MAX_FILE_BYTES) {
-        rejected.push(`${file.name} — over ${formatBytes(MAX_FILE_BYTES)}`);
-        continue;
-      }
-      const total = next.reduce((sum, existing) => sum + existing.size, file.size);
-      if (total > MAX_TOTAL_BYTES) {
-        rejected.push(`${file.name} — over ${formatBytes(MAX_TOTAL_BYTES)} in total`);
-        continue;
-      }
-      next.push(file);
-    }
-
-    setFiles(next);
-    setErrors((current) => ({
-      ...current,
-      documents: rejected.length > 0 ? `Not attached: ${rejected.join('; ')}.` : '',
-    }));
+    const screened = screenFiles(files, added, SCREEN_RULES);
+    setFiles(screened.files);
+    setRejected(screened.rejected);
   }
 
   function removeFile(index: number) {
     setFiles((current) => current.filter((_, i) => i !== index));
+    setRejected([]);
+  }
+
+  function fail(message: string, outcome: string) {
+    setStatus({ kind: 'failed', message });
+    reportFailure();
+    track('form_submit', { form: 'order', outcome });
+  }
+
+  /** With several fields wrong, the summary is where focus goes, not the first field. */
+  function failOnFields(found: Record<string, string>) {
+    setErrors(found);
+    setStatus({ kind: 'idle' });
+    track('form_submit', { form: 'order', outcome: 'invalid' });
+    requestAnimationFrame(() => summaryRef.current?.focus());
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus({ kind: 'sending' });
     setErrors({});
 
     const form = new FormData(event.currentTarget);
     // The file input is controlled in React state; everything else comes off
     // the form, and the manifest describes the files without sending them.
     form.delete('documents');
-    const payload = Object.fromEntries(form.entries());
-    const manifest = files.map((file) => ({ name: file.name, size: file.size }));
+    const payload = {
+      ...Object.fromEntries(form.entries()),
+      page_path: pathname,
+      documents: files.map((file) => ({ name: file.name, size: file.size })),
+    };
 
-    let body: {
+    // The same schema the server runs, so a mistake is named without a round trip.
+    const checked = orderSchema.safeParse(payload);
+    if (!checked.success) return failOnFields(fieldErrors(checked.error));
+    if (botCheck.enabled && !botCheck.token) {
+      return fail(
+        botCheck.unavailable
+          ? BOT_CHECK_BLOCKED
+          : 'Wait a moment for the check above the button to finish, then send again.',
+        'bot_check',
+      );
+    }
+
+    setStatus({ kind: 'sending' });
+    const reply = await postJson<{
       reference?: string;
       order_id?: string;
       uploads?: UploadTicket[];
       error?: string;
       errors?: Record<string, string>;
-    };
+    }>('/api/orders', {
+      ...withoutBlanks(payload),
+      submission_id: submission.current(),
+      turnstile_token: botCheck.token || undefined,
+    });
+    botCheck.reset();
 
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, page_path: pathname, documents: manifest }),
-      });
-
-      body = await response.json();
-
-      if (response.status === 422 && body.errors) {
-        setErrors(body.errors);
-        setStatus({ kind: 'failed', message: 'Some details need another look.' });
-        reportFailure();
-        return;
-      }
-
-      if (!response.ok) {
-        setStatus({ kind: 'failed', message: body.error ?? 'Something went wrong.' });
-        reportFailure();
-        return;
-      }
-    } catch {
-      setStatus({
-        kind: 'failed',
-        message: `We could not reach the server. Email ${site.ordersEmail} or call ${site.phoneDisplay}.`,
-      });
-      reportFailure();
-      return;
+    if (outcomeUnknown(reply)) {
+      return fail(
+        `We did not hear back, so we cannot tell whether the order reached us. Call ` +
+          `${site.phoneDisplay} before sending it again, or email ${site.ordersEmail}.`,
+        'no_answer',
+      );
     }
-
-    const reference = body.reference ?? '';
-    const tickets = body.uploads ?? [];
+    if (reply.status === 422 && reply.body?.errors) return failOnFields(reply.body.errors);
+    if (reply.status >= 400 || !reply.body) {
+      return fail(reply.body?.error ?? 'Something went wrong.', 'refused');
+    }
 
     // Past this line the order is recorded. Nothing that follows may present
     // itself as a failed order, because the office already has it.
-    if (tickets.length === 0 || !body.order_id) {
-      setStatus({ kind: 'sent', reference, attached: 0, failed: files.length });
-      return;
-    }
+    submission.settle();
+    track('form_submit', { form: 'order', outcome: 'sent' });
 
-    setStatus({ kind: 'uploading', done: 0, total: tickets.length });
-
-    // One at a time: the progress count stays honest and a phone on a weak
-    // connection is not asked to hold ten uploads open at once.
-    const uploaded: { path: string; name: string }[] = [];
-    for (const [position, ticket] of tickets.entries()) {
-      const file = files[ticket.index];
-      if (file && (await uploadOne(ticket, file))) {
-        uploaded.push({ path: ticket.path, name: file.name });
-      }
-      setStatus({ kind: 'uploading', done: position + 1, total: tickets.length });
-    }
-
+    const reference = reply.body.reference ?? '';
+    const orderId = reply.body.order_id;
+    const tickets = reply.body.uploads ?? [];
     let attached = 0;
-    if (uploaded.length > 0) {
-      try {
-        const response = await fetch('/api/orders/documents', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_id: body.order_id, documents: uploaded }),
-        });
-        const result = await response.json();
-        attached = response.ok ? (result.recorded ?? 0) : 0;
-      } catch {
-        attached = 0;
-      }
+    let missing: Rejection[] = files.map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
+    if (orderId) {
+      const controller = new AbortController();
+      uploads.current = controller;
+      ({ attached, missing } = await sendUploads({
+        files,
+        tickets,
+        signal: controller.signal,
+        onProgress: (state) => setStatus({ kind: 'uploading', ...state }),
+        confirm: (documents) => postJson('/api/orders/documents', { order_id: orderId, documents }),
+      }));
+      uploads.current = null;
     }
 
-    setStatus({ kind: 'sent', reference, attached, failed: files.length - attached });
+    if (missing.length > 0) track('upload_failed', { form: 'order', count: missing.length });
+    setStatus({ kind: 'sent', reference, attached, missing });
   }
 
   if (status.kind === 'sent') {
     return (
       <div className="form-status form-status--ok" role="status">
-        <p style={{ marginBottom: '0.5rem' }}>
+        <p ref={successRef} tabIndex={-1}>
           <strong>Order received{status.reference ? ` — ${status.reference}` : ''}.</strong>
         </p>
         {status.attached > 0 ? (
-          <p style={{ marginBottom: '0.5rem' }}>
+          <p>
             {status.attached} document{status.attached === 1 ? '' : 's'} attached to the file.
           </p>
         ) : null}
         {/* Never let a silent upload failure pass as success: the office would
             be waiting on a document nobody sent. */}
-        {status.failed > 0 ? (
-          <p style={{ marginBottom: '0.5rem' }}>
-            {status.failed} document{status.failed === 1 ? '' : 's'} did not upload. The order is
-            recorded either way — reply to the confirmation email with {status.failed === 1 ? 'it' : 'them'}.
-          </p>
+        {status.missing.length > 0 ? (
+          <>
+            <p className="form-status__lead">
+              {status.missing.length === 1 ? 'This did' : 'These did'} not reach us:
+            </p>
+            <ul className="form-status__list">
+              {status.missing.map((doc, index) => (
+                <li key={`${doc.name}-${index}`}>
+                  {doc.name} — {doc.reason}
+                </li>
+              ))}
+            </ul>
+            <p>
+              The order is recorded either way. Email {status.missing.length === 1 ? 'it' : 'them'} to{' '}
+              <a href={`mailto:${site.ordersEmail}`}>{site.ordersEmail}</a>
+              {status.reference ? ` with the reference ${status.reference}` : ''}.
+            </p>
+          </>
         ) : null}
-        <p style={{ margin: 0 }}>
+        <p>
           We will confirm by email and tell you what the search turns up.
         </p>
       </div>
@@ -228,7 +254,9 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} onSubmit={handleSubmit} onInput={clearOnInput} noValidate>
+      <ErrorSummary errors={errors} labels={FIELD_LABELS} summaryRef={summaryRef} />
+
       {status.kind === 'failed' ? (
         // tabIndex so focus can land here when no single field is at fault.
         <p className="form-status form-status--error" role="alert" tabIndex={-1}>
@@ -364,10 +392,11 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
           hint={`Contract, survey, payoff letter, estoppel, trust or entity paperwork. ${ACCEPTED_LABEL}, up to ${MAX_FILES} files and ${formatBytes(MAX_FILE_BYTES)} each.`}
           accept={ACCEPT_ATTRIBUTE}
           files={files}
+          rejected={rejected}
           onAdd={addFiles}
           onRemove={removeFile}
           disabled={busy}
-          error={errors.documents || undefined}
+          error={errors.documents}
         />
         <p className="form-note">Attachments go to private storage, not to email.</p>
       </fieldset>
@@ -381,15 +410,28 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
 
       <Honeypot />
 
+      <BotCheck enabled={botCheck.enabled} attach={botCheck.attach} />
+
+      {status.kind === 'uploading' ? (
+        <UploadMeter
+          name={status.name}
+          position={status.position}
+          count={status.count}
+          sent={status.sent}
+          total={status.total}
+          onCancel={() => uploads.current?.abort()}
+        />
+      ) : null}
+
       <button type="submit" className="btn btn--primary" disabled={busy}>
         {status.kind === 'uploading'
-          ? `Uploading ${status.done} of ${status.total}…`
+          ? `Uploading ${status.position} of ${status.count}…`
           : status.kind === 'sending'
             ? 'Sending…'
             : 'Open the order'}
       </button>
 
-      <p className="form-note" style={{ marginTop: '1rem' }}>
+      <p className="form-note form-note--after">
         This form opens a file and nothing more. Do not send bank account or wire details through
         it — not in a field, not in an attachment — or through email. We will never send you wire
         instructions by email, and we will not change instructions once given. Call{' '}

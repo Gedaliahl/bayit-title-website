@@ -5,6 +5,7 @@ import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
 import { getBestReviews, getReviewSnapshot } from '@/lib/reviews';
 import { getCounties } from '@/lib/locations';
 import { officeHoursLine, site } from '@/lib/site';
+import { baseOpenGraph } from '@/lib/seo';
 import { CountUp } from '@/components/CountUp';
 import { ServicesTicker } from '@/components/ServicesTicker';
 import { FileTimeline } from '@/components/FileTimeline';
@@ -12,14 +13,14 @@ import { FeaturedQuote } from '@/components/Reviews';
 import { UnderwriterBadge } from '@/components/UnderwriterBadge';
 
 export const metadata: Metadata = {
-  title: `Florida title insurance agency in ${site.address.city}`,
+  // Absolute, because the layout's "| Bayit Title" template applies only to the
+  // segments below it; without the name here the homepage's title had none.
+  title: { absolute: `${site.name} — Florida title insurance agency in ${site.address.city}` },
   description:
-    `${site.legalName} searches title, issues policies as an agent for ${site.underwriter}, holds ` +
-    `escrow and closes residential and commercial transactions throughout Florida. Excellent ` +
-    `title work, done by four named people in Coral Springs: the search read by a person, ` +
-    `problems put in writing the week they are found, the same processor and closer on your file ` +
-    `from opening to recording.`,
+    `${site.legalName}, a Florida title insurance agency in ${site.address.city}: title search and ` +
+    'insurance, escrow, and residential and commercial closings statewide.',
   alternates: { canonical: '/' },
+  openGraph: { ...baseOpenGraph, url: '/' },
 };
 
 /**
@@ -131,10 +132,7 @@ export default async function HomePage() {
           <div className="split__head">
             <p className="eyebrow">Why us</p>
             <h2>Why bring the file here</h2>
-            <p>
-              Because the work is excellent, and excellence in title is a set of specific,
-              checkable things rather than a claim.
-            </p>
+            <p>Four things that happen on every file here, and that you can check.</p>
             <p className="split__link">
               <Link href="/partners">How we work with realtors and mortgage brokers →</Link>
             </p>
@@ -227,12 +225,11 @@ export default async function HomePage() {
             <li className="card">
               <h3>1031 exchanges</h3>
               <p>
-                We can facilitate a like-kind exchange through {site.exchangeCompany.name} —{' '}
-                {site.exchangeCompany.relationship}, despite the shared name — so the qualified
-                intermediary and the closing are arranged together rather than by two offices that
-                have never spoken. It has to be set up before the relinquished property closes: once
-                the seller has touched the money, the exchange is over. Tell us early and we will
-                help you get the paperwork in the right order.
+                We close the transaction alongside whichever qualified intermediary you choose. The
+                exchange has to be set up before the relinquished property closes: once the seller
+                has touched the money, it is over. Tell us early and we will help you get the
+                paperwork in the right order. ({site.exchangeCompany.name}, despite the name, is{' '}
+                {site.exchangeCompany.relationship} with no connection to us.)
               </p>
             </li>
           </ul>
@@ -247,8 +244,8 @@ export default async function HomePage() {
             <p>
               We close throughout Florida. Most of our files sit in{' '}
               {site.priorityCounties.slice(0, -1).join(', ')} and {site.priorityCounties.at(-1)},
-              where who customarily pays for the owner&rsquo;s policy, what the clerk charges, and
-              how long recording takes all differ by county.
+              where who customarily pays for the owner&rsquo;s policy, which office records the
+              deed, and how long recording takes all differ by county.
             </p>
             <p className="split__link">
               Want a number before you call?{' '}

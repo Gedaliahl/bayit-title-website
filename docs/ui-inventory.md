@@ -72,10 +72,10 @@ ticker and the two figures that count up once on load.
 | `--accent-wash` | `#f7efdc` | Chips, icon discs, answer panel, CTA. |
 | `--flag` | `#6f1d2b` | VERIFY banners and form errors only. |
 | `--ink-muted` | `#555` | Secondary text, labels, credential line. |
-| `--ink-faint` | `#8a8070` | Steps not yet reached on the example file card. |
+| `--ink-faint` | `#756b5c` | Counts and quiet numerals, and steps not yet reached on the example file card. 4.5:1 on white, band and wash. |
 | `--rule` | `#e8e4db` | Chrome and section hairlines. |
 | `--rule-card` | `#e3ded2` | Card, pill and panel edges. |
-| `--rule-strong` | `#bdb3a0` | Input borders, which need a visible edge. |
+| `--rule-strong` | `#8a7f6a` | Form-control borders. Over 3:1 on white, band and wash, which a control's edge needs. |
 
 Two off-token colours exist: `#fdf6f2`, the warm blush ground of the VERIFY
 banner, and `#46360f` as the dark button's hover.
@@ -94,7 +94,7 @@ Headings are weight **400**, `line-height: 1.14`, `letter-spacing: -0.01em`,
 `text-wrap: balance`. Body is `1.0625rem` at `line-height: 1.65`.
 
 Scale: `--step-0` 1.0625rem · `--step-1` 1.25 · `--step-2` 1.5 ·
-`--step-3` 1.9375 (h2) · `--step-4` 2.5 ·
+`--step-3` 1.9375 (h2) ·
 `--step-5` `clamp(2.125rem, 1.35rem + 3.2vw, 3.25rem)` (h1). The homepage hero
 sets its own clamp, up to `3.75rem`.
 

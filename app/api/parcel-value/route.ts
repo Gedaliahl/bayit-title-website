@@ -8,27 +8,32 @@
 // second or two against the tenth of a second a dropdown can afford — and
 // because it is asked once per property rather than once per keystroke.
 //
+// It runs only lookups the search route signed. One of the kinds is a billed
+// Esri geocode, and an endpoint that took any key it was handed would be a way
+// to spend this site's account from anywhere; see lib/lookup-guard.ts.
+//
 // Like the search route it is a POST, writes nothing and keeps nothing; see the
 // note there for why the address does not travel in a URL.
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+import {
+  checkLookupToken,
+  createRateLimiter,
+  fingerprintRequired,
+} from '@/lib/lookup-guard';
 import { hashIp } from '@/lib/submissions';
 import { resolveParcelValue, type ValueLookup } from '@/lib/property-lookup';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+
+/**
+ * The statewide roll can take nine seconds to answer and a retry twenty more,
+ * on top of a geocode; this is room for that and not much besides.
+ */
+export const maxDuration = 45;
 
 const lookupSchema = z.discriminatedUnion('kind', [
-  z.object({
-    kind: z.literal('parcel'),
-    parcelId: z.string().trim().min(3).max(60),
-  }),
-  z.object({
-    kind: z.literal('county-feature'),
-    countySlug: z.string().trim().min(3).max(60),
-    objectId: z.number().int().min(0),
-  }),
   z.object({
     kind: z.literal('point'),
     lat: z.number().min(-90).max(90),
@@ -37,6 +42,7 @@ const lookupSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('esri'),
     magicKey: z.string().trim().min(1).max(512),
+    text: z.string().trim().min(1).max(200),
   }),
   z.object({
     kind: z.literal('jacksonville'),
@@ -52,6 +58,7 @@ const requestSchema = z.object({
   /** The county's own number for the parcel, where its address service gave one. */
   parcelId: z.string().trim().max(60).nullish(),
   lookup: lookupSchema,
+  token: z.string().max(100),
 });
 
 /**
@@ -59,27 +66,7 @@ const requestSchema = z.object({
  * somebody picks a property, not while they type, so a caller making them at
  * speed is not a person using the page.
  */
-const WINDOW_MS = 60_000;
-const MAX_PER_WINDOW = 20;
-const callers = new Map<string, { count: number; resetAt: number }>();
-
-function isRateLimited(fingerprint: string | null): boolean {
-  if (!fingerprint) return false;
-
-  const now = Date.now();
-  const seen = callers.get(fingerprint);
-
-  if (!seen || seen.resetAt <= now) {
-    callers.set(fingerprint, { count: 1, resetAt: now + WINDOW_MS });
-    if (callers.size > 2_000) {
-      for (const [key, entry] of callers) if (entry.resetAt <= now) callers.delete(key);
-    }
-    return false;
-  }
-
-  seen.count += 1;
-  return seen.count > MAX_PER_WINDOW;
-}
+const isRateLimited = createRateLimiter(60_000, 20);
 
 export async function POST(request: Request) {
   let raw: unknown;
@@ -90,37 +77,53 @@ export async function POST(request: Request) {
   }
 
   const parsed = requestSchema.safeParse(raw);
-  if (!parsed.success) return NextResponse.json({ value: null }, { status: 422 });
+  if (!parsed.success) return NextResponse.json({ status: 'invalid' }, { status: 422 });
 
-  if (isRateLimited(hashIp(request))) {
+  const fingerprint = hashIp(request);
+  if (!fingerprint && fingerprintRequired()) {
+    return NextResponse.json({ error: 'Unidentified request.' }, { status: 403 });
+  }
+
+  if (fingerprint && isRateLimited(fingerprint)) {
     return NextResponse.json(
-      { error: 'That is more lookups than we can pass on in a minute.' },
+      { error: 'That is more lookups than we can pass on in a minute.', status: 'rate-limited' },
       { status: 429 },
     );
   }
 
+  const { address, countyName, lookup, token } = parsed.data;
+  const parcelId = parsed.data.parcelId ?? null;
+
+  const signed = checkLookupToken(token, {
+    address,
+    countyName,
+    parcelId,
+    lookup: lookup as ValueLookup,
+  });
+  if (signed === 'expired') {
+    // An hour-old dropdown; the page asks for the property to be picked again.
+    return NextResponse.json({ status: 'expired' }, { status: 403 });
+  }
+  if (signed !== 'valid') return NextResponse.json({ status: 'invalid' }, { status: 403 });
+
   try {
     const result = await resolveParcelValue(
-      parsed.data.lookup as ValueLookup,
-      parsed.data.address,
-      parsed.data.countyName,
-      parsed.data.parcelId ?? null,
+      lookup as ValueLookup,
+      address,
+      countyName,
+      parcelId,
+      request.signal,
     );
 
-    // Three outcomes, and the page says something different about each. A
-    // decline is the check working — the parcel under that point is not the
-    // property that was picked — and belongs to the reader to work around. An
-    // unavailable is somebody else's server being slow, and is worth another
-    // go, so the page says which it was rather than blaming the address.
-    return NextResponse.json(
-      {
-        value: result.status === 'found' ? result.value : null,
-        unavailable: result.status === 'unavailable',
-      },
-      { headers: { 'cache-control': 'no-store' } },
-    );
+    // Each outcome is said differently on the page. A decline is the check
+    // working — the parcel under that point is not the property that was
+    // picked, or is one unit of a building when no unit was picked — and
+    // belongs to the reader to work around. An unavailable is somebody else's
+    // server being slow, and is worth another go, so the page says which it
+    // was rather than blaming the address.
+    return NextResponse.json(result, { headers: { 'cache-control': 'no-store' } });
   } catch (error) {
     console.error('[api/parcel-value] failed:', error);
-    return NextResponse.json({ value: null, unavailable: true });
+    return NextResponse.json({ status: 'unavailable' }, { headers: { 'cache-control': 'no-store' } });
   }
 }

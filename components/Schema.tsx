@@ -51,21 +51,25 @@ function daysInRange(label: string): string[] {
   return WEEK.slice(start, end + 1) as unknown as string[];
 }
 
-export function OrganizationSchema() {
-  const openingHours = site.hours
-    .filter((entry) => entry.open !== null)
+export function openingHoursSpecification() {
+  return site.hours
+    .filter((entry) => entry.opens !== null)
     .map((entry) => ({
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: daysInRange(entry.days),
-      opens: entry.open,
-      closes: entry.close,
+      opens: entry.opens,
+      closes: entry.closes,
     }));
+}
 
+export function OrganizationSchema() {
   return (
     <JsonLd
       data={{
         '@context': 'https://schema.org',
-        '@type': ['ProfessionalService', 'LocalBusiness'],
+        // ProfessionalService is already a LocalBusiness subtype; naming both
+        // says the same thing twice.
+        '@type': 'ProfessionalService',
         '@id': ORGANIZATION_ID,
         name: site.name,
         legalName: site.legalName,
@@ -93,7 +97,7 @@ export function OrganizationSchema() {
           '@type': 'State',
           name: 'Florida',
         },
-        openingHoursSpecification: openingHours,
+        openingHoursSpecification: openingHoursSpecification(),
         hasCredential: {
           '@type': 'EducationalOccupationalCredential',
           credentialCategory: 'Florida Title Insurance Agency License',
@@ -156,6 +160,7 @@ export function ArticleSchema({
   authorName,
   authorSlug,
   reviewedOn,
+  image,
 }: {
   headline: string;
   description: string;
@@ -163,6 +168,8 @@ export function ArticleSchema({
   authorName: string;
   authorSlug: string;
   reviewedOn: string;
+  /** The page's own social card, which is also the image Google shows for the article. */
+  image?: string;
 }) {
   return (
     <JsonLd
@@ -172,6 +179,7 @@ export function ArticleSchema({
         headline,
         description,
         mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(path) },
+        ...(image ? { image } : {}),
         datePublished: reviewedOn,
         dateModified: reviewedOn,
         author: {

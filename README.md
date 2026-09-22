@@ -40,13 +40,58 @@ npm run build       # production build; drafts excluded
 SHOW_DRAFTS=1 npm run build   # preview build; drafts included
 ```
 
-`.github/workflows/ci.yml` runs all five on every pull request.
+`.github/workflows/ci.yml` runs all five on every pull request, and then the
+browser suite and Lighthouse described below.
 
 The tests in `tests/` cover the decisions rather than the plumbing: the
 reviewed/VERIFY gate, the two review suppression rules, the document allowlist
 that has to mirror the bucket, and the IP fingerprint. Each of those is a choice
 about what the firm publishes or stores, and each could be weakened by a
 refactor without a single build turning red.
+
+### In a browser
+
+```bash
+npm run test:e2e    # Playwright: builds, starts on :3206, runs e2e/
+npm run test:a11y   # the axe sweep on its own
+npm run build && npm run lhci   # Lighthouse CI on four templates, as a phone
+```
+
+`e2e/` holds three suites, all run against `next build && next start`:
+
+- `matrix.spec.ts` walks every URL in `/sitemap.xml` except the homepage, the
+  two `?mode=` estimator views, an address that was never a page and a draft
+  (both must answer 404), at 14 widths from 280 to 2560. It fails on
+  horizontal overflow, console or page errors, a failed same-origin request,
+  anything other than one `h1`, a skipped heading level, an `img` without
+  `alt`, and a target under 24px that WCAG 2.5.8 does not excuse.
+- `a11y.spec.ts` runs axe (WCAG 2.0, 2.1 and 2.2, A and AA) on the same routes
+  at 375 and 1280, and fails on anything serious or critical.
+- `flows.spec.ts` covers the phone menu, both figure modes of the estimator,
+  the three forms and both upload boxes. The API routes are answered with
+  `page.route`, so no test reaches Supabase or a county roll, and the
+  estimator's expected totals come from `lib/closing-estimate.ts` itself.
+
+Locally only Chromium runs. CI adds WebKit on a phone and a Firefox smoke run;
+`E2E_ALL_BROWSERS=1` does the same on a machine that has them installed. An
+already-running `next start` on :3206 is reused rather than rebuilt, and
+`E2E_PORT` moves it.
+
+There are no screenshot comparisons. Fonts are rasterized differently on each
+CI runner image and on each developer's machine, so a pixel diff either fails
+on nothing or is loosened until it passes on everything. The matrix checks the
+layout properties that can be stated — nothing wider than the screen, nothing
+too small to tap — and a person looks at the pages.
+
+`lighthouserc.json` fails on accessibility below 100 or SEO below 95, and warns
+on performance below 90 or best practices below 95. SEO is scored without the
+`is-crawlable` audit, because every build that is not the production
+deployment answers `noindex` on purpose (see "Which deployment search engines
+are allowed into"). `@lhci/cli` is run through `npx` rather than installed:
+its dependency tree carries advisories with no fixed release, and this repo
+keeps `npm audit` at zero.
+
+`.github/workflows/rolls.yml` runs `npm run check:rolls` every Monday.
 
 ## The one rule that matters most
 

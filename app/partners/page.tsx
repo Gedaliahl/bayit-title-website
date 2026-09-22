@@ -7,36 +7,27 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel } from '@/components/Prose';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'For realtors and mortgage brokers',
-  description:
-    'How Bayit Title works with real estate agents and loan officers: one named processor and ' +
-    'closer per file, title read in the first week, lender conditions answered directly, and ' +
-    'signings arranged around the client. The reviews on this page were left by agents and ' +
-    'lenders, not by us.',
+  description: metaDescription(
+    'How we work with agents and loan officers: one named processor and closer per file, title ' +
+      'read in the first week, lender conditions answered directly.',
+  ),
   alternates: { canonical: '/partners' },
+  openGraph: { ...baseOpenGraph, url: '/partners' },
 };
 
 /**
- * Tags on the Google reviews written by the people this page is addressed to —
- * agents, loan officers, signing agents and repeat referrers. The reviews are
- * not chosen by hand: whatever carries these tags is what appears, ranked by
- * how many of them overlap. Nothing is written for this page and nothing is
- * edited into it.
+ * The tag on the Google reviews written by people who work in the business:
+ * agents, lenders and signing agents. The page says that is who wrote the reviews
+ * it shows, so it pulls only this tag: the broader ones (`agent`, `lender`,
+ * `referral`) are also on reviews by buyers and sellers who mention their agent
+ * or their loan. The reviews are not chosen by hand, and nothing is written for
+ * this page or edited into it.
  */
-const PARTNER_REVIEW_TAGS = [
-  'agent',
-  'lender',
-  'industry-professional',
-  'partner',
-  'signing-agent',
-  'referral',
-  'lender-coordination',
-  'lender-issues',
-  'clear-to-close',
-  'volume',
-];
+const PARTNER_REVIEW_TAGS = ['industry-professional'];
 
 export default async function PartnersPage() {
   const reviews = await getReviewsByTags(PARTNER_REVIEW_TAGS, 6);
@@ -50,13 +41,13 @@ export default async function PartnersPage() {
             { name: 'For realtors and mortgage brokers', path: '/partners' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>For realtors and mortgage brokers</h1>
+        <h1 className="after-crumbs">For realtors and mortgage brokers</h1>
 
         <AnswerPanel
           text={
-            'Your client’s closing is your reputation as much as ours, so the work here is held to ' +
-            'one standard: excellence, in the parts that decide whether your date holds. A named ' +
-            'processor and a named closer on every file from opening to recording. The title read ' +
+            'Your client’s closing is your reputation as much as ours, so here is how we handle the ' +
+            'parts that decide whether your date holds. A named processor and a named closer on ' +
+            'every file from opening to recording. The title read ' +
             'in the first week rather than the last. Problems put in writing with what it takes to ' +
             'clear them. Lender conditions answered by someone who can resolve them. And a phone ' +
             'answered by a person who already knows which file you mean.'
@@ -71,12 +62,13 @@ export default async function PartnersPage() {
           your client called back. That is the whole of our pitch, and everything below is a
           specific about how it is done.
         </p>
-        <p>
-          You do not have to take it from us. The{' '}
-          <Link href="/reviews">reviews</Link> on this page are not ours; they were left on Google,
-          mostly by agents, loan officers and signing agents, and they are reproduced in full,
-          unedited.
-        </p>
+        {reviews.length > 0 ? (
+          <p>
+            You do not have to take it from us. The <Link href="/reviews">reviews</Link> on this page
+            are not ours; they were left on Google by people who work in the business, and they are
+            reproduced in full, unedited.
+          </p>
+        ) : null}
 
         <h2>For real estate agents</h2>
         <ul>
@@ -110,9 +102,9 @@ export default async function PartnersPage() {
         <h2>For mortgage brokers and loan officers</h2>
         <ul>
           <li>
-            <strong>Conditions get answered, not forwarded.</strong> Title conditions, CPL,
-            wiring instructions, the closing protection letter and the fee sheet come back from
-            someone who can actually resolve them.
+            <strong>Conditions get answered, not forwarded.</strong> Title conditions, wiring
+            instructions, the closing protection letter and the fee sheet come back from someone who
+            can actually resolve them.
           </li>
           <li>
             <strong>Your numbers and ours reconcile before the borrower sees them.</strong> The
@@ -132,20 +124,23 @@ export default async function PartnersPage() {
           </li>
           <li>
             <strong>Wire discipline.</strong> We never send wire instructions by email and never
-            email a change to instructions already given. Tell your borrowers that; it is the single
-            most useful thing either of us can say to them.
+            email a change to instructions already given. Tell your borrowers that, on every
+            file.
           </li>
         </ul>
 
         <h2>Working the harder files</h2>
         <p>
           Commercial transactions — entity authority, leasehold and ALTA policies, UCC and judgment
-          searches, staged disbursement — are handled here rather than referred out. So are 1031
-          exchanges, which we can facilitate through {site.exchangeCompany.name} —{' '}
-          {site.exchangeCompany.relationship}, not ours, though the name suggests otherwise —
-          provided the exchange is set up before the relinquished property closes. If you have an
-          investor client selling into a like-kind exchange, the earliest phone call is the
-          valuable one.{' '}
+          searches, staged disbursement — are handled here rather than referred out. On a 1031
+          exchange we close alongside whichever qualified intermediary your client chooses,
+          provided the exchange is set up before the relinquished property closes.{' '}
+          <span>
+            ({site.exchangeCompany.name}, despite the name, is {site.exchangeCompany.relationship}{' '}
+            with no connection to us.)
+          </span>{' '}
+          If you have an investor client selling into a like-kind
+          exchange, the earliest phone call is the valuable one.{' '}
           <Link href="/services">What we do, in full →</Link>
         </p>
 
@@ -178,7 +173,7 @@ export default async function PartnersPage() {
           and the file number the same business day. If you would rather talk it through first, call{' '}
           <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>.
         </p>
-        <p className="muted ui" style={{ fontSize: '0.875rem' }}>
+        <p className="muted ui text-small">
           Office hours are {officeHoursLine}. Signings outside those hours are arranged in advance,
           file by file.
         </p>

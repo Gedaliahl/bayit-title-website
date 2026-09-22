@@ -22,7 +22,7 @@ export const site = {
     inTitleSince: '2017',    // never write "Florida licensed since 2017"
     linkedin: 'https://www.linkedin.com/in/shevy-lowenstein-25404922a/',
   },
-  // Where a reader checks the two licence numbers above for themselves. The
+  // Where a reader checks the two license numbers above for themselves. The
   // About page puts this at the top of the page rather than in a footnote: the
   // agency's whole argument is that nothing here has to be taken on trust.
   dfsLicenseeSearchUrl: 'https://licenseesearch.fldfs.com/',
@@ -64,9 +64,11 @@ export const site = {
   ],
 
   // From the Google Business Profile. Keep in sync with GBP, not the other way round.
+  // `opens` and `closes` are the same times on the 24-hour clock, which is the
+  // only form schema.org accepts; "9:00 AM" in the JSON-LD is invalid markup.
   hours: [
-    { days: 'Monday – Friday', open: '9:00 AM', close: '5:00 PM' },
-    { days: 'Saturday – Sunday', open: null, close: null },
+    { days: 'Monday – Friday', open: '9:00 AM', close: '5:00 PM', opens: '09:00', closes: '17:00' },
+    { days: 'Saturday – Sunday', open: null, close: null, opens: null, closes: null },
   ],
 
   // Emphasis first, then the rest of the state. Every slug here must exist in
@@ -90,21 +92,16 @@ export const site = {
   // be the taxpayer's agent for the sale. So it is a separate company, named
   // here rather than blurred into "we handle 1031s".
   //
-  // It shares the Bayit name and does not share the ownership, which a reader
-  // would not guess and is therefore said out loud wherever it comes up. It is
-  // not an affiliated business arrangement: there is no common ownership to
-  // disclose, and the site must not describe one.
+  // It shares the Bayit name and nothing else — the firm confirmed on 22
+  // September 2026 that it has no connection to the agency — which a reader
+  // would not guess and is therefore said out loud wherever it comes up. The
+  // site never says we facilitate an exchange "through" it or describe any
+  // arrangement with it: we close with whichever intermediary a client
+  // chooses.
   exchangeCompany: {
     name: 'Bayit Exchange Company',
     relationship: 'a separate company under different ownership',
   },
-
-  team: [
-    { slug: 'shevy',    name: 'Shevy Lowenstein',    role: 'Founder',                 credential: 'Florida Title Agent, License W766033' },
-    { slug: 'gedaliah', name: 'Gedaliah Lowenstein', role: 'Chief Operating Officer', credential: null },
-    { slug: 'jennifer', name: 'Jennifer Simon',      role: 'Processor',               credential: 'Florida Notary Public, Commission HH 795313' },
-    { slug: 'chaya',    name: 'Chaya Brooks',        role: 'Closer',                  credential: 'Florida Notary Public, Commission HH 817398' },
-  ],
 } as const;
 
 /**

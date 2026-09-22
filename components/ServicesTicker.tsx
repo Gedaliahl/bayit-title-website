@@ -3,7 +3,13 @@
  *
  * A short read of what the office handles — the headline categories, not the
  * full list. The order form's type options are finer grained than this.
+ *
+ * Moving content that runs on its own needs a way to stop it (WCAG 2.2.2), so
+ * the band carries a pause switch and also holds still under a pointer. The switch is a real checkbox and the stylesheet does the
+ * pausing, so none of it needs JavaScript.
  */
+
+import { MotionToggle } from './MotionToggle';
 
 const ICON = {
   width: 32,
@@ -50,7 +56,9 @@ const SERVICES: { label: string; icon: React.ReactNode }[] = [
     ),
   },
   {
-    label: '1031 Exchange',
+    // The closing side of an exchange. The intermediary is the client's
+    // choice; nothing here is an exchange service of our own.
+    label: '1031 closings',
     icon: (
       <svg {...ICON}>
         <path d="M4 9h13" />
@@ -91,7 +99,7 @@ export function ServicesTicker() {
   return (
     <div className="ticker">
       <div className="ticker__track">
-        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+        <span className="ticker__run">
           <Run />
         </span>
         {/* The band is short enough that one run of it does not fill a wide
@@ -99,11 +107,14 @@ export function ServicesTicker() {
             rest are repeats and would only be read back twice over. The
             keyframe moves the track by half its width, which lands on an
             identical frame, so the loop has no seam. */}
-        <span style={{ display: 'inline-flex', alignItems: 'center' }} aria-hidden="true">
+        <span className="ticker__run" aria-hidden="true">
           <Run />
           <Run />
           <Run />
         </span>
+      </div>
+      <div className="frame ticker__controls">
+        <MotionToggle label="Pause the moving list of what we close" />
       </div>
     </div>
   );

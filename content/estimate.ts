@@ -9,7 +9,10 @@
 // The figures the copy sits beside come from lib/ — the promulgated schedule,
 // the statutory rates and the two estimators — and are never restated here.
 
+import { MAX_PAGES } from '@/lib/closing-estimate';
+import { MAX_AMOUNT } from '@/lib/estimate-input';
 import { site } from '@/lib/site';
+import { formatMoney } from '@/lib/statutory-rates';
 
 export type EstimateMode = 'address' | 'numbers' | 'upload';
 
@@ -25,10 +28,8 @@ export function isEstimateMode(value: string | null | undefined): value is Estim
 export const META = {
   title: 'What a Florida closing costs, before anyone’s fee',
   description:
-    'Price a Florida closing three ways: from an address alone, off the county’s own record; ' +
-    'from the contract numbers; or send us the contract and we reply with the exact figure. ' +
-    'The premium is promulgated and the taxes are statutory, so every line is cited to the ' +
-    'rule or the statute.',
+    'Price a Florida closing from an address, from the contract numbers, or by sending us the ' +
+    'contract. Every line is cited to whoever sets it.',
 };
 
 export const HERO = {
@@ -41,8 +42,8 @@ export const HERO = {
     'you have them; or send us the contract and we reply with the exact figure, our fees ' +
     'included.',
   proof: [
-    'Every figure cited to the rule or the statute',
-    'The two estimators run in your browser — nothing stored, nothing sent to us',
+    'Every figure cited to whoever sets it',
+    'An address is only used to look up the county record',
   ],
 };
 
@@ -52,15 +53,15 @@ export const ROUTER = {
   rows: {
     address: {
       label: 'Not yet — start from the address',
-      sub: 'County and assessed value off the appraiser’s roll. A floor, not a quote.',
+      sub: 'County and value off the appraiser’s roll. A floor, not a quote.',
     },
     numbers: {
       label: 'Yes — enter the numbers',
-      sub: 'Price, loan, county, reissue. Every figure set by rule or statute.',
+      sub: 'Price, loan, county, reissue. Every figure cited to whoever sets it.',
     },
     upload: {
       label: 'Yes — send us the contract',
-      sub: 'We read it and reply with exact pricing, itemised, within one business day.',
+      sub: 'We read it and reply with exact pricing, itemized, within one business day.',
     },
   },
   prompt: 'Rather talk it through?',
@@ -73,38 +74,60 @@ export const BAND = {
   selected: 'Selected',
 };
 
-export const TABS: Record<EstimateMode, { eyebrow: string; title: string; body: string }> = {
+/** `short` is all a phone has room for, and is what the tab is called there. */
+export const TABS: Record<EstimateMode, { eyebrow: string; short: string; title: string; body: string }> = {
   address: {
     eyebrow: 'Option 1 · From an address',
+    short: 'Address',
     title: 'Approximate, off the county record',
     body:
-      'Type the address and pick the property. The county and the assessed value come off the ' +
+      'Type the address and pick the property. The county and the value come off the ' +
       'appraiser’s roll, and the premium, deed tax and recording are priced on them.',
   },
   numbers: {
     eyebrow: 'Option 2 · From the numbers',
-    title: 'Exact, from the contract',
+    short: 'Numbers',
+    title: 'Close, from the contract numbers',
     body:
       'Price, loan, county, whether the reissue rate applies and how long the documents run. ' +
-      'Every figure is set by the rule or the statute it cites.',
+      'Every figure is cited to whoever sets it — the rule, the statute, or us.',
   },
   upload: {
     eyebrow: 'Option 3 · From the contract',
+    short: 'Contract',
     title: 'Exact, from us',
     body:
       'Upload the signed contract. We read the price, the parties and the dates off it and reply ' +
-      'with the full itemised figure — our fees included — within one business day.',
+      'with the full itemized figure — our fees included — within one business day.',
   },
 };
 
 export const FORM = {
+  /** Said under a money box that has just refused what was typed into it. */
+  money: {
+    characters: 'Whole dollars only — digits, and commas if you like.',
+    tooLarge: `The calculator stops at ${formatMoney(MAX_AMOUNT)}.`,
+  },
   address: {
     label: 'Property address',
-    hint: 'Start typing and pick the property. Where the roll can be read, the assessed value comes with it.',
+    hint: 'Start typing and pick the property. Where the roll can be read, its value comes with it.',
     placeholder: '1409 NW 48th St, Boca Raton',
     listLabel: 'Matching properties',
     looking: 'Looking…',
     nothing: 'No property found for that. Type the value in below and the figures still work.',
+    /** Announced as the list opens, so there is something to say it is there. */
+    found: (count: number) =>
+      count === 1
+        ? '1 matching property. Arrow down to choose it.'
+        : `${count} matching properties. Arrow down to choose one.`,
+    floridaOnly: 'Florida properties only — that address reads as another state’s.',
+    rateLimited: 'That is more lookups than we can pass on in a minute.',
+    unavailable:
+      'The county services did not answer just then, so the property may still be there. The ' +
+      'figures work if you type the value in below.',
+    tryAgain: 'Try again',
+    justValue: (amount: string) => `Just value ${amount}`,
+    assessedValue: (amount: string) => `Assessed ${amount}`,
     valueOnPick: 'Value on pick',
     noRoll: 'No roll to read',
   },
@@ -112,6 +135,16 @@ export const FORM = {
     label: 'What is the transaction?',
     purchase: 'A purchase',
     refinance: 'A refinance',
+  },
+  party: {
+    label: 'Whose side are you on?',
+    buyer: 'Buyer',
+    seller: 'Seller',
+    hint:
+      'Some of these lines have no other side — a seller has no new loan, so the lender’s ' +
+      'policy, the mortgage taxes and the mortgage recording are never theirs. The rest is ' +
+      'ordinary Florida practice, and the contract can move any of it.',
+    refinanceHint: 'A refinance has one side of the table, so everything below is the borrower’s.',
   },
   county: {
     label: 'County',
@@ -122,7 +155,7 @@ export const FORM = {
     elsewhere: 'Another Florida county',
   },
   assessed: {
-    label: 'Assessed value',
+    label: 'Value used',
     reading: 'Reading the parcel off the roll…',
     /** "{Assessed value} on the {2025} roll, from the {source} · parcel {id}." */
     onRoll: {
@@ -132,11 +165,21 @@ export const FORM = {
       fromThe: ', from the ',
       parcel: (id: string | null) => (id ? ` · parcel ${id}` : ''),
       filedAs: (address: string) => ` The roll files that parcel as ${address}.`,
+      homestead:
+        ' The roll lists it as a homestead, where Save Our Homes caps how fast the assessed value can rise.',
+      sale: (price: string, year: number) => ` The roll records a sale at ${price} in ${year}.`,
     },
-    declined:
-      'The roll would not confirm a parcel at that address, so this one is yours to fill in. Look the parcel up on the ',
-    unavailable:
-      'The state’s parcel service did not answer just then — pick the property again, or look it up on the ',
+    /** Why a picked property came back without a figure; the appraiser's link follows. */
+    missed: {
+      declined: 'The roll would not confirm a parcel at that address, so this one is yours to fill in.',
+      'which-unit':
+        'That address is a building of several units, and the roll values each one. Add the unit ' +
+        'to the address — “Unit 1001” — and pick it again.',
+      unavailable: 'The state’s parcel service did not answer just then.',
+      'rate-limited': 'That is more lookups than we can pass on in a minute.',
+      expired: 'That list of properties is more than an hour old.',
+    },
+    tryAgain: 'Try again',
     pickOr: 'Pick the property above and this fills itself in, or look the parcel up on the ',
     lookUp: 'Look the parcel up on the ',
     appraiser: (countyName: string) => `${countyName} Property Appraiser`,
@@ -175,22 +218,25 @@ export const FORM = {
   pages: {
     label: 'Page counts',
     hint:
-      'Recording is charged by the page — $10.00 for the first and $8.50 for each after it. ' +
-      'These are ordinary lengths; change them if you know the documents.',
+      'Recording is charged by the page — $10.00 for the first and $8.50 for each after it, ' +
+      'plus $5.50 a document to e-record it. These are ordinary lengths; change them if you know ' +
+      'the documents.',
     deed: 'Pages in the deed',
     mortgage: 'Pages in the mortgage',
+    characters: 'A whole number of pages.',
+    tooMany: `Up to ${MAX_PAGES} pages here.`,
+    atLeastOne: 'A document has a first page, so this is priced as one.',
   },
 };
 
 export const RESULT = {
   eyebrow: {
     address: 'Approximate — a floor, not a quote',
-    numbers: 'Set by rule and statute',
+    numbers: 'Every line cited to whoever sets it',
   },
-  totalLabel: {
-    address: 'Estimated charges',
-    numbers: 'Set by rule and statute',
-  },
+  /** Whose statement the total is. A refinance has one side and it is the borrower's. */
+  totalLabel: (purchase: boolean, party: 'buyer' | 'seller') =>
+    purchase ? `The ${party}’s side` : 'The borrower’s side',
   nothingYet: 'Nothing priced yet.',
   /** "A purchase in Palm Beach County, priced on the 2025 roll figure." */
   sub: (purchase: boolean, county: string, rollYear: number | null) =>
@@ -199,26 +245,72 @@ export const RESULT = {
     '.',
   outsideDade: 'a Florida county outside Miami-Dade',
   subtotal: 'Subtotal',
-  totalNote: 'Everything above is set by the rule, the statute or the clerk — none of it is our fee.',
-  alternate: (otherRate: string, alternate: string, premium: string) =>
+  totalNote:
+    'Set by the rule, the statute or the clerk, except the lender’s policy and the e-recording ' +
+    'fee, which are ours and say so on the line. Which side pays each of them is the contract’s.',
+  /**
+   * "The seller carries about $3,500 of the same closing." An owner's policy
+   * shown to both sides is in this side's total already, so it is named
+   * rather than counted a second time in the other's.
+   */
+  otherParty: (other: 'buyer' | 'seller', amount: string, ownerPolicyUnassigned: boolean) =>
+    `The ${other} carries about ${amount} of the same closing, on the lines that are theirs` +
+    (ownerPolicyUnassigned ? ', plus the owner’s policy if the contract puts it on them.' : '.'),
+  /**
+   * With no previous policy amount entered, the reissue figure is the whole
+   * liability at the reissue schedule — the most it can save, and less if the
+   * old policy insured less than this one would.
+   */
+  alternate: (otherRate: string, alternate: string, premium: string, upTo: boolean) =>
     `At the ${otherRate} the same coverage is ${alternate} in premium against ${premium}. ` +
-    'The difference is what it is worth finding the old policy for.',
+    (upTo
+      ? 'Finding the old policy is worth up to the difference — less if it insured less than this would.'
+      : 'The difference is what it is worth finding the old policy for.'),
   notInIt: 'Not in it:',
+  /**
+   * A seller's list is not a buyer's: no lender, no endorsements, and the
+   * costs that are theirs alone — the ones /closing-costs/seller describes.
+   */
+  unknownsSeller:
+    'Our settlement fee, where the contract puts one on the seller; the mortgage payoff and the ' +
+    'recording of its satisfaction; association balances and estoppel charges; municipal claims, ' +
+    'judgments and liens; prorations and the commission. Which side pays each line above is the ' +
+    'contract’s to settle.',
   unknowns: {
     address:
-      'The policy is written at the purchase price, not the assessed value — on most Florida ' +
-      'homes the assessed figure is the lower of the two. Our settlement fee, the search and ' +
-      'examination, endorsements, survey, municipal lien search, estoppels and association fees.',
+      'The policy is written at the purchase price, not the value on the county roll — on most ' +
+      'Florida homes the roll’s figure is the lower of the two. Our settlement fee, the search and ' +
+      'examination, endorsements, survey, municipal lien search, estoppels and association fees. ' +
+      'Which side pays each line above is the contract’s to settle.',
     numbers:
       'Our settlement or closing fee; title search and examination; endorsements the lender asks ' +
       'for; survey, municipal lien search, estoppel letters and association fees; the lender’s own ' +
-      'charges, prepaid interest, escrows and prorations.',
+      'charges, prepaid interest, escrows and prorations. Which side pays each line above is the ' +
+      'contract’s to settle — the split shown is ordinary Florida practice and no more than a ' +
+      'starting point.',
   },
   empty: {
-    addressPurchase: 'Pick the property above, or enter the assessed value, and the figures appear here.',
+    addressPurchase: 'Pick the property above, or enter a value, and the figures appear here.',
     addressRefinance: 'Enter the loan amount and the figures appear here.',
-    numbers: 'Enter a price or a loan amount and the figures appear here.',
+    // A loan without a price is not a purchase yet, on either side of it.
+    numbersPurchase: 'Enter the price and the figures appear here.',
+    numbersRefinance: 'Enter the loan amount and the figures appear here.',
   },
+  /** Read out a moment after the figures settle: "The buyer’s side: $5,152.00". */
+  announce: (label: string, total: string) => `${label}: ${total}`,
+  /** On a phone, pinned to the foot of the screen while the form is in view. */
+  seeBreakdown: 'See breakdown',
+};
+
+export const ACTIONS = {
+  label: 'Keep these figures',
+  reset: 'Start again',
+  copy: 'Copy the figures',
+  copied: 'Copied. Paste them wherever you need them.',
+  copyFailed: 'That browser would not copy. Select the figures and copy them by hand.',
+  print: 'Print',
+  /** The first line of the copied text. */
+  summaryTitle: `Closing cost estimate from ${site.name}`,
 };
 
 export const UPLOAD = {
@@ -233,6 +325,8 @@ export const UPLOAD = {
     dropSub: 'or click to choose a file',
     dropSubMore: 'Add another page or choose a different file',
     remove: (name: string) => `Remove ${name}`,
+    /** Ends the reason a file was not added: "… — PDF, JPG, PNG or HEIC only". */
+    typeLabel: 'PDF, JPG, PNG or HEIC',
   },
   name: { label: 'Your name' },
   role: {
@@ -246,7 +340,7 @@ export const UPLOAD = {
       { value: 'attorney', label: 'Attorney' },
     ],
   },
-  email: { label: 'Email', hint: 'Where the itemised figure goes.' },
+  email: { label: 'Email', hint: 'Where the itemized figure goes.' },
   phone: { label: 'Phone', optional: '(optional)', hint: 'Only if a page is unreadable.' },
   note: {
     label: 'Anything we should know',
@@ -257,26 +351,38 @@ export const UPLOAD = {
   },
   status: 'One business day for a readable contract. No obligation.',
   sending: 'Sending…',
-  uploading: (done: number, total: number) => `Sending page ${done} of ${total}…`,
+  uploading: (done: number, total: number) => `Sending file ${done} of ${total}…`,
+  /** While pages are in flight: leaving now loses them. */
+  uploadingNote: 'Keep this page open until the pages have gone.',
   submit: `Send it to ${site.name}`,
   errors: {
     noFiles: 'Add the contract first — a PDF or a photo of each page.',
     tooLarge: 'That is over 25 MB together. Drop a page or send the rest by email.',
-    notReadable: 'Only a PDF or a photo — JPG, PNG or HEIC — can be read here.',
     noName: 'Tell us your name so we know who to write back to.',
     badEmail: 'That email does not look complete.',
     failed: `We could not send that. Email ${site.email} or call ${site.phoneDisplay}.`,
+    // No answer is not the same as a refusal: the request may be in the office.
+    noAnswer:
+      `We did not hear back, so we cannot tell whether that reached us. Call ${site.phoneDisplay} ` +
+      'before sending it again.',
+    botCheck: 'Wait a moment for the check above the button to finish, then send again.',
   },
   sent: {
     eyebrow: 'Received',
     title: (firstName: string) =>
       `Thank you${firstName ? `, ${firstName}` : ''}. It is in the office.`,
     body: (count: number, email: string, willCall: boolean) =>
-      `${count} file${count === 1 ? '' : 's'} received. We will read the contract and email the ` +
-      `itemised figure to ${email} within one business day. If a page is unreadable we will ` +
-      `${willCall ? 'call' : 'write'} first.`,
+      count === 0
+        ? 'Your details reached us, but none of the contract did, so there is nothing for us to ' +
+          'price yet.'
+        : `${count} file${count === 1 ? '' : 's'} received. We will read the contract and email the ` +
+          `itemized figure to ${email} within one business day. If a page is unreadable we will ` +
+          `${willCall ? 'call' : 'write'} first.`,
+    // There is no confirmation email to reply to; the office's own address is
+    // the one the pages would have gone to anyway.
     missing: (count: number) =>
-      `${count} file${count === 1 ? ' did' : 's did'} not upload — reply to our email with ${count === 1 ? 'it' : 'them'}.`,
+      `${count === 1 ? 'This file' : 'These files'} did not reach us — email ` +
+      `${count === 1 ? 'it' : 'them'} to ${site.ordersEmail}:`,
     wrongFile: 'Sent the wrong file?',
     again: 'Send another',
     orCall: `or call ${site.phoneDisplay}.`,
@@ -285,7 +391,7 @@ export const UPLOAD = {
     eyebrow: 'Exact pricing, from the documents',
     title: 'What comes back',
     sub:
-      'A closing-cost itemisation on our letterhead, by email, within one business day of a ' +
+      'A closing-cost itemization on our letterhead, by email, within one business day of a ' +
       'readable contract.',
     sections: [
       {
@@ -305,8 +411,8 @@ export const UPLOAD = {
     file: {
       title: 'What we do with the file',
       body:
-        'It goes to the office over an encrypted connection and is read by a person, not sold, ' +
-        'not kept past the quote unless you open an order with us. No obligation either way.',
+        'It goes to the office over an encrypted connection, is read by a person, and is not sold. ' +
+        'No obligation either way.',
       more: 'More',
     },
   },
@@ -315,9 +421,10 @@ export const UPLOAD = {
 export const RAIL = {
   label: 'The detail',
   items: [
-    { id: 'assessed-value', label: 'Where the assessed value comes from' },
+    { id: 'assessed-value', label: 'Where the value comes from' },
     { id: 'county', label: 'What the county changes' },
-    { id: 'floor', label: 'Why assessed value reads low' },
+    { id: 'sides', label: 'Which side pays what' },
+    { id: 'floor', label: 'Why the roll’s value reads low' },
     { id: 'schedule', label: 'The schedule it works from' },
     { id: 'reissue', label: 'When the reissue rate applies' },
     { id: 'unknowns', label: 'What this does not know' },
@@ -327,7 +434,7 @@ export const RAIL = {
 
 export const DETAIL = {
   assessedValue: {
-    title: 'Where the assessed value comes from',
+    title: 'Where the value comes from',
     p1:
       'Picking a property fills the figure in, and the line under the box says which office it ' +
       'came from, which parcel it belongs to and which year’s roll it is on. Nothing is estimated ' +
@@ -362,19 +469,50 @@ export const DETAIL = {
     p2b:
       ' — the price — and an estimate that starts from an address has no price in it. So the ' +
       'address option computes it on the appraiser’s value instead, says so on every line that ' +
-      'does it, and keeps it in its own group away from the premium. On a sale above the assessed ' +
+      'does it, and keeps it in its own group away from the premium. On a sale above the roll’s ' +
       'value, which is most sales, the real tax is higher.',
   },
+  sides: {
+    title: 'Which side pays what, and which lines have no other side',
+    p1a:
+      'The toggle above is not a filter on one list. Some of these lines genuinely have no other ' +
+      'side: a seller is not borrowing, so the lender’s policy, the documentary stamp tax and ' +
+      'intangible tax on the mortgage, and the recording and e-recording of it are never a ' +
+      'seller’s to pay. Showing a seller one total with a buyer’s loan costs inside it was the ' +
+      'thing worth fixing.',
+    p2a: 'The rest is ',
+    p2em: 'custom',
+    p2b:
+      ', which is not law. Documentary stamp tax on the deed is the seller’s in ordinary Florida ' +
+      'practice — s. 201.02 taxes the deed and names nobody to pay it — and the buyer records the ' +
+      'deed they are taking. Who pays for the owner’s policy is the one that really moves: in some ' +
+      'counties it is customarily the buyer, who then chooses the closing agent, and in others the ' +
+      'seller. Each of those lines says on its face which way custom put it.',
+    p3:
+      'That custom is read off the same county record the county and city pages print, not typed ' +
+      'into the calculator. Where we have not verified it for a county — and “another Florida ' +
+      'county” is sixty-odd counties at once — the owner’s policy is shown to both sides and says ' +
+      'so. In every case the purchase contract is what settles it, and the contract can put any of ' +
+      'these lines on either party. Read the paragraph that does it rather than assuming.',
+    p4a: 'Each side’s costs, the ones no calculator can price included, are set out line by line on the ',
+    p4Buyer: 'buyer closing costs',
+    p4b: ' and ',
+    p4Seller: 'seller closing costs',
+    p4c: ' pages.',
+  },
   floor: {
-    title: 'Why assessed value, and where it goes wrong',
+    title: 'Why the roll’s value, and where it goes wrong',
     p1a: 'A policy is written for the full insurable value of the property — on a sale, the purchase price. Florida’s ',
     p1em: 'assessed',
     p1b:
       ' value is a tax figure. On homestead property the annual increase in assessed value is ' +
       'capped by the Save Our Homes provision, so a house held for years can be assessed far below ' +
-      'what it would sell for today. Other exemptions and classifications pull it down further.',
+      'what it would sell for today. Other exemptions and classifications pull it down further. ' +
+      'The box leads with the just value where the roll has one, because it sits before the cap ' +
+      'and the exemptions, and offers the assessed value beside it. The just value is still a ' +
+      'figure for the tax roll rather than a sale price, so the same caution applies to it.',
     p2:
-      'That makes an assessed-value estimate useful and one-sided: the premium on the real coverage ' +
+      'That makes an estimate off the roll useful and one-sided: the premium on the real coverage ' +
       'amount is usually higher than the figure it gives, rarely lower. If you have a contract ' +
       'price, use it — the second option works from a price and a loan amount and adds documentary ' +
       'stamp tax, intangible tax and recording on top. If you have the contract itself, the third ' +
@@ -389,8 +527,13 @@ export const DETAIL = {
     original: 'Original rates · (1)(a)',
     reissue: 'Reissue rates · (2)(a)',
     simultaneous:
-      'A lender’s policy issued alongside the owner’s on the same land is $25 up to the owner’s ' +
-      'amount, under (5)(a); the excess is rated at the original schedule.',
+      'Under (5)(a) a lender’s policy issued alongside the owner’s on the same land can be no ' +
+      'less than $25 up to the owner’s amount. That is a minimum, not a price, and the estimator ' +
+      'prints $125 on the line because that is what this office charges to issue the policy; the ' +
+      'line cites us rather than the rule for that reason. Where the loan is larger than the ' +
+      'owner’s amount, the coverage above it is rated at the original schedule layered on the ' +
+      'owner’s amount: the original rate at the loan amount, less the original rate at the ' +
+      'owner’s amount.',
   },
   reissue: {
     title: 'When does the reissue rate apply?',
@@ -418,16 +561,18 @@ export const DETAIL = {
       'Not counted: our settlement or closing fee; title search and examination; endorsements the ' +
       'lender asks for; survey, municipal lien search, estoppel letters and association fees; the ' +
       'lender’s own charges, prepaid interest, escrows and prorations. Send us the price, the ' +
-      'county and the contract date and we will itemise the rest against the actual documents.',
+      'county and the contract date and we will itemize the rest against the actual documents.',
   },
   privacy: {
     title: 'What happens to the address you typed',
     p1:
-      'It is sent to this site while you type, and this site asks the county property appraiser ' +
-      'and the geocoder about it. That is the whole of it: nothing is written down, nothing is ' +
-      'emailed to the office, no cookie is set, and the request is a POST so the address does not ' +
-      'end up in a server log the way a search in a URL would. Turn the page and there is no ' +
-      'record you were here.',
+      'It is sent to this site while you type, in the body of the request rather than its ' +
+      'address, so it does not end up in a server log the way a search in a URL would. This site ' +
+      'then asks about it: the county and city services that publish property records, the U.S. ' +
+      'Census Bureau’s geocoder and, where it is switched on, Esri’s. Those requests carry the ' +
+      'address in their URLs, so it reaches those services and their logs. Nothing about it is ' +
+      'emailed to the office and no cookie is set; answers are held in the server’s memory for up ' +
+      'to an hour so the same search is not sent twice.',
     p2:
       'The two estimators ask for nothing else because the premium is the rule’s, not ours, so ' +
       'there is nothing to trade for it. If you would rather send nothing at all, use the second ' +
@@ -436,8 +581,7 @@ export const DETAIL = {
     p3:
       'The third option is different, and says so: a contract you upload goes to the office over ' +
       'an encrypted connection with your name and email, so we can read it and write back. It is ' +
-      'opened by a person, kept only as long as the quote is open unless you go on to open an ' +
-      'order, and never sold or shared.',
+      'opened by a person and never sold.',
     /** "Premium read from {rule} on {date}; the rule was last amended {date}. Taxes … on {date}." */
     note: (rule: string, premiumRead: string, amended: string, statutesRead: string) =>
       `Premium read from ${rule} on ${premiumRead}; the rule was last amended ${amended}. Taxes ` +
@@ -447,6 +591,6 @@ export const DETAIL = {
 };
 
 export const CTA = {
-  text: `Send the contract and ${site.name} will itemise the rest against the actual documents.`,
+  text: `Send the contract and ${site.name} will itemize the rest against the actual documents.`,
   action: 'Upload the contract',
 };

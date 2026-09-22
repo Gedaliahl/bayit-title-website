@@ -24,8 +24,9 @@ import {
 } from '@/lib/content';
 import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
-import { absoluteUrl, formatLongDate, metaDescription } from '@/lib/seo';
+import { absoluteUrl, baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
+import { getTeamMember } from '@/lib/team';
 import { Byline, Prose, VerifyBanner, VerifyText } from '@/components/Prose';
 import { DraftBanner } from '@/components/DraftBanner';
 import { QuickFacts } from '@/components/QuickFacts';
@@ -57,16 +58,17 @@ export async function generateMetadata({
   const path = `/title-problems/${doc.slug}`;
 
   return {
-    title: doc.title,
+    title: fittedTitle(doc.seo_title ?? doc.title),
     description,
     alternates: { canonical: path },
     // A draft is only ever reachable on a preview build, and must never be indexed.
     ...(doc.status === 'draft' ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
+      ...baseOpenGraph,
       type: 'article',
       title: doc.title,
       description,
-      url: absoluteUrl(path),
+      url: path,
       publishedTime: doc.reviewed_on,
       modifiedTime: doc.reviewed_on,
     },
@@ -104,9 +106,11 @@ export default async function TitleProblemPage({
     getReviewsByTags(doc.review_tags, 1),
   ]);
 
-  const author = doc.author ? site.team.find((member) => member.slug === doc.author) : undefined;
+  const author = doc.author ? getTeamMember(doc.author) : undefined;
   const authorName = author?.name ?? site.agentInCharge.displayName;
-  const faq = extractFaq(doc.raw);
+  // The page shows every question with its answer rendered; the JSON-LD gets
+  // plain text, and none of the questions still carrying a flag.
+  const faq = doc.faq;
   const path = `/title-problems/${doc.slug}`;
 
   // Sections the template lays out itself: the questions become disclosures,
@@ -129,9 +133,10 @@ export default async function TitleProblemPage({
           authorName={authorName}
           authorSlug={doc.author!}
           reviewedOn={doc.reviewed_on!}
+          image={absoluteUrl(`${path}/opengraph-image`)}
         />
       ) : null}
-      <FaqSchema items={faq} />
+      <FaqSchema items={extractFaq(doc.raw)} />
 
       <section className="frame page-hero">
         <div className="page-hero__copy">
@@ -264,7 +269,7 @@ export default async function TitleProblemPage({
           {doc.status === 'reviewed' ? (
             <Byline
               authorName={authorName}
-              authorRole={author?.role ?? 'Founder'}
+              authorRole={author?.role ?? 'Agent in Charge'}
               credential={author?.credential ?? null}
               reviewedOn={doc.reviewed_on!}
               nextReview={doc.next_review!}

@@ -105,6 +105,25 @@ export const getReviewSnapshot = cache(async (): Promise<ReviewSnapshot | null> 
 });
 
 /**
+ * Every topic tag the `google_reviews` rows carry, as read from the table on
+ * 2026-09-22. A page's `review_tags` are matched against these by exact
+ * string, so a tag written in a different form — `clearing-title` for
+ * `title-clearing`, `ron` for `remote-closing` — matches nothing and the page
+ * silently shows no review. A test holds every page's tags to this list; add
+ * to it when the seeded rows gain a tag, never to make a page's tag pass.
+ */
+export const REVIEW_TOPIC_TAGS = [
+  'after-hours', 'agent', 'attention-to-detail', 'buyer', 'clear-to-close', 'communication',
+  'complicated', 'condo', 'coral-springs', 'delay', 'due-diligence', 'estoppel', 'fast-closing',
+  'first-time-buyer', 'foreign-seller', 'guidance', 'industry-professional', 'investor',
+  'judgments', 'lender', 'lender-coordination', 'lender-issues', 'liens', 'loans', 'long-term',
+  'mobile-signing', 'notarization', 'notary', 'out-of-state-buyer', 'partner', 'pricing',
+  'problem-solving', 'rating-only', 'referral', 'refinance', 'remote-closing', 'repeat-client',
+  'responsiveness', 'seller', 'short', 'signing', 'signing-agent', 'south-florida',
+  'title-clearing', 'title-commitment', 'volume',
+] as const;
+
+/**
  * Reviews whose topic tags overlap the page's `review_tags`, most specific first.
  * Used to pull a relevant review onto a library page automatically.
  */

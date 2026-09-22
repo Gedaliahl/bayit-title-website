@@ -9,12 +9,13 @@ import {
   getCounties,
   getLocation,
   recorderName,
+  turnaroundForQuote,
   type Location,
 } from '@/lib/locations';
 import { citiesInCounty } from '@/lib/florida-cities';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -32,6 +33,8 @@ import {
   mortgageStampTaxDue,
   recordingChargeDue,
 } from '@/lib/statutory-rates';
+import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
+import { EXAMPLE_PAGE_COUNTS } from '@/lib/closing-estimate';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   MINIMUM_PREMIUM,
@@ -64,20 +67,19 @@ export async function generateMetadata({
   const county = await getLocation(slug);
   if (!county) return {};
 
-  const market = COUNTY_MARKETS[county.slug];
   const payer = county.customaryOwnerPolicyPayer;
 
   return {
-    title: countyPageTitle(county),
-    description:
-      `${site.legalName} is a Florida title company closing in ${county.name}` +
-      (market ? `, including ${market}` : '') +
-      `. Title insurance, escrow and closings for residential and commercial property, ` +
-      (payer
-        ? `who customarily pays for the owner’s policy here (the ${payer}), `
-        : 'who customarily pays for the owner’s policy, ') +
-      'the deed stamp rate, recording, and what a policy costs at every price.',
+    title: fittedTitle(countyPageTitle(county), `Title company in ${county.name}, FL`),
+    // What the page answers, in the order it answers it. The firm's name is
+    // left to the title, where a results page shows it anyway.
+    description: metaDescription(
+      `Closings in ${county.name}: who customarily pays for the owner’s policy` +
+        (payer ? ` (the ${payer})` : '') +
+        ', the deed stamp rate, recording, and what a policy costs.',
+    ),
     alternates: { canonical: `/counties/${county.slug}` },
+    openGraph: { ...baseOpenGraph, url: `/counties/${county.slug}` },
   };
 }
 
@@ -125,7 +127,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             { name: county.name, path: `/counties/${county.slug}` },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>
+        <h1 className="after-crumbs">
           Title insurance and closings in {county.name}
         </h1>
 
@@ -194,8 +196,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <p>
           So a {formatMoney(EXAMPLE_PRICE)} purchase in {county.name} is{' '}
-          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong> — the first{' '}
-          {formatMoney(100_000)} at $5.75 per thousand and the rest at $5.00. The minimum premium on
+          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong> — the{' '}
+          {ORIGINAL_SCHEDULE[0].label.toLowerCase()} at {ORIGINAL_SCHEDULE[0].amount} and the rest
+          at {ORIGINAL_SCHEDULE[1].amount}. The minimum premium on
           a conveyance is {formatMoney(MINIMUM_PREMIUM)}, and a fraction of $100 counts as a full
           $100 before the arithmetic starts.
         </p>
@@ -212,9 +215,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           </li>
           <li>
             <strong>Simultaneous issue.</strong> Where a lender&rsquo;s policy is issued at the same
-            time as the owner&rsquo;s policy on the same land, the lender&rsquo;s policy is{' '}
-            {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} for coverage up to the owner&rsquo;s amount.
-            Anything above that amount is charged at the regular rate.
+            time as the owner&rsquo;s policy on the same land, the rule sets{' '}
+            {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} as the least it can be for coverage up to the
+            owner&rsquo;s amount. {LENDER_POLICY_BESIDE_RULE}
           </li>
           <li>
             <strong>The new home purchase discount</strong>, on the first sale of a newly built one-
@@ -233,6 +236,11 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             Work the premium, tax and recording out for a specific price
           </Link>{' '}
           — the estimate page uses this schedule and cites the same rule.
+        </p>
+        <p>
+          What each side pays, line by line, is on the{' '}
+          <Link href="/closing-costs/buyer">buyer closing costs</Link> and{' '}
+          <Link href="/closing-costs/seller">seller closing costs</Link> pages.
         </p>
 
         <p className="muted">
@@ -313,8 +321,10 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         <CitedFigures figures={RECORDING_CHARGES} />
 
         <p>
-          A two-page deed is {formatMoney(recordingChargeDue(2))} and a twelve-page mortgage is{' '}
-          {formatMoney(recordingChargeDue(12))}. The clerk&rsquo;s own fee schedule covers the
+          A {EXAMPLE_PAGE_COUNTS.deed}-page deed is{' '}
+          {formatMoney(recordingChargeDue(EXAMPLE_PAGE_COUNTS.deed))} and a{' '}
+          {EXAMPLE_PAGE_COUNTS.mortgage}-page mortgage is{' '}
+          {formatMoney(recordingChargeDue(EXAMPLE_PAGE_COUNTS.mortgage))}. The clerk&rsquo;s own fee schedule covers the
           other things the office does — certified copies, searches, its own e-recording
           arrangements — and a third-party e-recording vendor may add a fee of its own, which is
           not the clerk&rsquo;s charge and not this.
@@ -338,13 +348,17 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
               {recorderName(county)} publishes this:
             </p>
             <blockquote>
-              {county.recordingTurnaround}
+              {turnaroundForQuote(county.recordingTurnaround)}
               <footer>
-                <a href={county.recordingTurnaroundSourceUrl!} rel="nofollow">
-                  Read from the office&rsquo;s own page
-                </a>
+                {county.recordingTurnaroundSourceUrl ? (
+                  <a href={county.recordingTurnaroundSourceUrl} rel="nofollow">
+                    Read from the office&rsquo;s own page
+                  </a>
+                ) : (
+                  'Read from the office’s own page'
+                )}
                 {county.recordingTurnaroundCheckedOn
-                  ? ` on ${county.recordingTurnaroundCheckedOn}`
+                  ? ` on ${formatLongDate(county.recordingTurnaroundCheckedOn)}`
                   : ''}
               </footer>
             </blockquote>

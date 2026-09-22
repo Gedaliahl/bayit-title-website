@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { getDoc, listRoutableSlugs } from '@/lib/content';
+import { getDoc, isPublishable, listRoutableSlugs } from '@/lib/content';
 import { ogImage, OG_SIZE, OG_CONTENT_TYPE } from '@/lib/og';
 
 export const alt = 'Bayit Title — Florida closing services';
@@ -14,7 +14,9 @@ export function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const doc = await getDoc('services', slug);
-  if (!doc) notFound();
+  // An image route renders any slug it is asked for, so the draft gate is
+  // applied here too; see the title-problems card.
+  if (!doc || !isPublishable(doc)) notFound();
 
   return ogImage({ eyebrow: 'Closing services', title: doc.title });
 }

@@ -6,9 +6,11 @@
 //
 // The arithmetic is lib/'s: the promulgated schedule, the statutory rates and
 // the two estimators built on them. Nothing on this page prices anything on
-// its own, and every figure is cited to the rule or the section it comes from.
+// its own, and every figure is cited to whoever sets it: the rule, the section,
+// or this office for the two charges that are ours.
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { DETAIL, HERO, META, RAIL } from '@/content/estimate';
 import { getCounties } from '@/lib/locations';
@@ -22,7 +24,7 @@ import {
 import { REISSUE_CONDITIONS } from '@/lib/closing-estimate';
 import { CHECKED_ON as STATUTE_CHECKED_ON } from '@/lib/statutory-rates';
 import type { CitedFigure } from '@/lib/cited-figures';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Rail } from '@/components/Rail';
 import { EstimateModeProvider } from '@/components/estimate/EstimateMode';
@@ -32,8 +34,9 @@ import { EstimateCta } from '@/components/estimate/EstimateCta';
 
 export const metadata: Metadata = {
   title: META.title,
-  description: META.description,
+  description: metaDescription(META.description),
   alternates: { canonical: '/estimate' },
+  openGraph: { ...baseOpenGraph, url: '/estimate' },
 };
 
 /** "Broward, Palm Beach, Miami-Dade and Hillsborough". */
@@ -70,9 +73,18 @@ export default async function EstimatePage() {
       slug: county.slug,
       name: county.name,
       propertyAppraiserUrl: county.propertyAppraiserUrl,
+      // The same custom the county and city pages print. A county the roll can
+      // be read for but the table has nothing on carries null, and the estimate
+      // shows the owner's policy to both sides rather than picking one.
+      customaryOwnerPolicyPayer: county.customaryOwnerPolicyPayer,
     })),
     ...VALUE_COUNTIES.filter((county) => !counties.some((known) => known.slug === county.slug)).map(
-      (county) => ({ slug: county.slug, name: county.name, propertyAppraiserUrl: null }),
+      (county) => ({
+        slug: county.slug,
+        name: county.name,
+        propertyAppraiserUrl: null,
+        customaryOwnerPolicyPayer: null,
+      }),
     ),
   ];
 
@@ -142,6 +154,26 @@ export default async function EstimatePage() {
                 {DETAIL.county.p2a}
                 <em>{DETAIL.county.p2em}</em>
                 {DETAIL.county.p2b}
+              </p>
+            </div>
+          </section>
+
+          <section id="sides">
+            <h2>{DETAIL.sides.title}</h2>
+            <div className="prose prose--detail">
+              <p>{DETAIL.sides.p1a}</p>
+              <p>
+                {DETAIL.sides.p2a}
+                <em>{DETAIL.sides.p2em}</em>
+                {DETAIL.sides.p2b}
+              </p>
+              <p>{DETAIL.sides.p3}</p>
+              <p>
+                {DETAIL.sides.p4a}
+                <Link href="/closing-costs/buyer">{DETAIL.sides.p4Buyer}</Link>
+                {DETAIL.sides.p4b}
+                <Link href="/closing-costs/seller">{DETAIL.sides.p4Seller}</Link>
+                {DETAIL.sides.p4c}
               </p>
             </div>
           </section>
