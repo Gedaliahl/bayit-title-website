@@ -17,12 +17,13 @@ import {
 } from '@/lib/documents';
 import { contractQuoteSchema, fieldErrors, HONEYPOT_FIELD } from '@/lib/schemas';
 import {
+  BOT_CHECK_BLOCKED,
   BotCheck,
   Honeypot,
-  RejectedFiles,
-  UploadMeter,
   outcomeUnknown,
   postJson,
+  RejectedFiles,
+  UploadMeter,
   useBotCheck,
   useLeaveWarning,
   useSubmissionId,
@@ -140,7 +141,9 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
     // file comes first because it is the first thing on the form.
     const checked = contractQuoteSchema.safeParse(payload);
     if (!checked.success) return fail(fieldErrors(checked.error), 'invalid');
-    if (botCheck.enabled && !botCheck.token) return fail({ form: UPLOAD.errors.botCheck }, 'bot_check');
+    if (botCheck.enabled && !botCheck.token) {
+      return fail({ form: botCheck.unavailable ? BOT_CHECK_BLOCKED : UPLOAD.errors.botCheck }, 'bot_check');
+    }
 
     setErrors({});
     setStatus({ kind: 'sending' });

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObjec
 
 import { formatBytes, type Rejection } from '@/lib/documents';
 import { HONEYPOT_FIELD } from '@/lib/schemas';
+import { site } from '@/lib/site';
 
 interface BaseProps {
   name: string;
@@ -434,6 +435,7 @@ export function useBotCheck() {
   const widget = useRef<string | null>(null);
   const api = useRef<TurnstileApi | null>(null);
   const [token, setToken] = useState('');
+  const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY || !box) return;
@@ -455,8 +457,10 @@ export function useBotCheck() {
         });
       })
       .catch(() => {
-        // Blocked or offline: the form still sends, and the server's answer
-        // says what to do instead.
+        // Blocked by a content blocker, or offline. The server will not take
+        // the form without a token, so the form says so rather than asking
+        // the sender to wait for a box that is never coming.
+        if (!cancelled) setUnavailable(true);
       });
 
     return () => {
@@ -471,8 +475,13 @@ export function useBotCheck() {
     if (widget.current) api.current?.reset(widget.current);
   }, []);
 
-  return { enabled: Boolean(TURNSTILE_SITE_KEY), token, reset, attach: setBox };
+  return { enabled: Boolean(TURNSTILE_SITE_KEY), token, unavailable, reset, attach: setBox };
 }
+
+/** Said when the check cannot load at all, which leaves the sender no way to send. */
+export const BOT_CHECK_BLOCKED =
+  `The check above the button did not load, which a content blocker can cause. Allow ` +
+  `challenges.cloudflare.com and reload the page, or email ${site.ordersEmail} or call ${site.phoneDisplay}.`;
 
 export function BotCheck({ enabled, attach }: { enabled: boolean; attach: (box: HTMLDivElement | null) => void }) {
   if (!enabled) return null;

@@ -7,13 +7,14 @@ import { track } from '@vercel/analytics';
 
 import { useErrorFocus } from './useErrorFocus';
 import {
-  TextField,
-  TextArea,
-  SelectField,
-  Honeypot,
+  BOT_CHECK_BLOCKED,
   BotCheck,
+  Honeypot,
   outcomeUnknown,
   postJson,
+  SelectField,
+  TextArea,
+  TextField,
   useBotCheck,
   useFieldErrors,
   useSubmissionId,
@@ -77,7 +78,12 @@ export function LeadForm({
       return fail('Some details need another look.', 'invalid');
     }
     if (botCheck.enabled && !botCheck.token) {
-      return fail('Wait a moment for the check above the button to finish, then send again.', 'bot_check');
+      return fail(
+        botCheck.unavailable
+          ? BOT_CHECK_BLOCKED
+          : 'Wait a moment for the check above the button to finish, then send again.',
+        'bot_check',
+      );
     }
 
     setStatus({ kind: 'sending' });

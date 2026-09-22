@@ -6,16 +6,17 @@ import { usePathname } from 'next/navigation';
 import { track } from '@vercel/analytics';
 
 import {
-  TextField,
-  TextArea,
-  SelectField,
-  FileField,
-  Honeypot,
+  BOT_CHECK_BLOCKED,
   BotCheck,
   ErrorSummary,
-  UploadMeter,
+  FileField,
+  Honeypot,
   outcomeUnknown,
   postJson,
+  SelectField,
+  TextArea,
+  TextField,
+  UploadMeter,
   useBotCheck,
   useFieldErrors,
   useLeaveWarning,
@@ -158,7 +159,12 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
     const checked = orderSchema.safeParse(payload);
     if (!checked.success) return failOnFields(fieldErrors(checked.error));
     if (botCheck.enabled && !botCheck.token) {
-      return fail('Wait a moment for the check above the button to finish, then send again.', 'bot_check');
+      return fail(
+        botCheck.unavailable
+          ? BOT_CHECK_BLOCKED
+          : 'Wait a moment for the check above the button to finish, then send again.',
+        'bot_check',
+      );
     }
 
     setStatus({ kind: 'sending' });
