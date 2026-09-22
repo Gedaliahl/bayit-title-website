@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 
 import { ACTIONS, FORM, RESULT, type EstimateMode } from '@/content/estimate';
 import {
@@ -31,6 +31,7 @@ import {
 } from '@/lib/estimate-input';
 import type { OfferedSuggestion, ParcelValue, PropertySuggestion } from '@/lib/property-lookup';
 import { discretionarySurtax, formatCents, formatMoney } from '@/lib/statutory-rates';
+import { useEstimateMode } from './EstimateMode';
 import { FigureCard } from './FigureCard';
 import { TotalBar } from './TotalBar';
 
@@ -113,6 +114,10 @@ function premiumSubtotal(groups: EstimateGroup[]): number | null {
 function useCaret() {
   const input = useRef<HTMLInputElement>(null);
   const pending = useRef<number | null>(null);
+  // A refused key or a deleted comma leaves the text as it was, so React has
+  // nothing to render, restores the value itself and puts the caret at the
+  // end. Asking for a render is what gets the caret put back.
+  const [, rerender] = useReducer((count: number) => count + 1, 0);
 
   useLayoutEffect(() => {
     if (pending.current === null || !input.current) return;
@@ -122,8 +127,16 @@ function useCaret() {
     pending.current = null;
   });
 
-  return { input, placeAt: (position: number) => (pending.current = position) };
+  return {
+    input,
+    placeAt: (position: number) => {
+      pending.current = position;
+      rerender();
+    },
+  };
 }
+
+const digitsOf = (text: string) => text.replace(/\D/g, '');
 
 /**
  * A labelled box with a `$` in front, formatted with thousands separators as it
@@ -174,10 +187,24 @@ function MoneyField({
           aria-describedby={describedBy}
           value={shown}
           onFocus={() => setDraft(formatAmount(value))}
-          onBlur={() => setDraft(null)}
+          onBlur={() => {
+            setDraft(null);
+            setRefusal(null);
+          }}
           onChange={(event) => {
-            const raw = event.target.value;
-            const caret = event.target.selectionStart ?? raw.length;
+            let raw = event.target.value;
+            let caret = event.target.selectionStart ?? raw.length;
+            // Deleting a comma would take only the comma, which the next
+            // format puts straight back: take the digit beside it instead,
+            // before it for Backspace and after it for Delete.
+            if (raw.length === shown.length - 1 && digitsOf(raw) === digitsOf(shown)) {
+              const forward = (event.nativeEvent as InputEvent).inputType === 'deleteContentForward';
+              if (forward) raw = raw.slice(0, caret) + raw.slice(caret + 1);
+              else if (caret > 0) {
+                raw = raw.slice(0, caret - 1) + raw.slice(caret);
+                caret -= 1;
+              }
+            }
             const parsed = parseMoney(raw);
             if (!parsed.ok) {
               setRefusal(parsed.reason);
@@ -240,6 +267,7 @@ function PagesField({
           if (parsed.ok) onChange(parsed.value);
         }}
         onBlur={() => {
+          setRefusal(null);
           if (value < 1) onChange(pagesToPrice(value));
         }}
       />
@@ -307,6 +335,7 @@ export function CalculatorPane({
   valueCountySlugs: string[];
 }) {
   const isAddress = mode === 'address';
+  const { search } = useEstimateMode();
 
   const [purpose, setPurpose] = useState<Purpose>('purchase');
   const [party, setParty] = useState<Party>('buyer');
@@ -543,6 +572,9 @@ export function CalculatorPane({
       return;
     }
 
+    // The box may still hold the last property's roll figure. It belongs to
+    // that property, so it goes; a figure the reader typed stays theirs.
+    if (valueOrigin !== 'typed') setAssessed(0);
     setRecord(null);
     setValueOrigin('typed');
     if (suggestion.valueLookup) void lookUpValue(suggestion);
@@ -602,6 +634,9 @@ export function CalculatorPane({
   // arrival; anything in the query that is not a figure this form could have
   // produced is ignored and the default stays.
   useEffect(() => {
+    // Wrapped so the read is one call rather than state set in the effect's
+    // body line by line: the URL is outside React, and this is the one moment
+    // it is copied in.
     const apply = () => {
       const read = readNumbers(new URLSearchParams(window.location.search), [
         ...counties.map((entry) => entry.slug),
@@ -625,6 +660,10 @@ export function CalculatorPane({
 
   const numbersShowing = !isAddress && !hidden;
 
+  // Also re-run whenever the query changes under it — Back past an in-page
+  // link restores an older query, and the masthead's Estimate link drops it —
+  // so the address bar is put back in step with the boxes rather than left
+  // saying figures they no longer show.
   useEffect(() => {
     const timer = setTimeout(() => {
       const url = new URL(window.location.href);
@@ -648,6 +687,7 @@ export function CalculatorPane({
     }, QUERY_WRITE_MS);
     return () => clearTimeout(timer);
   }, [
+    search,
     numbersShowing,
     purpose,
     party,
@@ -860,7 +900,19 @@ export function CalculatorPane({
     setCopyStatus(copied ? 'copied' : 'failed');
   }
 
-  function resetNumbers() {
+  /**
+   * Back to the page as it loaded. The transaction, the side and the county
+   * are shared with the address option, so the property picked there goes
+   * too, or it would be left describing a county the select no longer shows.
+   */
+  function startAgain() {
+    cancelLookup();
+    setAddress('');
+    setParcel(null);
+    setRecord(null);
+    setValueMissed(null);
+    setAssessed(0);
+    setValueOrigin('typed');
     setPurpose('purchase');
     setParty('buyer');
     setChosenCounty(null);
@@ -1059,7 +1111,9 @@ export function CalculatorPane({
         <div className="field">
           <label htmlFor={`${listId}-county`}>{FORM.county.label}</label>
           <span className="field__hint" id={`${listId}-county-hint`}>
-            {isAddress && parcel ? FORM.county.fromParcel(parcel.countyName) : FORM.county.hint(isAddress)}
+            {isAddress && parcel && countyInList(parcel.countySlug) === countySlug
+              ? FORM.county.fromParcel(parcel.countyName)
+              : FORM.county.hint(isAddress)}
           </span>
           <select
             id={`${listId}-county`}
@@ -1233,7 +1287,7 @@ export function CalculatorPane({
               </>
             ) : null}
             {!isAddress ? (
-              <button type="button" onClick={resetNumbers}>
+              <button type="button" onClick={startAgain}>
                 {ACTIONS.reset}
               </button>
             ) : null}

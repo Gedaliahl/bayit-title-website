@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { createContext, Suspense, useCallback, useContext, useEffect, useState } from 'react';
 
 import { DEFAULT_MODE, isEstimateMode, type EstimateMode } from '@/content/estimate';
 
@@ -14,9 +15,15 @@ interface ModeContext {
    * focus where it is.
    */
   setMode: (mode: EstimateMode, options?: { reveal?: boolean }) => void;
+  /**
+   * The query as it stands. It changes on Back, on a link to this same page
+   * and on the page's own writes, and anything that keeps the query in step
+   * with the boxes re-runs on it.
+   */
+  search: string;
 }
 
-const Context = createContext<ModeContext>({ mode: DEFAULT_MODE, setMode: () => {} });
+const Context = createContext<ModeContext>({ mode: DEFAULT_MODE, setMode: () => {}, search: '' });
 
 /** Below this the hero and the estimator no longer share a screen. */
 const NARROW = '(max-width: 62rem)';
@@ -38,26 +45,20 @@ export function scrollBehavior(): ScrollBehavior {
  *
  * The mode is carried in the URL as `?mode=`, so a link to the calculator can
  * land on the calculator and the old /calculator address can redirect to it.
- * It is read once the page is on screen rather than during render: the page is
- * prerendered, and reading the query on the server would either cost it that
- * or leave the estimator out of the HTML behind a Suspense boundary. The cost
- * is one repaint for a reader who arrives with a mode in the URL, which the
- * server HTML already carries the default for. Changing the mode replaces the
- * history entry rather than pushing one, so Back leaves the page rather than
- * stepping through tabs.
+ * It is followed from the query once the page is on screen rather than read
+ * during render: the page is prerendered, and reading the query on the server
+ * would either cost it that or leave the estimator out of the HTML. So only
+ * FollowQuery, which renders nothing, waits behind a Suspense boundary. The
+ * cost is one repaint for a reader who arrives with a mode in the URL, which
+ * the server HTML already carries the default for. Following the query rather
+ * than reading it once also catches a click on the masthead's Estimate link
+ * from /estimate?mode=upload, which changes the URL without reloading the page.
+ * Changing the mode replaces the history entry rather than pushing one, so
+ * Back leaves the page rather than stepping through tabs.
  */
 export function EstimateModeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<EstimateMode>(DEFAULT_MODE);
-
-  useEffect(() => {
-    const read = () => {
-      const wanted = new URLSearchParams(window.location.search).get('mode');
-      setModeState(isEstimateMode(wanted) ? wanted : DEFAULT_MODE);
-    };
-    read();
-    window.addEventListener('popstate', read);
-    return () => window.removeEventListener('popstate', read);
-  }, []);
+  const [search, setSearch] = useState('');
 
   const setMode = useCallback((next: EstimateMode, options?: { reveal?: boolean }) => {
     setModeState(next);
@@ -84,7 +85,36 @@ export function EstimateModeProvider({ children }: { children: React.ReactNode }
     });
   }, []);
 
-  return <Context.Provider value={{ mode, setMode }}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={{ mode, setMode, search }}>
+      <Suspense fallback={null}>
+        <FollowQuery onMode={setModeState} onSearch={setSearch} />
+      </Suspense>
+      {children}
+    </Context.Provider>
+  );
+}
+
+function FollowQuery({
+  onMode,
+  onSearch,
+}: {
+  onMode: (mode: EstimateMode) => void;
+  onSearch: (search: string) => void;
+}) {
+  const params = useSearchParams();
+  const wanted = params.get('mode');
+  const search = params.toString();
+
+  useEffect(() => {
+    onMode(isEstimateMode(wanted) ? wanted : DEFAULT_MODE);
+  }, [wanted, onMode]);
+
+  useEffect(() => {
+    onSearch(search);
+  }, [search, onSearch]);
+
+  return null;
 }
 
 export function useEstimateMode(): ModeContext {
