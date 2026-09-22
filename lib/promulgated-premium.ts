@@ -182,7 +182,18 @@ export function simultaneousLoanPremium(loanAmount: number, ownerCoverage: numbe
   if (loanAmount <= 0) return 0;
   if (loanAmount <= ownerCoverage) return SIMULTANEOUS_LOAN_PREMIUM;
 
-  return toCents(
-    SIMULTANEOUS_LOAN_PREMIUM + premium(loanAmount - ownerCoverage, ORIGINAL, 0),
-  );
+  return toCents(SIMULTANEOUS_LOAN_PREMIUM + excessLoanPremium(loanAmount - ownerCoverage));
+}
+
+/**
+ * The original schedule applied to the excess alone, under the same paragraph.
+ *
+ * Exported because what a lender's policy is issued for is this office's charge
+ * rather than the rule's (see lib/agency-charges.ts), while the coverage above
+ * the owner's amount stays the rule's to rate. The $100 policy minimum is not
+ * applied: the excess is not itself a policy, it is the part of one.
+ */
+export function excessLoanPremium(excessCoverage: number): number {
+  if (excessCoverage <= 0) return 0;
+  return premium(excessCoverage, ORIGINAL, 0);
 }

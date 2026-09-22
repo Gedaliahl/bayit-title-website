@@ -17,6 +17,7 @@ export function FigureCard({
   groups,
   totalLabel,
   alternateText,
+  otherPartyText,
   unknownsText,
   emptyText,
 }: {
@@ -26,6 +27,8 @@ export function FigureCard({
   groups: EstimateGroup[];
   totalLabel: string;
   alternateText: string | null;
+  /** What the other side of the same closing carries. Null on a refinance. */
+  otherPartyText: string | null;
   unknownsText: string;
   emptyText: string;
 }) {
@@ -50,9 +53,17 @@ export function FigureCard({
                     <div className="figure-line__label">
                       {line.label}
                       {line.note ? <span className="figure-line__note">{line.note}</span> : null}
-                      <a className="figure-line__cite" href={line.sourceUrl} rel="nofollow">
-                        {line.cite}
-                      </a>
+                      {/* A line this office sets has nothing to link to, so it
+                          names us in the same place rather than faking a source. */}
+                      {line.sourceUrl ? (
+                        <a className="figure-line__cite" href={line.sourceUrl} rel="nofollow">
+                          {line.cite}
+                        </a>
+                      ) : (
+                        <span className="figure-line__cite figure-line__cite--ours">
+                          {line.cite}
+                        </span>
+                      )}
                     </div>
                     <div className="figure-line__amount">{formatMoney(line.value)}</div>
                   </div>
@@ -77,6 +88,7 @@ export function FigureCard({
 
           <div className="figure-card__foot">
             {alternateText ? <p>{alternateText}</p> : null}
+            {otherPartyText ? <p>{otherPartyText}</p> : null}
             <p>
               <strong>{RESULT.notInIt}</strong> {unknownsText}
             </p>

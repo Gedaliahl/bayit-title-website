@@ -2461,6 +2461,13 @@ legend {
   color: var(--accent-deep);
 }
 
+/* A charge this office sets, named where the others cite a statute. Muted and
+   not underlined, so it never reads as a link to an authority that sets it. */
+.figure-line__cite--ours {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
 .figure-line__amount {
   font-weight: 600;
   font-variant-numeric: tabular-nums;

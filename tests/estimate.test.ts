@@ -16,6 +16,7 @@ import {
   estimateFromAssessedValue,
   otherRateLabel,
 } from '@/lib/assessed-estimate';
+import { E_RECORDING_FEE, LENDER_POLICY_CHARGE } from '@/lib/agency-charges';
 import { originalPremium, reissuePremium } from '@/lib/promulgated-premium';
 import { deedStampTaxDue, discretionarySurtaxDue } from '@/lib/statutory-rates';
 
@@ -74,14 +75,24 @@ describe('pricing from an assessed value', () => {
     expect(otherRateLabel(false)).toBe('reissue rate');
   });
 
-  it('adds the simultaneous loan policy at $25 when there is a loan', () => {
+  it('adds the lender’s policy at what we charge to issue it, not at the rule’s $25', () => {
     const result = estimateFromAssessedValue({
       ...ASSESSED_DEFAULTS,
       assessedValue: 500_000,
       loanAmount: 400_000,
     });
 
-    expect(result.premiumTotal).toBe(originalPremium(500_000) + 25);
+    expect(result.premiumTotal).toBe(originalPremium(500_000) + LENDER_POLICY_CHARGE);
+
+    // R. 69O-186.003(5)(a) sets the risk premium inside that charge, not the
+    // charge, so the line has to name us rather than cite the rule for it.
+    const lender = result.groups
+      .flatMap((group) => group.lines)
+      .find((line) => line.label.toLowerCase().includes('lender'));
+
+    expect(lender?.value).toBe(LENDER_POLICY_CHARGE);
+    expect(lender?.sourceUrl).toBeUndefined();
+    expect(lender?.cite).not.toMatch(/69O-186/);
   });
 
   it('rates a refinance on the loan, never on the assessed value', () => {
@@ -139,6 +150,9 @@ describe('pricing from an assessed value', () => {
    */
   describe('what the county changes', () => {
     const inputs = { ...ASSESSED_DEFAULTS, assessedValue: 500_000, loanAmount: 400_000 };
+    // The tax on the deed is customarily the seller's, so it is the seller's
+    // statement these read. See the split described further down.
+    const sellerInputs = { ...inputs, party: 'seller' as const };
 
     it('keeps the premium identical across counties', () => {
       const broward = estimateFromAssessedValue({ ...inputs, countySlug: 'broward-county' });
@@ -148,13 +162,13 @@ describe('pricing from an assessed value', () => {
     });
 
     it('charges Miami-Dade’s 60-cent deed rate where the rest of Florida pays 70', () => {
-      const broward = estimateFromAssessedValue({ ...inputs, countySlug: 'broward-county' });
-      const dade = estimateFromAssessedValue({ ...inputs, countySlug: 'miami-dade-county' });
+      const broward = estimateFromAssessedValue({ ...sellerInputs, countySlug: 'broward-county' });
+      const dade = estimateFromAssessedValue({ ...sellerInputs, countySlug: 'miami-dade-county' });
 
       const deedTax = (result: ReturnType<typeof estimateFromAssessedValue>) =>
         result.groups
           .flatMap((group) => group.lines)
-          .find((line) => line.label.toLowerCase().includes('deed'))?.value;
+          .find((line) => line.label.toLowerCase().includes('stamp tax on the deed'))?.value;
 
       expect(deedTax(broward)).toBe(deedStampTaxDue(500_000, 'broward-county'));
       expect(deedTax(dade)).toBe(deedStampTaxDue(500_000, 'miami-dade-county'));
@@ -162,14 +176,14 @@ describe('pricing from an assessed value', () => {
     });
 
     it('adds the surtax in Miami-Dade only when it is not a single-family residence', () => {
-      const home = estimateFromAssessedValue({ ...inputs, countySlug: 'miami-dade-county' });
+      const home = estimateFromAssessedValue({ ...sellerInputs, countySlug: 'miami-dade-county' });
       const other = estimateFromAssessedValue({
-        ...inputs,
+        ...sellerInputs,
         countySlug: 'miami-dade-county',
         singleFamilyResidence: false,
       });
       const elsewhere = estimateFromAssessedValue({
-        ...inputs,
+        ...sellerInputs,
         countySlug: 'broward-county',
         singleFamilyResidence: false,
       });
@@ -199,18 +213,145 @@ describe('pricing from an assessed value', () => {
       loanAmount: 400_000,
     });
 
-    expect(result.premiumTotal).toBe(originalPremium(500_000) + 25);
+    expect(result.premiumTotal).toBe(originalPremium(500_000) + LENDER_POLICY_CHARGE);
     expect(result.total).toBeGreaterThan(result.premiumTotal);
 
     const premiumLabels = (premiumOf(result)?.lines ?? []).map((line) => line.label.toLowerCase());
     expect(premiumLabels.some((label) => label.includes('stamp'))).toBe(false);
     expect(premiumLabels.some((label) => label.includes('recording'))).toBe(false);
 
-    const deedLine = result.groups
-      .flatMap((group) => group.lines)
-      .find((line) => line.label.toLowerCase().includes('deed') && !line.label.includes('Recording'));
+    const deedLine = estimateFromAssessedValue({
+      ...ASSESSED_DEFAULTS,
+      party: 'seller',
+      assessedValue: 500_000,
+      loanAmount: 400_000,
+    })
+      .groups.flatMap((group) => group.lines)
+      .find((line) => line.label.toLowerCase().includes('stamp tax on the deed'));
 
     expect(deedLine?.note).toMatch(/consideration/i);
+  });
+
+  /**
+   * The reason the estimate is split by party rather than simply totalled.
+   *
+   * A seller is not borrowing, so a total with the buyer's loan costs inside it
+   * was not a figure a seller could use for anything. What is worth asserting
+   * is the direction of the error: the lines that have no other side really do
+   * not appear on the wrong one, and the two sides between them account for
+   * every line exactly once where the custom is known.
+   */
+  describe('whose side of the table each line lands on', () => {
+    const inputs = {
+      ...ASSESSED_DEFAULTS,
+      countyName: 'Broward County',
+      assessedValue: 500_000,
+      loanAmount: 400_000,
+    };
+
+    const labels = (result: ReturnType<typeof estimateFromAssessedValue>) =>
+      result.groups.flatMap((group) => group.lines).map((line) => line.label.toLowerCase());
+
+    it('never puts a loan charge on the seller', () => {
+      const seller = labels(estimateFromAssessedValue({ ...inputs, party: 'seller' }));
+
+      for (const loanLine of ['lender', 'mortgage', 'intangible']) {
+        expect(seller.some((label) => label.includes(loanLine))).toBe(false);
+      }
+    });
+
+    it('gives the seller the tax on the deed and the buyer the recording of it', () => {
+      const seller = labels(estimateFromAssessedValue({ ...inputs, party: 'seller' }));
+      const buyer = labels(estimateFromAssessedValue({ ...inputs, party: 'buyer' }));
+
+      expect(seller.some((label) => label.includes('stamp tax on the deed'))).toBe(true);
+      expect(buyer.some((label) => label.includes('stamp tax on the deed'))).toBe(false);
+
+      expect(buyer.some((label) => label.includes('recording the deed'))).toBe(true);
+      expect(seller.some((label) => label.includes('recording the deed'))).toBe(false);
+    });
+
+    it('follows the county’s own custom on the owner’s policy', () => {
+      const buyerCounty = { ...inputs, ownerPolicyCustom: 'buyer' };
+      const sellerCounty = { ...inputs, ownerPolicyCustom: 'seller' };
+      const owners = (result: ReturnType<typeof estimateFromAssessedValue>) =>
+        labels(result).some((label) => label.includes('owner’s policy'));
+
+      expect(owners(estimateFromAssessedValue({ ...buyerCounty, party: 'buyer' }))).toBe(true);
+      expect(owners(estimateFromAssessedValue({ ...buyerCounty, party: 'seller' }))).toBe(false);
+
+      expect(owners(estimateFromAssessedValue({ ...sellerCounty, party: 'seller' }))).toBe(true);
+      expect(owners(estimateFromAssessedValue({ ...sellerCounty, party: 'buyer' }))).toBe(false);
+    });
+
+    it('shows the owner’s policy to both sides where the custom is unverified', () => {
+      // 'another Florida county' is sixty-odd counties at once and cannot have
+      // one answer, so neither side is told it is theirs.
+      const owner = (party: 'buyer' | 'seller') =>
+        estimateFromAssessedValue({ ...inputs, ownerPolicyCustom: null, party })
+          .groups.flatMap((group) => group.lines)
+          .find((line) => line.label.toLowerCase().includes('owner’s policy'));
+
+      expect(owner('buyer')?.value).toBe(originalPremium(500_000));
+      expect(owner('seller')?.value).toBe(originalPremium(500_000));
+      expect(owner('buyer')?.note).toMatch(/both sides/i);
+    });
+
+    it('tells each side what the other is carrying', () => {
+      const buyer = estimateFromAssessedValue({
+        ...inputs,
+        ownerPolicyCustom: 'buyer',
+        party: 'buyer',
+      });
+      const seller = estimateFromAssessedValue({
+        ...inputs,
+        ownerPolicyCustom: 'buyer',
+        party: 'seller',
+      });
+
+      expect(buyer.otherPartyTotal).toBe(seller.total);
+      expect(seller.otherPartyTotal).toBe(buyer.total);
+      expect(seller.total).toBeGreaterThan(0);
+
+      // Where the custom is known there is no line on both sides, so the two
+      // statements between them are the closing and not more than it.
+      const overlap = labels(buyer).filter((label) => labels(seller).includes(label));
+      expect(overlap).toEqual([]);
+    });
+
+    it('leaves a refinance whole, whichever way the toggle was left', () => {
+      const asBuyer = estimateFromAssessedValue({ ...inputs, purpose: 'refinance', party: 'buyer' });
+      const asSeller = estimateFromAssessedValue({
+        ...inputs,
+        purpose: 'refinance',
+        party: 'seller',
+      });
+
+      expect(asSeller.total).toBe(asBuyer.total);
+      expect(asSeller.total).toBeGreaterThan(0);
+      expect(asSeller.otherPartyTotal).toBe(0);
+    });
+  });
+
+  it('charges the e-recording fee once for each document it sends', () => {
+    const purchase = estimateFromAssessedValue({
+      ...ASSESSED_DEFAULTS,
+      assessedValue: 500_000,
+      loanAmount: 400_000,
+    });
+    const cash = estimateFromAssessedValue({ ...ASSESSED_DEFAULTS, assessedValue: 500_000 });
+
+    const eRecording = (result: ReturnType<typeof estimateFromAssessedValue>) =>
+      result.groups
+        .flatMap((group) => group.lines)
+        .filter((line) => line.label.toLowerCase().startsWith('e-recording'));
+
+    // A deed and a mortgage; a cash closing sends the deed alone.
+    expect(eRecording(purchase)).toHaveLength(2);
+    expect(eRecording(cash)).toHaveLength(1);
+    expect(eRecording(purchase).every((line) => line.value === E_RECORDING_FEE)).toBe(true);
+    // It is on top of the clerk's per-page charge, so it cites us, not s. 28.24.
+    expect(eRecording(purchase).every((line) => line.sourceUrl === undefined)).toBe(true);
   });
 
   it('totals the groups it prints, and nothing else', () => {

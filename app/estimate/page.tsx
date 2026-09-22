@@ -70,9 +70,18 @@ export default async function EstimatePage() {
       slug: county.slug,
       name: county.name,
       propertyAppraiserUrl: county.propertyAppraiserUrl,
+      // The same custom the county and city pages print. A county the roll can
+      // be read for but the table has nothing on carries null, and the estimate
+      // shows the owner's policy to both sides rather than picking one.
+      customaryOwnerPolicyPayer: county.customaryOwnerPolicyPayer,
     })),
     ...VALUE_COUNTIES.filter((county) => !counties.some((known) => known.slug === county.slug)).map(
-      (county) => ({ slug: county.slug, name: county.name, propertyAppraiserUrl: null }),
+      (county) => ({
+        slug: county.slug,
+        name: county.name,
+        propertyAppraiserUrl: null,
+        customaryOwnerPolicyPayer: null,
+      }),
     ),
   ];
 
@@ -143,6 +152,19 @@ export default async function EstimatePage() {
                 <em>{DETAIL.county.p2em}</em>
                 {DETAIL.county.p2b}
               </p>
+            </div>
+          </section>
+
+          <section id="sides">
+            <h2>{DETAIL.sides.title}</h2>
+            <div className="prose prose--detail">
+              <p>{DETAIL.sides.p1a}</p>
+              <p>
+                {DETAIL.sides.p2a}
+                <em>{DETAIL.sides.p2em}</em>
+                {DETAIL.sides.p2b}
+              </p>
+              <p>{DETAIL.sides.p3}</p>
             </div>
           </section>
 

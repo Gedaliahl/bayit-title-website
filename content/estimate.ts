@@ -113,6 +113,16 @@ export const FORM = {
     purchase: 'A purchase',
     refinance: 'A refinance',
   },
+  party: {
+    label: 'Whose side are you on?',
+    buyer: 'Buyer',
+    seller: 'Seller',
+    hint:
+      'Some of these lines have no other side — a seller has no new loan, so the lender’s ' +
+      'policy, the mortgage taxes and the mortgage recording are never theirs. The rest is ' +
+      'ordinary Florida practice, and the contract can move any of it.',
+    refinanceHint: 'A refinance has one side of the table, so everything below is the borrower’s.',
+  },
   county: {
     label: 'County',
     hint: (address: boolean) =>
@@ -175,8 +185,9 @@ export const FORM = {
   pages: {
     label: 'Page counts',
     hint:
-      'Recording is charged by the page — $10.00 for the first and $8.50 for each after it. ' +
-      'These are ordinary lengths; change them if you know the documents.',
+      'Recording is charged by the page — $10.00 for the first and $8.50 for each after it, ' +
+      'plus $5.50 a document to e-record it. These are ordinary lengths; change them if you know ' +
+      'the documents.',
     deed: 'Pages in the deed',
     mortgage: 'Pages in the mortgage',
   },
@@ -185,12 +196,11 @@ export const FORM = {
 export const RESULT = {
   eyebrow: {
     address: 'Approximate — a floor, not a quote',
-    numbers: 'Set by rule and statute',
+    numbers: 'Every line cited to whatever sets it',
   },
-  totalLabel: {
-    address: 'Estimated charges',
-    numbers: 'Set by rule and statute',
-  },
+  /** Whose statement the total is. A refinance has one side and it is the borrower's. */
+  totalLabel: (purchase: boolean, party: 'buyer' | 'seller') =>
+    purchase ? `The ${party}’s side` : 'The borrower’s side',
   nothingYet: 'Nothing priced yet.',
   /** "A purchase in Palm Beach County, priced on the 2025 roll figure." */
   sub: (purchase: boolean, county: string, rollYear: number | null) =>
@@ -199,7 +209,12 @@ export const RESULT = {
     '.',
   outsideDade: 'a Florida county outside Miami-Dade',
   subtotal: 'Subtotal',
-  totalNote: 'Everything above is set by the rule, the statute or the clerk — none of it is our fee.',
+  totalNote:
+    'Set by the rule, the statute or the clerk, except the lender’s policy and the e-recording ' +
+    'fee, which are ours and say so on the line. Which side pays each of them is the contract’s.',
+  /** "The seller carries about $3,500 of the same closing." */
+  otherParty: (other: 'buyer' | 'seller', amount: string) =>
+    `The ${other} carries about ${amount} of the same closing, on the lines above that are theirs.`,
   alternate: (otherRate: string, alternate: string, premium: string) =>
     `At the ${otherRate} the same coverage is ${alternate} in premium against ${premium}. ` +
     'The difference is what it is worth finding the old policy for.',
@@ -208,16 +223,21 @@ export const RESULT = {
     address:
       'The policy is written at the purchase price, not the assessed value — on most Florida ' +
       'homes the assessed figure is the lower of the two. Our settlement fee, the search and ' +
-      'examination, endorsements, survey, municipal lien search, estoppels and association fees.',
+      'examination, endorsements, survey, municipal lien search, estoppels and association fees. ' +
+      'Which side pays each line above is the contract’s to settle.',
     numbers:
       'Our settlement or closing fee; title search and examination; endorsements the lender asks ' +
       'for; survey, municipal lien search, estoppel letters and association fees; the lender’s own ' +
-      'charges, prepaid interest, escrows and prorations.',
+      'charges, prepaid interest, escrows and prorations. Which side pays each line above is the ' +
+      'contract’s to settle — the split shown is ordinary Florida practice and no more than a ' +
+      'starting point.',
   },
   empty: {
     addressPurchase: 'Pick the property above, or enter the assessed value, and the figures appear here.',
     addressRefinance: 'Enter the loan amount and the figures appear here.',
     numbers: 'Enter a price or a loan amount and the figures appear here.',
+    // A seller's side has no loan on it, so a loan amount alone will not fill it.
+    sellerNeedsPrice: 'Enter a price — a loan amount alone puts nothing on the seller’s side.',
   },
 };
 
@@ -317,6 +337,7 @@ export const RAIL = {
   items: [
     { id: 'assessed-value', label: 'Where the assessed value comes from' },
     { id: 'county', label: 'What the county changes' },
+    { id: 'sides', label: 'Which side pays what' },
     { id: 'floor', label: 'Why assessed value reads low' },
     { id: 'schedule', label: 'The schedule it works from' },
     { id: 'reissue', label: 'When the reissue rate applies' },
@@ -365,6 +386,29 @@ export const DETAIL = {
       'does it, and keeps it in its own group away from the premium. On a sale above the assessed ' +
       'value, which is most sales, the real tax is higher.',
   },
+  sides: {
+    title: 'Which side pays what, and which lines have no other side',
+    p1a:
+      'The toggle above is not a filter on one list. Some of these lines genuinely have no other ' +
+      'side: a seller is not borrowing, so the lender’s policy, the documentary stamp tax and ' +
+      'intangible tax on the mortgage, and the recording and e-recording of it are never a ' +
+      'seller’s to pay. Showing a seller one total with a buyer’s loan costs inside it was the ' +
+      'thing worth fixing.',
+    p2a: 'The rest is ',
+    p2em: 'custom',
+    p2b:
+      ', which is not law. Documentary stamp tax on the deed is the seller’s in ordinary Florida ' +
+      'practice — s. 201.02 taxes the deed and names nobody to pay it — and the buyer records the ' +
+      'deed they are taking. Who pays for the owner’s policy is the one that really moves: in some ' +
+      'counties it is customarily the buyer, who then chooses the closing agent, and in others the ' +
+      'seller. Each of those lines says on its face which way custom put it.',
+    p3:
+      'That custom is read off the same county record the county and city pages print, not typed ' +
+      'into the calculator. Where we have not verified it for a county — and “another Florida ' +
+      'county” is sixty-odd counties at once — the owner’s policy is shown to both sides and says ' +
+      'so. In every case the purchase contract is what settles it, and the contract can put any of ' +
+      'these lines on either party. Read the paragraph that does it rather than assuming.',
+  },
   floor: {
     title: 'Why assessed value, and where it goes wrong',
     p1a: 'A policy is written for the full insurable value of the property — on a sale, the purchase price. Florida’s ',
@@ -389,8 +433,11 @@ export const DETAIL = {
     original: 'Original rates · (1)(a)',
     reissue: 'Reissue rates · (2)(a)',
     simultaneous:
-      'A lender’s policy issued alongside the owner’s on the same land is $25 up to the owner’s ' +
-      'amount, under (5)(a); the excess is rated at the original schedule.',
+      'Under (5)(a) the risk premium on a lender’s policy issued alongside the owner’s on the same ' +
+      'land is $25 up to the owner’s amount, and the excess is rated at the original schedule. ' +
+      'The estimator prints $125 on that line, because that is what this office charges to issue ' +
+      'the policy — the $25 is the promulgated premium inside it, not the whole of it. The line ' +
+      'cites us rather than the rule for exactly that reason.',
   },
   reissue: {
     title: 'When does the reissue rate apply?',

@@ -5,6 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { FORM, RESULT, type EstimateMode } from '@/content/estimate';
 import { estimateFromAssessedValue, otherRateLabel, type Purpose } from '@/lib/assessed-estimate';
 import { DEFAULTS as CLOSING_DEFAULTS, estimate, type EstimateGroup } from '@/lib/closing-estimate';
+import { PARTIES, type Party } from '@/lib/cost-allocation';
 import { addressKey } from '@/lib/address-format';
 import type { ParcelValue, PropertySuggestion } from '@/lib/property-lookup';
 import { discretionarySurtax, formatMoney } from '@/lib/statutory-rates';
@@ -14,6 +15,12 @@ export interface EstimatorCounty {
   slug: string;
   name: string;
   propertyAppraiserUrl: string | null;
+  /**
+   * Who customarily pays for the owner's policy here, off the locations table.
+   * Null where nobody has verified it, which the estimate says on the line
+   * rather than guessing a side.
+   */
+  customaryOwnerPolicyPayer: string | null;
 }
 
 /** Chosen when the address is somewhere the list has no row for. */
@@ -116,6 +123,7 @@ export function CalculatorPane({
   const isAddress = mode === 'address';
 
   const [purpose, setPurpose] = useState<Purpose>('purchase');
+  const [party, setParty] = useState<Party>('buyer');
   // Null until the reader chooses one; before that the parcel, or the default.
   const [chosenCounty, setChosenCounty] = useState<string | null>(null);
   const [assessed, setAssessed] = useState(0);
@@ -306,12 +314,26 @@ export function CalculatorPane({
 
   const isPurchase = purpose === 'purchase';
   const loan = isAddress ? addressLoan : numbersLoan;
+  // A refinance has a borrower and nobody else, so the toggle is put away and
+  // the estimators are told to ignore it rather than hide half the statement.
+  const side: Party = isPurchase ? party : 'buyer';
+  const otherSide: Party = side === 'buyer' ? 'seller' : 'buyer';
 
   const result = useMemo(() => {
+    // Looked up in here rather than read off `county` above: the compiler will
+    // not memoize on a field read out of a prop array, and these two are the
+    // only county facts the arithmetic needs.
+    const entry = counties.find((candidate) => candidate.slug === countySlug);
+    const countyName = entry?.name ?? RESULT.outsideDade;
+    const ownerPolicyCustom = entry?.customaryOwnerPolicyPayer ?? null;
+
     if (isAddress) {
       const assessedResult = estimateFromAssessedValue({
         purpose,
         countySlug,
+        countyName,
+        party: side,
+        ownerPolicyCustom,
         assessedValue: assessed,
         loanAmount: addressLoan,
         reissue,
@@ -323,12 +345,16 @@ export function CalculatorPane({
         total: assessedResult.total,
         premiumTotal: assessedResult.premiumTotal,
         alternate: assessedResult.alternateRateTotal,
+        otherPartyTotal: assessedResult.otherPartyTotal,
       };
     }
 
     const input = {
       transaction: purpose,
       countySlug,
+      countyName,
+      party: side,
+      ownerPolicyCustom,
       price,
       loanAmount: numbersLoan,
       reissue,
@@ -347,11 +373,14 @@ export function CalculatorPane({
       total: priced.total,
       premiumTotal: premiumTotal ?? 0,
       alternate: premiumTotal === null ? null : other,
+      otherPartyTotal: priced.otherPartyTotal,
     };
   }, [
     isAddress,
+    counties,
     purpose,
     countySlug,
+    side,
     assessed,
     addressLoan,
     price,
@@ -414,6 +443,13 @@ export function CalculatorPane({
   const alternateText =
     hasResult && result.alternate !== null && result.alternate !== result.premiumTotal
       ? RESULT.alternate(otherRateLabel(reissue), formatMoney(result.alternate), formatMoney(result.premiumTotal))
+      : null;
+
+  // Said only where there is another side and it is carrying something, so a
+  // cash purchase does not tell a seller the buyer is paying nothing.
+  const otherPartyText =
+    isPurchase && result.otherPartyTotal > 0
+      ? RESULT.otherParty(otherSide, formatMoney(result.otherPartyTotal))
       : null;
 
   return (
@@ -523,6 +559,35 @@ export function CalculatorPane({
         </div>
 
         <div className="field">
+          <span className="field__label" id={`${listId}-party`}>
+            {FORM.party.label}
+          </span>
+          <span className="field__hint" id={`${listId}-party-hint`}>
+            {isPurchase ? FORM.party.hint : FORM.party.refinanceHint}
+          </span>
+          {isPurchase ? (
+            <div
+              className="seg"
+              role="radiogroup"
+              aria-labelledby={`${listId}-party`}
+              aria-describedby={`${listId}-party-hint`}
+            >
+              {PARTIES.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={party === value}
+                  onClick={() => setParty(value)}
+                >
+                  {FORM.party[value]}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="field">
           <label htmlFor={`${listId}-county`}>{FORM.county.label}</label>
           <span className="field__hint" id={`${listId}-county-hint`}>
             {isAddress && parcel ? FORM.county.fromParcel(parcel.countyName) : FORM.county.hint(isAddress)}
@@ -582,13 +647,17 @@ export function CalculatorPane({
           <MoneyField id="price" label={FORM.price.label} hint={FORM.price.hint} value={price} onChange={setPrice} />
         ) : null}
 
-        <MoneyField
-          id={isAddress ? 'address-loan' : 'loan'}
-          label={FORM.loan.label}
-          hint={isPurchase ? FORM.loan.purchaseHint : FORM.loan.refinanceHint}
-          value={loan}
-          onChange={isAddress ? setAddressLoan : setNumbersLoan}
-        />
+        {/* Every line a loan produces is the borrower's, so on the seller's
+            side the box would change nothing. What was typed in it stays. */}
+        {side === 'buyer' ? (
+          <MoneyField
+            id={isAddress ? 'address-loan' : 'loan'}
+            label={FORM.loan.label}
+            hint={isPurchase ? FORM.loan.purchaseHint : FORM.loan.refinanceHint}
+            value={loan}
+            onChange={isAddress ? setAddressLoan : setNumbersLoan}
+          />
+        ) : null}
 
         <label className="check">
           <input type="checkbox" checked={reissue} onChange={(event) => setReissue(event.target.checked)} />
@@ -620,7 +689,7 @@ export function CalculatorPane({
           </label>
         ) : null}
 
-        {!isAddress ? (
+        {!isAddress && side === 'buyer' ? (
           <div className="disclosure">
             <button
               type="button"
@@ -674,15 +743,20 @@ export function CalculatorPane({
             : RESULT.nothingYet
         }
         groups={result.groups}
-        totalLabel={RESULT.totalLabel[mode]}
+        totalLabel={RESULT.totalLabel(isPurchase, side)}
         alternateText={alternateText}
+        otherPartyText={otherPartyText}
         unknownsText={RESULT.unknowns[mode]}
         emptyText={
-          isAddress
-            ? isPurchase
-              ? RESULT.empty.addressPurchase
-              : RESULT.empty.addressRefinance
-            : RESULT.empty.numbers
+          // A seller's side is empty until there is a price: a loan amount puts
+          // nothing on it, so the usual prompt would send them the wrong way.
+          side === 'seller'
+            ? RESULT.empty.sellerNeedsPrice
+            : isAddress
+              ? isPurchase
+                ? RESULT.empty.addressPurchase
+                : RESULT.empty.addressRefinance
+              : RESULT.empty.numbers
         }
       />
     </div>
