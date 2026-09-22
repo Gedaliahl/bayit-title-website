@@ -34,6 +34,10 @@ export default async function ContactPage() {
           <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
           <br />
           <a href={`mailto:${site.email}`}>{site.email}</a>
+          <br />
+          <a href={site.googleProfileUrl} rel="nofollow noopener">
+            Map and directions
+          </a>
         </p>
 
         <h2>Hours</h2>
