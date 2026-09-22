@@ -3,6 +3,8 @@ import Link from 'next/link';
 
 import { site } from '@/lib/site';
 import { PRIVACY_EFFECTIVE_DATE } from '@/lib/privacy';
+import { QUOTE_RETENTION_DAYS, RETENTION_DAYS } from '@/lib/documents';
+import { DOWNLOAD_LINK_HOURS } from '@/lib/document-storage';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { formatLongDate } from '@/lib/seo';
 
@@ -23,15 +25,24 @@ import { formatLongDate } from '@/lib/seo';
  *
  * Everything describing the website itself is written from the code and is
  * checkable: the fields each form posts, the salted fingerprint that replaces
- * the caller's IP, the absence of any cookie or browser storage. No retention
- * period is stated, because the firm has never set one and inventing a number
- * would be worse than describing the practice honestly.
+ * the caller's IP, the absence of any cookie or browser storage. The only
+ * retention periods stated are the two the code enforces — the daily purge in
+ * app/api/cron/purge deletes uploaded contracts and order documents at the ages
+ * named below — because the firm has never set one for anything else, and
+ * inventing a number would be worse than describing the practice honestly.
+ *
+ * The Cloudflare paragraphs render only when the Turnstile site key is set,
+ * which is also the only time the site loads Cloudflare's script. The claim
+ * that no third-party script loads stays true in both builds.
  */
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: `How ${site.legalName} collects, uses and protects information submitted through this website.`,
   alternates: { canonical: '/privacy' },
 };
+
+/** Read at build time, like the CSP: the page and the policy header agree. */
+const botCheck = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim());
 
 export default function PrivacyPage() {
   return (
@@ -76,14 +87,21 @@ export default function PrivacyPage() {
           <li>Which page of this site you sent the form from</li>
         </ul>
         <p>
-          Only your name, your email address and the property address are required. Every other
-          field is optional and is marked as optional on the form.
+          On the order form, only your name, your email address and the property address are
+          required. The quote and contact forms need only your name and email address, and a
+          contract sent from the estimate page needs your name, your email address and the
+          contract. Every other field is optional and is marked as optional on the form.
         </p>
         <p>
           If you attach documents to an order, we receive those documents and whatever they contain
           — a contract, a survey, a payoff letter or an estoppel may itself carry financial or
           identification information. We record the file name, its type and size, and when it
           arrived.
+        </p>
+        <p>
+          If you send a contract from the estimate page for exact pricing, we receive the pages you
+          upload and whatever they contain, along with your name, your email address, your role in
+          the transaction and, if you give them, a phone number and a note.
         </p>
 
         <h2>2. How we use it</h2>
@@ -116,6 +134,9 @@ export default function PrivacyPage() {
             website those are our hosting provider, our database and document storage provider, and
             the service that emails a notification to our office when you submit a form. All store
             information in the United States.
+            {botCheck
+              ? ' The forms also use Cloudflare to check that a person, not a program, is sending them.'
+              : null}
           </li>
           <li>Government or regulatory authorities, when legally required</li>
         </ul>
@@ -156,10 +177,12 @@ export default function PrivacyPage() {
             <strong>This site sets no cookies</strong> and stores nothing in your browser.
           </li>
           <li>
-            <strong>We do not store your IP address.</strong> When you submit a form, your address
-            is converted using a secret key into a short fingerprint that cannot be turned back into
-            an address. Its only purpose is to limit how many submissions come from one source in an
-            hour, so the forms cannot be flooded.
+            <strong>We keep a fingerprint of your IP address, not the address itself.</strong> Like
+            any website, our hosting provider sees the address each request comes from and records
+            it in its own request logs. When you submit a form, we convert the address using a
+            secret key into a short fingerprint that cannot be turned back into an address, and the
+            fingerprint is all we store. Its only purpose is to limit how many submissions come from
+            one source in an hour, so the forms cannot be flooded.
           </li>
           <li>
             <strong>The address box on the estimator is not stored.</strong> While you type an
@@ -174,11 +197,21 @@ export default function PrivacyPage() {
             the answer comes back, and it is sent as a POST so it does not appear in a server log
             the way a search in a web address would.
           </li>
-          <li>
-            <strong>We run no advertising or social media trackers.</strong> This site loads no
-            third-party scripts at all, which your browser enforces rather than taking our word for
-            it.
-          </li>
+          {botCheck ? (
+            <li>
+              <strong>We run no advertising or social media trackers.</strong> The one outside
+              script this site loads is Cloudflare&rsquo;s check on the forms, which tells a person
+              from a program. It runs in its own frame, and Cloudflare handles what it sees of your
+              visit under its own privacy policy. Your browser enforces that nothing else loads,
+              rather than taking our word for it.
+            </li>
+          ) : (
+            <li>
+              <strong>We run no advertising or social media trackers.</strong> This site loads no
+              third-party scripts at all, which your browser enforces rather than taking our word
+              for it.
+            </li>
+          )}
           <li>
             We measure page views and page speed using tools served from our own domain. They set no
             cookie and build no profile of you. They tell us which pages are read and how quickly
@@ -194,9 +227,10 @@ export default function PrivacyPage() {
         <p>
           We maintain reasonable administrative, technical and physical safeguards designed to
           protect personal information from unauthorised access, disclosure or misuse. Documents you
-          attach to an order do not pass through this website: your browser sends them directly to
-          private storage using a single-use link, and our office opens them through links that
-          expire.
+          attach to an order, and a contract you send from the estimate page, do not pass through
+          this website: your browser sends them directly to private storage using a single-use
+          link, and our office opens them through links that expire after {DOWNLOAD_LINK_HOURS}{' '}
+          hours.
         </p>
         <p>
           <strong>A word about wire fraud.</strong> Do not send bank account or wire details through
@@ -207,7 +241,13 @@ export default function PrivacyPage() {
 
         <h2>7. How long we keep it</h2>
         <p>
-          We keep information for as long as it is needed for the purposes described above and for
+          Two kinds of upload have a fixed limit, and a deletion runs every day to keep it. A
+          contract sent for pricing from the estimate page is kept in this website&rsquo;s storage
+          for no longer than {QUOTE_RETENTION_DAYS} days, and documents attached to an order for no
+          longer than {RETENTION_DAYS} days. After that they are deleted.
+        </p>
+        <p>
+          Otherwise, we keep information for as long as it is needed for the purposes described above and for
           as long as the law and our underwriting obligations require us to keep it. When it is no
           longer needed for either, we dispose of it. You can ask us to delete information we hold
           about you, and we will do so unless we are required to keep it.
