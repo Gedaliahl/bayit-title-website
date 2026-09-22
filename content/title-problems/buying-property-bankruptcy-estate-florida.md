@@ -5,7 +5,7 @@ slug: "buying-property-bankruptcy-estate-florida"
 cluster: "distressed"
 direct_answer: "In a bankruptcy sale the court's order authorizing the sale is a title document. The trustee's authority, the terms the order approves, whether liens are stripped or ride through, and whether the appeal period has run all come from that order — so it is read as carefully as the deed, and the closing is scheduled around it."
 counties: []
-review_tags: ["bankruptcy", "court-ordered-sale", "distressed", "clearing-title"]
+review_tags: ["title-clearing"]
 author: "shevy"
 reviewed_on: "2026-09-22"
 next_review: "2027-09-22"

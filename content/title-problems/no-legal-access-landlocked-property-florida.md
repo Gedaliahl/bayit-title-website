@@ -5,7 +5,7 @@ slug: "no-legal-access-landlocked-property-florida"
 cluster: "survey"
 direct_answer: "Physical access is a road you can drive on. Legal access is a recorded right to use it. A parcel can have a paved driveway to a public street and still have no recorded easement supporting it, which is a title problem rather than a survey problem — and it usually surfaces as an exception on Schedule B-II of the commitment."
 counties: []
-review_tags: ["access", "easement", "survey", "schedule-b"]
+review_tags: []
 author: "shevy"
 reviewed_on: "2026-09-22"
 next_review: "2027-09-22"
