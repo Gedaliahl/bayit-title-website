@@ -30,7 +30,10 @@
 --
 -- Safe to re-run.
 
-insert into public.locations (slug, kind, name, is_priority, clerk_name, clerk_url)
+-- e_recording_available is named explicitly and set null. The column used to
+-- default to true, which is a claim about this office's practice that nobody
+-- had made; see supabase/migrations/20260920_locations_e_recording_default_null.sql.
+insert into public.locations (slug, kind, name, is_priority, clerk_name, clerk_url, e_recording_available)
 values
   (
     'pinellas-county',
@@ -38,7 +41,8 @@ values
     'Pinellas County',
     false,
     'Pinellas County Clerk of the Circuit Court and Comptroller',
-    'https://www.mypinellasclerk.gov/Home/Recording-Services'
+    'https://www.mypinellasclerk.gov/Home/Recording-Services',
+    null
   ),
   (
     'lee-county',
@@ -46,7 +50,8 @@ values
     'Lee County',
     false,
     'Lee County Clerk of Court',
-    'https://www.leeclerk.org/services/e-record-official-records'
+    'https://www.leeclerk.org/services/e-record-official-records',
+    null
   ),
   (
     'collier-county',
@@ -54,7 +59,8 @@ values
     'Collier County',
     false,
     'Collier County Clerk of the Circuit Court',
-    'https://www.collierclerk.com/recording-information/e-recording/'
+    'https://www.collierclerk.com/recording-information/e-recording/',
+    null
   ),
   (
     'sarasota-county',
@@ -62,7 +68,8 @@ values
     'Sarasota County',
     false,
     'Sarasota County Clerk of the Circuit Court and County Comptroller',
-    'https://www.sarasotaclerk.com/Records/Recording-Services'
+    'https://www.sarasotaclerk.com/Records/Recording-Services',
+    null
   ),
   (
     'polk-county',
@@ -70,7 +77,8 @@ values
     'Polk County',
     false,
     'Polk County Clerk of the Circuit Court',
-    'https://www.polkclerkfl.gov/101/Records'
+    'https://www.polkclerkfl.gov/101/Records',
+    null
   ),
   (
     'brevard-county',
@@ -78,7 +86,8 @@ values
     'Brevard County',
     false,
     'Brevard County Clerk of the Circuit Court',
-    'https://www.brevardclerk.us/official-records'
+    'https://www.brevardclerk.us/official-records',
+    null
   )
 on conflict (slug) do update set
   kind        = excluded.kind,
