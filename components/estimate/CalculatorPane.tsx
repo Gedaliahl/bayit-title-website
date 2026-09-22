@@ -372,6 +372,8 @@ export function CalculatorPane({
   /** Where the figure in the box came from, once it is the appraiser's. */
   const [record, setRecord] = useState<ParcelValue | null>(null);
   const [valueOrigin, setValueOrigin] = useState<ValueBasis>('typed');
+  /** The last figure the roll put in the box, to tell it apart from one the reader typed. */
+  const rollFigure = useRef<number | null>(null);
   /** Counties that publish addresses but not values need a second request. */
   const [lookingUp, setLookingUp] = useState(false);
   const [valueMissed, setValueMissed] = useState<ValueMiss | null>(null);
@@ -473,9 +475,11 @@ export function CalculatorPane({
     setRecord(value);
     if (value.justValue) {
       setAssessed(value.justValue);
+      rollFigure.current = value.justValue;
       setValueOrigin('just');
     } else if (value.assessedValue) {
       setAssessed(value.assessedValue);
+      rollFigure.current = value.assessedValue;
       setValueOrigin('assessed');
     } else {
       setValueOrigin('typed');
@@ -573,9 +577,11 @@ export function CalculatorPane({
       return;
     }
 
-    // The box may still hold the last property's roll figure. It belongs to
-    // that property, so it goes; a figure the reader typed stays theirs.
-    if (valueOrigin !== 'typed') setAssessed(0);
+    // The box may still hold the last property's roll figure — kept through
+    // an edit to the address, which is often a typo fixed. Picking another
+    // property is not, so that figure goes; a figure the reader typed stays.
+    if (rollFigure.current !== null && assessed === rollFigure.current) setAssessed(0);
+    rollFigure.current = null;
     setRecord(null);
     setValueOrigin('typed');
     if (suggestion.valueLookup) void lookUpValue(suggestion);

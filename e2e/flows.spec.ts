@@ -70,6 +70,15 @@ test.describe('the menu on a phone @smoke', () => {
     await expect(toggle(page)).toBeFocused();
   });
 
+  test('leaves Escape to a field further down the page', async ({ page }) => {
+    await page.goto('/estimate?mode=numbers');
+    await toggle(page).click();
+    const price = page.getByLabel(FORM.price.label, { exact: true });
+    await price.focus();
+    await page.keyboard.press('Escape');
+    await expect(price).toBeFocused();
+  });
+
   test('closes when a link in it is followed', async ({ page }) => {
     await page.goto('/about');
     await toggle(page).click();
@@ -149,6 +158,37 @@ test.describe('the estimator from the numbers', () => {
     });
   }
 
+  test('Backspace on a comma takes the digit before it, and a refused key leaves the caret', async ({ page }) => {
+    await openNumbers(page);
+    const field = price(page);
+    await field.click();
+    // "500,000" with the caret just after the comma.
+    await field.evaluate((input: HTMLInputElement) => input.setSelectionRange(4, 4));
+    await page.keyboard.press('Backspace');
+    await expect(field).toHaveValue('50,000');
+
+    await field.evaluate((input: HTMLInputElement) => input.setSelectionRange(2, 2));
+    await page.keyboard.type('x');
+    await expect(field).toHaveValue('50,000');
+    expect(await field.evaluate((input: HTMLInputElement) => input.selectionStart)).toBe(2);
+    await expect(page.getByText(FORM.money.characters)).toBeVisible();
+
+    await field.blur();
+    await expect(page.getByText(FORM.money.characters)).toBeHidden();
+  });
+
+  test('keeps the address bar in step with the boxes after Back past an in-page link', async ({ page }) => {
+    await openNumbers(page);
+    await typeMoney(page, price(page), '600,000');
+    await expect(page).toHaveURL(/price=600000/);
+    await page.getByRole('link', { name: FORM.reissue.link }).click();
+    await expect(page).toHaveURL(/#reissue$/);
+    await typeMoney(page, price(page), '700,000');
+    await page.goBack();
+    await expect(price(page)).toHaveValue('700,000');
+    await expect(page).toHaveURL(/price=700000/);
+  });
+
   test('keeps the figures in the address bar through a reload', async ({ page }) => {
     await openNumbers(page);
     await typeMoney(page, price(page), '612,500');
@@ -200,6 +240,15 @@ test.describe('the estimator from the numbers', () => {
     await expect(page.getByRole('radio', { name: FORM.party.seller })).toBeChecked();
     await expect(total(page)).toHaveText(expectedTotal({ party: 'seller' }));
   });
+});
+
+test('the masthead’s Estimate link from the contract option opens the address option', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/estimate?mode=upload');
+  await expect(page.getByRole('combobox', { name: FORM.address.label })).toBeHidden();
+  await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Estimate' }).click();
+  await expect(page).toHaveURL(/\/estimate$/);
+  await expect(page.getByRole('combobox', { name: FORM.address.label })).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
@@ -296,6 +345,44 @@ test.describe('the estimator from an address', () => {
     await page.waitForTimeout(300);
     await expect(value(page)).toHaveValue('222,222');
     await expect(box(page)).toHaveValue(/200 Fast St/);
+  });
+
+  test('a second property picked carries nothing of the first one’s value', async ({ page }) => {
+    const first = suggestion('d', '400 First Ave');
+    const second = suggestion('e', '500 Second St');
+    await page.route('/api/property-search', (route) => {
+      const q = (route.request().postDataJSON() as { q: string }).q;
+      return json(route, 200, { status: 'ok', suggestions: q.startsWith('400') ? [first] : [second] });
+    });
+    await page.route('/api/parcel-value', (route) => {
+      const address = (route.request().postDataJSON() as { address: string }).address;
+      return address === first.address
+        ? json(route, 200, found(first.address, 333_333))
+        : json(route, 200, { status: 'declined', reason: 'mismatch' });
+    });
+
+    await search(page, '400 First');
+    await page.getByRole('option', { name: /400 First Ave/ }).click();
+    await expect(value(page)).toHaveValue('333,333');
+
+    await search(page, '500 Second');
+    await page.getByRole('option', { name: /500 Second St/ }).click();
+    await expect(page.getByText(FORM.assessed.missed.declined)).toBeVisible();
+    await expect(value(page)).toHaveValue('');
+  });
+
+  test('the county hint stops naming the parcel once another county is chosen', async ({ page }) => {
+    const picked = suggestion('f', '600 County Rd');
+    await page.route('/api/property-search', (route) => json(route, 200, { status: 'ok', suggestions: [picked] }));
+    await page.route('/api/parcel-value', (route) => json(route, 200, found(picked.address, 250_000)));
+
+    await search(page, '600 County');
+    await page.getByRole('option', { name: /600 County Rd/ }).click();
+    const fromParcel = page.getByText(FORM.county.fromParcel('Broward County'));
+    await expect(fromParcel).toBeVisible();
+
+    await page.getByLabel(FORM.county.label, { exact: true }).selectOption('palm-beach-county');
+    await expect(fromParcel).toBeHidden();
   });
 
   const searchFailures: { name: string; answer: (route: Route) => Promise<void>; says: string }[] = [
@@ -530,6 +617,16 @@ for (const box of UPLOADS) {
         `page-${MAX_FILES + 1}.pdf — no more than ${MAX_FILES} files`,
         `page-${MAX_FILES + 2}.pdf — no more than ${MAX_FILES} files`,
       ]);
+    });
+
+    test('removing a file puts focus on the next one, and then on the picker', async ({ page }) => {
+      await page.locator(box.input).setInputFiles([pdf('a.pdf'), pdf('b.pdf')]);
+      const removeButtons = page.locator('.file-list__remove, .contract-files__remove');
+      await removeButtons.first().click();
+      await expect(removeButtons).toHaveCount(1);
+      await expect(removeButtons.first()).toBeFocused();
+      await removeButtons.first().click();
+      await expect(page.locator(box.input)).toBeFocused();
     });
 
     test('the same file picked twice is listed as a duplicate', async ({ page }) => {
