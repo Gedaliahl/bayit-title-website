@@ -3461,6 +3461,18 @@ legend {
   color: var(--ink-body);
 }
 
+/* An answer rendered from Markdown: paragraphs, and the lists some answers are. */
+.faq__answer ul,
+.faq__answer ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.2rem;
+  color: var(--ink-body);
+}
+
+.faq__answer li + li {
+  margin-top: 0.35rem;
+}
+
 /* ---------- link cards ---------- */
 
 .card-grid--narrow {

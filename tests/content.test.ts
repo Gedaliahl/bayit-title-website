@@ -383,3 +383,65 @@ describe('splitting a body into sections', () => {
     expect(doc?.sections[0].id).toBe('dont-worry-about-it');
   });
 });
+
+describe('the common questions', () => {
+  const body = [
+    '## Why does it matter?',
+    '',
+    'Because it does.',
+    '',
+    '## Common questions',
+    '',
+    '### Is an old judgment still a lien?',
+    '',
+    'Eventually not ([§ 55.10](https://example.test/55.10)).',
+    '',
+    'But old is not the same as expired.',
+    '',
+    '### What makes it entireties?',
+    '',
+    '- **The deed.** How it reads.',
+    '- **The marriage.** Whether it still exists.',
+    '',
+    '### Is the window fixed?',
+    '',
+    'It is [VERIFY: the statutory window] days.',
+    '',
+  ].join('\n');
+
+  it('renders each answer as the page shows it, with its paragraphs, lists and links', async () => {
+    writeDoc('with-questions', { body });
+
+    const { getDoc } = await loadContentModule();
+    const doc = await getDoc('title-problems', 'with-questions');
+    const [lien, entireties] = doc!.faq;
+
+    // The statute link is the checkable part of the answer, and the second
+    // paragraph is a separate point; flattening lost both.
+    expect(lien.html).toContain('<a href="https://example.test/55.10">§ 55.10</a>');
+    expect(lien.html).toContain('<p>But old is not the same as expired.</p>');
+    expect(entireties.html).toMatch(/<ul>\s*<li><strong>The deed\.<\/strong>/);
+  });
+
+  it('gives the structured data plain text, and no flagged answer', async () => {
+    writeDoc('with-questions', { body });
+
+    const { getDoc } = await loadContentModule();
+    const { extractFaq } = await import('@/lib/faq');
+    const doc = await getDoc('title-problems', 'with-questions');
+
+    // The page still shows the flagged question, marked, as it shows every
+    // other flag. Only the JSON-LD leaves it out.
+    expect(doc!.faq.map((item) => item.question)).toContain('Is the window fixed?');
+    expect(extractFaq(doc!.raw)).toEqual([
+      {
+        question: 'Is an old judgment still a lien?',
+        answer: 'Eventually not (§ 55.10). But old is not the same as expired.',
+      },
+      {
+        question: 'What makes it entireties?',
+        answer: 'The deed. How it reads. The marriage. Whether it still exists.',
+      },
+    ]);
+  });
+});

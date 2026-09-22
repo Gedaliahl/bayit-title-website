@@ -9,7 +9,7 @@ import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkHtml from 'remark-html';
 
-import { isFaqHeading } from './faq';
+import { faqEntries, isFaqHeading, toPlainText, type FaqItem } from './faq';
 
 export const CLUSTERS = [
   'liens',
@@ -172,6 +172,12 @@ export interface Doc extends DocFrontMatter {
   html: string;
   /** The same body, split at its `## ` headings so each part can be laid out. */
   sections: DocSection[];
+  /**
+   * The questions under the FAQ heading, each answer rendered as the page shows
+   * it. Unfiltered: a draft's flagged answer is shown with its flag, as every
+   * other flag on the page is. `extractFaq` is what filters for the JSON-LD.
+   */
+  faq: FaqItem[];
   /** Raw Markdown body, used to detect unresolved [VERIFY] flags. */
   raw: string;
   /** Every `[VERIFY: ...]` flag on the page — answer, quick facts and body. */
@@ -526,6 +532,16 @@ async function splitSections(markdown: string, file: string): Promise<DocSection
   );
 }
 
+async function renderFaq(markdown: string): Promise<FaqItem[]> {
+  return Promise.all(
+    faqEntries(markdown).map(async (entry) => ({
+      question: entry.question,
+      answer: toPlainText(entry.markdown),
+      html: await toHtml(entry.markdown),
+    })),
+  );
+}
+
 function sectionKind(title: string): SectionKind {
   if (!title) return 'prose';
   if (isFaqHeading(title)) return 'faq';
@@ -588,6 +604,7 @@ export async function getDoc(collection: Collection, slug: string): Promise<Doc 
     ...(frontMatter.verdict ? { verdict: { ...frontMatter.verdict, rows: verdictRows } } : {}),
     html: await toHtml(content),
     sections: await splitSections(content, relativePath),
+    faq: await renderFaq(content),
     raw: content,
     verifyFlags: findVerifyFlags(flaggableText(frontMatter, content)),
     collection,

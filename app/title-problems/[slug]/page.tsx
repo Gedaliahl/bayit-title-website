@@ -106,7 +106,9 @@ export default async function TitleProblemPage({
 
   const author = doc.author ? site.team.find((member) => member.slug === doc.author) : undefined;
   const authorName = author?.name ?? site.agentInCharge.displayName;
-  const faq = extractFaq(doc.raw);
+  // The page shows every question with its answer rendered; the JSON-LD gets
+  // plain text, and none of the questions still carrying a flag.
+  const faq = doc.faq;
   const path = `/title-problems/${doc.slug}`;
 
   // Sections the template lays out itself: the questions become disclosures,
@@ -131,7 +133,7 @@ export default async function TitleProblemPage({
           reviewedOn={doc.reviewed_on!}
         />
       ) : null}
-      <FaqSchema items={faq} />
+      <FaqSchema items={extractFaq(doc.raw)} />
 
       <section className="frame page-hero">
         <div className="page-hero__copy">

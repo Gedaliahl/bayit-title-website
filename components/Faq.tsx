@@ -1,5 +1,5 @@
 import type { FaqItem } from '@/lib/faq';
-import { VerifyText } from '@/components/Prose';
+import { VerifyText, markVerifyFlags } from '@/components/Prose';
 
 /**
  * The common questions, as native disclosures.
@@ -22,9 +22,17 @@ export function Faq({ items }: { items: FaqItem[] }) {
               +
             </span>
           </summary>
-          <p>
-            <VerifyText text={item.answer} />
-          </p>
+          {item.html ? (
+            <div
+              className="faq__answer"
+              // Markdown authored in this repo and reviewed before merge.
+              dangerouslySetInnerHTML={{ __html: markVerifyFlags(item.html) }}
+            />
+          ) : (
+            <p>
+              <VerifyText text={item.answer} />
+            </p>
+          )}
         </details>
       ))}
     </div>
