@@ -25,7 +25,7 @@ quick_facts:
 
 The closing happens at 3301 N University Drive in Coral Springs. Documents are on the table, the closer walks through them, and questions get answered by the person who prepared the file rather than relayed.
 
-Office hours are Monday through Thursday, 9:00 to 5:00, and Friday 9:00 to 12:00. Signings outside those hours are arranged in advance on a specific file; we do not staff the office after hours as a standing matter.
+Office hours are Monday through Friday, 9:00 to 5:00. Signings outside those hours are arranged in advance on a specific file; we do not staff the office after hours as a standing matter.
 
 ## Wherever the signer is
 
