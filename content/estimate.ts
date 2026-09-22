@@ -232,7 +232,7 @@ export const FORM = {
 export const RESULT = {
   eyebrow: {
     address: 'Approximate — a floor, not a quote',
-    numbers: 'Every line cited to whatever sets it',
+    numbers: 'Every line cited to whoever sets it',
   },
   /** Whose statement the total is. A refinance has one side and it is the borrower's. */
   totalLabel: (purchase: boolean, party: 'buyer' | 'seller') =>
@@ -351,7 +351,7 @@ export const UPLOAD = {
   },
   status: 'One business day for a readable contract. No obligation.',
   sending: 'Sending…',
-  uploading: (done: number, total: number) => `Sending page ${done} of ${total}…`,
+  uploading: (done: number, total: number) => `Sending file ${done} of ${total}…`,
   /** While pages are in flight: leaving now loses them. */
   uploadingNote: 'Keep this page open until the pages have gone.',
   submit: `Send it to ${site.name}`,

@@ -109,6 +109,9 @@ export interface EstimateLine {
   payer: Payer;
 }
 
+/** The premium's group, which the page reads its subtotal from; named once so the two cannot drift. */
+export const PREMIUM_GROUP_TITLE = 'Title insurance premium';
+
 export interface EstimateGroup {
   title: string;
   lines: EstimateLine[];
@@ -408,7 +411,7 @@ export function estimate(input: EstimateInput): Estimate {
   }
 
   const all = [
-    { title: 'Title insurance premium', lines: premiumLines },
+    { title: PREMIUM_GROUP_TITLE, lines: premiumLines },
     // A refinance transfers nothing; its taxes are on the loan.
     { title: isPurchase ? 'Tax on the transfer' : 'Taxes', lines: taxLines },
     { title: 'Recording', lines: recordingLines },

@@ -122,7 +122,7 @@ const KEYS = {
   mortgagePages: 'mortgage',
 } as const satisfies Record<keyof NumbersState, string>;
 
-export const NUMBERS_KEYS: string[] = Object.values(KEYS);
+const NUMBERS_KEYS: string[] = Object.values(KEYS);
 
 /**
  * The numbers in a shared or refreshed address. Anything missing, misspelt or

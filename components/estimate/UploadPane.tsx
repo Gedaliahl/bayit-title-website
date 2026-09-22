@@ -45,8 +45,7 @@ type Status =
   | { kind: 'sending' }
   /** The request is already with the office; only the pages are in flight. */
   | { kind: 'uploading'; name: string; position: number; count: number; sent: number; total: number }
-  | { kind: 'sent'; attached: number; missing: Rejection[]; email: string; willCall: boolean; firstName: string }
-  | { kind: 'failed'; message: string };
+  | { kind: 'sent'; attached: number; missing: Rejection[]; email: string; willCall: boolean; firstName: string };
 
 const SCREEN_RULES = {
   accepts: isContractFile,

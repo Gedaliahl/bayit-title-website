@@ -37,7 +37,12 @@ import {
   eRecordingDue,
   lenderPolicyCharge,
 } from './agency-charges';
-import { EXAMPLE_PAGE_COUNTS, type EstimateGroup, type EstimateLine } from './closing-estimate';
+import {
+  EXAMPLE_PAGE_COUNTS,
+  PREMIUM_GROUP_TITLE,
+  type EstimateGroup,
+  type EstimateLine,
+} from './closing-estimate';
 import {
   BORROWER_ONLY,
   DEED_RECORDING,
@@ -404,7 +409,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
   }
 
   const all = [
-    { title: 'Title insurance premium', lines: premiumLines },
+    { title: PREMIUM_GROUP_TITLE, lines: premiumLines },
     // A refinance transfers nothing; its taxes are on the loan.
     { title: isPurchase ? 'Tax on the transfer' : 'Taxes', lines: taxLines },
     { title: 'Recording', lines: recordingLines },
@@ -439,12 +444,3 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
 export function otherRateLabel(reissue: boolean): string {
   return reissue ? 'original rate' : 'reissue rate';
 }
-
-/** What an assessed-value estimate cannot tell you, printed rather than omitted. */
-export const ASSESSED_UNKNOWNS = [
-  'The policy is written at the purchase price or full insurable value, not at the value on the county roll — on most Florida homes the roll’s figure is the lower of the two.',
-  'Documentary stamp tax and the surtax are charged on the consideration. Until there is a contract price, the figures above compute them on the appraiser’s value instead, which is the same substitution and the same direction of error.',
-  'Which side pays for the owner’s policy and the deed tax is the contract’s to settle. The split shown is ordinary Florida practice, and it is only the starting point.',
-  'Our settlement or closing fee, and the title search and examination.',
-  'Endorsements the lender asks for, survey, municipal lien search, estoppel letters and association fees.',
-];

@@ -13,6 +13,7 @@ import {
   DEFAULTS as CLOSING_DEFAULTS,
   estimate,
   pagesToPrice,
+  PREMIUM_GROUP_TITLE,
   type EstimateGroup,
 } from '@/lib/closing-estimate';
 import { PARTIES, type Party } from '@/lib/cost-allocation';
@@ -77,7 +78,7 @@ type SearchStatus = 'ok' | 'rate-limited' | 'unavailable' | 'outside-florida';
  */
 type ValueMiss = 'declined' | 'which-unit' | 'unavailable' | 'rate-limited' | 'expired';
 
-/** Where the figures go on paste when the page cannot write to the clipboard itself. */
+/** Copies through a hidden box, for a page that is not allowed to write to the clipboard directly. */
 function copyByHand(text: string): boolean {
   const area = document.createElement('textarea');
   area.value = text;
@@ -103,7 +104,7 @@ function suggestionLine(suggestion: PropertySuggestion): string {
 }
 
 function premiumSubtotal(groups: EstimateGroup[]): number | null {
-  const premium = groups.find((group) => group.title === 'Title insurance premium');
+  const premium = groups.find((group) => group.title === PREMIUM_GROUP_TITLE);
   return premium ? premium.subtotal : null;
 }
 
