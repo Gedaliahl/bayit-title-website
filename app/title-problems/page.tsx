@@ -12,7 +12,7 @@ import {
   CLUSTER_CAPTIONS,
   type Doc,
 } from '@/lib/content';
-import { formatReviewDate, metaDescription } from '@/lib/seo';
+import { baseOpenGraph, formatReviewDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
@@ -22,10 +22,12 @@ import { Rail } from '@/components/Rail';
 
 export const metadata: Metadata = {
   title: 'Florida title problems, explained',
-  description:
+  description: metaDescription(
     'Specific title problems that come up on Florida closings — what each one is, what it does to a ' +
-    'closing, and how it gets cleared. Written and reviewed by a licensed Florida title agent.',
+      'closing, and how it gets cleared. Written and reviewed by a licensed Florida title agent.',
+  ),
   alternates: { canonical: '/title-problems' },
+  openGraph: { ...baseOpenGraph, url: '/title-problems' },
 };
 
 /**

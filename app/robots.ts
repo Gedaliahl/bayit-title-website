@@ -39,7 +39,8 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: '*', allow: '/', disallow: ['/api/'] },
       ...AI_CRAWLERS.map((userAgent) => ({ userAgent, allow: '/', disallow: ['/api/'] })),
     ],
+    // No `host:` line. It was Yandex's own extension, Google and Bing ignore
+    // it, and the canonical host is already stated by every page's canonical.
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }

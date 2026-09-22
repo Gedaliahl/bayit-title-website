@@ -12,7 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -43,11 +43,12 @@ import { QuietCta } from '@/components/QuietCta';
 
 export const metadata: Metadata = {
   title: 'Buyer closing costs in Florida',
-  description:
-    'What a buyer pays at a Florida closing: the mortgage stamp tax, intangible tax and recording ' +
-    'charges the statute sets, the promulgated title insurance premium, and the fees no rule sets. ' +
-    'Each figure cited to the statute or rule, with a worked example.',
+  description: metaDescription(
+    'What a buyer pays at a Florida closing: mortgage stamp tax, intangible tax, recording, the ' +
+      'promulgated premium and the fees no rule sets, each cited.',
+  ),
   alternates: { canonical: '/closing-costs/buyer' },
+  openGraph: { ...baseOpenGraph, url: '/closing-costs/buyer' },
 };
 
 const MORTGAGE_PAGES = 12;

@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getAllDocs } from '@/lib/content';
-import { metaDescription } from '@/lib/seo';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
@@ -16,11 +16,12 @@ import { Rail } from '@/components/Rail';
 
 export const metadata: Metadata = {
   title: 'Services',
-  description:
+  description: metaDescription(
     'Title search and examination, title insurance, settlement and escrow, commercial title, and ' +
-    '1031 exchanges facilitated through Bayit Exchange Company — with closings held in our ' +
-    'office, wherever the signer is, or online, throughout Florida.',
+      '1031 exchanges facilitated through Bayit Exchange Company.',
+  ),
   alternates: { canonical: '/services' },
+  openGraph: { ...baseOpenGraph, url: '/services' },
 };
 
 /** The RON card links here when the page exists, and says nothing when it does not. */

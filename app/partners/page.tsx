@@ -7,15 +7,16 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel } from '@/components/Prose';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'For realtors and mortgage brokers',
-  description:
-    'How Bayit Title works with real estate agents and loan officers: one named processor and ' +
-    'closer per file, title read in the first week, lender conditions answered directly, and ' +
-    'signings arranged around the client. The reviews on this page were left by agents and ' +
-    'lenders, not by us.',
+  description: metaDescription(
+    'How we work with agents and loan officers: one named processor and closer per file, title ' +
+      'read in the first week, lender conditions answered directly.',
+  ),
   alternates: { canonical: '/partners' },
+  openGraph: { ...baseOpenGraph, url: '/partners' },
 };
 
 /**

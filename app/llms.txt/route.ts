@@ -6,6 +6,7 @@ import { getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { absoluteUrl } from '@/lib/seo';
 import { site, footerCredentialLine } from '@/lib/site';
+import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export const dynamic = 'force-static';
 
@@ -96,7 +97,12 @@ export async function GET() {
     `- [Buyer closing costs in Florida](${absoluteUrl('/closing-costs/buyer')}): the mortgage stamp tax, intangible tax and recording the statute sets, the promulgated premium, and the fees no rule sets, each cited.`,
     `- [Seller closing costs in Florida](${absoluteUrl('/closing-costs/seller')}): the deed stamp tax at the county's rate, the owner's policy where custom puts it on the seller, the reissue rate, payoffs and balances, each cited.`,
     `- [Request a quote](${absoluteUrl('/quote')}): for the lines that are not promulgated — settlement fee, search, endorsements.`,
+    `- [Open a title order](${absoluteUrl('/order')}): the property address and the contract terms, to open the file and order the search.`,
     '',
+    // Same gate as the footer link and the sitemap: not advertised until counsel has reviewed it.
+    ...(PRIVACY_PUBLISHED
+      ? ['## Policies', '', `- [Privacy](${absoluteUrl('/privacy')})`, '']
+      : []),
     '---',
     footerCredentialLine,
   ];

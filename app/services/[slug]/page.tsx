@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getDoc, listRoutableSlugs, isPublishable } from '@/lib/content';
 import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
-import { absoluteUrl, metaDescription } from '@/lib/seo';
+import { baseOpenGraph, fittedTitle, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { AnswerPanel, Byline, Prose, VerifyBanner } from '@/components/Prose';
 import { DraftBanner } from '@/components/DraftBanner';
@@ -33,12 +33,12 @@ export async function generateMetadata({
   const path = `/services/${doc.slug}`;
 
   return {
-    title: doc.title,
+    title: fittedTitle(doc.title),
     description,
     alternates: { canonical: path },
     // A draft is only ever reachable on a preview build, and must never be indexed.
     ...(doc.status === 'draft' ? { robots: { index: false, follow: false } } : {}),
-    openGraph: { type: 'article', title: doc.title, description, url: absoluteUrl(path) },
+    openGraph: { ...baseOpenGraph, type: 'article', title: doc.title, description, url: path },
   };
 }
 

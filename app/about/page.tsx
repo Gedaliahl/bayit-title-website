@@ -12,14 +12,17 @@ import { Verdict } from '@/components/Verdict';
 import { StepBand } from '@/components/StepBand';
 import { Rail } from '@/components/Rail';
 import { initials } from '@/components/Prose';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'About',
-  description:
+  description: metaDescription(
     `${site.legalName} is a Florida title insurance agency in ${site.address.city}, closing ` +
-    `residential and commercial transactions throughout Florida. What we are, exactly, what we ` +
-    `are not, and the specific things that make the work excellent.`,
+      `residential and commercial transactions throughout Florida. What we are, exactly, what we ` +
+      `are not, and the specific things that make the work excellent.`,
+  ),
   alternates: { canonical: '/about' },
+  openGraph: { ...baseOpenGraph, url: '/about' },
 };
 
 const WHAT_AN_AGENCY_DOES = [

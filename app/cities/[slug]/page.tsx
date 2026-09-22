@@ -16,7 +16,7 @@ import { FLORIDA_CITIES, cityBySlug, cityPageTitle, citiesInCounty } from '@/lib
 import { getCounties, getLocation, recorderName } from '@/lib/locations';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
 import {
@@ -65,17 +65,20 @@ export async function generateMetadata({
   const city = cityBySlug(slug);
   if (!city) return {};
   const county = await getLocation(city.countySlug);
-  const payer = county?.customaryOwnerPolicyPayer;
 
   return {
-    title: cityPageTitle(city),
-    description:
-      `${site.legalName} is a Florida title company closing in ${city.name}` +
-      (county ? `, ${county.name}` : '') +
-      `. Title insurance, escrow and closings for residential and commercial property, ` +
-      (payer ? `who customarily pays for the owner’s policy (the ${payer}), ` : '') +
-      'the deed stamp rate, where the deed is recorded, and what a policy costs at every price.',
+    title: fittedTitle(cityPageTitle(city), `Title company in ${city.name}, FL`),
+    // What the page answers, in the order it answers it; see the county page.
+    // The payer is left to the page: with the county's name as well, naming it
+    // here runs the longest cities past what a results page shows.
+    description: metaDescription(
+      `Closings in ${city.name}` +
+        (county ? `, ${county.name}` : '') +
+        ': who customarily pays for the owner’s policy, the deed stamp rate, recording, and what a ' +
+        'policy costs.',
+    ),
     alternates: { canonical: `/cities/${city.slug}` },
+    openGraph: { ...baseOpenGraph, url: `/cities/${city.slug}` },
   };
 }
 

@@ -24,7 +24,7 @@ import {
 } from '@/lib/content';
 import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
-import { absoluteUrl, formatLongDate, metaDescription } from '@/lib/seo';
+import { absoluteUrl, baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { Byline, Prose, VerifyBanner, VerifyText } from '@/components/Prose';
 import { DraftBanner } from '@/components/DraftBanner';
@@ -57,16 +57,17 @@ export async function generateMetadata({
   const path = `/title-problems/${doc.slug}`;
 
   return {
-    title: doc.title,
+    title: fittedTitle(doc.title),
     description,
     alternates: { canonical: path },
     // A draft is only ever reachable on a preview build, and must never be indexed.
     ...(doc.status === 'draft' ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
+      ...baseOpenGraph,
       type: 'article',
       title: doc.title,
       description,
-      url: absoluteUrl(path),
+      url: path,
       publishedTime: doc.reviewed_on,
       modifiedTime: doc.reviewed_on,
     },
@@ -129,6 +130,7 @@ export default async function TitleProblemPage({
           authorName={authorName}
           authorSlug={doc.author!}
           reviewedOn={doc.reviewed_on!}
+          image={absoluteUrl(`${path}/opengraph-image`)}
         />
       ) : null}
       <FaqSchema items={faq} />

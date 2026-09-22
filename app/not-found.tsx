@@ -1,5 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { site } from '@/lib/site';
+
+// Without its own title the 404 carried the homepage's, so a tab or a history
+// entry for a dead link read as though it were the home page.
+export const metadata: Metadata = {
+  title: 'Page not found',
+};
 
 export default function NotFound() {
   return (
@@ -27,8 +34,8 @@ export default function NotFound() {
           </li>
         </ul>
         <p className="form-note">
-          If you were looking for something specific, call {site.phoneDisplay} and we will point you
-          at it.
+          If you were looking for something specific, call{' '}
+          <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a> and we will point you at it.
         </p>
       </div>
     </div>

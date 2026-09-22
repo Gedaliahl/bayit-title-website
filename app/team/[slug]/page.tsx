@@ -8,6 +8,13 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PersonSchema } from '@/components/Schema';
 import { ReviewList } from '@/components/Reviews';
 import { QuietCta } from '@/components/QuietCta';
+import {
+  baseOpenGraph,
+  fittedTitle,
+  indexingAllowed,
+  metaDescription,
+  teamPageHasContent,
+} from '@/lib/seo';
 
 export const dynamicParams = false;
 
@@ -24,10 +31,19 @@ export async function generateMetadata({
   const member = getTeamMember(slug);
   if (!member) return {};
 
+  // Name and role alone is what /team already says. The page stays reachable
+  // from there, but out of the index until it has something of its own.
+  const hasContent = teamPageHasContent(member, await getReviews());
+
   return {
-    title: `${member.name}, ${member.role}`,
-    description: `${member.name} is ${member.role} at ${site.legalName} in ${site.address.city}, Florida.`,
+    title: fittedTitle(`${member.name}, ${member.role}`),
+    description: metaDescription(
+      `${member.name} is ${member.role} at ${site.legalName} in ${site.address.city}, Florida.`,
+    ),
     alternates: { canonical: `/team/${member.slug}` },
+    openGraph: { ...baseOpenGraph, url: `/team/${member.slug}` },
+    // Its links are still followed where the site is open to crawlers at all.
+    ...(hasContent ? {} : { robots: { index: false, follow: indexingAllowed() } }),
   };
 }
 
