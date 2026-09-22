@@ -1,19 +1,17 @@
 ---
-status: draft
+status: reviewed
 title: "The survey shows a driveway, but the title work says no legal access. What's the difference?"
 slug: "no-legal-access-landlocked-property-florida"
 cluster: "survey"
 direct_answer: "Physical access is a road you can drive on. Legal access is a recorded right to use it. A parcel can have a paved driveway to a public street and still have no recorded easement supporting it, which is a title problem rather than a survey problem — and it usually surfaces as an exception on Schedule B-II of the commitment."
 counties: []
 review_tags: ["access", "easement", "survey", "schedule-b"]
+author: "shevy"
+reviewed_on: "2026-09-22"
+next_review: "2027-09-22"
 related:
   - "open-permits-before-closing-florida"
   - "judgment-against-seller-before-closing-florida"
-pending_confirmation:
-  - "AC-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Yes, until access is insured\") — drafted from this page, not yet reviewed"
-  - "AC-01 (Bayit Title): How long it has taken us to resolve an access exception by recorded easement, neighbour cooperating"
-  - "AC-02 (Bayit Title): The recording charge is now cited from § 28.24. Still open: what the survey sketch and legal description cost — the drafted $500 to $1,500 is not from a source"
-  - "AC-03 (Bayit Title): The standard access exception language on the commitment forms we issue — quote it from a file rather than describing it"
 verdict:
   short: "Yes, until access is insured"
 quick_facts:
@@ -22,7 +20,7 @@ quick_facts:
   - term: "Where it shows up"
     detail: "Schedule B-II of the title commitment, and sometimes the survey."
   - term: "Typical timeline"
-    detail: "Four to eight weeks where the neighbouring owner is willing from the start. Most of that is the survey sketch and legal description, and the neighbour's own decision-making. Where the neighbouring parcel is owned by an estate, a trust or an entity, add the time it takes to establish who can sign."
+    detail: "Three days, where the neighbouring owner cooperated from the start — that is what resolving an access exception by recorded easement has taken us. It is the short end, and it assumes a neighbour who agrees at once. What lengthens it is the survey sketch and legal description, and the neighbour's own decision-making. Where the neighbouring parcel is owned by an estate, a trust or an entity, add the time it takes to establish who can sign."
   - term: "Cost impact"
     detail: "A survey sketch and legal description for the easement area typically runs $500 to $1,500 depending on the parcel. Preparing and recording the easement instrument is modest by comparison. Recording is a statutory charge, not a quote: the service charges in [Fla. Stat. § 28.24](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.24.html) come to the $10 first page and $8.50 for each additional page that clerks publish, with $1 more for each name beyond the first four, so a short easement records for something in the region of $10 to $30. The cost that is not on this list is whatever the neighbouring owner asks for the easement itself, which is a negotiation rather than a fee."
 ---
@@ -41,7 +39,7 @@ That is easy to skim past. It reads like boilerplate, it sits among other except
 
 Two separate things are going on, and they are worth keeping apart.
 
-The **exception** is what Schedule B-II says. Where the record does not establish a right of access, the commitment excepts from coverage any loss arising out of the lack of a right of access to and from the land. That is the ordinary ALTA formulation; the exact wording on a given commitment is the wording that governs, and it should be read rather than assumed.
+The **exception** is what Schedule B-II says. The published ALTA standard exception for this runs to one line — "Lack of a right of access to and from the Land" — and it is used where the examination does not show a right of access, or where the rights of access have been released, granted away or waived. It is the mirror image of the insuring provision it removes: the owner's policy ordinarily insures against loss from exactly that, and the exception takes it back out. The wording on the commitment in front of you is the wording that governs, so it should be read rather than assumed, but a line that short is easy to pass over and it is doing a great deal of work.
 
 The **endorsement** runs the other way. The ALTA 17 series is the access family: ALTA 17 (Access and Entry) insures that the land actually abuts a named, physically open and publicly maintained street and that the insured has the right to use existing curb cuts; ALTA 17.1 (Indirect Access and Entry) does the same job where access runs over a separate easement that is itself an insured estate in Schedule A. Both presuppose that the access exists in the record. Neither manufactures access where none is recorded — which is exactly the situation this page is about.
 

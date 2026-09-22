@@ -10,13 +10,8 @@ related:
   - "judgment-against-seller-before-closing-florida"
   - "buying-property-bankruptcy-estate-florida"
 pending_confirmation:
-  - "LT-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Only if a lis pendens is recorded\") — drafted from this page, not yet reviewed"
-  - "LT-01 (Bayit Title): Typical timeline (quick fact) — needed from the team"
-  - "LT-04 (Bayit Title): What we examine differently where a seller acquired recently"
-  - "LT-05 (Bayit Title): The four file details the finished page needs (search result, claim, requirement to close, duration)"
-  - "LT-06 (Bayit Title): Our actual practice where a seller is in active litigation, including where we decline"
-  - "LT-08 (Bayit Title): Our practice for putting a pending-litigation position to the underwriter in writing before closing"
-  - "LT-09 (attorney): The fair nexus standard for discharging a lis pendens and the burden allocation — case law rather than statute. A Florida Supreme Court case was cited here and has been removed pending confirmation; counsel should say whether it belongs on the page"
+  - "LT-05 (Bayit Title): the four file details the finished page needs — what the search returned, what the claim was, what was required to close, and how long it took. This is what keeps the page unpublished, and if the underlying file does not come back the page should be dropped rather than published"
+  - "LT-09 (attorney): the fair nexus standard for discharging a lis pendens and the burden allocation — case law rather than statute. A Florida Supreme Court case was cited here and has been removed pending confirmation; counsel should say whether it belongs on the page"
 verdict:
   short: "Only if a lis pendens is recorded"
 quick_facts:
@@ -25,7 +20,7 @@ quick_facts:
   - term: "Where it shows up"
     detail: "The title search, if something has been recorded. Pending litigation with nothing recorded may not appear at all."
   - term: "Typical timeline"
-    detail: "Driven by the litigation, not by the closing. Where a lis pendens is voluntarily discharged on settlement, days. Where it has to be discharged on motion, weeks — a hearing has to be obtained. Where the suit seeks an interest in the property and is being defended, the closing waits on the case."
+    detail: "About a day in the ordinary case: where nothing is recorded against the property, establishing that from the records and the docket and putting the position to the underwriter takes a day and moves no closing date. Where something is recorded, the timeline stops being ours. A lis pendens voluntarily discharged on settlement is days; one that has to be discharged on motion is weeks, because a hearing has to be obtained; and where the suit seeks an interest in the property and is being defended, the closing waits on the case."
   - term: "Cost impact"
     detail: "No additional title premium — Florida title insurance rates are promulgated. The costs are the seller's litigation costs, any escrow holdback the parties agree, and the buyer's own counsel, which on a file like this is not optional."
 ---
@@ -45,6 +40,8 @@ Where nothing has been recorded, a pending lawsuit may not surface in a title se
 ## Why does a short ownership period matter?
 
 Not because a quick resale is improper — it is not. It matters because there has been less time for the record to settle, and because the examination has to look closely at how the seller acquired.
+
+The search itself goes back further than the seller's own purchase. A recent acquisition means the sales before it are close enough to matter, so those are examined too rather than treated as settled by the last closing.
 
 Four things get a closer read:
 
@@ -68,9 +65,11 @@ The following have to come from the actual file before this page says anything m
 
 ## How Bayit Title handles this
 
-*Placeholder — this paragraph must be rewritten by the team to describe what Bayit Title actually does.*
+We search the official records and we check the clerk's civil docket on the seller's name, and where the seller acquired recently we look further back than that purchase. Where something comes back, we put in writing to both sides what we found, whether anything is recorded against the property, and what the suit appears to seek — an interest in the property, or money.
 
-We search the official records and we check the clerk's civil docket on the seller's name. Where something comes back, we put in writing to both sides what we found, whether anything is recorded against the property, and what the suit appears to seek — an interest in the property, or money. Where a lis pendens is recorded, it is a requirement on the commitment and it has to be discharged, released or otherwise disposed of before we close. Where nothing is recorded and the suit seeks money only, we say so, put the position to the underwriter, and tell the buyer to take it to their own attorney before deciding. Where the suit claims an interest in the property, we do not close until it is resolved or the underwriter approves the file in writing.
+The position goes to the underwriter in writing, identifying the case by name, before the file is cleared to close. Where we cannot close over it clean, there are two ways a file like this still gets done: an exception left on title for the matter, or a holdback left in escrow. Which one is appropriate is the underwriter's call and the parties', and it is agreed in writing before the closing rather than at it.
+
+Where a lis pendens is recorded, it is a requirement on the commitment and it has to be discharged, released or otherwise disposed of before we close. Where nothing is recorded and the suit seeks money only, we say so and tell the buyer to take it to their own attorney before deciding. Where the suit claims an interest in the property, we do not close until it is resolved or the underwriter approves the file in writing.
 
 ## When should an attorney be involved?
 

@@ -1,18 +1,17 @@
 ---
-status: draft
+status: reviewed
 title: "There's a judgment against the seller. What happens to the closing?"
 slug: "judgment-against-seller-before-closing-florida"
 cluster: "liens"
 direct_answer: "A recorded judgment against a seller can attach to real property they own in that county and has to be dealt with before clear title passes. The question is never whether someone is worried about it, but whether the judgment attaches to this property, for how much, and what it takes to release or satisfy it at closing."
 counties: ["broward-county", "palm-beach-county", "miami-dade-county"]
 review_tags: ["judgments", "liens", "clearing-title", "payoff"]
+author: "shevy"
+reviewed_on: "2026-09-22"
+next_review: "2027-09-22"
 related:
   - "open-permits-before-closing-florida"
   - "litigation-against-seller-flip-florida"
-pending_confirmation:
-  - "JG-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Rarely\"), the four verdict-card rows, and the five steps — drafted from this page, not yet reviewed"
-  - "JG-01 (Bayit Title): Answered in part from the statute — § 701.04(3) gives the creditor 60 days from payment to record the satisfaction. Still open: how long a payoff and release actually takes on our files, and whether the drafted three-to-ten business days for the written payoff itself is right"
-  - "JG-05 (Bayit Title): The supporting detail we assemble as standard on an identity affidavit, and our practice of obtaining the underwriter's written sign-off before closing"
 verdict:
   headline: "Rarely — if it is found early."
   short: "Rarely"
@@ -27,7 +26,7 @@ steps:
   - title: "Same person?"
     body: "Confirmed or ruled out with an affidavit of identity the underwriter accepts."
   - title: "Does it attach?"
-    body: "Certified copy, address, dates — and whether the property is homestead."
+    body: "Certified copy, address, dates — whether the property is homestead, and how the spouses hold title."
   - title: "Written payoff"
     body: "From the creditor or counsel, good through a date, verified by phone."
   - title: "Paid and satisfied"
@@ -86,11 +85,11 @@ Sixty days is the limit the statute allows, not a closing timetable. Where a jud
 
 Where the judgment does not belong to this seller, the route is different: an affidavit establishing that the debtor is a different person, in a form the underwriter will accept.
 
-The instrument is an affidavit of identity — often called a same-name or not-the-same-person affidavit — sworn by the seller, stating that they are not the person named in the judgment and setting out the facts that show it. What makes it acceptable is the supporting detail rather than the denial: full legal name and any former names, date of birth, the last four digits of the social security number, residence history covering the period of the judgment, and a comparison against whatever identifying information the judgment and its underlying case file contain.
+The instrument is an affidavit of identity — often called a same-name or not-the-same-person affidavit — sworn by the seller, stating that they are not the person named in the judgment and setting out the facts that show it. What makes it acceptable is the supporting detail rather than the denial: full legal name and any former names, date of birth, the last four digits of the social security number, residence history covering the period of the judgment, and a comparison against whatever identifying information the judgment and its underlying case file contain. That is what we assemble as standard.
 
 Where the match is close, or the judgment is large, the underwriter may also want a search of the debtor's identifiers, a credit report, or a written statement from the judgment creditor's counsel that the seller is not their debtor.
 
-The form and the supporting documentation are First American's call, and we obtain their written sign-off on the affidavit before closing rather than relying on it afterwards.
+The form and the supporting documentation are First American's call. We obtain their written sign-off on the affidavit before closing, on every file, rather than relying on it afterwards.
 
 ## How Bayit Title handles this
 
@@ -112,9 +111,18 @@ Eventually, yes. A recorded judgment is a lien for 10 years from the date of rec
 
 ### Does a judgment against only one spouse attach?
 
-It depends on how title is held and whether tenancy by the entireties applies.
+Generally not, where the property is held by both spouses as tenants by the entireties — but "generally" is carrying weight in that sentence, and the qualifications are the useful part.
 
-[VERIFY: how a judgment against one spouse interacts with property held as tenants by the entireties. This one is deliberately still open: it turns on Florida case law rather than on a statute we can cite, so it needs a Florida real estate attorney’s statement rather than a summary assembled from public sources.]
+Florida treats entireties property as belonging to the marital unit rather than to either spouse separately: each spouse is seized of the whole, and the estate is not divisible to satisfy the obligation of one of them alone. That is the holding of *Beal Bank, SSB v. Almand & Associates*, 780 So. 2d 45 (Fla. 2001), resting on a rule Florida has applied at least since *Winters v. Parks*, 91 So. 2d 649 (Fla. 1956). Applied to a recorded judgment, the consequence is the one this question asks about: a judgment lien against one tenant alone does not attach to the entireties estate (*Sharp v. Hamilton*, 495 So. 2d 235 (Fla. 5th DCA 1986), approved, 520 So. 2d 9 (Fla. 1988)).
+
+Four things have to be true before that rule does any work on a file, and each of them is a question of fact rather than an assumption:
+
+- **The property is actually held as entireties.** Where a deed conveys to two people as husband and wife, Florida takes that as creating an estate by the entireties in the absence of express language showing a contrary intent (*Bridgeview Bank Group v. Callaghan*, 84 So. 3d 1154 (Fla. 4th DCA 2012)). How the deed reads is the starting point, not how the parties describe their ownership.
+- **The marriage was in existence when the property was acquired, and still is.** The estate depends on the marital unit, so a divorce or a death changes the analysis — which is what *Sharp* was actually about.
+- **The debt is not a joint one.** A creditor holding a judgment against both spouses jointly is in a different position entirely. And two separate judgments, one against each spouse and held by different creditors, are not a joint debt and cannot be added together to make one (*Williams v. M & R Construction of North Florida, Inc.*, 305 So. 3d 353 (Fla. 1st DCA 2020)).
+- **It is a Florida judgment question.** A federal tax lien is governed by federal law rather than by Florida's entireties rule, and nothing above answers it. It is something we look for on the search rather than something the entireties position disposes of.
+
+None of this clears the record. The judgment is still recorded, still returns on a search, and is still a requirement on the commitment until it is disposed of. Where the position is that it does not attach, that position is documented on the file and signed off by the underwriter in writing before closing — the same way the homestead position is — rather than asserted afterwards. And where the marriage, the deed or the debt is genuinely in question, it belongs with the seller's own counsel.
 
 ### Will the title policy insure over it?
 
