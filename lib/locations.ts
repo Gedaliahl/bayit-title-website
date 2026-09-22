@@ -299,6 +299,23 @@ export const RECORDER_STATUTE = {
   url: 'https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.222.html',
 } as const;
 
+/**
+ * A recording office's turnaround, ready to set in a blockquote.
+ *
+ * Some rows store the office's words as a run of quoted sentences — `"We
+ * cannot guarantee…" "Documents submitted…"` — because they were lifted from
+ * two places on one page. Inside a blockquote those marks double up: the block
+ * already says it is a quotation. When every part of the text is quoted, the
+ * marks come off and the sentences run on. When the row mixes quoted words with
+ * our own description of the page, the marks are what tell the two apart, so
+ * they stay.
+ */
+export function turnaroundForQuote(text: string): string {
+  const parts = text.trim().match(/"[^"]*"/g);
+  if (!parts || parts.join('').replace(/\s/g, '') !== text.replace(/\s/g, '')) return text.trim();
+  return parts.map((part) => part.slice(1, -1).trim()).join(' ');
+}
+
 export function recorderName(county: Pick<Location, 'name' | 'clerkName'>): string {
   return county.clerkName ?? `${county.name} Clerk of the Circuit Court`;
 }

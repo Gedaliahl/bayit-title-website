@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { FLORIDA_CITIES, cityBySlug, cityPageTitle, citiesInCounty } from '@/lib/florida-cities';
-import { getCounties, getLocation, recorderName } from '@/lib/locations';
+import { getCounties, getLocation, recorderName, turnaroundForQuote } from '@/lib/locations';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
 import { formatLongDate } from '@/lib/seo';
@@ -139,7 +139,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           }
         />
 
-        <VerifyBanner flags={openItems} variant="withheld" />
+        <VerifyBanner flags={openItems} variant="withheld" scope="city" />
 
         <h2>What title insurance costs on a {city.name} purchase</h2>
         <p>
@@ -240,13 +240,17 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           <>
             <p>On turnaround, the {recorder} publishes this:</p>
             <blockquote>
-              {county.recordingTurnaround}
+              {turnaroundForQuote(county.recordingTurnaround)}
               <footer>
-                <a href={county.recordingTurnaroundSourceUrl!} rel="nofollow">
-                  Read from the office&rsquo;s own page
-                </a>
+                {county.recordingTurnaroundSourceUrl ? (
+                  <a href={county.recordingTurnaroundSourceUrl} rel="nofollow">
+                    Read from the office&rsquo;s own page
+                  </a>
+                ) : (
+                  'Read from the office’s own page'
+                )}
                 {county.recordingTurnaroundCheckedOn
-                  ? ` on ${county.recordingTurnaroundCheckedOn}`
+                  ? ` on ${formatLongDate(county.recordingTurnaroundCheckedOn)}`
                   : ''}
               </footer>
             </blockquote>

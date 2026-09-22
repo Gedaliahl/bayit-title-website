@@ -126,3 +126,28 @@ describe('a build whose query comes back short', () => {
     await expect(loadCounties()).resolves.toHaveLength(67);
   });
 });
+
+describe('a turnaround set in a blockquote', () => {
+  it('drops the marks when every sentence was quoted, so they do not double up', async () => {
+    const { turnaroundForQuote } = await import('@/lib/locations');
+
+    expect(
+      turnaroundForQuote('"We cannot guarantee same-day recording." "eRecording may take 1-3 days."'),
+    ).toBe('We cannot guarantee same-day recording. eRecording may take 1-3 days.');
+  });
+
+  it('keeps them where our own words sit between the office’s', async () => {
+    const { turnaroundForQuote } = await import('@/lib/locations');
+    const mixed = '"We cannot guarantee it." Walk-in recording appears under "Same Day Recording".';
+
+    expect(turnaroundForQuote(mixed)).toBe(mixed);
+  });
+
+  it('leaves an unquoted statement alone', async () => {
+    const { turnaroundForQuote } = await import('@/lib/locations');
+
+    expect(turnaroundForQuote('Documents are recorded in the order received.')).toBe(
+      'Documents are recorded in the order received.',
+    );
+  });
+});

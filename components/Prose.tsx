@@ -95,13 +95,19 @@ export function AnswerPanel({ text }: { text: string }) {
  * - `withheld` — the page has no marks because the facts are simply not on it,
  *   held back until each is tied to a source. Pointing such a reader at "what
  *   is marked VERIFY below" sends them looking for a word that never appears.
+ *
+ * `scope` is what the withheld facts belong to. A county page holds back the
+ * county's custom, a city page its building department, and the statewide
+ * buyer and seller pages hold back figures that are no county's at all.
  */
 export function VerifyBanner({
   flags,
   variant = 'flagged',
+  scope = 'county',
 }: {
   flags: string[];
   variant?: 'flagged' | 'withheld';
+  scope?: 'county' | 'city' | 'statewide';
 }) {
   if (flags.length === 0) return null;
 
@@ -122,7 +128,8 @@ export function VerifyBanner({
       ) : (
         <>
           <strong>
-            {flags.length} item{plural} we have not published for this county
+            {flags.length} item{plural} we have not published{' '}
+            {scope === 'statewide' ? 'on this page' : `for this ${scope}`}
           </strong>
           {flags.length === 1 ? 'It is not stated' : 'These are not stated'} anywhere on this page.
           We publish a figure once it is tied to a source we are willing to stand behind, and{' '}
