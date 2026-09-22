@@ -341,13 +341,35 @@ describe('splitting a body into sections', () => {
 
   it('numbers a second heading that slugifies the same way', async () => {
     writeDoc('twice-asked', {
-      body: '## What now?\n\nOne.\n\n## What now?\n\nTwo.\n',
+      body: '## What now?\n\nOne.\n\n## What, now?\n\nTwo.\n',
     });
 
     const { getDoc } = await loadContentModule();
     const doc = await getDoc('title-problems', 'twice-asked');
 
     expect(doc?.sections.map((section) => section.id)).toEqual(['what-now', 'what-now-2']);
+  });
+
+  it('refuses a heading with nothing under it', async () => {
+    writeDoc('empty-section', {
+      body: '## Does Florida cap it?\n\n## What shortens it?\n\nA complete package.\n',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'empty-section')).rejects.toThrow(
+      /"Does Florida cap it\?" has no body/,
+    );
+  });
+
+  it('refuses the same question asked twice on one page', async () => {
+    writeDoc('pasted-twice', {
+      body: '## Does Florida cap it?\n\nNo.\n\n## Does Florida cap it?\n\nIt does not.\n',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'pasted-twice')).rejects.toThrow(
+      /"Does Florida cap it\?" appears twice/,
+    );
   });
 
   it('slugifies a quoted heading without collapsing it to hyphens', async () => {
@@ -359,5 +381,81 @@ describe('splitting a body into sections', () => {
     const doc = await getDoc('title-problems', 'quoted-heading');
 
     expect(doc?.sections[0].id).toBe('dont-worry-about-it');
+  });
+});
+
+describe('the common questions', () => {
+  const body = [
+    '## Why does it matter?',
+    '',
+    'Because it does.',
+    '',
+    '## Common questions',
+    '',
+    '### Is an old judgment still a lien?',
+    '',
+    'Eventually not ([§ 55.10](https://example.test/55.10)).',
+    '',
+    'But old is not the same as expired.',
+    '',
+    '### What makes it entireties?',
+    '',
+    '- **The deed.** How it reads.',
+    '- **The marriage.** Whether it still exists.',
+    '',
+    '### Is the window fixed?',
+    '',
+    'It is [VERIFY: the statutory window] days.',
+    '',
+  ].join('\n');
+
+  it('renders each answer as the page shows it, with its paragraphs, lists and links', async () => {
+    writeDoc('with-questions', { body });
+
+    const { getDoc } = await loadContentModule();
+    const doc = await getDoc('title-problems', 'with-questions');
+    const [lien, entireties] = doc!.faq;
+
+    // The statute link is the checkable part of the answer, and the second
+    // paragraph is a separate point; flattening lost both.
+    expect(lien.html).toContain('<a href="https://example.test/55.10">§ 55.10</a>');
+    expect(lien.html).toContain('<p>But old is not the same as expired.</p>');
+    expect(entireties.html).toMatch(/<ul>\s*<li><strong>The deed\.<\/strong>/);
+  });
+
+  it('gives the structured data plain text, and no flagged answer', async () => {
+    writeDoc('with-questions', { body });
+
+    const { getDoc } = await loadContentModule();
+    const { extractFaq } = await import('@/lib/faq');
+    const doc = await getDoc('title-problems', 'with-questions');
+
+    // The page still shows the flagged question, marked, as it shows every
+    // other flag. Only the JSON-LD leaves it out.
+    expect(doc!.faq.map((item) => item.question)).toContain('Is the window fixed?');
+    expect(extractFaq(doc!.raw)).toEqual([
+      {
+        question: 'Is an old judgment still a lien?',
+        answer: 'Eventually not (§ 55.10). But old is not the same as expired.',
+      },
+      {
+        question: 'What makes it entireties?',
+        answer: 'The deed. How it reads. The marriage. Whether it still exists.',
+      },
+    ]);
+  });
+});
+
+describe('tables in the body', () => {
+  it('scroll inside a named, focusable box instead of widening the page', async () => {
+    writeDoc('with-a-table', {
+      body: '## What does it cost?\n\n| Item | Amount |\n| --- | --- |\n| Recording | $10.00 |\n',
+    });
+    const { getDoc } = await loadContentModule();
+    const doc = await getDoc('title-problems', 'with-a-table');
+    const html = doc?.sections.map((section) => section.html).join('') ?? '';
+
+    expect(html).toContain('<div class="table-scroll" role="region" tabindex="0" aria-label="Table"><table>');
+    expect(html).toContain('</table></div>');
   });
 });

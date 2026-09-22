@@ -94,6 +94,25 @@ export const MORTGAGE_CHARGES: CitedFigure[] = [
 ];
 
 /**
+ * Said on the two loan taxes on a refinance, which are charged here on the
+ * whole new loan. Each statute takes some or all of that away when the new
+ * note continues an old one, on conditions only the loan papers can show, so
+ * the estimate states the condition and leaves the full figure standing.
+ *
+ * Read from the 2025 statutes (flsenate.gov) on 22 September 2026.
+ */
+export const RENEWAL_NOTES = {
+  mortgageStamps:
+    'Charged here on the whole new loan. Under § 201.09, a note that only renews an existing ' +
+    'note, signed by the same borrower and not enlarging it, is not taxed, and nor is the ' +
+    'mortgage securing it; a renewal that increases the unpaid balance is taxed only on the increase.',
+  intangible:
+    'Charged here on the whole new loan. Under § 199.145(4), refinancing a loan the tax was ' +
+    'paid on, with the original lender or its assignee, owes nothing up to the unpaid principal ' +
+    'and accrued interest; above that, where the same borrower stays liable, only the excess is taxed.',
+};
+
+/**
  * s. 28.24(13) charges a deed or mortgage three ways per page and every clerk
  * adds them up the same: (a) $5.00 + (d)1. $1.00 + (e) $4.00 for the first
  * page, and (b) $4.00 + (d)2. $0.50 + (e) $4.00 for each one after it.
@@ -155,11 +174,31 @@ export function intangibleTaxDue(amountSecured: number): number {
   return toCents(amountSecured * 0.002);
 }
 
+/**
+ * A figure that is not a finite number is a bug upstream, never a price, so it
+ * prints as a dash rather than as "$NaN" or "$∞" on a page a reader might act on.
+ */
 export function formatMoney(amount: number): string {
+  if (!Number.isFinite(amount)) return '—';
   return amount.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
     maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+  });
+}
+
+/**
+ * Always to the cent. formatMoney drops ".00" from a whole figure, which reads
+ * well in a sentence and badly in a column, where "$2,575" above "$5.50" looks
+ * like two different kinds of number.
+ */
+export function formatCents(amount: number): string {
+  if (!Number.isFinite(amount)) return '—';
+  return amount.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
 }
 

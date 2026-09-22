@@ -12,7 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -26,6 +26,7 @@ import {
   recordingChargeDue,
 } from '@/lib/statutory-rates';
 import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
+import { EXAMPLE_PAGE_COUNTS } from '@/lib/closing-estimate';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   ORIGINAL_SCHEDULE,
@@ -43,14 +44,15 @@ import { QuietCta } from '@/components/QuietCta';
 
 export const metadata: Metadata = {
   title: 'Buyer closing costs in Florida',
-  description:
-    'What a buyer pays at a Florida closing: the mortgage stamp tax, intangible tax and recording ' +
-    'charges the statute sets, the promulgated title insurance premium, and the fees no rule sets. ' +
-    'Each figure cited to the statute or rule, with a worked example.',
+  description: metaDescription(
+    'What a buyer pays at a Florida closing: mortgage stamp tax, intangible tax, recording, the ' +
+      'promulgated premium and the fees no rule sets, each cited.',
+  ),
   alternates: { canonical: '/closing-costs/buyer' },
+  openGraph: { ...baseOpenGraph, url: '/closing-costs/buyer' },
 };
 
-const MORTGAGE_PAGES = 12;
+const MORTGAGE_PAGES = EXAMPLE_PAGE_COUNTS.mortgage;
 
 export default async function BuyerClosingCostsPage() {
   const counties = await getCounties();
@@ -98,10 +100,11 @@ export default async function BuyerClosingCostsPage() {
         <Breadcrumbs
           trail={[
             { name: 'Home', path: '/' },
+            { name: 'Closing costs', path: '/closing-costs' },
             { name: 'Buyer closing costs', path: '/closing-costs/buyer' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Buyer closing costs in Florida</h1>
+        <h1 className="after-crumbs">Buyer closing costs in Florida</h1>
 
         <AnswerPanel
           text={
@@ -119,7 +122,13 @@ export default async function BuyerClosingCostsPage() {
             'How the standard Florida contract forms allocate each line by default',
           ]}
           variant="withheld"
+          scope="statewide"
         />
+
+        <p>
+          The other side of the same closing statement is on the{' '}
+          <Link href="/closing-costs/seller">seller closing costs</Link> page.
+        </p>
 
         <h2>What the statute sets, on a financed purchase</h2>
         <p>
@@ -160,9 +169,10 @@ export default async function BuyerClosingCostsPage() {
 
         <p>
           An owner&rsquo;s policy on a {formatMoney(EXAMPLE_PRICE)} purchase is{' '}
-          <strong>{formatMoney(ownerPremium)}</strong>. A lender&rsquo;s policy issued at the same
-          time on the same land is <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong> for
-          coverage up to the owner&rsquo;s amount. {LENDER_POLICY_BESIDE_RULE}{' '}
+          <strong>{formatMoney(ownerPremium)}</strong>. For a lender&rsquo;s policy issued at the same
+          time on the same land, the rule sets <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong>{' '}
+          as the least it can be for coverage up to the owner&rsquo;s amount.{' '}
+          {LENDER_POLICY_BESIDE_RULE}{' '}
           <Link href="/estimate?mode=numbers">The estimate page</Link> works both out for any price
           and loan.
         </p>
@@ -239,7 +249,7 @@ export default async function BuyerClosingCostsPage() {
         </p>
 
         <QuietCta
-          text="Send us the price, the loan amount and the county and we will itemise the buyer’s side against the actual documents."
+          text="Send us the price, the loan amount and the county and we will itemize the buyer’s side against the actual documents."
           action="Request a quote"
           href="/quote"
         />

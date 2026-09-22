@@ -52,7 +52,10 @@ const REISSUE: Bracket[] = [
 /** R. 69O-186.003(1)(a)1.b. — every conveyance but a multiple conveyance. */
 export const MINIMUM_PREMIUM = 100;
 
-/** R. 69O-186.003(5)(a) — the loan policy issued alongside an owner's policy. */
+/**
+ * R. 69O-186.003(5)(a) — the least a loan policy issued alongside an owner's
+ * policy can be. A minimum, not a price or a maximum.
+ */
 export const SIMULTANEOUS_LOAN_PREMIUM = 25;
 
 /** R. 69O-186.003(3)(c) — floor under the new home purchase discount. */
@@ -171,29 +174,18 @@ export const ORIGINAL_SCHEDULE = schedule(ORIGINAL, `${PREMIUM_RULE.cite}(1)(a)`
 export const REISSUE_SCHEDULE = schedule(REISSUE, `${PREMIUM_RULE.cite}(2)(a)`, PREMIUM_RULE.url);
 
 /**
- * R. 69O-186.003(5)(a). The loan policy issued alongside an owner's policy on
- * the same land is $25 up to the owner's amount; "the risk premium on the
- * amount of the mortgage policy or policies in excess of the owner's policy
- * shall be figured at the regular original title insurance rates for mortgage
- * policies", so the excess alone is rated, and the $100 policy minimum is not
- * applied a second time to it.
- */
-export function simultaneousLoanPremium(loanAmount: number, ownerCoverage: number): number {
-  if (loanAmount <= 0) return 0;
-  if (loanAmount <= ownerCoverage) return SIMULTANEOUS_LOAN_PREMIUM;
-
-  return toCents(SIMULTANEOUS_LOAN_PREMIUM + excessLoanPremium(loanAmount - ownerCoverage));
-}
-
-/**
- * The original schedule applied to the excess alone, under the same paragraph.
+ * R. 69O-186.003(5)(a), coverage above the owner's amount on a lender's policy
+ * issued alongside an owner's policy on the same land.
  *
- * Exported because what a lender's policy is issued for is this office's charge
- * rather than the rule's (see lib/agency-charges.ts), while the coverage above
- * the owner's amount stays the rule's to rate. The $100 policy minimum is not
- * applied: the excess is not itself a policy, it is the part of one.
+ * The excess is rated at the original schedule layered on top of the owner's
+ * amount: it falls in whichever brackets it actually reaches, and does not
+ * start again at the $5.75 first-$100,000 bracket. So it is the original
+ * premium at the loan amount less the original premium at the owner's amount.
+ * Confirmed by the agency as the practice on 22 September 2026. What the
+ * policy itself is issued for is the agency's charge, not the rule's (see
+ * lib/agency-charges.ts); this is only the part above the owner's amount.
  */
-export function excessLoanPremium(excessCoverage: number): number {
-  if (excessCoverage <= 0) return 0;
-  return premium(excessCoverage, ORIGINAL, 0);
+export function excessLoanPremium(loanAmount: number, ownerCoverage: number): number {
+  if (loanAmount <= ownerCoverage) return 0;
+  return toCents(originalPremium(loanAmount) - originalPremium(ownerCoverage));
 }

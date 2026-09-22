@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getAllDocs } from '@/lib/content';
-import { metaDescription } from '@/lib/seo';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
@@ -16,11 +16,12 @@ import { Rail } from '@/components/Rail';
 
 export const metadata: Metadata = {
   title: 'Services',
-  description:
+  description: metaDescription(
     'Title search and examination, title insurance, settlement and escrow, commercial title, and ' +
-    '1031 exchanges facilitated through Bayit Exchange Company — with closings held in our ' +
-    'office, wherever the signer is, or online, throughout Florida.',
+      'the closing side of a 1031 exchange, with the intermediary you choose.',
+  ),
   alternates: { canonical: '/services' },
+  openGraph: { ...baseOpenGraph, url: '/services' },
 };
 
 /** The RON card links here when the page exists, and says nothing when it does not. */
@@ -85,7 +86,7 @@ const COST_ROUTES = [
   {
     eyebrow: 'From an address',
     title: 'Estimate from a property address',
-    body: 'Prices the policy off the county and the assessed value on the appraiser’s record.',
+    body: 'Prices the policy off the county and the value on the appraiser’s record.',
     href: '/estimate',
   },
   {
@@ -96,7 +97,7 @@ const COST_ROUTES = [
   },
   {
     eyebrow: 'Everything else',
-    title: 'Ask for an itemised quote',
+    title: 'Ask for an itemized quote',
     body: 'Our fee, the search, endorsements — everything that is not promulgated, line by line.',
     href: '/quote',
   },
@@ -207,7 +208,7 @@ export default async function ServicesIndex() {
           </section>
 
           <section id="exchange">
-            <h2>1031 exchanges, through {site.exchangeCompany.name}</h2>
+            <h2>1031 exchanges</h2>
             <div className="prose prose--detail">
               <p>
                 A like-kind exchange under section 1031 lets an investor defer gain on the sale of
@@ -217,22 +218,20 @@ export default async function ServicesIndex() {
                 proceeds, there is no exchange left to structure.
               </p>
               <p>
-                We can facilitate that exchange through {site.exchangeCompany.name}. It is{' '}
-                {site.exchangeCompany.relationship} — the name is shared, the ownership is not, and
-                that is worth stating rather than leaving the name to imply otherwise.
+                We coordinate the closing with whichever qualified intermediary you choose: the
+                exchange documents are ready before the settlement statement is cut, the proceeds
+                go where they are supposed to go, and the 45-day identification and 180-day
+                acquisition clocks are watched by the people holding the closing file.
               </p>
               <p>
-                What the arrangement gets you is coordination rather than two offices working the
-                same deadline separately: the exchange documents are ready before the settlement
-                statement is cut, the proceeds go where they are supposed to go, and the 45-day
-                identification and 180-day acquisition clocks are watched by people who are also
-                holding the closing file.
+                {site.exchangeCompany.name} is {site.exchangeCompany.relationship}, with no
+                connection to us. The name is shared and nothing else is, which is worth stating
+                rather than leaving the name to imply otherwise.
               </p>
               <p>
-                You are free to use any qualified intermediary you choose, and nothing about closing
-                here requires that one. What we ask is only that you tell us early. We are not tax
-                advisers — the decision to exchange, and whether the property qualifies, belongs
-                with your CPA or tax counsel.
+                Nothing about closing here depends on which intermediary you use. What we ask is
+                only that you tell us early. We are not tax advisers — the decision to exchange,
+                and whether the property qualifies, belongs with your CPA or tax counsel.
               </p>
             </div>
           </section>
@@ -273,7 +272,7 @@ export default async function ServicesIndex() {
               <li className="flat-card">
                 <p className="flat-card__title">Mobile signing</p>
                 <p className="flat-card__body">
-                  A closer comes to the signer. Arranged file by file, including outside office
+                  We send a notary to the signer. Arranged file by file, including outside office
                   hours.
                 </p>
               </li>
@@ -291,8 +290,8 @@ export default async function ServicesIndex() {
             <h2>Working out the cost</h2>
             <div className="prose prose--detail">
               <p>
-                Three ways, none of which asks you for anything. The premium is promulgated — set by
-                the Florida Office of Insurance Regulation — so there is nothing to trade for it.
+                Three ways. The premium is promulgated — set by the Florida Office of Insurance
+                Regulation — so there is nothing to trade for it.
               </p>
             </div>
             <ul className="card-grid card-grid--narrow">

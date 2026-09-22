@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
 import { site } from './site';
+import type { TeamMember } from './team';
+import type { Review } from './review-order';
 
 /**
  * The absolute base for canonical URLs, JSON-LD and the sitemap.
@@ -114,6 +116,65 @@ export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${pathname.startsWith('/') ? pathname : `/${pathname}`}`;
 }
 
+/** The root layout's title template, which every page title below the home page runs through. */
+export const TITLE_TEMPLATE = `%s | ${site.name}`;
+
+/**
+ * About what a results page shows before it cuts a title off. Past it, the end
+ * of the title is replaced with an ellipsis, and the end is where the site name
+ * and the reader's own place name sit.
+ */
+export const TITLE_LIMIT = 60;
+
+/**
+ * A page title that fits, from candidates in order of preference. When the
+ * template's " | Bayit Title" would push one past the limit, the name comes off
+ * before the words the reader searched for do; the name is still on the card,
+ * in the byline and in the URL. Only when a candidate is too long even without
+ * it does the next, shorter one get its turn. The visible headline is not
+ * affected: this is the `<title>` alone.
+ */
+export function fittedTitle(...candidates: [string, ...string[]]): string | { absolute: string } {
+  for (const title of candidates) {
+    if (TITLE_TEMPLATE.replace('%s', title).length <= TITLE_LIMIT) return title;
+    if (title.length <= TITLE_LIMIT) return { absolute: title };
+  }
+  return { absolute: candidates[candidates.length - 1] };
+}
+
+/**
+ * The Open Graph fields every page shares. Next merges metadata shallowly, so a
+ * page that sets `openGraph` at all replaces the layout's whole object — which
+ * is how the pages with their own card lost `site_name` and `locale`. Each page
+ * spreads this and adds its own `url`. The layout carries no url: one set there
+ * is the homepage's, and it became every page's `og:url`.
+ */
+export const baseOpenGraph = {
+  siteName: site.name,
+  locale: 'en_US',
+  type: 'website',
+} satisfies NonNullable<Metadata['openGraph']>;
+
+/**
+ * Whether a team page has anything on it beyond the name and role the team page
+ * already lists: a bio the person wrote, a license or commission on the public
+ * record, or a review that names them. Without any of them the page is thin,
+ * and a thin page is kept out of the index and the sitemap rather than padded
+ * with copy nobody wrote.
+ */
+export function teamPageHasContent(
+  member: Pick<TeamMember, 'slug' | 'bio' | 'publicRecord'>,
+  reviews: Pick<Review, 'teamMemberSlug'>[],
+): boolean {
+  return (
+    (member.bio?.length ?? 0) > 0 ||
+    // A license or a commission on the public record is what the page is for:
+    // the byline on every article links to the agent's page to show it.
+    member.publicRecord.length > 0 ||
+    reviews.some((review) => review.teamMemberSlug === member.slug)
+  );
+}
+
 /**
  * Meta descriptions come from the direct answer, trimmed at a sentence boundary.
  * The direct answer is already written to stand alone, so nothing new is invented.
@@ -128,7 +189,9 @@ export function metaDescription(text: string, max = 155): string {
 
 export function formatReviewDate(iso: string | null): string | null {
   if (!iso) return null;
-  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  // UTC for the same reason as formatLongDate: a bare YYYY-MM-DD read in a
+  // US time zone is the evening before, which near the 1st is last month.
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
 export function formatLongDate(iso: string): string {

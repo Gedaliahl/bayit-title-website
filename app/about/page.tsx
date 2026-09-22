@@ -6,20 +6,24 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { officeHoursLine, site } from '@/lib/site';
+import { team } from '@/lib/team';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
 import { Verdict } from '@/components/Verdict';
 import { StepBand } from '@/components/StepBand';
 import { Rail } from '@/components/Rail';
 import { initials } from '@/components/Prose';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'About',
-  description:
+  description: metaDescription(
     `${site.legalName} is a Florida title insurance agency in ${site.address.city}, closing ` +
-    `residential and commercial transactions throughout Florida. What we are, exactly, what we ` +
-    `are not, and the specific things that make the work excellent.`,
+      `residential and commercial transactions throughout Florida. What we are, exactly, what we ` +
+      `are not, and how the work is done.`,
+  ),
   alternates: { canonical: '/about' },
+  openGraph: { ...baseOpenGraph, url: '/about' },
 };
 
 const WHAT_AN_AGENCY_DOES = [
@@ -67,8 +71,7 @@ const WHAT_WE_HANDLE = [
   {
     title: '1031 exchanges',
     body:
-      `Through ${site.exchangeCompany.name} — ${site.exchangeCompany.relationship}, despite the ` +
-      'shared name. We are not tax advisers.',
+      'The closing side, with whichever qualified intermediary you choose. We are not tax advisers.',
   },
 ];
 
@@ -138,7 +141,7 @@ export default function AboutPage() {
         <Rail
           label="The detail"
           items={[
-            { id: 'excellent', label: 'What “excellent” means here' },
+            { id: 'work', label: 'How the work is done' },
             { id: 'not', label: 'What we are not' },
             { id: 'handle', label: 'What we handle' },
             { id: 'licensing', label: 'Licensing' },
@@ -149,13 +152,12 @@ export default function AboutPage() {
         />
 
         <div className="detail">
-          <section id="excellent">
-            <h2>What “excellent” means here</h2>
+          <section id="work">
+            <h2>How the work is done</h2>
             <div className="prose prose--detail">
               <p>
-                That word is doing specific work, so here is what it means in practice: the search
-                is read rather than skimmed, by a person who will tell you what each exception
-                actually does to your file. A problem is raised in week one, in writing, with what
+                The search is read rather than skimmed, by a person who will tell you what each
+                exception actually does to your file. A problem is raised in week one, in writing, with what
                 clearing it takes — not in week six. The same processor and the same closer hold the
                 file from opening through recording. The phone is answered by someone who knows
                 which file you mean. Read our{' '}
@@ -232,13 +234,15 @@ export default function AboutPage() {
               </Link>
             </div>
             <ul className="team-grid">
-              {site.team.map((member) => (
+              {team.map((member) => (
                 <li key={member.slug} className="team-card">
                   <span className="avatar avatar--large" aria-hidden="true">
                     {initials(member.name)}
                   </span>
                   <div>
-                    <p className="team-card__name">{member.name}</p>
+                    <p className="team-card__name">
+                      <Link href={`/team/${member.slug}`}>{member.name}</Link>
+                    </p>
                     <p className="team-card__role">{member.role}</p>
                     {/* No credential line is invented for somebody who does not
                         hold one: the page's whole claim is that every line on it

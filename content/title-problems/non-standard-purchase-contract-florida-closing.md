@@ -1,11 +1,12 @@
 ---
 status: reviewed
 title: "The contract isn't the standard form. What does that change at closing?"
+seo_title: "A non-standard contract: what it changes at closing"
 slug: "non-standard-purchase-contract-florida-closing"
 cluster: "process"
 direct_answer: "A non-standard contract changes the closing because the closing follows the contract. Deadlines, who pays which cost, what happens on default, and which conditions must be met before funds move are all read from the document in front of us — so a bespoke contract has to be read line by line rather than assumed."
 counties: []
-review_tags: ["contract", "closing-process", "deadlines"]
+review_tags: []
 author: "shevy"
 reviewed_on: "2026-09-20"
 next_review: "2027-09-20"

@@ -1,11 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { track } from '@vercel/analytics';
 
 import { useErrorFocus } from './useErrorFocus';
-import { TextField, TextArea, SelectField, Honeypot } from './Field';
+import {
+  BOT_CHECK_BLOCKED,
+  BotCheck,
+  Honeypot,
+  outcomeUnknown,
+  postJson,
+  SelectField,
+  TextArea,
+  TextField,
+  useBotCheck,
+  useFieldErrors,
+  useSubmissionId,
+  withoutBlanks,
+} from './Field';
+import { fieldErrors, leadSchema } from '@/lib/schemas';
 import { site } from '@/lib/site';
 
 type Status =
@@ -29,58 +44,89 @@ export function LeadForm({
 }) {
   const pathname = usePathname();
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { errors, setErrors, clearOnInput } = useFieldErrors();
   const { formRef, reportFailure } = useErrorFocus();
+  const submission = useSubmissionId();
+  const botCheck = useBotCheck();
+  const successRef = useRef<HTMLParagraphElement>(null);
+
+  // The form is gone once it is sent, and focus with it. Put it on the
+  // confirmation, which also has it read out.
+  useEffect(() => {
+    if (status.kind === 'sent') successRef.current?.focus();
+  }, [status.kind]);
+
+  function fail(message: string, outcome: string) {
+    setStatus({ kind: 'failed', message });
+    reportFailure();
+    track('form_submit', { form: source, outcome });
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus({ kind: 'sending' });
     setErrors({});
 
-    const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+    const payload = {
+      ...Object.fromEntries(new FormData(event.currentTarget).entries()),
+      source,
+      page_path: pathname,
+    };
 
-    try {
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, source, page_path: pathname }),
-      });
-
-      const body = await response.json();
-
-      if (response.status === 422 && body.errors) {
-        setErrors(body.errors);
-        setStatus({ kind: 'failed', message: 'Some details need another look.' });
-        reportFailure();
-        return;
-      }
-
-      if (!response.ok) {
-        setStatus({ kind: 'failed', message: body.error ?? 'Something went wrong.' });
-        reportFailure();
-        return;
-      }
-
-      setStatus({ kind: 'sent' });
-    } catch {
-      setStatus({
-        kind: 'failed',
-        message: `We could not reach the server. Email ${site.email} or call ${site.phoneDisplay}.`,
-      });
-      reportFailure();
+    // The same schema the server runs, so a mistake is named without a round trip.
+    const checked = leadSchema.safeParse(payload);
+    if (!checked.success) {
+      setErrors(fieldErrors(checked.error));
+      return fail('Some details need another look.', 'invalid');
     }
+    if (botCheck.enabled && !botCheck.token) {
+      return fail(
+        botCheck.unavailable
+          ? BOT_CHECK_BLOCKED
+          : 'Wait a moment for the check above the button to finish, then send again.',
+        'bot_check',
+      );
+    }
+
+    setStatus({ kind: 'sending' });
+    const reply = await postJson<{ error?: string; errors?: Record<string, string> }>('/api/leads', {
+      ...withoutBlanks(payload),
+      submission_id: submission.current(),
+      turnstile_token: botCheck.token || undefined,
+    });
+    botCheck.reset();
+
+    if (outcomeUnknown(reply)) {
+      return fail(
+        `We did not hear back, so we cannot tell whether this reached us. Call ${site.phoneDisplay} ` +
+          `or email ${site.email} before sending it again.`,
+        'no_answer',
+      );
+    }
+    if (reply.status === 422 && reply.body?.errors) {
+      setErrors(reply.body.errors);
+      return fail('Some details need another look.', 'invalid');
+    }
+    if (reply.status >= 400) {
+      return fail(reply.body?.error ?? 'Something went wrong.', 'refused');
+    }
+
+    submission.settle();
+    setStatus({ kind: 'sent' });
+    track('form_submit', { form: source, outcome: 'sent' });
   }
 
   if (status.kind === 'sent') {
     return (
       <div className="form-status form-status--ok" role="status">
-        <p style={{ margin: 0 }}>{successMessage}</p>
+        <p ref={successRef} tabIndex={-1}>
+          {successMessage}
+        </p>
       </div>
     );
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} onSubmit={handleSubmit} onInput={clearOnInput} noValidate>
       {status.kind === 'failed' ? (
         // tabIndex so focus can land here when no single field is at fault.
         <p className="form-status form-status--error" role="alert" tabIndex={-1}>
@@ -175,11 +221,13 @@ export function LeadForm({
 
       <Honeypot />
 
+      <BotCheck enabled={botCheck.enabled} attach={botCheck.attach} />
+
       <button type="submit" className="btn btn--primary" disabled={status.kind === 'sending'}>
         {status.kind === 'sending' ? 'Sending…' : submitLabel}
       </button>
 
-      <p className="form-note" style={{ marginTop: '1rem' }}>
+      <p className="form-note form-note--after">
         Please do not send bank account or wire details through this form. We will never email you
         wire instructions, and we will never change instructions once given. Call{' '}
         {site.phoneDisplay} to verify anything that claims to come from us. What we do with what

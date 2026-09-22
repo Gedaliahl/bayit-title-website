@@ -84,12 +84,32 @@ describe('claims about the website that the code has to keep true', () => {
     expect(page).toContain('sets no cookies');
   });
 
-  it('claims the IP address is not stored, which lib/submissions.ts must honour', () => {
-    expect(page).toMatch(/do not store your IP address/i);
+  it('says only a fingerprint of the IP is kept, which lib/submissions.ts must honour', () => {
+    // The old line, "we do not store your IP address", was untrue as written:
+    // the host's request logs hold it. What this site stores is the hash.
+    expect(page).not.toMatch(/do not store your IP address/i);
+    expect(page).toMatch(/fingerprint of your IP address, not the address itself/i);
+    expect(page).toMatch(/hosting provider receives the address/i);
 
     const submissions = readFileSync(join(process.cwd(), 'lib/submissions.ts'), 'utf8');
     expect(submissions).toContain('createHash');
     expect(submissions).not.toMatch(/ip:\s*ip\b/);
+  });
+
+  it('promises no deletion schedule, which the firm has decided not to make', () => {
+    // The purge can be switched on or off without the policy becoming untrue.
+    expect(page).not.toMatch(/RETENTION_DAYS/);
+    expect(page).not.toMatch(/no longer than|are deleted|is not stored/i);
+  });
+
+  it('scopes the three required fields to the order form', () => {
+    expect(page).toMatch(/On the order form, only your name, your email address and the property/);
+  });
+
+  it('keeps the no-third-party-scripts claim true when the bot check is on', () => {
+    expect(page).toMatch(/botCheck \?/);
+    expect(page).toContain('This site loads no');
+    expect(page).toMatch(/one outside\s+script this site loads is Cloudflare/);
   });
 });
 

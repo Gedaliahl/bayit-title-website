@@ -1,11 +1,12 @@
 ---
 status: reviewed
 title: "There's a judgment against the seller. What happens to the closing?"
+seo_title: "A judgment against the seller: what happens to the closing"
 slug: "judgment-against-seller-before-closing-florida"
 cluster: "liens"
 direct_answer: "A recorded judgment against a seller can attach to real property they own in that county and has to be dealt with before clear title passes. The question is never whether someone is worried about it, but whether the judgment attaches to this property, for how much, and what it takes to release or satisfy it at closing."
 counties: ["broward-county", "palm-beach-county", "miami-dade-county"]
-review_tags: ["judgments", "liens", "clearing-title", "payoff"]
+review_tags: ["judgments", "liens", "title-clearing"]
 author: "shevy"
 reviewed_on: "2026-09-22"
 next_review: "2027-09-22"

@@ -1,14 +1,29 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+
 import { RESULT } from '@/content/estimate';
 import type { EstimateGroup } from '@/lib/closing-estimate';
-import { formatMoney } from '@/lib/statutory-rates';
+import { formatCents } from '@/lib/statutory-rates';
+
+/** Long enough for a reader to finish typing a figure, short enough to still feel like an answer. */
+const ANNOUNCE_AFTER_MS = 500;
+
+/** How long after the card appears a change is still the page arriving rather than the reader. */
+const SETTLE_MS = 1000;
+
+/** Where the phone's total bar sends the reader. */
+export const FIGURES_ID = 'estimate-figures';
 
 /**
  * The figures, beside the form. Same shell as the verdict card: the total in
  * the dark cap, the lines under it, each cited, and what is not in it at the
- * foot. Announced politely, so a screen reader hears the total change without
- * being interrupted mid-field.
+ * foot. Every amount is to the cent, since most of them are and a column that
+ * mixes "$2,575" with "$5.50" reads as two kinds of number.
+ *
+ * The card itself is not a live region: it is dozens of nodes, and every
+ * keystroke would read all of them out. One hidden line says the total
+ * instead, once the figures have stopped moving.
  */
 export function FigureCard({
   eyebrow,
@@ -20,6 +35,7 @@ export function FigureCard({
   otherPartyText,
   unknownsText,
   emptyText,
+  actions,
 }: {
   eyebrow: string;
   total: string;
@@ -31,11 +47,34 @@ export function FigureCard({
   otherPartyText: string | null;
   unknownsText: string;
   emptyText: string;
+  /** Copy, print and reset, under the foot. */
+  actions?: React.ReactNode;
 }) {
   const hasResult = groups.length > 0;
+  const message = hasResult ? RESULT.announce(totalLabel, total) : RESULT.nothingYet;
+
+  // Nothing is said on arrival: the reader has not changed anything yet, and
+  // the figures are on the page for anyone who goes to read them. Arrival
+  // lasts until the page has settled, because figures carried in the address
+  // bar are applied just after the first render. After that every change is
+  // said, including a change back to where the page started.
+  const [spoken, setSpoken] = useState('');
+  const mountedAt = useRef<number | null>(null);
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
+  useEffect(() => {
+    if (mountedAt.current === null || Date.now() - mountedAt.current < SETTLE_MS) return;
+    const timer = setTimeout(() => setSpoken(message), ANNOUNCE_AFTER_MS);
+    return () => clearTimeout(timer);
+  }, [message]);
 
   return (
-    <div className="verdict figure-card" aria-live="polite">
+    <div className="verdict figure-card" id={FIGURES_ID}>
+      <p className="visually-hidden" aria-live="polite">
+        {spoken}
+      </p>
+
       <div className="verdict__cap">
         <p className="verdict__eyebrow figure-card__eyebrow">{eyebrow}</p>
         <p className="figure-card__total">{total}</p>
@@ -65,13 +104,13 @@ export function FigureCard({
                         </span>
                       )}
                     </div>
-                    <div className="figure-line__amount">{formatMoney(line.value)}</div>
+                    <div className="figure-line__amount">{formatCents(line.value)}</div>
                   </div>
                 ))}
                 {group.lines.length > 1 ? (
                   <div className="figure-subtotal">
                     <span>{RESULT.subtotal}</span>
-                    <span className="figure-line__amount">{formatMoney(group.subtotal)}</span>
+                    <span className="figure-line__amount">{formatCents(group.subtotal)}</span>
                   </div>
                 ) : null}
               </section>
@@ -97,6 +136,8 @@ export function FigureCard({
       ) : (
         <p className="figure-card__empty">{emptyText}</p>
       )}
+
+      {actions}
     </div>
   );
 }

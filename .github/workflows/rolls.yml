@@ -1,0 +1,41 @@
+# The live check on the county roll services, once a week.
+#
+# tests/rolls.live.test.ts asks every service in lib/county-rolls.ts whether
+# it still answers and still carries the columns the site reads. It fails when
+# a county moves or renames a service, which nothing in this repo changes and
+# no pull request would catch, so it runs on a schedule rather than on a push.
+# A red run here is a county to go and look at, not a broken build.
+name: County rolls
+
+on:
+  schedule:
+    # Mondays at 11:00 UTC.
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rolls:
+    name: Check the county roll services
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # No NODE_USE_ENV_PROXY: a GitHub runner reaches the services directly.
+      - name: Check
+        run: npm run check:rolls
+        env:
+          # tests/geocoder.live.test.ts skips itself when this is not set.
+          ARCGIS_API_KEY: ${{ secrets.ARCGIS_API_KEY }}

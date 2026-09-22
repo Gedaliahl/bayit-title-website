@@ -1,16 +1,27 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 
-import { leadSchema, fieldErrors } from '@/lib/schemas';
-import { requireServiceClient } from '@/lib/supabase';
-import { hashIp, isRateLimited, notify, describeSubmission } from '@/lib/submissions';
+import { HONEYPOT_FIELD, leadSchema, fieldErrors } from '@/lib/schemas';
+import {
+  BOT_CHECK_FAILED,
+  fileAsSpam,
+  hashIp,
+  isRateLimited,
+  notify,
+  officeEmail,
+  passesBotCheck,
+  recordOnce,
+  refuseForeignRequest,
+} from '@/lib/submissions';
 import { site } from '@/lib/site';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 
 const HOURLY_LIMIT = 5;
 
 export async function POST(request: Request) {
+  const refused = refuseForeignRequest(request);
+  if (refused) return refused;
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -23,40 +34,57 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: fieldErrors(parsed.error) }, { status: 422 });
   }
 
-  const { company, ...lead } = parsed.data;
+  const {
+    [HONEYPOT_FIELD]: trap,
+    turnstile_token: botToken,
+    submission_id: submissionId,
+    ...lead
+  } = parsed.data;
 
-  // Honeypot tripped. Answer as though it succeeded so the bot stops retrying,
-  // but write nothing.
-  if (company) return NextResponse.json({ ok: true });
+  if (!(await passesBotCheck(botToken))) {
+    return NextResponse.json({ error: BOT_CHECK_FAILED }, { status: 403 });
+  }
 
   const ipHash = hashIp(request);
 
+  // Honeypot tripped. Kept as spam, answered as though it succeeded so the bot
+  // stops retrying, and the office is not emailed.
+  if (trap) {
+    await fileAsSpam(lead, ipHash);
+    return NextResponse.json({ ok: true });
+  }
+
   try {
-    if (await isRateLimited('leads', ipHash, HOURLY_LIMIT)) {
+    const recorded = await recordOnce<{ id: string }, 'leads'>(
+      'leads',
+      'id',
+      submissionId,
+      () => ({ ...lead, ip_hash: ipHash }),
+      async () => !(await isRateLimited('leads', ipHash, HOURLY_LIMIT)),
+    );
+    if (!recorded) {
       return NextResponse.json(
         { error: `That is more requests than we can take in an hour. Call ${site.phoneDisplay}.` },
         { status: 429 },
       );
     }
+    const { row, duplicate } = recorded;
 
-    const supabase = requireServiceClient();
-    const { data, error } = await supabase
-      .from('leads')
-      .insert({ ...lead, ip_hash: ipHash })
-      .select('id')
-      .single();
+    // Persisted first, then notified after the response: a mail failure must
+    // not lose the lead, and a slow one must not make the sender send it twice.
+    if (!duplicate) {
+      after(() =>
+        notify(
+          `Website ${lead.source}: ${lead.full_name}`,
+          officeEmail([`Lead id: ${row.id}`], lead),
+          { replyTo: lead.email },
+        ),
+      );
+    }
 
-    if (error) throw new Error(error.message);
-
-    // Persisted first, then notified: a mail failure must not lose the lead.
-    await notify(
-      `Website ${lead.source}: ${lead.full_name}`,
-      [...describeSubmission(lead), '', `Lead id: ${data.id}`],
-    );
-
-    return NextResponse.json({ ok: true, id: data.id }, { status: 201 });
+    return NextResponse.json({ ok: true, id: row.id }, { status: duplicate ? 200 : 201 });
   } catch (error) {
-    console.error('[api/leads] failed:', error);
+    console.error('[api/leads] failed:', (error as Error).message);
     return NextResponse.json(
       {
         error: `We could not record that. Please email ${site.email} or call ${site.phoneDisplay}.`,

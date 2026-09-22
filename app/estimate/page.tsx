@@ -6,9 +6,11 @@
 //
 // The arithmetic is lib/'s: the promulgated schedule, the statutory rates and
 // the two estimators built on them. Nothing on this page prices anything on
-// its own, and every figure is cited to the rule or the section it comes from.
+// its own, and every figure is cited to whoever sets it: the rule, the section,
+// or this office for the two charges that are ours.
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { DETAIL, HERO, META, RAIL } from '@/content/estimate';
 import { getCounties } from '@/lib/locations';
@@ -22,7 +24,7 @@ import {
 import { REISSUE_CONDITIONS } from '@/lib/closing-estimate';
 import { CHECKED_ON as STATUTE_CHECKED_ON } from '@/lib/statutory-rates';
 import type { CitedFigure } from '@/lib/cited-figures';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Rail } from '@/components/Rail';
 import { EstimateModeProvider } from '@/components/estimate/EstimateMode';
@@ -32,8 +34,9 @@ import { EstimateCta } from '@/components/estimate/EstimateCta';
 
 export const metadata: Metadata = {
   title: META.title,
-  description: META.description,
+  description: metaDescription(META.description),
   alternates: { canonical: '/estimate' },
+  openGraph: { ...baseOpenGraph, url: '/estimate' },
 };
 
 /** "Broward, Palm Beach, Miami-Dade and Hillsborough". */
@@ -165,6 +168,13 @@ export default async function EstimatePage() {
                 {DETAIL.sides.p2b}
               </p>
               <p>{DETAIL.sides.p3}</p>
+              <p>
+                {DETAIL.sides.p4a}
+                <Link href="/closing-costs/buyer">{DETAIL.sides.p4Buyer}</Link>
+                {DETAIL.sides.p4b}
+                <Link href="/closing-costs/seller">{DETAIL.sides.p4Seller}</Link>
+                {DETAIL.sides.p4c}
+              </p>
             </div>
           </section>
 

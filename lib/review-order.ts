@@ -20,6 +20,24 @@ export interface Review {
 
 export type ReviewOrder = 'relevance' | 'recent' | 'detailed';
 
+/**
+ * Why the list is shorter than the count beside it.
+ *
+ * The summary line counts every Google review; the list shows only the ones
+ * with written text to reproduce in full. Left unexplained, "92 reviews" over a
+ * list of 85 reads as seven filtered out, on the page that promises nothing is.
+ * Null when the two agree, or when there is no count to compare against.
+ */
+export function unlistedReviewsNote(total: number | null, listed: number): string | null {
+  if (total === null || total <= listed) return null;
+  const unlisted = total - listed;
+  return (
+    `${listed} of the ${total} include written text and are listed below. The other ` +
+    `${unlisted} ${unlisted === 1 ? 'is a star rating' : 'are star ratings'} with no text we can ` +
+    'reproduce in full.'
+  );
+}
+
 export const REVIEW_ORDERS: { value: ReviewOrder; label: string; hint: string }[] = [
   {
     value: 'relevance',
@@ -29,7 +47,7 @@ export const REVIEW_ORDERS: { value: ReviewOrder; label: string; hint: string }[
   {
     value: 'recent',
     label: 'Most recent first',
-    hint: 'Newest first. Reviews Google dates only as “a year ago” have no date to sort on and come last.',
+    hint: 'Newest first. Reviews dated only by a label like “12 weeks ago” have no date to sort on and come last.',
   },
   {
     value: 'detailed',

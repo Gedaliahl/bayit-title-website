@@ -1,7 +1,15 @@
 /* Design tokens. White ground, black text, one antique gold carrying every
-   action — the same gold as the masthead mark. See HANDOFF.md. */
+   action — the same gold as the masthead mark. See HANDOFF.md.
+
+   Breakpoints, which custom properties cannot carry into a media query, so
+   they are listed here instead: 22rem (the smallest phones), 40rem (one
+   column), 58rem (the nav collapses), 62rem (the rail and hero stack) and
+   120rem (large monitors). A new layout step should use one of these. */
 
 :root {
+  /* Light only; see the viewport export in app/layout.tsx. */
+  color-scheme: light;
+
   --ink: #111;             /* body text */
   --paper: #fff;
   --band: #faf7f0;         /* alternating section grounds */
@@ -16,10 +24,10 @@
 
   --ink-body: #333;        /* lede and disclosure answers, one step off the body ink */
   --ink-muted: #555;
-  --ink-faint: #8a8070;
+  --ink-faint: #756b5c;    /* counts and quiet numerals; 4.5:1 on white, band and wash */
   --rule: #e8e4db;         /* chrome and section rules */
   --rule-card: #e3ded2;    /* card, pill and panel edges */
-  --rule-strong: #bdb3a0;  /* form controls, which need a visible edge */
+  --rule-strong: #8a7f6a;  /* form controls: over 3:1 on white, band and wash, so the box is seen */
   --rule-dashed: #cfc7b4;  /* the drop zone's dashed edge, between the two above */
 
   --font-display: var(--font-libre-caslon), Georgia, 'Times New Roman', serif;
@@ -42,7 +50,6 @@
   --step-1: 1.25rem;
   --step-2: 1.5rem;
   --step-3: 1.9375rem;
-  --step-4: 2.5rem;
   /* Caslon sets wider than the face this replaced, and library titles are
      whole questions inside a 34rem column, so the top step comes down. */
   --step-5: clamp(2.125rem, 1.35rem + 3.2vw, 3.25rem);
@@ -76,6 +83,9 @@ body {
   line-height: 1.65;
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
+  /* A statute URL, an email address or a license string is one unbroken word,
+     and at 280px it is wider than the column. Break it rather than the page. */
+  overflow-wrap: break-word;
 }
 
 h1,
@@ -106,8 +116,12 @@ a {
   text-underline-offset: 0.18em;
 }
 
-a:hover {
-  color: var(--accent);
+/* Darker on hover, not lighter: the action gold is under 4.5:1 on the band and
+   the wash, and a link is small text wherever it sits. */
+@media (hover: hover) {
+  a:hover {
+    color: var(--accent-dark);
+  }
 }
 
 strong { font-weight: 600; }
@@ -134,6 +148,12 @@ blockquote footer {
   margin-top: 0.5rem;
   font-size: 0.85em;
   font-style: normal;
+}
+
+/* A detail is often a single long value — a commission number, an address, a
+   URL — in a narrow column. */
+dd {
+  overflow-wrap: anywhere;
 }
 
 code {
@@ -172,12 +192,24 @@ th {
   padding-inline: var(--gutter);
 }
 
-.measure {
-  max-width: var(--measure);
+/* 27 to 32 inch monitors. At 1240px the frame left about 60% of a 2560px
+   screen empty, so above 1920px the type grows with the window, to at most
+   18px at 2240px and beyond, and the frame opens to 82rem: about 1300px at
+   1920, 1480px at 2560. The grids — counties, reviews, the estimate — take the
+   width. Reading columns are set in rem, so they grow with the type and keep
+   the same measure in characters rather than getting wider. */
+@media (min-width: 120rem) {
+  :root {
+    --wide: 82rem;
+  }
+
+  html {
+    font-size: clamp(100%, 0.4rem + 0.5vw, 112.5%);
+  }
 }
 
-.stack > * + * {
-  margin-top: var(--stack-gap, 1.1rem);
+.measure {
+  max-width: var(--measure);
 }
 
 .eyebrow {
@@ -245,6 +277,49 @@ th {
   border-radius: 2px;
 }
 
+/* A text field matches :focus-visible however it was focused, so this is the
+   ring on every input, click or Tab. Set close in, so it reads as the box's own
+   edge rather than a second box around it. */
+:where(input, textarea, select):focus-visible {
+  outline-offset: 1px;
+}
+
+/* <main> takes focus from the skip link and from the mobile menu. It is the
+   destination, not a control, so it is not ringed like one. */
+main:focus {
+  outline: none;
+}
+
+/* Spacing that pages used to set inline. The heading after a breadcrumb trail
+   sits closer to it than a heading after body copy, and a role line under a
+   name is tucked up to the name it belongs to. */
+.after-crumbs {
+  margin-top: 1.5rem;
+}
+
+.eyebrow--after-title {
+  margin-top: -0.5rem;
+}
+
+.flush-top {
+  margin-top: 0;
+}
+
+/* A list of cards under the paragraph that introduces it. */
+.after-intro {
+  margin-top: 1.5rem;
+}
+
+.text-small {
+  font-size: 0.875rem;
+}
+
+.link-quiet,
+.link-quiet:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* ---------- buttons ---------- */
 
 .btn {
@@ -266,9 +341,11 @@ th {
   color: var(--paper);
 }
 
-.btn--primary:hover {
-  background: var(--accent-deep);
-  color: var(--paper);
+@media (hover: hover) {
+  .btn--primary:hover {
+    background: var(--accent-deep);
+    color: var(--paper);
+  }
 }
 
 /* The masthead's single dark button. Near-black bronze rather than the action
@@ -280,9 +357,11 @@ th {
   padding: 0.75rem 1.375rem;
 }
 
-.btn--dark:hover {
-  background: var(--accent-dark-hover);
-  color: var(--paper);
+@media (hover: hover) {
+  .btn--dark:hover {
+    background: var(--accent-dark-hover);
+    color: var(--paper);
+  }
 }
 
 .btn--quiet {
@@ -291,9 +370,11 @@ th {
   border-color: var(--ink);
 }
 
-.btn--quiet:hover {
-  background: var(--accent-wash);
-  color: var(--ink);
+@media (hover: hover) {
+  .btn--quiet:hover {
+    background: var(--accent-wash);
+    color: var(--ink);
+  }
 }
 
 /* A button that carries icons alongside its label. `.btn` is inline-block so
@@ -391,8 +472,13 @@ th {
 }
 
 .nav__toggle-glyph {
-  font-size: 1.125rem;
-  line-height: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
 }
 
 /* `:not(.btn)` is load-bearing, not tidiness. `.nav a` outranks `.btn--primary`
@@ -409,9 +495,11 @@ th {
   border-bottom: 1px solid transparent;
 }
 
-.nav a:not(.btn):hover {
-  border-bottom-color: var(--accent);
-  color: var(--ink);
+@media (hover: hover) {
+  .nav a:not(.btn):hover {
+    border-bottom-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 /* Below this width the list collapses behind the Menu button above.
@@ -460,6 +548,45 @@ th {
   }
 }
 
+/* The smallest phones, 280px to 350px: the wordmark and the Menu button stop
+   fitting on one row at the usual gutter, and the button dropped under the
+   wordmark, taking the header from 81px to 111px. Narrower gutters and gap, a
+   slightly smaller wordmark, and the button down to its glyph put the row back.
+   The word stays in the markup, visually hidden, so the button is still
+   announced as "Menu". The gutter change is page-wide on purpose: at this
+   width every column wants the 16px back. */
+@media (max-width: 22rem) {
+  :root {
+    --gutter: 1rem;
+  }
+
+  .masthead__inner {
+    gap: 0.75rem;
+  }
+
+  .wordmark {
+    gap: 0.5rem;
+  }
+
+  .wordmark__mark {
+    width: 32px;
+    height: auto;
+  }
+
+  .wordmark__name {
+    font-size: 1.25rem;
+  }
+
+  .nav__toggle-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 /* No scripting, no button worth showing: the panel could never be opened, so
    the nav stays as it was — wrapped and long, but every link reachable. */
 @media (max-width: 58rem) and (scripting: none) {
@@ -488,12 +615,38 @@ th {
   border-bottom-color: var(--accent);
 }
 
+/* Windows High Contrast repaints every border in the one text color, the
+   transparent ones included, so each desktop nav link grew an underline and
+   the current page's stopped meaning anything. The row's resting borders take
+   the page color instead, and the current link is marked with a system color
+   the theme keeps distinct. On a phone the rules between rows are separators
+   and stay as the theme draws them; the current row is underlined instead. */
+@media (forced-colors: active) {
+  .nav a[aria-current] {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+}
+
+@media (forced-colors: active) and (width > 58rem) {
+  .nav a:not(.btn) {
+    border-bottom-color: Canvas;
+  }
+
+  .nav a[aria-current] {
+    border-bottom-color: Highlight;
+    text-decoration: none;
+  }
+}
+
 .sitefoot {
   border-top: 1px solid var(--rule);
   background: var(--paper);
   padding-block: 3rem 2.5rem;
   font-family: var(--font-body);
   font-size: 0.9375rem;
+  /* The email address is one word, and the footer columns are 13rem. */
+  overflow-wrap: anywhere;
 }
 
 .sitefoot__cols {
@@ -525,11 +678,19 @@ th {
 .sitefoot a:not(.btn) {
   color: var(--ink);
   text-decoration: none;
+  /* The text alone is a 20px target. The padding makes it 31px, and the
+     matching negative margin keeps the lines where they were, so the list
+     looks the same and the targets meet without overlapping. */
+  display: inline-block;
+  padding-block: 0.2rem;
+  margin-block: -0.2rem;
 }
 
-.sitefoot a:not(.btn):hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .sitefoot a:not(.btn):hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 /* The credential line. Required disclosure, and the specificity that
@@ -541,6 +702,29 @@ th {
   font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--ink-muted);
+}
+
+/* On paper the chrome is only a letterhead. The nav, its button and the skip
+   link cannot be used there, and the footer's link columns are the site's
+   navigation again; the address, the hours and the credential line are what a
+   printed page needs to say whose it is. */
+@media print {
+  .skip-link,
+  .nav__toggle,
+  .nav,
+  .sitefoot nav {
+    display: none;
+  }
+
+  .masthead__inner {
+    min-height: 0;
+    padding-block: 0.5rem;
+  }
+
+  .sitefoot {
+    padding-block: 1.5rem 0;
+    break-inside: avoid;
+  }
 }
 
 /* ---------- the answer panel ---------- */
@@ -601,7 +785,7 @@ th {
   margin: 0;
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 40rem) {
   .quick-facts dl {
     grid-template-columns: 1fr;
     gap: 0.15rem;
@@ -641,7 +825,7 @@ th {
   font-size: 0.8125rem;
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 40rem) {
   .quick-facts--rail dl {
     gap: 0.75rem;
   }
@@ -665,6 +849,11 @@ th {
   line-height: 1.6;
 }
 
+/* The whole-page draft notice, heavier than a banner about one section. */
+.verify-banner--draft {
+  border-width: 2px;
+}
+
 .verify-banner strong {
   display: block;
   color: var(--flag);
@@ -680,6 +869,9 @@ th {
 
 .prose {
   max-width: var(--measure);
+  /* Markdown carries statute URLs and citations with no spaces in them; in a
+     34rem column at 280px they are the one thing that can push the page wide. */
+  overflow-wrap: anywhere;
 }
 
 .prose h2 {
@@ -696,10 +888,41 @@ th {
   margin-top: 0.35rem;
 }
 
-.prose table {
-  display: block;
-  overflow-x: auto;
+/* The table keeps display: table, which is what tells a screen reader it is a
+   table: set to block, Safari and VoiceOver read it as a run of cells. The
+   scrolling is done by the wrapper the Markdown renderer puts around it. */
+.prose .table-scroll {
   max-width: 100%;
+  overflow-x: auto;
+  margin: 1.6em 0;
+}
+
+.prose .table-scroll > table {
+  margin: 0;
+  /* Back to whole words: breaking anywhere would let the table crush its
+     columns to a letter wide rather than scroll. */
+  overflow-wrap: normal;
+}
+
+@media print {
+  /* Where a link goes is the part of it paper can keep. In-page anchors are
+     left alone: they point at something already on the sheet. */
+  .prose a[href^='http']::after,
+  .prose a[href^='/']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: var(--ink-muted);
+  }
+
+  /* A path on its own leads nowhere on paper, so the site's own links carry
+     the domain in front. */
+  .prose a[href^='/']::after {
+    content: ' (www.bayittitle.com' attr(href) ')';
+  }
+
+  .prose .table-scroll {
+    overflow: visible;
+  }
 }
 
 /* An inline [VERIFY: ...] flag inside body copy, marked up by the renderer. */
@@ -768,8 +991,10 @@ th {
   white-space: nowrap;
 }
 
-.section__head-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .section__head-link:hover {
+    text-decoration: underline;
+  }
 }
 
 .card {
@@ -796,9 +1021,11 @@ th {
   text-decoration: none;
 }
 
-.card h3 a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .card h3 a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 .card p {
@@ -806,16 +1033,6 @@ th {
   font-size: 0.9375rem;
   color: var(--ink-muted);
   line-height: 1.55;
-}
-
-.card__meta {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-top: auto;
-  padding-top: 0.5rem;
 }
 
 .linklist {
@@ -835,16 +1052,10 @@ th {
   text-decoration: none;
 }
 
-.linklist a:not(.btn):hover {
-  color: var(--accent);
-}
-
-.linklist__sub {
-  display: block;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  color: var(--ink-muted);
-  margin-top: 0.15rem;
+@media (hover: hover) {
+  .linklist a:not(.btn):hover {
+    color: var(--accent-deep);
+  }
 }
 
 /* ---------- reviews ---------- */
@@ -934,6 +1145,13 @@ th {
   border-radius: 0 var(--radius-card) var(--radius-card) 0;
   padding: 1.1rem 1.35rem;
   margin: 2rem 0;
+}
+
+.review--pull blockquote {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
 }
 
 /* ---------- byline ---------- */
@@ -1061,9 +1279,9 @@ th {
 
 .file-list li {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
-  padding: 0.45rem 0;
+  padding: 0.1rem 0;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -1081,13 +1299,17 @@ th {
   font-variant-numeric: tabular-nums;
 }
 
+/* 44px square at the least: it sits beside a filename, and a near miss on a
+   phone removes the wrong document. */
 .file-list__remove {
   font-family: var(--font-body);
   font-size: 0.8125rem;
   color: var(--flag);
   background: none;
   border: 0;
-  padding: 0;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -1096,6 +1318,71 @@ th {
 .file-list__remove[disabled] {
   color: var(--ink-muted);
   cursor: default;
+}
+
+/* Files picked but not attached, each with its reason. */
+.file-rejects {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--flag);
+}
+
+.file-rejects__title {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 600;
+}
+
+.file-rejects__list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.file-rejects__name {
+  overflow-wrap: anywhere;
+}
+
+/* One upload in flight, with its bytes and a way to stop it. */
+.upload-meter {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+}
+
+.upload-meter__file {
+  margin: 0 0 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.upload-meter__bar {
+  display: block;
+  width: 100%;
+  height: 0.5rem;
+  accent-color: var(--accent);
+}
+
+.upload-meter__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.upload-meter__bytes {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.upload-meter__cancel {
+  font: inherit;
+  color: var(--flag);
+  background: none;
+  border: 0;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .field-row {
@@ -1109,6 +1396,11 @@ th {
   font-size: 0.8125rem;
   color: var(--ink-muted);
   line-height: 1.6;
+}
+
+/* Under a form's button, set apart from it. */
+.form-note--after {
+  margin-top: 1rem;
 }
 
 .form-status {
@@ -1129,6 +1421,41 @@ th {
   border-color: var(--accent);
 }
 
+/* A confirmation can run to several lines: what arrived, what did not, what next. */
+.form-status--ok p {
+  margin: 0 0 0.5rem;
+}
+
+.form-status--ok p:last-child {
+  margin-bottom: 0;
+}
+
+/* The line that introduces a list sits close to it. */
+.form-status--ok .form-status__lead {
+  margin-bottom: 0.25rem;
+}
+
+.form-status__list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+/* The long order form's list of what to fix, each item a link to its field. */
+.error-summary__title {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.error-summary a {
+  color: inherit;
+}
+
 /* Honeypot. Off-screen rather than display:none so bots that check
    computed style still fill it in. */
 .hp {
@@ -1137,6 +1464,11 @@ th {
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* Cloudflare's check, when it is switched on. It draws its own box. */
+.bot-check {
+  margin-bottom: 1rem;
 }
 
 fieldset {
@@ -1230,6 +1562,10 @@ legend {
   align-items: baseline;
   gap: 1rem;
   margin-bottom: 1.375rem;
+}
+
+.filecard__head .chip {
+  white-space: nowrap;
 }
 
 .filecard__head h2 {
@@ -1591,9 +1927,12 @@ legend {
 }
 
 /* The step itself, held back until the file has reached it. */
+/* A step not yet reached is dimmed, but no further than its lighter line of
+   text can go and still read at 4.5:1 on the card: 0.82 of --ink-muted. The
+   dot and the rail carry most of the sense of which steps are done. */
 @keyframes filestep-body-1 {
   0% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   3%,
   100% {
@@ -1604,7 +1943,7 @@ legend {
 @keyframes filestep-body-2 {
   0%,
   25% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   28%,
   100% {
@@ -1615,7 +1954,7 @@ legend {
 @keyframes filestep-body-3 {
   0%,
   50% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   53%,
   100% {
@@ -1626,7 +1965,7 @@ legend {
 @keyframes filestep-body-4 {
   0%,
   75% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   78%,
   100% {
@@ -1646,6 +1985,73 @@ legend {
   }
 }
 
+/* Paused where it stands, by the switch under the steps. */
+.filecard:has(.motion-toggle input:checked) .filestep__dot,
+.filecard:has(.motion-toggle input:checked) .filestep__line::after,
+.filecard:has(.motion-toggle input:checked) .filestep__body,
+.filecard:has(.motion-toggle input:checked) .filestep__disc {
+  animation-play-state: paused;
+}
+
+.filecard .filecard__toggle {
+  display: flex;
+  width: fit-content;
+  margin-top: 1rem;
+}
+
+/* ---------- pause switch ---------- */
+/* See components/MotionToggle.tsx. A checkbox laid over a small pill, so the
+   whole pill is the target and the box itself is never seen. */
+
+.motion-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.motion-toggle input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.motion-toggle:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.motion-toggle__play,
+.motion-toggle:has(input:checked) .motion-toggle__pause {
+  display: none;
+}
+
+.motion-toggle:has(input:checked) .motion-toggle__play {
+  display: inline;
+}
+
+/* Nothing moves for these readers, so there is nothing to pause. The second
+   selector matches the file card's placement rule, which would otherwise win. */
+@media (prefers-reduced-motion: reduce) {
+  .motion-toggle,
+  .filecard .filecard__toggle {
+    display: none;
+  }
+}
+
 /* ---------- services ticker ---------- */
 /* What the office closes, as a band rather than a list, because a band reads
    in passing and a list asks to be read. */
@@ -1655,7 +2061,7 @@ legend {
   overflow: hidden;
   border-block: 1px solid var(--rule);
   background: var(--paper);
-  padding-block: 1.375rem;
+  padding-block: 1.375rem 0.875rem;
 }
 
 .ticker::before,
@@ -1664,7 +2070,9 @@ legend {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 7.5rem;
+  /* At most a sixth of the screen each, or on a folded phone the two fades
+     cover the band they are fading. */
+  width: min(7.5rem, 15vw);
   z-index: 1;
   pointer-events: none;
 }
@@ -1684,6 +2092,35 @@ legend {
   align-items: center;
   white-space: nowrap;
   animation: ticker 46s linear infinite;
+}
+
+.ticker__run {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Held still by the switch, and while a pointer rests on the band, so a pill
+   can be read. Not on focus: the switch is the only thing in the band that
+   takes it, and pausing on it would leave "Play" pressed and nothing moving. */
+.ticker:has(.motion-toggle input:checked) .ticker__track {
+  animation-play-state: paused;
+}
+
+@media (hover: hover) {
+  .ticker:hover .ticker__track {
+    animation-play-state: paused;
+  }
+}
+
+/* Under the band at the frame's right edge, clear of the pills: laid over
+   them, it read as one more pill being cut off. */
+.ticker__controls {
+  position: relative;
+  /* Above the edge fades, which run the band's full height. */
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
 }
 
 /* The track holds the same run of pills twice, so -50% lands back on an
@@ -1727,6 +2164,11 @@ legend {
 @media print {
   .ticker__track {
     animation: none;
+  }
+
+  .motion-toggle,
+  .filecard .filecard__toggle {
+    display: none;
   }
 }
 
@@ -1856,8 +2298,10 @@ legend {
   white-space: nowrap;
 }
 
-.quote-rotator__all:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .quote-rotator__all:hover {
+    text-decoration: underline;
+  }
 }
 
 .quote-rotator__dot {
@@ -1882,13 +2326,28 @@ legend {
   inset: -0.5rem;
 }
 
-.quote-rotator__dot:hover {
-  background: var(--ink-faint);
+@media (hover: hover) {
+  .quote-rotator__dot:hover {
+    background: var(--ink-faint);
+  }
 }
 
 .quote-rotator__dot--current {
   background: var(--accent);
   transform: scale(1.25);
+}
+
+/* A dot is drawn by its fill alone, and Windows High Contrast repaints fills,
+   so without these the dots and the current one vanish. */
+@media (forced-colors: active) {
+  .quote-rotator__dot {
+    border: 1px solid ButtonText;
+  }
+
+  .quote-rotator__dot--current {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
 }
 
 /* The component does not rotate at all under this, so this only catches a
@@ -1942,20 +2401,20 @@ legend {
   border-left: 1px solid var(--rule);
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 40rem) {
   .underwriter__line {
     padding-left: 0;
     border-left: 0;
   }
 }
 
-@media (max-width: 60rem) {
+@media (max-width: 62rem) {
   .figures__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 40rem) {
   .figures__grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2025,16 +2484,28 @@ legend {
   transition: outline-color 120ms ease, border-color 120ms ease;
 }
 
-.mode-tab:hover {
-  border-color: var(--accent);
+/* Hover only where there is a pointer to hover with: on a phone the tap
+   leaves the hover state behind, and a card that stays lit after the reader
+   has moved on reads as selected. The same goes for the other hovers below. */
+@media (hover: hover) {
+  .mode-tab:hover {
+    border-color: var(--accent);
+  }
 }
 
-.mode-tab[aria-selected='true'] {
+.mode-tab[aria-pressed='true'] {
   outline-color: var(--accent);
 }
 
+/* Focus is a second ring outside the card, so a focused card that is not the
+   chosen one never looks chosen, and the chosen one shows focus as well. */
 .mode-tab:focus-visible {
-  outline-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent-dark);
+}
+
+/* The one-word name a phone shows in place of the card. */
+.mode-tab__short {
+  display: none;
 }
 
 .mode-tab__head {
@@ -2096,6 +2567,13 @@ legend {
   padding: 1.5rem;
 }
 
+/* A grid item will not shrink below its content by default, and a select's
+   content is its longest option: at 280px that pushed the county box out
+   past the card's edge. */
+.form-card > * {
+  min-width: 0;
+}
+
 /* The site's form fields, at the estimator's own measure: a larger label,
    a cream box, and the gold edge on focus. */
 .form-card .field {
@@ -2124,7 +2602,9 @@ legend {
 .form-card .field textarea,
 .form-card .money {
   padding: 0.75rem 0.875rem;
-  border: 1px solid var(--rule-card);
+  /* The box's only edge, so it carries the 3:1 a control's boundary needs;
+     the band fill alone is barely distinguishable from the white card. */
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
   background: var(--band);
   transition: border-color 120ms ease, background-color 120ms ease;
@@ -2139,9 +2619,19 @@ legend {
 .form-card .field select:focus,
 .form-card .field textarea:focus,
 .form-card .money:focus-within {
-  outline: none;
   border-color: var(--accent);
   background: var(--paper);
+}
+
+/* The money box clips its contents, so the ring goes on the box and not on
+   the input inside it, where it would be cut off. */
+.form-card .money:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.form-card .money input:focus-visible {
+  outline: none;
 }
 
 .form-card .field input[disabled],
@@ -2179,35 +2669,87 @@ legend {
   background: transparent;
 }
 
-/* Purchase or refinance, as one control with two halves. */
+/* Purchase or refinance, as one control with two halves. Native radios under
+   the halves, so the browser supplies the arrow keys and the checked state;
+   the input covers its half, invisible, and the span beside it is what shows. */
 .seg {
   display: inline-flex;
   width: fit-content;
   max-width: 100%;
-  border: 1px solid var(--rule-card);
+  /* The group's only outline, so it takes the control border, as the
+     boxes beside it do. */
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
   overflow: hidden;
 }
 
-.seg button {
+.seg__option {
+  position: relative;
+  display: flex;
+}
+
+.seg__option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.seg__option span {
   padding: 0.625rem 1.125rem;
-  border: 0;
-  font: inherit;
   font-size: 0.9375rem;
   font-weight: 600;
   background: var(--paper);
   color: var(--ink);
-  cursor: pointer;
   transition: background-color 120ms ease, color 120ms ease;
 }
 
-.seg button + button {
-  border-left: 1px solid var(--rule-card);
+.seg__option + .seg__option span {
+  border-left: 1px solid var(--rule-strong);
 }
 
-.seg button[aria-checked='true'] {
+/* On the narrowest phones the two halves share the width evenly rather than
+   each wrapping its label onto two lines. */
+@media (max-width: 22rem) {
+  .seg {
+    display: flex;
+    width: 100%;
+  }
+
+  .seg__option {
+    flex: 1;
+  }
+
+  .seg__option span {
+    flex: 1;
+    padding-inline: 0.5rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.seg__option input:checked + span {
   background: var(--accent-dark);
   color: var(--paper);
+}
+
+/* The chosen half is marked by its fill alone, and Windows High Contrast
+   repaints every fill the same. */
+@media (forced-colors: active) {
+  .seg__option input:checked + span {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* Inside the half rather than around it, since the group clips its corners: a
+   gold ring and a white one, which read on the dark half and the light one. */
+.seg__option input:focus-visible + span {
+  box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 4px var(--paper);
 }
 
 .check {
@@ -2285,6 +2827,11 @@ legend {
   margin-top: 0.75rem;
 }
 
+/* The grid above would otherwise win over the hidden attribute. */
+.disclosure__body[hidden] {
+  display: none;
+}
+
 .disclosure__body .field label {
   font-size: 0.875rem;
 }
@@ -2294,7 +2841,15 @@ legend {
    fields below it must not jump every time another keystroke changes how many
    properties match. */
 
+/* Where a phone scrolls the field to when the box takes focus: the top of
+   the screen, with the label still in sight. */
 .combo {
+  scroll-margin-top: 0.75rem;
+}
+
+/* The input and the list, and nothing else, so the list hangs from the
+   bottom of the input however many lines the label and hint wrap to. */
+.combo__anchor {
   position: relative;
 }
 
@@ -2303,12 +2858,12 @@ legend {
   z-index: 20;
   left: 0;
   right: 0;
-  /* Under the input, which is the third thing in the field. */
-  top: calc(100% - 1.6em);
+  top: 100%;
   margin: 0.375rem 0 0;
   padding: 0.375rem;
   list-style: none;
-  max-height: 22rem;
+  /* Short enough on a phone to leave the box and the keyboard both in view. */
+  max-height: min(22rem, 45dvh);
   overflow-y: auto;
   background: var(--paper);
   border: 1px solid var(--rule-card);
@@ -2350,6 +2905,18 @@ legend {
   color: var(--ink-muted);
 }
 
+/* On a phone the figure goes under the address rather than beside it, which
+   otherwise squeezed the street to one word a line. */
+@media (max-width: 40rem) {
+  .combo__option {
+    grid-template-columns: 1fr;
+  }
+
+  .combo__value {
+    text-align: left;
+  }
+}
+
 /* Holds its line so the fields below do not shift when "Looking…" appears. */
 .combo__status {
   min-height: 1.2em;
@@ -2369,16 +2936,24 @@ legend {
   cursor: pointer;
 }
 
-.linkish:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .linkish:hover {
+    color: var(--accent);
+  }
 }
 
 /* --- the figures card --- */
-/* The verdict shell, pinned beside the form as the reader scrolls it. */
+/* The verdict shell, pinned beside the form as the reader scrolls it. Never
+   taller than the screen it is pinned to: on a short laptop the foot of a
+   long estimate would otherwise sit below the fold for good, so the card
+   scrolls inside itself instead. */
 
 .figure-card {
   position: sticky;
   top: 1.5rem;
+  max-height: calc(100vh - 3rem);
+  max-height: calc(100dvh - 3rem);
+  overflow: auto;
   background: var(--paper);
 }
 
@@ -2442,6 +3017,9 @@ legend {
 
 .figure-line__label {
   min-width: 0;
+  /* A county or an address in a label has no break point of its own, and the
+     column beside it is fixed; at 280px it would otherwise push the figure out. */
+  overflow-wrap: anywhere;
 }
 
 .figure-line__note {
@@ -2524,6 +3102,101 @@ legend {
   color: var(--ink-muted);
 }
 
+/* Copy, print, start again: small, plain and last, under everything they act on. */
+.figure-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem 1.125rem;
+  border-top: 1px solid var(--rule);
+}
+
+.figure-card__actions:not(:has(button)) {
+  display: none;
+}
+
+.figure-card__actions button {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .figure-card__actions button:hover {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+  }
+}
+
+.figure-card__status {
+  flex-basis: 100%;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+
+.figure-card__status:empty {
+  display: none;
+}
+
+/* The running total on a phone, pinned to the foot of the screen while the
+   form is. Only below 40rem; above it the card is beside or near the form. */
+.total-bar {
+  display: none;
+}
+
+@media (max-width: 40rem) {
+  .total-bar:not([hidden]) {
+    position: fixed;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* One row at every phone width: two rows took a sixth of a small screen.
+       The label gives way first, the figure and the link never. */
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.75rem var(--gutter) calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    background: var(--accent-dark);
+    color: var(--accent-wash);
+    font-size: 0.875rem;
+    box-shadow: 0 -8px 24px rgba(47, 36, 8, 0.12);
+  }
+}
+
+.total-bar__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.total-bar__total {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.total-bar__link {
+  flex: none;
+  margin-left: auto;
+  padding-block: 0.5rem;
+  color: var(--accent-light);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* --- the contract --- */
 
 .drop {
@@ -2539,9 +3212,14 @@ legend {
   transition: border-color 120ms ease, background-color 120ms ease;
 }
 
-.drop:hover,
 .drop--active {
   border-color: var(--accent);
+}
+
+@media (hover: hover) {
+  .drop:hover {
+    border-color: var(--accent);
+  }
 }
 
 .drop--active {
@@ -2577,7 +3255,7 @@ legend {
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.75rem;
   align-items: center;
-  padding: 0.5rem 0.75rem;
+  padding: 0 0 0 0.75rem;
   border: 1px solid var(--rule-card);
   border-radius: var(--radius);
   font-size: 0.875rem;
@@ -2595,10 +3273,13 @@ legend {
   font-variant-numeric: tabular-nums;
 }
 
+/* 44px square, as on the order form's file list. */
 .contract-files__remove {
   border: 0;
   background: none;
-  padding: 0 0.25rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
   font: inherit;
   font-size: 1.125rem;
   line-height: 1;
@@ -2606,8 +3287,10 @@ legend {
   cursor: pointer;
 }
 
-.contract-files__remove:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .contract-files__remove:hover {
+    color: var(--accent);
+  }
 }
 
 .form-card__foot {
@@ -2668,6 +3351,13 @@ legend {
   line-height: 1.55;
 }
 
+.received__list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--ink-body);
+  overflow-wrap: anywhere;
+}
+
 .received__again {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;
@@ -2722,6 +3412,10 @@ legend {
   margin: 0;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  /* A rate is one figure. The global dd rule lets a long value break
+     anywhere, which here split "$5.00" into "$5.0" and "0" at 280px. */
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .schedule__note {
@@ -2772,9 +3466,12 @@ legend {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* Under the form rather than beside it, so it no longer follows the reader. */
+  /* Under the form rather than beside it, so it no longer follows the reader
+     and has no screen height to fit inside. */
   .figure-card {
     position: static;
+    max-height: none;
+    overflow: hidden;
   }
 }
 
@@ -2782,6 +3479,85 @@ legend {
   .two-up,
   .schedule-cards {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Three cards stacked would push the form a screen down, so on a phone the
+     three ways in are one segmented row, each named in a word. */
+  .mode-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid var(--rule-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .mode-tab {
+    align-items: center;
+    padding: 0.75rem 0.25rem;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .mode-tab + .mode-tab {
+    border-left: 1px solid var(--rule-card);
+  }
+
+  .mode-tab[aria-pressed='true'] {
+    background: var(--accent-dark);
+    color: var(--paper);
+  }
+
+  .mode-tab:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent), inset 0 0 0 4px var(--paper);
+  }
+
+  .mode-tab__short {
+    display: block;
+  }
+
+  .mode-tab__head,
+  .mode-tab__title,
+  .mode-tab__body {
+    display: none;
+  }
+}
+
+/* On paper the figures are the point: the card prints in full, flat, with its
+   dark cap kept dark, and the controls that only work on a screen are left off. */
+@media print {
+  .router-card,
+  .mode-tabs,
+  .figure-card__actions,
+  .total-bar,
+  .estimate-cta {
+    display: none !important;
+  }
+
+  .calc-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .figure-card {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+  }
+
+  .figure-card .verdict__cap {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .figure-group,
+  .figure-line,
+  .figure-total,
+  .figure-card__foot {
+    break-inside: avoid;
   }
 }
 
@@ -2813,11 +3589,19 @@ legend {
 .crumbs a {
   color: inherit;
   text-decoration: none;
+  /* A 21px target on its own. Padded to 29px and pulled back by the same
+     amount, so the trail looks as it did and a wrapped second row's targets
+     meet the first's without overlapping. */
+  display: inline-block;
+  padding-block: 0.25rem;
+  margin-block: -0.25rem;
 }
 
-.crumbs a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .crumbs a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 /* ---------- the interior page system ---------- */
@@ -2971,8 +3755,10 @@ legend {
   border-bottom: 0;
 }
 
-.verdict__link:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .verdict__link:hover {
+    color: var(--accent-deep);
+  }
 }
 
 .verdict__link strong {
@@ -3019,9 +3805,11 @@ legend {
   transition: background-color 120ms ease;
 }
 
-.verdict__action:hover {
-  background: var(--accent-deep);
-  color: var(--paper);
+@media (hover: hover) {
+  .verdict__action:hover {
+    background: var(--accent-deep);
+    color: var(--paper);
+  }
 }
 
 /* ---------- step band ---------- */
@@ -3127,9 +3915,11 @@ legend {
   transition: border-color 120ms ease;
 }
 
-.step-card--link:hover {
-  border-color: var(--accent);
-  color: var(--ink);
+@media (hover: hover) {
+  .step-card--link:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 .step-card__more {
@@ -3194,10 +3984,16 @@ legend {
   transition: border-left-color 120ms ease, color 120ms ease;
 }
 
-.rail__link:hover,
 .rail__link.is-active {
   border-left-color: var(--accent);
   color: var(--ink);
+}
+
+@media (hover: hover) {
+  .rail__link:hover {
+    border-left-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 .rail__count {
@@ -3439,8 +4235,10 @@ legend {
   display: none;
 }
 
-.faq summary:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .faq summary:hover {
+    color: var(--accent-deep);
+  }
 }
 
 .faq__plus {
@@ -3459,6 +4257,18 @@ legend {
 .faq p {
   margin: 0 0 1.25rem;
   color: var(--ink-body);
+}
+
+/* An answer rendered from Markdown: paragraphs, and the lists some answers are. */
+.faq__answer ul,
+.faq__answer ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.2rem;
+  color: var(--ink-body);
+}
+
+.faq__answer li + li {
+  margin-top: 0.35rem;
 }
 
 /* ---------- link cards ---------- */
@@ -3485,9 +4295,11 @@ legend {
   transition: border-color 120ms ease;
 }
 
-.card-link:hover {
-  border-color: var(--accent);
-  color: var(--ink);
+@media (hover: hover) {
+  .card-link:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 .card-link--tight {
@@ -3501,12 +4313,13 @@ legend {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  /* A card link has no ground of its own, so on a banded section this 12px
+     label sits on the band, where only the deep gold reaches 4.5:1. */
+  color: var(--accent-deep);
 }
 
 .card-link__eyebrow--deep {
   letter-spacing: 0.08em;
-  color: var(--accent-deep);
 }
 
 .card-link__title {
@@ -3616,6 +4429,11 @@ legend {
   margin: 0;
 }
 
+/* One person's entry on /team, spaced as its own section. */
+.team-entry {
+  margin-top: 2.5rem;
+}
+
 .team-grid {
   list-style: none;
   padding: 0;
@@ -3637,6 +4455,18 @@ legend {
 .team-card__name {
   font-weight: 600;
   margin: 0;
+}
+
+.team-card__name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .team-card__name a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 .team-card__role {
@@ -3674,9 +4504,11 @@ legend {
   text-decoration: none;
 }
 
-.county-list a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .county-list a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 .county-list__priority {
@@ -3714,8 +4546,57 @@ legend {
 
 /* The band's ground is the wash, so the ghost button's hover has to leave it
    rather than land on it. */
-.cta--band .btn--quiet:hover {
-  background: var(--paper);
+@media (hover: hover) {
+  .cta--band .btn--quiet:hover {
+    background: var(--paper);
+  }
+}
+
+/* ---------- interior system, print ---------- */
+/* One card should not be split across two sheets. The verdict's dark cap is
+   printed as it is, since without it the cream headline is white on white. The
+   rail's contents list is links into the page it sits beside, and the closing
+   CTA asks for a click; neither means anything on paper. The rail's quick-facts
+   box does, and stays, above the detail. */
+@media print {
+  .card,
+  .card-link,
+  .step-card,
+  .flat-card,
+  .num-card,
+  .team-card,
+  .verdict,
+  .callout,
+  .quick-facts,
+  .review,
+  .faq details {
+    break-inside: avoid;
+  }
+
+  .verdict__cap {
+    print-color-adjust: exact;
+  }
+
+  .rail > nav,
+  .cta {
+    display: none;
+  }
+
+  .cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    position: static;
+  }
+}
+
+/* The current section in the rail is marked by its edge alone, and in Windows
+   High Contrast every edge is the same color. */
+@media (forced-colors: active) {
+  .rail__link.is-active {
+    border-left-color: Highlight;
+  }
 }
 
 /* ---------- interior system, narrow ---------- */

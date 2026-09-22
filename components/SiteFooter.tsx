@@ -34,8 +34,14 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          <div>
-            <h2>Pages</h2>
+          {/* The two link columns are the footer's navigation, and each is its
+              own landmark named by its heading, so a screen reader's landmark
+              list offers "Pages" and "Get started" rather than two "Footer"s.
+              A single <nav> around both would have to sit in the grid as one
+              cell, or be taken out of it with display: contents, which some
+              browsers still answer by dropping the landmark. */}
+          <nav aria-labelledby="footer-pages">
+            <h2 id="footer-pages">Pages</h2>
             <ul>
               <li>
                 <Link href="/title-problems">Title problems</Link>
@@ -62,10 +68,10 @@ export function SiteFooter() {
                 <Link href="/reviews">Reviews</Link>
               </li>
             </ul>
-          </div>
+          </nav>
 
-          <div>
-            <h2>Get started</h2>
+          <nav aria-labelledby="footer-start">
+            <h2 id="footer-start">Get started</h2>
             <ul>
               <li>
                 <Link href="/order">Open a title order</Link>
@@ -97,7 +103,7 @@ export function SiteFooter() {
                 </li>
               ) : null}
             </ul>
-          </div>
+          </nav>
         </div>
 
         <p className="credential-line">

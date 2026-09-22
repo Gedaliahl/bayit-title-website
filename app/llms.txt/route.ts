@@ -6,6 +6,7 @@ import { getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { absoluteUrl } from '@/lib/seo';
 import { site, footerCredentialLine } from '@/lib/site';
+import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export const dynamic = 'force-static';
 
@@ -25,8 +26,8 @@ export async function GET() {
     '',
     `> ${site.legalName} is a Florida title insurance agency in ${site.address.city}, Florida. ` +
       `We search and examine title, issue policies as an agent for ${site.underwriter}, hold ` +
-      `escrow, and close residential and commercial transactions throughout Florida. We can also ` +
-      `facilitate 1031 like-kind exchanges through ${site.exchangeCompany.name}.`,
+      `escrow, and close residential and commercial transactions throughout Florida, including the ` +
+      `closing side of a 1031 like-kind exchange with whichever qualified intermediary the client chooses.`,
     '',
     '## Verifiable facts',
     '',
@@ -40,7 +41,7 @@ export async function GET() {
     `- Hours: ${site.hours.map((h) => `${h.days} ${h.open ? `${h.open}–${h.close}` : 'closed'}`).join('; ')}`,
     `- Service area: ${site.serviceArea}, all 67 counties. Most files in ${site.priorityCounties.join(', ')}.`,
     `- Closing methods: ${site.closingMethods.join('; ')}`,
-    `- Transaction types: residential and commercial title, escrow and settlement; 1031 like-kind exchanges facilitated through ${site.exchangeCompany.name}, which is ${site.exchangeCompany.relationship}. It is not an affiliated business of ${site.legalName}; a client may use any qualified intermediary they choose.`,
+    `- Transaction types: residential and commercial title, escrow and settlement; the closing side of 1031 like-kind exchanges, with whichever qualified intermediary the client chooses. ${site.exchangeCompany.name} is ${site.exchangeCompany.relationship} and has no connection to ${site.legalName}.`,
     '- Title insurance premiums in Florida are promulgated by the Office of Insurance Regulation under',
     '  Fla. Admin. Code R. 69O-186.003. The premium for a given coverage amount comes off that published',
     '  schedule; this site prints the schedule and cites the rule.',
@@ -92,11 +93,17 @@ export async function GET() {
     '',
     '## Cost tools',
     '',
-    `- [Estimate what a Florida closing costs](${absoluteUrl('/estimate')}): three ways in. From an address, it prices the promulgated premium off the county and the assessed value on the property appraiser's record — a tax figure that usually sits below the price a policy would be written at, so that result is a floor, not a quote. From the contract numbers, it works the premium, documentary stamp tax, intangible tax and recording charges out from a price and a loan amount, each cited to the rule or statute that sets it. Or the contract itself can be sent for an exact, itemised figure.`,
+    `- [Estimate what a Florida closing costs](${absoluteUrl('/estimate')}): three ways in. From an address, it prices the promulgated premium off the county and the value on the property appraiser's record — the just value where the roll has one, otherwise the assessed value, both tax figures that usually sit below the price a policy would be written at, so that result is a floor, not a quote. From the contract numbers, it works the premium, documentary stamp tax, intangible tax and recording charges out from a price and a loan amount, each cited to the rule or statute that sets it. Or the contract itself can be sent for an exact, itemized figure.`,
+    `- [Florida closing costs, buyer and seller](${absoluteUrl('/closing-costs')}): which side of a Florida closing statement each cost falls on, with a page for each side.`,
     `- [Buyer closing costs in Florida](${absoluteUrl('/closing-costs/buyer')}): the mortgage stamp tax, intangible tax and recording the statute sets, the promulgated premium, and the fees no rule sets, each cited.`,
     `- [Seller closing costs in Florida](${absoluteUrl('/closing-costs/seller')}): the deed stamp tax at the county's rate, the owner's policy where custom puts it on the seller, the reissue rate, payoffs and balances, each cited.`,
     `- [Request a quote](${absoluteUrl('/quote')}): for the lines that are not promulgated — settlement fee, search, endorsements.`,
+    `- [Open a title order](${absoluteUrl('/order')}): the property address and the contract terms, to open the file and order the search.`,
     '',
+    // Same gate as the footer link and the sitemap: not advertised until counsel has reviewed it.
+    ...(PRIVACY_PUBLISHED
+      ? ['## Policies', '', `- [Privacy](${absoluteUrl('/privacy')})`, '']
+      : []),
     '---',
     footerCredentialLine,
   ];

@@ -28,7 +28,7 @@ describe.skipIf(!geocoderConfigured())('with a key configured', () => {
     const suggestions = await suggestAddresses(ADDRESSES[0].typed);
     expect(suggestions.length, 'the geocoder suggested nothing').toBeGreaterThan(0);
 
-    const geocoded = await geocodeSuggestion(suggestions[0].magicKey);
+    const geocoded = await geocodeSuggestion(suggestions[0].magicKey, suggestions[0].text);
     expect(geocoded, 'the suggestion did not geocode').not.toBeNull();
     expect(geocoded!.rooftop, `Addr_type was ${geocoded!.addressType}`).toBe(true);
     expect(geocoded!.countyName).toBe(ADDRESSES[0].county);
@@ -42,7 +42,7 @@ describe.skipIf(!geocoderConfigured())('with a key configured', () => {
       if (suggestions.length === 0) continue;
 
       const result = await resolveParcelValue(
-        { kind: 'esri', magicKey: suggestions[0].magicKey },
+        { kind: 'esri', magicKey: suggestions[0].magicKey, text: suggestions[0].text },
         suggestions[0].text.split(',')[0],
         '',
         null,
@@ -65,11 +65,11 @@ describe.skipIf(!geocoderConfigured())('with a key configured', () => {
     const suggestions = await suggestAddresses('99999 Chancery Ln, Clearwater, FL');
     if (suggestions.length === 0) return;
 
-    const geocoded = await geocodeSuggestion(suggestions[0].magicKey);
+    const geocoded = await geocodeSuggestion(suggestions[0].magicKey, suggestions[0].text);
     if (!geocoded || geocoded.rooftop) return;
 
     const result = await resolveParcelValue(
-      { kind: 'esri', magicKey: suggestions[0].magicKey },
+      { kind: 'esri', magicKey: suggestions[0].magicKey, text: suggestions[0].text },
       suggestions[0].text.split(',')[0],
       '',
       null,

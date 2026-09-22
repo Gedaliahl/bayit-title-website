@@ -13,10 +13,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { FLORIDA_CITIES, cityBySlug, cityPageTitle, citiesInCounty } from '@/lib/florida-cities';
-import { getCounties, getLocation, recorderName } from '@/lib/locations';
+import { getCounties, getLocation, recorderName, turnaroundForQuote } from '@/lib/locations';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
 import {
@@ -65,17 +65,20 @@ export async function generateMetadata({
   const city = cityBySlug(slug);
   if (!city) return {};
   const county = await getLocation(city.countySlug);
-  const payer = county?.customaryOwnerPolicyPayer;
 
   return {
-    title: cityPageTitle(city),
-    description:
-      `${site.legalName} is a Florida title company closing in ${city.name}` +
-      (county ? `, ${county.name}` : '') +
-      `. Title insurance, escrow and closings for residential and commercial property, ` +
-      (payer ? `who customarily pays for the owner’s policy (the ${payer}), ` : '') +
-      'the deed stamp rate, where the deed is recorded, and what a policy costs at every price.',
+    title: fittedTitle(cityPageTitle(city), `Title company in ${city.name}, FL`),
+    // What the page answers, in the order it answers it; see the county page.
+    // The payer is left to the page: with the county's name as well, naming it
+    // here runs the longest cities past what a results page shows.
+    description: metaDescription(
+      `Closings in ${city.name}` +
+        (county ? `, ${county.name}` : '') +
+        ': who customarily pays for the owner’s policy, the deed stamp rate, recording, and what a ' +
+        'policy costs.',
+    ),
     alternates: { canonical: `/cities/${city.slug}` },
+    openGraph: { ...baseOpenGraph, url: `/cities/${city.slug}` },
   };
 }
 
@@ -118,7 +121,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             { name: city.name, path: `/cities/${city.slug}` },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Title insurance and closings in {city.name}</h1>
+        <h1 className="after-crumbs">Title insurance and closings in {city.name}</h1>
 
         <AnswerPanel
           text={
@@ -139,7 +142,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           }
         />
 
-        <VerifyBanner flags={openItems} variant="withheld" />
+        <VerifyBanner flags={openItems} variant="withheld" scope="city" />
 
         <h2>What title insurance costs on a {city.name} purchase</h2>
         <p>
@@ -150,9 +153,10 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           , so the premium on a {city.name} policy is the same figure it would be anywhere in the
           state. On a {formatMoney(EXAMPLE_PRICE)} purchase the owner&rsquo;s policy is{' '}
           <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong>; where the reissue
-          conditions in the rule are met it is {formatMoney(reissuePremium(EXAMPLE_PRICE))}; and a
-          lender&rsquo;s policy issued at the same time for the same or a lesser amount is{' '}
-          {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}. {LENDER_POLICY_BESIDE_RULE}
+          conditions in the rule are met it is {formatMoney(reissuePremium(EXAMPLE_PRICE))}; and the
+          rule sets {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} as the least a lender&rsquo;s policy
+          issued at the same time for the same or a lesser amount can be.{' '}
+          {LENDER_POLICY_BESIDE_RULE}
         </p>
         <p>
           <Link href={`/counties/${county.slug}`}>The {county.name} page</Link> prints the whole
@@ -240,13 +244,17 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           <>
             <p>On turnaround, the {recorder} publishes this:</p>
             <blockquote>
-              {county.recordingTurnaround}
+              {turnaroundForQuote(county.recordingTurnaround)}
               <footer>
-                <a href={county.recordingTurnaroundSourceUrl!} rel="nofollow">
-                  Read from the office&rsquo;s own page
-                </a>
+                {county.recordingTurnaroundSourceUrl ? (
+                  <a href={county.recordingTurnaroundSourceUrl} rel="nofollow">
+                    Read from the office&rsquo;s own page
+                  </a>
+                ) : (
+                  'Read from the office’s own page'
+                )}
                 {county.recordingTurnaroundCheckedOn
-                  ? ` on ${county.recordingTurnaroundCheckedOn}`
+                  ? ` on ${formatLongDate(county.recordingTurnaroundCheckedOn)}`
                   : ''}
               </footer>
             </blockquote>

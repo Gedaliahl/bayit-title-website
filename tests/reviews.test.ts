@@ -8,6 +8,10 @@
  * decisions about what the firm is willing to publish, so neither may drift
  * into being a template detail.
  */
+import fs from 'node:fs';
+import path from 'node:path';
+
+import matter from 'gray-matter';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 interface Call {
@@ -162,6 +166,28 @@ describe('pulling a relevant review onto a page', () => {
     const matched = await getReviewsByTags(['permits', 'hoa']);
 
     expect(matched.map((review) => review.id)).toEqual(['two-tags', 'one-tag']);
+  });
+
+  it('only ever asks for a tag the reviews actually carry', async () => {
+    const { REVIEW_TOPIC_TAGS } = await import('@/lib/reviews');
+    const known = new Set<string>(REVIEW_TOPIC_TAGS);
+
+    // Matching is by exact string. Four pages once asked for `clearing-title`
+    // and `ron` where the rows say `title-clearing` and `remote-closing`, and
+    // showed no review with nothing to say why.
+    const unknown = ['title-problems', 'services'].flatMap((collection) => {
+      const dir = path.join(process.cwd(), 'content', collection);
+      return fs
+        .readdirSync(dir)
+        .filter((file) => file.endsWith('.md'))
+        .flatMap((file) => {
+          const tags = (matter(fs.readFileSync(path.join(dir, file), 'utf8')).data.review_tags ??
+            []) as string[];
+          return tags.filter((tag) => !known.has(tag)).map((tag) => `${collection}/${file}: ${tag}`);
+        });
+    });
+
+    expect(unknown).toEqual([]);
   });
 
   it('returns nothing when the page declares no tags', async () => {

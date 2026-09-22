@@ -4,8 +4,9 @@ import { notFound } from 'next/navigation';
 import { getDoc, listRoutableSlugs, isPublishable } from '@/lib/content';
 import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
-import { absoluteUrl, metaDescription } from '@/lib/seo';
+import { absoluteUrl, baseOpenGraph, fittedTitle, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
+import { getTeamMember } from '@/lib/team';
 import { AnswerPanel, Byline, Prose, VerifyBanner } from '@/components/Prose';
 import { DraftBanner } from '@/components/DraftBanner';
 import { QuickFacts } from '@/components/QuickFacts';
@@ -33,12 +34,12 @@ export async function generateMetadata({
   const path = `/services/${doc.slug}`;
 
   return {
-    title: doc.title,
+    title: fittedTitle(doc.title),
     description,
     alternates: { canonical: path },
     // A draft is only ever reachable on a preview build, and must never be indexed.
     ...(doc.status === 'draft' ? { robots: { index: false, follow: false } } : {}),
-    openGraph: { type: 'article', title: doc.title, description, url: absoluteUrl(path) },
+    openGraph: { ...baseOpenGraph, type: 'article', title: doc.title, description, url: path },
   };
 }
 
@@ -48,7 +49,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   if (!doc || !isPublishable(doc)) notFound();
 
   const matchedReviews = await getReviewsByTags(doc.review_tags, 1);
-  const author = doc.author ? site.team.find((member) => member.slug === doc.author) : undefined;
+  const author = doc.author ? getTeamMember(doc.author) : undefined;
   const path = `/services/${doc.slug}`;
 
   return (
@@ -61,6 +62,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           authorName={author?.name ?? site.agentInCharge.displayName}
           authorSlug={doc.author!}
           reviewedOn={doc.reviewed_on!}
+          image={absoluteUrl(`${path}/opengraph-image`)}
         />
       ) : null}
       <FaqSchema items={extractFaq(doc.raw)} />
@@ -73,7 +75,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             { name: doc.title, path },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>{doc.title}</h1>
+        <h1 className="after-crumbs">{doc.title}</h1>
 
         <AnswerPanel text={doc.direct_answer} />
         {doc.status === 'draft' ? <DraftBanner /> : null}
@@ -86,7 +88,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         {doc.status === 'reviewed' ? (
           <Byline
             authorName={author?.name ?? site.agentInCharge.displayName}
-            authorRole={author?.role ?? 'Founder'}
+            authorRole={author?.role ?? 'Agent in Charge'}
             credential={author?.credential ?? null}
             reviewedOn={doc.reviewed_on!}
             nextReview={doc.next_review!}

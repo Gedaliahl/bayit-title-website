@@ -38,7 +38,8 @@ import {
   lenderPolicyCharge,
 } from './agency-charges';
 import {
-  DEFAULTS as CLOSING_DEFAULTS,
+  EXAMPLE_PAGE_COUNTS,
+  PREMIUM_GROUP_TITLE,
   type EstimateGroup,
   type EstimateLine,
 } from './closing-estimate';
@@ -66,6 +67,7 @@ import {
   deedStampTaxDue,
   discretionarySurtax,
   discretionarySurtaxDue,
+  RENEWAL_NOTES,
   intangibleTaxDue,
   mortgageStampTaxDue,
   recordingChargeDue,
@@ -85,6 +87,8 @@ export interface AssessedInput {
   ownerPolicyCustom: string | null;
   /** The county's assessed (or just value) figure for the parcel, in dollars. */
   assessedValue: number;
+  /** Which figure assessedValue is, so the premium line can say what it was priced on. */
+  valueBasis: ValueBasis;
   /** 0 for a cash purchase. On a refinance this is the whole of it. */
   loanAmount: number;
   /** The rule's reissue conditions are met — see REISSUE_CONDITIONS. */
@@ -102,9 +106,30 @@ export interface AssessedEstimate {
   total: number;
   /** What the same coverage would cost at the other rate, for comparison. */
   alternateRateTotal: number | null;
-  /** What the other side of the same closing carries, so neither reads alone. */
+  /** What the other side carries, leaving out a line shown to both — see Estimate. */
   otherPartyTotal: number;
+  /** An owner's policy is on both statements, so otherPartyTotal leaves it out and says so. */
+  ownerPolicyUnassigned: boolean;
 }
+
+/**
+ * The figure in the value box. The roll's two figures are floors for
+ * different reasons; a figure the reader typed may be the price itself, so
+ * it is not called one.
+ */
+export type ValueBasis = 'just' | 'assessed' | 'typed';
+
+const VALUE_NAMES: Record<ValueBasis, string> = {
+  just: 'the just value',
+  assessed: 'the assessed value',
+  typed: 'the value entered',
+};
+
+const FLOOR_NOTES: Record<ValueBasis, string> = {
+  just: ' The just value on the roll is a tax figure, not a sale price, so read this as a floor.',
+  assessed: ' Assessed value is usually lower, so read this as a floor.',
+  typed: '',
+};
 
 export const ASSESSED_DEFAULTS: AssessedInput = {
   purpose: 'purchase',
@@ -113,6 +138,7 @@ export const ASSESSED_DEFAULTS: AssessedInput = {
   party: 'buyer',
   ownerPolicyCustom: null,
   assessedValue: 0,
+  valueBasis: 'assessed',
   loanAmount: 0,
   reissue: false,
   priorPolicyAmount: 0,
@@ -126,8 +152,8 @@ export const ASSESSED_DEFAULTS: AssessedInput = {
  * page count yet, so these are the calculator's own defaults rather than a
  * second set to keep in step. A page either way is $8.50.
  */
-const DEED_PAGES = CLOSING_DEFAULTS.deedPages;
-const MORTGAGE_PAGES = CLOSING_DEFAULTS.mortgagePages;
+const DEED_PAGES = EXAMPLE_PAGE_COUNTS.deed;
+const MORTGAGE_PAGES = EXAMPLE_PAGE_COUNTS.mortgage;
 
 /** Printed on every line that is charged on consideration and computed on a value. */
 const STAND_IN_NOTE =
@@ -135,6 +161,9 @@ const STAND_IN_NOTE =
   'value standing in for the price. On a sale above it, the tax is higher.';
 
 const toCents = (value: number) => Math.round(value * 100) / 100;
+
+/** A negative, NaN or infinite figure is no figure, never a credit. */
+const dollars = (value: number) => (Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0);
 
 const sum = (lines: EstimateLine[]) =>
   toCents(lines.reduce((running, line) => running + line.value, 0));
@@ -160,9 +189,24 @@ function allocate(line: Omit<EstimateLine, 'payer'>, allocation: Allocation): Es
  * as otherPartyTotal so the page can say so rather than leave it unsaid.
  */
 export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimate {
-  const coverage = Math.max(0, Math.floor(input.assessedValue));
-  const loan = Math.max(0, Math.floor(input.loanAmount));
+  const coverage = dollars(input.assessedValue);
+  const loan = dollars(input.loanAmount);
+  const prior = dollars(input.priorPolicyAmount);
   const isPurchase = input.purpose === 'purchase';
+
+  // A purchase with no value to stand in for the price has nothing to price:
+  // the loan taxes alone, with no policy under them, are not a closing.
+  if (isPurchase && coverage <= 0) {
+    return {
+      groups: [],
+      premiumTotal: 0,
+      total: 0,
+      alternateRateTotal: null,
+      otherPartyTotal: 0,
+      ownerPolicyUnassigned: false,
+    };
+  }
+
   const { countySlug, countyName } = input;
   // A refinance has one party, so nothing is filtered away from the borrower.
   const party: Party = isPurchase ? input.party : 'buyer';
@@ -171,9 +215,9 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
   const premiumLines: EstimateLine[] = [];
 
   const ownerRate = (amount: number) =>
-    input.reissue ? reissuePremium(amount, input.priorPolicyAmount) : originalPremium(amount);
+    input.reissue ? reissuePremium(amount, prior) : originalPremium(amount);
   const otherRate = (amount: number) =>
-    input.reissue ? originalPremium(amount) : reissuePremium(amount, input.priorPolicyAmount);
+    input.reissue ? originalPremium(amount) : reissuePremium(amount, prior);
   const rateCite = input.reissue ? REISSUE_SCHEDULE[0].cite : ORIGINAL_SCHEDULE[0].cite;
 
   // Accumulated against the lines the reader is actually shown, so the
@@ -181,18 +225,18 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
   let alternate = 0;
   const countsForReader = (allocation: Allocation) => payableBy(allocation.payer, party);
 
-  if (isPurchase && coverage > 0) {
+  if (isPurchase) {
     premiumLines.push(
       allocate(
         {
-          label: `Owner’s policy at the assessed value, ${input.reissue ? 'reissue rate' : 'original rate'}`,
+          label: `Owner’s policy at ${VALUE_NAMES[input.valueBasis]}, ${input.reissue ? 'reissue rate' : 'original rate'}`,
           value: ownerRate(coverage),
           cite: rateCite,
           sourceUrl: PREMIUM_RULE.url,
           note:
-            'A policy is written for the full insurable value — in a sale, the price. Assessed value ' +
-            'is usually lower, so read this as a floor.' +
-            (input.reissue ? ` ${reissueExcessNote(coverage, input.priorPolicyAmount)}` : ''),
+            'A policy is written for the full insurable value — in a sale, the price.' +
+            FLOOR_NOTES[input.valueBasis] +
+            (input.reissue ? ` ${reissueExcessNote(coverage, prior)}` : ''),
         },
         ownerPolicy,
       ),
@@ -200,7 +244,12 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
     if (countsForReader(ownerPolicy)) alternate += otherRate(coverage);
 
     if (loan > 0) {
-      const lender = lenderPolicyCharge(loan, coverage);
+      // The owner's policy on this closing will be written at the price, and
+      // the appraiser's value is only standing in for it. A loan above that
+      // value says nothing about whether the loan is above the price, so no
+      // excess is rated off the stand-in: the charge is priced as if the owner's
+      // policy covers the loan, and the line says what would change that.
+      const lender = lenderPolicyCharge(loan, Math.max(coverage, loan));
       premiumLines.push(
         allocate(
           {
@@ -209,7 +258,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
             cite: SET_BY,
             note:
               loan > coverage
-                ? `${LENDER_POLICY_NOTE} The loan is larger than the owner’s policy, so the excess coverage is rated at the original schedule on top of the charge.`
+                ? `${LENDER_POLICY_NOTE} The loan is above the appraiser’s value, but the owner’s policy will be written at the price, so no excess coverage is rated here. If the loan is larger than the price, the part above it is added on top: the original rate at the loan amount less the original rate at the price.`
                 : LENDER_POLICY_NOTE,
           },
           BORROWER_ONLY,
@@ -231,7 +280,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
             'A refinance is rated on the loan, not on the value of the property, so the assessed ' +
             'value does not enter into it. It has no owner’s policy alongside, so it is rated on ' +
             'the schedule rather than charged as an addition to one.' +
-            (input.reissue ? ` ${reissueExcessNote(loan, input.priorPolicyAmount)}` : ''),
+            (input.reissue ? ` ${reissueExcessNote(loan, prior)}` : ''),
         },
         BORROWER_ONLY,
       ),
@@ -241,7 +290,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
 
   const taxLines: EstimateLine[] = [];
 
-  if (isPurchase && coverage > 0) {
+  if (isPurchase) {
     const deed = deedStampTax(countySlug);
     taxLines.push(
       allocate(
@@ -285,7 +334,9 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
           value: mortgageStampTaxDue(loan),
           cite: 'Fla. Stat. § 201.08(1)(b)',
           sourceUrl: DOR_DOC_STAMP_GUIDANCE,
-          note: 'Charged on the loan, so this one does not depend on the value at all.',
+          note: isPurchase
+            ? 'Charged on the loan, so this one does not depend on the value at all.'
+            : RENEWAL_NOTES.mortgageStamps,
         },
         BORROWER_ONLY,
       ),
@@ -297,6 +348,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
           value: intangibleTaxDue(loan),
           cite: 'Fla. Stat. § 199.133(1)',
           sourceUrl: DOR_DOC_STAMP_GUIDANCE,
+          note: isPurchase ? undefined : RENEWAL_NOTES.intangible,
         },
         BORROWER_ONLY,
       ),
@@ -308,7 +360,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
   const recordingUrl =
     'https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.24.html';
 
-  if (isPurchase && coverage > 0) {
+  if (isPurchase) {
     recordingLines.push(
       allocate(
         {
@@ -357,8 +409,9 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
   }
 
   const all = [
-    { title: 'Title insurance premium', lines: premiumLines },
-    { title: 'Tax on the transfer', lines: taxLines },
+    { title: PREMIUM_GROUP_TITLE, lines: premiumLines },
+    // A refinance transfers nothing; its taxes are on the loan.
+    { title: isPurchase ? 'Tax on the transfer' : 'Taxes', lines: taxLines },
     { title: 'Recording', lines: recordingLines },
   ];
 
@@ -380,8 +433,10 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
     total: toCents(groups.reduce((running, group) => running + group.subtotal, 0)),
     alternateRateTotal: myPremiumLines.length > 0 ? toCents(alternate) : null,
     otherPartyTotal: isPurchase
-      ? sum(all.flatMap(({ lines }) => lines.filter((line) => payableBy(line.payer, other))))
+      ? sum(all.flatMap(({ lines }) => lines.filter((line) => line.payer === other)))
       : 0,
+    ownerPolicyUnassigned:
+      isPurchase && all.some(({ lines }) => lines.some((line) => line.payer === 'either')),
   };
 }
 
@@ -389,12 +444,3 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
 export function otherRateLabel(reissue: boolean): string {
   return reissue ? 'original rate' : 'reissue rate';
 }
-
-/** What an assessed-value estimate cannot tell you, printed rather than omitted. */
-export const ASSESSED_UNKNOWNS = [
-  'The policy is written at the purchase price or full insurable value, not at the assessed value — on most Florida homes the assessed figure is the lower of the two.',
-  'Documentary stamp tax and the surtax are charged on the consideration. Until there is a contract price, the figures above compute them on the appraiser’s value instead, which is the same substitution and the same direction of error.',
-  'Which side pays for the owner’s policy and the deed tax is the contract’s to settle. The split shown is ordinary Florida practice, and it is only the starting point.',
-  'Our settlement or closing fee, and the title search and examination.',
-  'Endorsements the lender asks for, survey, municipal lien search, estoppel letters and association fees.',
-];

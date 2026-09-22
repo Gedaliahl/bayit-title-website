@@ -1,11 +1,12 @@
 ---
 status: reviewed
 title: "The HOA says approval takes 30 days and we close in two weeks. Now what?"
+seo_title: "HOA approval takes 30 days and we close in two weeks"
 slug: "hoa-approval-delay-closing-florida"
 cluster: "property-type"
 direct_answer: "Association approval is a contract condition, not a title defect, but it can stop a closing just as effectively. The stated turnaround is usually a maximum the association is entitled to take, not the time it needs. Most of the delay is the application sitting incomplete, so the fix is getting a complete package in on day one."
 counties: ["broward-county", "palm-beach-county", "miami-dade-county"]
-review_tags: ["hoa", "condo", "association-approval", "estoppel"]
+review_tags: ["condo", "estoppel"]
 author: "shevy"
 reviewed_on: "2026-09-20"
 next_review: "2027-09-20"
@@ -20,7 +21,7 @@ quick_facts:
   - term: "Where it shows up"
     detail: "The purchase contract and the association's governing documents, not the title search."
   - term: "Typical timeline"
-    detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. The fastest turnaround we have documented is two days, and that was an emergency we pushed."
+    detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. We have seen it done in two days, on an emergency we pushed."
   - term: "Cost impact"
     detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $299, plus up to $119 for delivery within three business days and up to $179 where amounts are delinquent — the statute prints $250, $100 and $150 and directs the Department of Business and Professional Regulation to adjust them for inflation every five years, which it last did on 1 July 2022."
 ---
@@ -35,9 +36,7 @@ The distinction matters because it changes who can fix it. A title requirement i
 
 Because the documents usually give it a window that long, and quoting the maximum is safer for the person answering the phone than quoting the likely time.
 
-That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorisation, or the interview that has not been scheduled.
-
-## Does Florida cap how long the association can take?
+That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorization, or the interview that has not been scheduled.
 
 ## Does Florida cap how long the association can take?
 

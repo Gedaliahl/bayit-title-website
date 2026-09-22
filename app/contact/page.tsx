@@ -4,11 +4,13 @@ import { getCounties } from '@/lib/locations';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LeadForm } from '@/components/LeadForm';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: `Reach ${site.legalName} in ${site.address.city}, Florida: ${site.phoneDisplay}, ${site.email}.`,
+  description: metaDescription(`Reach ${site.legalName} in ${site.address.city}, Florida: ${site.phoneDisplay}, ${site.email}.`),
   alternates: { canonical: '/contact' },
+  openGraph: { ...baseOpenGraph, url: '/contact' },
 };
 
 export default async function ContactPage() {
@@ -23,9 +25,9 @@ export default async function ContactPage() {
             { name: 'Contact', path: '/contact' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Contact us</h1>
+        <h1 className="after-crumbs">Contact us</h1>
 
-        <h2 style={{ marginTop: '1.5rem' }}>The office</h2>
+        <h2 className="after-crumbs">The office</h2>
         <p>
           {site.address.street}
           <br />
@@ -34,6 +36,10 @@ export default async function ContactPage() {
           <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
           <br />
           <a href={`mailto:${site.email}`}>{site.email}</a>
+          <br />
+          <a href={site.googleProfileUrl} rel="nofollow noopener">
+            Map and directions
+          </a>
         </p>
 
         <h2>Hours</h2>

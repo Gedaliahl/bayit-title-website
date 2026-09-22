@@ -1,14 +1,22 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 
 import { confirmDocumentsSchema, fieldErrors } from '@/lib/schemas';
 import { requireServiceClient } from '@/lib/supabase';
-import { notify } from '@/lib/submissions';
+import { notify, refuseForeignRequest } from '@/lib/submissions';
 import { isPathForOrder } from '@/lib/documents';
-import { isWithinConfirmWindow, registerUploadedDocuments } from '@/lib/document-storage';
+import {
+  DOWNLOAD_LINK_HOURS,
+  describeConfirmation,
+  isWithinConfirmWindow,
+  registerUploadedDocuments,
+} from '@/lib/document-storage';
 import { site } from '@/lib/site';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+
+// Every file is opened to check its bytes before it is recorded, and ten
+// documents on a slow storage read take longer than the platform default.
+export const maxDuration = 60;
 
 /**
  * Called by the browser once it has finished uploading straight to storage.
@@ -18,6 +26,9 @@ export const dynamic = 'force-dynamic';
  * needs a signed upload URL that only the person who opened the order received.
  */
 export async function POST(request: Request) {
+  const refused = refuseForeignRequest(request);
+  if (refused) return refused;
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -43,7 +54,7 @@ export async function POST(request: Request) {
 
     const { data: order, error } = await supabase
       .from('orders')
-      .select('id, reference, property_address, created_at')
+      .select('id, reference, property_address, ordered_by_email, created_at')
       .eq('id', orderId)
       .single();
 
@@ -51,34 +62,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unknown order.' }, { status: 404 });
     }
 
-    // Documents belong to the session that opened the order. Anything later is
-    // a reply to the confirmation email, where a person sees it.
+    // Documents belong to the session that opened the order. Anything later
+    // goes to the office by email, where a person sees it.
     if (!isWithinConfirmWindow(order.created_at)) {
       return NextResponse.json({ error: 'That order is no longer accepting uploads.' }, { status: 409 });
     }
 
-    const recorded = await registerUploadedDocuments(orderId, own);
+    const { kept, rejected } = await registerUploadedDocuments(orderId, own);
 
-    if (recorded.length > 0) {
-      await notify(`Documents for ${order.reference}: ${order.property_address}`, [
-        `${recorded.length} document(s) uploaded for order ${order.reference}.`,
-        `Property: ${order.property_address}`,
-        '',
-        ...recorded.map((doc) =>
+    if (kept.length > 0 || rejected.length > 0) {
+      after(() =>
+        notify(
+          `Documents for ${order.reference}: ${order.property_address}`,
           [
-            `${doc.originalName} (${Math.round(doc.sizeBytes / 1024)} KB)`,
-            doc.downloadUrl ?? 'Link unavailable — open the file from Supabase Storage.',
+            `${kept.length} document(s) uploaded for order ${order.reference}.`,
+            `Property: ${order.property_address}`,
             '',
-          ].join('\n'),
+            ...describeConfirmation({ kept, rejected }),
+            `These links expire in ${DOWNLOAD_LINK_HOURS} hours. Move anything you need into the title file —`,
+            'the website bucket is a drop box, not a system of record.',
+          ],
+          { replyTo: order.ordered_by_email },
         ),
-        'These links expire in a week. Move anything you need into the title file —',
-        'the website bucket is a drop box, not a system of record.',
-      ]);
+      );
     }
 
-    return NextResponse.json({ ok: true, recorded: recorded.length });
+    return NextResponse.json({ ok: true, recorded: kept.length, rejected });
   } catch (error) {
-    console.error('[api/orders/documents] failed:', error);
+    console.error('[api/orders/documents] failed:', (error as Error).message);
     return NextResponse.json(
       {
         // The order itself is already safe. Say so — the caller has just watched

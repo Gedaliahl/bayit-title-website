@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { AnimatedStars } from '@/components/AnimatedStars';
 
@@ -23,6 +23,18 @@ export interface Quote {
 /** Four seconds on each review. */
 const HOLD_MS = 4_000;
 
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+
+function subscribeToReducedMotion(onChange: () => void) {
+  const query = window.matchMedia(REDUCED_MOTION);
+  query.addEventListener('change', onChange);
+  return () => query.removeEventListener('change', onChange);
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia(REDUCED_MOTION).matches;
+}
+
 /**
  * The review beside the figures on the homepage, rotating through the best
  * reviews the site has, with a dot per review under it and a link on to the
@@ -43,16 +55,19 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
   const [held, setHeld] = useState(false);
   const [chosen, setChosen] = useState(false);
 
+  // Followed, not read once: a reader who turns motion down while the strip is
+  // on screen gets a strip that stops.
+  const reduced = useSyncExternalStore(subscribeToReducedMotion, prefersReducedMotion, () => false);
+
   useEffect(() => {
-    if (quotes.length < 2 || held || chosen) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (quotes.length < 2 || held || chosen || reduced) return;
 
     const timer = setInterval(() => {
       setIndex((current) => (current + 1) % quotes.length);
     }, holdMs);
 
     return () => clearInterval(timer);
-  }, [quotes.length, held, chosen, holdMs]);
+  }, [quotes.length, held, chosen, reduced, holdMs]);
 
   const current = quotes[index];
   if (!current) return null;
@@ -107,8 +122,8 @@ export function RotatingQuote({ quotes, holdMs = HOLD_MS }: { quotes: Quote[]; h
           </div>
         ) : null}
 
-        {/* Eighteen of ninety-two are on show here. The arrow reads the way
-            every other onward link on the site does. */}
+        {/* Only the best few are on show here; the link is to all of them.
+            The arrow reads the way every other onward link on the site does. */}
         <Link href="/reviews" className="quote-rotator__all">
           Read Google reviews &rarr;
         </Link>

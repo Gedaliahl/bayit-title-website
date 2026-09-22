@@ -4,43 +4,48 @@ import { getAllDocs } from '@/lib/content';
 import { getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { team } from '@/lib/team';
-import { absoluteUrl } from '@/lib/seo';
+import { getReviews } from '@/lib/reviews';
+import { absoluteUrl, teamPageHasContent } from '@/lib/seo';
 import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [allProblems, allServices, counties] = await Promise.all([
+  const [allProblems, allServices, counties, reviews] = await Promise.all([
     getAllDocs('title-problems'),
     getAllDocs('services'),
     getCounties(),
+    getReviews(),
   ]);
 
   // Drafts can be readable on a preview build, but never listed for crawlers.
   const problems = allProblems.filter((doc) => doc.status === 'reviewed');
   const services = allServices.filter((doc) => doc.status === 'reviewed');
 
-  const now = new Date();
-
+  // Only the reviewed articles carry a date that means anything. The other
+  // pages have no record of when their content last changed, and stamping
+  // them with the build time told crawlers that every page changed on every
+  // deploy — which teaches them to ignore the field. They go without one.
   const staticPages: MetadataRoute.Sitemap = [
-    { url: absoluteUrl('/'), lastModified: now, changeFrequency: 'weekly', priority: 1 },
-    { url: absoluteUrl('/title-problems'), lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-    { url: absoluteUrl('/services'), lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: absoluteUrl('/counties'), lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: absoluteUrl('/about'), lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
-    { url: absoluteUrl('/team'), lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
-    { url: absoluteUrl('/reviews'), lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: absoluteUrl('/contact'), lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
-    { url: absoluteUrl('/order'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
-    { url: absoluteUrl('/quote'), lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
-    { url: absoluteUrl('/estimate'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
-    { url: absoluteUrl('/closing-costs/buyer'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
-    { url: absoluteUrl('/closing-costs/seller'), lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
-    { url: absoluteUrl('/partners'), lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: absoluteUrl('/'), changeFrequency: 'weekly', priority: 1 },
+    { url: absoluteUrl('/title-problems'), changeFrequency: 'weekly', priority: 0.9 },
+    { url: absoluteUrl('/services'), changeFrequency: 'monthly', priority: 0.8 },
+    { url: absoluteUrl('/counties'), changeFrequency: 'monthly', priority: 0.8 },
+    { url: absoluteUrl('/about'), changeFrequency: 'yearly', priority: 0.6 },
+    { url: absoluteUrl('/team'), changeFrequency: 'yearly', priority: 0.6 },
+    { url: absoluteUrl('/reviews'), changeFrequency: 'monthly', priority: 0.5 },
+    { url: absoluteUrl('/contact'), changeFrequency: 'yearly', priority: 0.6 },
+    { url: absoluteUrl('/order'), changeFrequency: 'yearly', priority: 0.7 },
+    { url: absoluteUrl('/quote'), changeFrequency: 'yearly', priority: 0.7 },
+    { url: absoluteUrl('/estimate'), changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs'), changeFrequency: 'yearly', priority: 0.7 },
+    { url: absoluteUrl('/closing-costs/buyer'), changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs/seller'), changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/partners'), changeFrequency: 'monthly', priority: 0.7 },
     // Same rule as a draft content page: nothing unreviewed is listed for crawlers.
     ...(PRIVACY_PUBLISHED
       ? [
           {
             url: absoluteUrl('/privacy'),
-            lastModified: now,
+           
             changeFrequency: 'yearly' as const,
             priority: 0.3,
           },
@@ -66,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...counties.map((county) => ({
       url: absoluteUrl(`/counties/${county.slug}`),
-      lastModified: now,
+     
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
@@ -75,14 +80,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...FLORIDA_CITIES.filter((city) => counties.some((county) => county.slug === city.countySlug)).map(
       (city) => ({
         url: absoluteUrl(`/cities/${city.slug}`),
-        lastModified: now,
+       
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       }),
     ),
-    ...team.map((member) => ({
+    // A team page with no bio and no review naming its person is noindexed;
+    // listing it here would ask crawlers for a page it then turns away.
+    ...team.filter((member) => teamPageHasContent(member, reviews)).map((member) => ({
       url: absoluteUrl(`/team/${member.slug}`),
-      lastModified: now,
+     
       changeFrequency: 'yearly' as const,
       priority: 0.4,
     })),

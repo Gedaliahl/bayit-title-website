@@ -105,6 +105,7 @@ export type Database = {
           role: string | null;
           source: Database['public']['Enums']['lead_source'];
           status: Database['public']['Enums']['lead_status'];
+          submission_id: string | null;
           transaction_type: string | null;
           updated_at: string;
           utm: Json | null;
@@ -126,6 +127,7 @@ export type Database = {
           role?: string | null;
           source?: Database['public']['Enums']['lead_source'];
           status?: Database['public']['Enums']['lead_status'];
+          submission_id?: string | null;
           transaction_type?: string | null;
           updated_at?: string;
           utm?: Json | null;
@@ -209,6 +211,22 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['order_documents']['Insert']>;
         Relationships: [];
       };
+      quote_documents: {
+        Row: {
+          lead_id: string;
+          sent_at: string;
+          size_bytes: number | null;
+          storage_path: string;
+        };
+        Insert: {
+          lead_id: string;
+          sent_at?: string;
+          size_bytes?: number | null;
+          storage_path: string;
+        };
+        Update: Partial<Database['public']['Tables']['quote_documents']['Insert']>;
+        Relationships: [];
+      };
       orders: {
         Row: {
           buyer_name: string | null;
@@ -233,6 +251,7 @@ export type Database = {
           reference: string | null;
           seller_name: string | null;
           status: Database['public']['Enums']['order_status'];
+          submission_id: string | null;
           transaction_type: string | null;
           updated_at: string;
         };
@@ -259,6 +278,7 @@ export type Database = {
           reference?: string | null;
           seller_name?: string | null;
           status?: Database['public']['Enums']['order_status'];
+          submission_id?: string | null;
           transaction_type?: string | null;
           updated_at?: string;
         };

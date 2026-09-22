@@ -5,13 +5,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  TITLE_LIMIT,
+  fittedTitle,
   metaDescription,
   formatLongDate,
   formatReviewDate,
   indexingAllowed,
   siteVerification,
+  teamPageHasContent,
 } from '@/lib/seo';
 import { site } from '@/lib/site';
+import { openingHoursSpecification } from '@/components/Schema';
 
 describe('meta descriptions', () => {
   it('leaves a short answer alone', () => {
@@ -152,5 +156,92 @@ describe('which deployment crawlers are invited into', () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost.toUpperCase());
     expect(indexingAllowed()).toBe(true);
+  });
+});
+
+describe('fitting a title', () => {
+  it('keeps the site name when there is room for it', () => {
+    expect(fittedTitle('Buyer closing costs in Florida')).toBe('Buyer closing costs in Florida');
+  });
+
+  it('drops the site name before any of the title', () => {
+    // 55 characters: fits alone, not with " | Bayit Title".
+    const title = 'Title company in Miami, FL: title insurance and closing';
+    expect(fittedTitle(title)).toEqual({ absolute: title });
+  });
+
+  it('falls back to the shorter title only when the long one cannot fit at all', () => {
+    const long = 'Title company in Palm Beach County, FL: West Palm Beach and Boca Raton closings';
+    const short = 'Title company in Palm Beach County, FL';
+
+    expect(fittedTitle(long, short)).toBe(short);
+  });
+
+  it('never returns more than the limit when a candidate fits', () => {
+    const result = fittedTitle('x'.repeat(80), 'y'.repeat(TITLE_LIMIT));
+    expect(result).toEqual({ absolute: 'y'.repeat(TITLE_LIMIT) });
+  });
+});
+
+describe('thin team pages', () => {
+  it('counts a bio the person wrote', () => {
+    expect(teamPageHasContent({ slug: 'jennifer', bio: ['Her own words.'], publicRecord: [] }, [])).toBe(true);
+  });
+
+  it('counts a license on the public record, which every byline links to', () => {
+    expect(
+      teamPageHasContent({ slug: 'shevy', bio: null, publicRecord: ['Florida Title Agent License W766033'] }, []),
+    ).toBe(true);
+  });
+
+  it('counts a review that names the person', () => {
+    expect(
+      teamPageHasContent({ slug: 'shevy', bio: null, publicRecord: [] }, [{ teamMemberSlug: 'shevy' }]),
+    ).toBe(true);
+  });
+
+  it('treats a name and a role alone as thin, whoever else is reviewed', () => {
+    expect(
+      teamPageHasContent({ slug: 'gedaliah', bio: null, publicRecord: [] }, [
+        { teamMemberSlug: 'shevy' },
+        { teamMemberSlug: null },
+      ]),
+    ).toBe(false);
+  });
+});
+
+/**
+ * schema.org takes opening hours on the 24-hour clock only. The office hours
+ * are written twice in lib/site.ts, once for readers and once for the markup,
+ * so the two are held to saying the same thing.
+ */
+describe('opening hours in the markup', () => {
+  function to24Hour(time: string): string {
+    const [, h, m, meridiem] = /^(\d{1,2}):(\d{2}) (AM|PM)$/.exec(time)!;
+    const hour = (Number(h) % 12) + (meridiem === 'PM' ? 12 : 0);
+    return `${String(hour).padStart(2, '0')}:${m}`;
+  }
+
+  it('publishes times in the HH:MM form schema.org accepts', () => {
+    for (const entry of openingHoursSpecification()) {
+      expect(entry.opens).toMatch(/^\d{2}:\d{2}$/);
+      expect(entry.closes).toMatch(/^\d{2}:\d{2}$/);
+    }
+  });
+
+  it('gives the markup the same hours the page shows', () => {
+    for (const entry of site.hours) {
+      if (entry.open === null) {
+        expect(entry.opens).toBeNull();
+        continue;
+      }
+      expect(entry.opens).toBe(to24Hour(entry.open));
+      expect(entry.closes).toBe(to24Hour(entry.close!));
+    }
+  });
+
+  it('leaves the closed days out rather than publishing them with no times', () => {
+    const days = openingHoursSpecification().flatMap((entry) => entry.dayOfWeek);
+    expect(days).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
   });
 });
