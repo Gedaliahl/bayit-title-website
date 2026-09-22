@@ -56,7 +56,7 @@ export const CLUSTER_CAPTIONS: Partial<Record<Cluster, string>> = {
   liens: 'Recorded against the property or the seller',
   distressed: 'Where a court order is a title document',
   process: 'Contracts, signings and who does what',
-  'property-type': 'Condominiums, HOAs, new construction',
+  'property-type': 'Condominiums and HOAs',
   survey: 'What the survey shows versus what the record supports',
 };
 

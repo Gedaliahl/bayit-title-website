@@ -93,9 +93,6 @@ describe('page metadata', () => {
   it.each(all.map((route) => [route.path, route.metadata] as const))(
     '%s shares its own URL, with the site name and locale kept',
     (route, metadata) => {
-      // The homepage inherits the layout's Open Graph block, which is correct
-      // for it alone; it is checked for its canonical above.
-      if (route === '/') return;
       expect(metadata.openGraph?.url).toBe(route);
       expect(metadata.openGraph).toMatchObject({ siteName: 'Bayit Title', locale: 'en_US' });
     },

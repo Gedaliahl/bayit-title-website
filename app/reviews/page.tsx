@@ -41,10 +41,10 @@ export default async function ReviewsPage() {
           />
         ) : null}
         <p className="form-note">
-          {unlisted ? `${unlisted} ` : ''}Some reviews carry no date. Their dates were worked out
-          from relative labels such as &ldquo;12 weeks ago&rdquo;, and rather than print a date we
-          would be guessing at, we print none. The order below can be changed; nothing is filtered
-          out of it.
+          {unlisted ? `${unlisted} ` : ''}Some reviews carry no date: Google shows them with only a
+          label such as &ldquo;12 weeks ago&rdquo;, and rather than print a date we would be
+          guessing at, we print none. The order below can be changed; every review with text is in
+          it.
         </p>
 
         {reviews.length > 0 ? (

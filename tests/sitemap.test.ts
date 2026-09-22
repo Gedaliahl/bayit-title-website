@@ -25,7 +25,8 @@ describe('the sitemap', () => {
   it('leaves out team pages that have nothing but a name and a role', () => {
     const listed = new Set(entries.map((entry) => entry.url));
     for (const member of team) {
-      expect(listed.has(absoluteUrl(`/team/${member.slug}`))).toBe((member.bio?.length ?? 0) > 0);
+      const hasContent = (member.bio?.length ?? 0) > 0 || member.publicRecord.length > 0;
+      expect(listed.has(absoluteUrl(`/team/${member.slug}`))).toBe(hasContent);
     }
   });
 });

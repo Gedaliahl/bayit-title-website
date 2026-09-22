@@ -86,7 +86,7 @@ const COST_ROUTES = [
   {
     eyebrow: 'From an address',
     title: 'Estimate from a property address',
-    body: 'Prices the policy off the county and the assessed value on the appraiser’s record.',
+    body: 'Prices the policy off the county and the value on the appraiser’s record.',
     href: '/estimate',
   },
   {

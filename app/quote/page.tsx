@@ -54,7 +54,7 @@ export default async function QuotePage() {
           <Link href="/estimate?mode=numbers">estimate page</Link> works it out without asking you
           for anything. If you have an address but not a price yet,{' '}
           <Link href="/estimate">estimate from the address</Link>: it prices the premium off the
-          county and the assessed value the property appraiser publishes. If you have the contract,{' '}
+          county and the value the property appraiser publishes. If you have the contract,{' '}
           <Link href="/estimate?mode=upload">send it</Link> and we itemize everything, our fees
           included.
         </p>

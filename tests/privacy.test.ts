@@ -89,7 +89,7 @@ describe('claims about the website that the code has to keep true', () => {
     // the host's request logs hold it. What this site stores is the hash.
     expect(page).not.toMatch(/do not store your IP address/i);
     expect(page).toMatch(/fingerprint of your IP address, not the address itself/i);
-    expect(page).toMatch(/hosting provider[\s\S]{0,80}request logs/i);
+    expect(page).toMatch(/hosting provider receives the address/i);
 
     const submissions = readFileSync(join(process.cwd(), 'lib/submissions.ts'), 'utf8');
     expect(submissions).toContain('createHash');

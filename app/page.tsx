@@ -5,6 +5,7 @@ import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
 import { getBestReviews, getReviewSnapshot } from '@/lib/reviews';
 import { getCounties } from '@/lib/locations';
 import { officeHoursLine, site } from '@/lib/site';
+import { baseOpenGraph } from '@/lib/seo';
 import { CountUp } from '@/components/CountUp';
 import { ServicesTicker } from '@/components/ServicesTicker';
 import { FileTimeline } from '@/components/FileTimeline';
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
     `problems put in writing the week they are found, the same processor and closer on your file ` +
     `from opening to recording.`,
   alternates: { canonical: '/' },
+  openGraph: { ...baseOpenGraph, url: '/' },
 };
 
 /**

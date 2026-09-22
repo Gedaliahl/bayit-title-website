@@ -172,7 +172,7 @@ export default async function SellerClosingCostsPage() {
           </p>
         )}
         <p>
-          Whichever side pays, one thing in the rule turns on the seller. If the seller&rsquo;s own
+          Whoever pays, the seller&rsquo;s history can lower the figure. If the seller&rsquo;s own
           title was insured and the prior policy can be produced, the new policy can qualify for
           the <strong>reissue rate</strong> in{' '}
           <a href={PREMIUM_RULE.url} rel="nofollow">

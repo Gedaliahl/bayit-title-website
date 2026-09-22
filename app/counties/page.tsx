@@ -19,9 +19,8 @@ import { baseOpenGraph, metaDescription } from '@/lib/seo';
 export const metadata: Metadata = {
   title: 'Florida title company by county and city',
   description: metaDescription(
-    'A Florida title company closing in all 67 counties, with most files in Broward, Palm Beach, ' +
-      'Miami-Dade, Hillsborough, Orange and Duval. County and city pages: who customarily pays for ' +
-      'the owner’s policy, the deed stamp rate, recording, and what a policy costs.',
+    'Florida closings in all 67 counties: who customarily pays for the owner’s policy, the deed ' +
+      'stamp rate, recording, and what a policy costs.',
   ),
   alternates: { canonical: '/counties' },
   openGraph: { ...baseOpenGraph, url: '/counties' },

@@ -176,11 +176,11 @@ export default function PrivacyPage() {
             <strong>This site sets no cookies</strong> and stores nothing in your browser.
           </li>
           <li>
-            <strong>We keep a fingerprint of your IP address, not the address itself.</strong> Like
-            any website, our hosting provider sees the address each request comes from and records
-            it in its own request logs. When you submit a form, we convert the address using a
-            secret key into a short fingerprint that cannot be turned back into an address, and the
-            fingerprint is all we store. Its only purpose is to limit how many submissions come from
+            <strong>We keep a fingerprint of your IP address, not the address itself.</strong> Our
+            hosting provider receives the address each request comes from, as any web host does,
+            and handles it under its own policy. When you submit a form, we convert the address
+            using a secret key into a short fingerprint that cannot be turned back into an address,
+            and keep the fingerprint rather than the address. Its only purpose is to limit how many submissions come from
             one source in an hour, so the forms cannot be flooded.
           </li>
           <li>

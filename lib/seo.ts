@@ -157,16 +157,21 @@ export const baseOpenGraph = {
 
 /**
  * Whether a team page has anything on it beyond the name and role the team page
- * already lists. Until the person has written a bio or a review names them, the
- * page is thin, and a thin page is kept out of the index and the sitemap rather
- * than padded with copy nobody wrote.
+ * already lists: a bio the person wrote, a license or commission on the public
+ * record, or a review that names them. Without any of them the page is thin,
+ * and a thin page is kept out of the index and the sitemap rather than padded
+ * with copy nobody wrote.
  */
 export function teamPageHasContent(
-  member: Pick<TeamMember, 'slug' | 'bio'>,
+  member: Pick<TeamMember, 'slug' | 'bio' | 'publicRecord'>,
   reviews: Pick<Review, 'teamMemberSlug'>[],
 ): boolean {
   return (
-    (member.bio?.length ?? 0) > 0 || reviews.some((review) => review.teamMemberSlug === member.slug)
+    (member.bio?.length ?? 0) > 0 ||
+    // A license or a commission on the public record is what the page is for:
+    // the byline on every article links to the agent's page to show it.
+    member.publicRecord.length > 0 ||
+    reviews.some((review) => review.teamMemberSlug === member.slug)
   );
 }
 

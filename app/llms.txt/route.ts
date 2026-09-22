@@ -94,6 +94,7 @@ export async function GET() {
     '## Cost tools',
     '',
     `- [Estimate what a Florida closing costs](${absoluteUrl('/estimate')}): three ways in. From an address, it prices the promulgated premium off the county and the value on the property appraiser's record — the just value where the roll has one, otherwise the assessed value, both tax figures that usually sit below the price a policy would be written at, so that result is a floor, not a quote. From the contract numbers, it works the premium, documentary stamp tax, intangible tax and recording charges out from a price and a loan amount, each cited to the rule or statute that sets it. Or the contract itself can be sent for an exact, itemized figure.`,
+    `- [Florida closing costs, buyer and seller](${absoluteUrl('/closing-costs')}): which side of a Florida closing statement each cost falls on, with a page for each side.`,
     `- [Buyer closing costs in Florida](${absoluteUrl('/closing-costs/buyer')}): the mortgage stamp tax, intangible tax and recording the statute sets, the promulgated premium, and the fees no rule sets, each cited.`,
     `- [Seller closing costs in Florida](${absoluteUrl('/closing-costs/seller')}): the deed stamp tax at the county's rate, the owner's policy where custom puts it on the seller, the reissue rate, payoffs and balances, each cited.`,
     `- [Request a quote](${absoluteUrl('/quote')}): for the lines that are not promulgated — settlement fee, search, endorsements.`,

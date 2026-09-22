@@ -185,16 +185,27 @@ describe('fitting a title', () => {
 
 describe('thin team pages', () => {
   it('counts a bio the person wrote', () => {
-    expect(teamPageHasContent({ slug: 'jennifer', bio: ['Her own words.'] }, [])).toBe(true);
+    expect(teamPageHasContent({ slug: 'jennifer', bio: ['Her own words.'], publicRecord: [] }, [])).toBe(true);
+  });
+
+  it('counts a license on the public record, which every byline links to', () => {
+    expect(
+      teamPageHasContent({ slug: 'shevy', bio: null, publicRecord: ['Florida Title Agent License W766033'] }, []),
+    ).toBe(true);
   });
 
   it('counts a review that names the person', () => {
-    expect(teamPageHasContent({ slug: 'shevy', bio: null }, [{ teamMemberSlug: 'shevy' }])).toBe(true);
+    expect(
+      teamPageHasContent({ slug: 'shevy', bio: null, publicRecord: [] }, [{ teamMemberSlug: 'shevy' }]),
+    ).toBe(true);
   });
 
   it('treats a name and a role alone as thin, whoever else is reviewed', () => {
     expect(
-      teamPageHasContent({ slug: 'gedaliah', bio: null }, [{ teamMemberSlug: 'shevy' }, { teamMemberSlug: null }]),
+      teamPageHasContent({ slug: 'gedaliah', bio: null, publicRecord: [] }, [
+        { teamMemberSlug: 'shevy' },
+        { teamMemberSlug: null },
+      ]),
     ).toBe(false);
   });
 });
