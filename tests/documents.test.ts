@@ -9,11 +9,15 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ACCEPT_ATTRIBUTE,
+  CONTRACT_ACCEPT_ATTRIBUTE,
+  MAX_CONTRACT_TOTAL_BYTES,
   MAX_FILE_BYTES,
   contentTypeFor,
   extensionOf,
   formatBytes,
+  isContractFile,
   isPathForOrder,
+  isPathForQuote,
   sanitizeName,
 } from '@/lib/documents';
 
@@ -115,5 +119,37 @@ describe('sizes as a person reads them', () => {
     expect(formatBytes(900)).toBe('900 B');
     expect(formatBytes(120_000)).toBe('117 KB');
     expect(formatBytes(3_500_000)).toBe('3.3 MB');
+  });
+});
+
+/**
+ * A contract sent from /estimate lives under its own folder in the same
+ * bucket, and the page takes only what a person can read a contract off.
+ */
+describe('a contract sent for pricing', () => {
+  it('keeps quote pages and order documents apart by path', () => {
+    expect(isPathForQuote('quotes/abc/1.pdf', 'abc')).toBe(true);
+    expect(isPathForQuote('orders/abc/1.pdf', 'abc')).toBe(false);
+    expect(isPathForQuote('quotes/abcd/1.pdf', 'abc')).toBe(false);
+  });
+
+  it('takes a PDF or a photograph, and not a Word file', () => {
+    expect(isContractFile('contract.pdf')).toBe(true);
+    expect(isContractFile('page-1.HEIC')).toBe(true);
+    expect(isContractFile('page-2.jpeg')).toBe(true);
+    expect(isContractFile('contract.docx')).toBe(false);
+    expect(isContractFile('contract')).toBe(false);
+  });
+
+  it('offers the picker only what it will take, all of which the bucket stores', () => {
+    for (const extension of CONTRACT_ACCEPT_ATTRIBUTE.split(',')) {
+      expect(ACCEPT_ATTRIBUTE.split(',')).toContain(extension);
+      expect(isContractFile(`x${extension}`)).toBe(true);
+    }
+  });
+
+  it('holds the whole contract to what the page promises', () => {
+    expect(MAX_CONTRACT_TOTAL_BYTES).toBe(25 * 1024 * 1024);
+    expect(MAX_CONTRACT_TOTAL_BYTES).toBeLessThanOrEqual(MAX_FILE_BYTES);
   });
 });

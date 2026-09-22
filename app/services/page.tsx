@@ -92,7 +92,7 @@ const COST_ROUTES = [
     eyebrow: 'From a price',
     title: 'Premium calculator',
     body: 'Works from a price and a loan amount; adds doc stamps, intangible tax and recording.',
-    href: '/calculator',
+    href: '/estimate?mode=numbers',
   },
   {
     eyebrow: 'Everything else',

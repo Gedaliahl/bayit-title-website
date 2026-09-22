@@ -47,10 +47,13 @@ export default async function QuotePage() {
 
         <p>
           For the promulgated and statutory part on its own — premium, documentary stamps,
-          intangible tax, recording — the <Link href="/calculator">calculator</Link> works it out
-          without asking you for anything. If you have an address but not a price yet,{' '}
+          intangible tax, recording — the{' '}
+          <Link href="/estimate?mode=numbers">estimate page</Link> works it out without asking you
+          for anything. If you have an address but not a price yet,{' '}
           <Link href="/estimate">estimate from the address</Link>: it prices the premium off the
-          county and the assessed value the property appraiser publishes.
+          county and the assessed value the property appraiser publishes. If you have the contract,{' '}
+          <Link href="/estimate?mode=upload">send it</Link> and we itemise everything, our fees
+          included.
         </p>
         <p className="form-note">
           Neither tool prices the part that is ours rather than the rule&rsquo;s — our settlement

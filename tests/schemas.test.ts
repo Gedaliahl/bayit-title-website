@@ -4,7 +4,14 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { orderSchema, leadSchema, confirmDocumentsSchema, fieldErrors } from '@/lib/schemas';
+import {
+  orderSchema,
+  leadSchema,
+  confirmDocumentsSchema,
+  contractQuoteSchema,
+  confirmQuoteDocumentsSchema,
+  fieldErrors,
+} from '@/lib/schemas';
 
 const validOrder = {
   ordered_by_name: 'Jane Agent',
@@ -120,5 +127,55 @@ describe('leads', () => {
     const result = leadSchema.safeParse({ full_name: 'J', email: 'nope' });
     const errors = fieldErrors(result.error!);
     expect(Object.keys(errors)).toEqual(['full_name', 'email']);
+  });
+});
+
+/**
+ * A contract sent for pricing from /estimate. The page promises the sender
+ * three things before it sends anything — a file, a name, an address to write
+ * back to — and these are the messages it shows when one is missing.
+ */
+describe('a contract sent for pricing', () => {
+  const validQuote = {
+    full_name: 'Dana Buyer',
+    email: 'dana@example.com',
+    documents: [{ name: 'contract.pdf', size: 1_200_000 }],
+  };
+
+  it('accepts a file, a name and an email, and defaults the role to buyer', () => {
+    const parsed = contractQuoteSchema.parse(validQuote);
+    expect(parsed.role).toBe('buyer');
+    expect(parsed.documents).toHaveLength(1);
+  });
+
+  it('refuses a request with nothing attached, in the page’s own words', () => {
+    const result = contractQuoteSchema.safeParse({ ...validQuote, documents: [] });
+    expect(result.success).toBe(false);
+    expect(fieldErrors(result.error!).documents).toMatch(/Add the contract first/);
+  });
+
+  it('refuses a request with nobody to write back to', () => {
+    const noName = contractQuoteSchema.safeParse({ ...validQuote, full_name: '' });
+    expect(fieldErrors(noName.error!).full_name).toMatch(/your name/);
+
+    const badEmail = contractQuoteSchema.safeParse({ ...validQuote, email: 'dana@' });
+    expect(fieldErrors(badEmail.error!).email).toMatch(/does not look complete/);
+  });
+
+  it('only knows the roles the page offers', () => {
+    expect(contractQuoteSchema.safeParse({ ...validQuote, role: 'lender' }).success).toBe(true);
+    expect(contractQuoteSchema.safeParse({ ...validQuote, role: 'underwriter' }).success).toBe(false);
+  });
+
+  it('confirms pages only against a real lead id', () => {
+    expect(
+      confirmQuoteDocumentsSchema.safeParse({
+        lead_id: '2c0b8f6e-4d1a-4a2b-9c3d-0e1f2a3b4c5d',
+        documents: [{ path: 'quotes/x/y.pdf', name: 'contract.pdf' }],
+      }).success,
+    ).toBe(true);
+    expect(
+      confirmQuoteDocumentsSchema.safeParse({ lead_id: 'not-a-uuid', documents: [] }).success,
+    ).toBe(false);
   });
 });

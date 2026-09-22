@@ -28,12 +28,19 @@ const CONFIRM_WINDOW_MS = 24 * 60 * 60 * 1000;
 const DOWNLOAD_URL_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 /**
+ * Which kind of submission a document belongs to. An order's documents sit
+ * under `orders/`, a contract sent for pricing from /estimate under `quotes/`,
+ * so the folder says what the file is before anyone opens it.
+ */
+export type DocumentFolder = 'orders' | 'quotes';
+
+/**
  * Storage paths are generated, never derived from the filename. A caller who
  * cannot guess a path cannot overwrite someone else's document, and nothing a
  * client typed ends up in a storage key or a log line.
  */
-function buildStoragePath(orderId: string, filename: string): string {
-  return `orders/${orderId}/${randomUUID()}${extensionOf(filename)}`;
+function buildStoragePath(folder: DocumentFolder, ownerId: string, filename: string): string {
+  return `${folder}/${ownerId}/${randomUUID()}${extensionOf(filename)}`;
 }
 
 export interface UploadTicket {
@@ -60,6 +67,7 @@ export interface UploadTicket {
 export async function mintUploadTickets(
   orderId: string,
   documents: DeclaredDocument[],
+  folder: DocumentFolder = 'orders',
 ): Promise<UploadTicket[]> {
   const supabase = requireServiceClient();
   const tickets: UploadTicket[] = [];
@@ -68,7 +76,7 @@ export async function mintUploadTickets(
     const contentType = contentTypeFor(doc.name);
     if (!contentType) continue;
 
-    const path = buildStoragePath(orderId, doc.name);
+    const path = buildStoragePath(folder, orderId, doc.name);
     const { data, error } = await supabase.storage.from(BUCKET).createSignedUploadUrl(path);
 
     if (error || !data) {
@@ -173,6 +181,48 @@ export async function registerUploadedDocuments(
   }
 
   return registered;
+}
+
+/**
+ * The contract pages a reader sent from /estimate, once they have landed.
+ *
+ * There is no table for these — a quote is a lead, and `order_documents` hangs
+ * off an order — so the bucket listing is the record. Each path is checked
+ * against what is actually in the folder before a link is signed, for the same
+ * reason as above: a confirmation can only ever describe objects that exist.
+ */
+export async function signQuoteDocuments(
+  leadId: string,
+  documents: UploadedDocument[],
+): Promise<RegisteredDocument[]> {
+  const supabase = requireServiceClient();
+
+  const { data: objects, error } = await supabase.storage
+    .from(BUCKET)
+    .list(`quotes/${leadId}`, { limit: MAX_FILES * 2 });
+
+  if (error) throw new Error(`could not list uploaded contract pages: ${error.message}`);
+
+  const present = new Map((objects ?? []).map((object) => [`quotes/${leadId}/${object.name}`, object]));
+  const signed: RegisteredDocument[] = [];
+  const seen = new Set<string>();
+
+  for (const { path, name } of documents) {
+    const object = present.get(path);
+    if (!object || seen.has(path)) continue;
+    seen.add(path);
+
+    const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, DOWNLOAD_URL_TTL_SECONDS);
+
+    signed.push({
+      originalName: sanitizeName(name),
+      storagePath: path,
+      sizeBytes: Number(object.metadata?.size ?? 0),
+      downloadUrl: data?.signedUrl ?? null,
+    });
+  }
+
+  return signed;
 }
 
 /** An order is only open for document confirmation briefly after it is created. */

@@ -77,7 +77,7 @@ export function SiteFooter() {
                 <Link href="/estimate">Estimate from an address</Link>
               </li>
               <li>
-                <Link href="/calculator">Premium calculator</Link>
+                <Link href="/estimate?mode=numbers">Premium calculator</Link>
               </li>
               <li>
                 <Link href="/closing-costs/buyer">Buyer closing costs</Link>

@@ -71,6 +71,31 @@ export function isPathForOrder(path: string, orderId: string): boolean {
   return path.startsWith(`orders/${orderId}/`);
 }
 
+/**
+ * A contract sent for pricing from /estimate, which is a lead and not an
+ * order. It lives in the same private bucket under its own folder, so the two
+ * kinds of upload can never be confused for each other by path.
+ */
+export function isPathForQuote(path: string, leadId: string): boolean {
+  return path.startsWith(`quotes/${leadId}/`);
+}
+
+/**
+ * What /estimate will take as a contract: a PDF or a photograph of each page.
+ * A Word file is not a signed contract, so it is left off the picker there
+ * even though the bucket would store it.
+ */
+const CONTRACT_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png', '.heic'];
+
+export const CONTRACT_ACCEPT_ATTRIBUTE = CONTRACT_EXTENSIONS.join(',');
+
+/** The whole contract, every page together. Matches the copy on the page. */
+export const MAX_CONTRACT_TOTAL_BYTES = 25 * 1024 * 1024;
+
+export function isContractFile(filename: string): boolean {
+  return CONTRACT_EXTENSIONS.includes(extensionOf(filename));
+}
+
 /** Sizes as a person reads them, for the file list under the picker. */
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;

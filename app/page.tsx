@@ -227,7 +227,7 @@ export default async function HomePage() {
           <p>
             Want a number before you call?{' '}
             <Link href="/estimate">Estimate from a property address</Link> or{' '}
-            <Link href="/calculator">work it out from a price</Link>.
+            <Link href="/estimate?mode=numbers">work it out from a price</Link>.
           </p>
         </div>
       </section>

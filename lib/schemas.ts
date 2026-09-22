@@ -108,7 +108,45 @@ export const confirmDocumentsSchema = z.object({
     .max(20),
 });
 
+/** Who a contract sent from /estimate is from, in their own description. */
+export const CONTRACT_QUOTE_ROLES = ['buyer', 'seller', 'borrower', 'agent', 'lender', 'attorney'] as const;
+
+/**
+ * A contract sent for pricing from /estimate. The files themselves travel
+ * straight to storage, as an order's do; this is the manifest and the person
+ * to write back to. The name and the email are the two things the office
+ * cannot do without, and the messages here are the ones the page shows.
+ */
+export const contractQuoteSchema = z.object({
+  full_name: trimmed(120).min(2, 'Tell us your name so we know who to write back to.'),
+  email: z.email('That email does not look complete.').max(160),
+  phone: trimmed(40).optional(),
+  role: z.enum(CONTRACT_QUOTE_ROLES).default('buyer'),
+  message: trimmed(4000).optional(),
+  page_path: trimmed(240).optional(),
+  documents: z
+    .array(declaredDocumentSchema)
+    .min(1, 'Add the contract first — a PDF or a photo of each page.')
+    .max(20),
+  company: honeypot,
+});
+
+/** The pages that finished uploading, to be linked in the office's email. */
+export const confirmQuoteDocumentsSchema = z.object({
+  lead_id: z.uuid('Unknown request.'),
+  documents: z
+    .array(
+      z.object({
+        path: z.string().trim().min(1).max(300),
+        name: z.string().trim().min(1).max(255),
+      }),
+    )
+    .min(1)
+    .max(20),
+});
+
 export type LeadInput = z.infer<typeof leadSchema>;
+export type ContractQuoteInput = z.infer<typeof contractQuoteSchema>;
 export type OrderInput = z.infer<typeof orderSchema>;
 export type ConfirmDocumentsInput = z.infer<typeof confirmDocumentsSchema>;
 

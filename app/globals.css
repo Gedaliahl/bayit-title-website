@@ -11,6 +11,7 @@
   --accent-wash: #f7efdc;  /* chips, icon discs, answer panel ground */
   --accent-light: #d3a93a; /* the gold that reads on the dark brown, and only there */
   --accent-dark-hover: #46360f;
+  --cream-muted: #d9cfb4;  /* the quieter cream on the dark brown, under a figure */
   --flag: #6f1d2b;         /* unresolved facts and form errors only */
 
   --ink-body: #333;        /* lede and disclosure answers, one step off the body ink */
@@ -19,6 +20,7 @@
   --rule: #e8e4db;         /* chrome and section rules */
   --rule-card: #e3ded2;    /* card, pill and panel edges */
   --rule-strong: #bdb3a0;  /* form controls, which need a visible edge */
+  --rule-dashed: #cfc7b4;  /* the drop zone's dashed edge, between the two above */
 
   --font-display: var(--font-libre-caslon), Georgia, 'Times New Roman', serif;
   --font-body: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1154,146 +1156,6 @@ legend {
   margin-bottom: 0.85rem;
 }
 
-/* ---------- premium calculator ---------- */
-/* Inputs left, figures right, the reissue note under both. The figures column
-   is the point of the page, so it gets the wider half. */
-
-.calc {
-  display: grid;
-  grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
-  gap: 1.5rem 2.5rem;
-  align-items: start;
-  margin: 2rem 0;
-  /* Wider than the reading measure, narrower than the frame: a row of figures
-     stops being readable long before it reaches 72rem. */
-  max-width: 56rem;
-}
-
-.calc__footnote {
-  grid-column: 1 / -1;
-}
-
-@media (max-width: 52rem) {
-  .calc {
-    grid-template-columns: 1fr;
-  }
-}
-
-.calc__fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0 0 1.1rem;
-}
-
-.calc__fieldset legend {
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 0;
-  margin-bottom: 0.4rem;
-}
-
-.calc__radio,
-.calc__check {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-  margin-bottom: 0.5rem;
-}
-
-.calc__check {
-  margin-bottom: 1.1rem;
-}
-
-.calc__radio input,
-.calc__check input {
-  margin-top: 0.25rem;
-  flex: none;
-}
-
-.calc__details summary {
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-}
-
-.calc__details .field__hint {
-  display: block;
-  margin: 0.5rem 0;
-}
-
-.calc__result {
-  border: 1px solid var(--rule-card);
-  border-top: 2px solid var(--accent);
-  border-radius: var(--radius-card);
-  padding: 1.25rem 1.5rem;
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-}
-
-.estimate-group + .estimate-group {
-  margin-top: 1.5rem;
-}
-
-.estimate-group h3 {
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-deep);
-  margin: 0 0 0.35rem;
-}
-
-.estimate-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1.5rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.estimate-line__amount {
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.estimate-line__note,
-.estimate-line__cite {
-  display: block;
-  font-size: 0.8125rem;
-  color: var(--ink-muted);
-  line-height: 1.5;
-}
-
-.estimate-total {
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
-  margin-top: 1.25rem;
-  padding-top: 0.75rem;
-  border-top: 2px solid var(--accent);
-  font-weight: 600;
-}
-
-.estimate-caveat {
-  font-size: 0.8125rem;
-  color: var(--ink-muted);
-  line-height: 1.6;
-  margin: 1.25rem 0 0;
-}
-
-ul.estimate-caveat {
-  margin-top: 0.4rem;
-  padding-left: 1.1rem;
-}
-
 /* ---------- chips ---------- */
 
 .chip {
@@ -2103,10 +1965,334 @@ ul.estimate-caveat {
   }
 }
 
-/* ---------- address suggestions ---------- */
-/* The dropdown under the estimator's address box. It is positioned rather than
-   in flow: the fields below it must not jump down the page every time another
-   keystroke changes how many properties match. */
+/* ---------- the estimate page ---------- */
+/* Three ways to price a closing on one page. The shells are the interior
+   system's — the router card and the figures card are the verdict card, the
+   estimator sits in a band, the detail beside a rail — and what is new here
+   is the form: cream boxes on a white card, a `$` in front of a money figure,
+   a segmented pair for purchase or refinance, and the drop zone. */
+
+/* The router card's rows are buttons here rather than links, since they set
+   the mode rather than go anywhere. */
+.verdict__link--button {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  align-items: center;
+  transition: color 120ms ease;
+}
+
+.verdict__link--button:last-child {
+  border-bottom: 0;
+}
+
+.verdict__link--button strong {
+  display: block;
+}
+
+.verdict__link--button .verdict__link-sub {
+  display: block;
+  line-height: 1.45;
+}
+
+/* --- the mode picker --- */
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mode-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  text-align: left;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  padding: 1.25rem;
+  font: inherit;
+  cursor: pointer;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 120ms ease, border-color 120ms ease;
+}
+
+.mode-tab:hover {
+  border-color: var(--accent);
+}
+
+.mode-tab[aria-selected='true'] {
+  outline-color: var(--accent);
+}
+
+.mode-tab:focus-visible {
+  outline-color: var(--accent);
+}
+
+.mode-tab__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.mode-tab__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.mode-tab__tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+.mode-tab__title {
+  font-weight: 600;
+  font-size: var(--step-0);
+  line-height: 1.3;
+}
+
+.mode-tab__body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* --- form beside figures --- */
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+  gap: 2rem;
+  align-items: start;
+}
+
+.calc-grid[hidden] {
+  display: none;
+}
+
+.form-card {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+  background: var(--paper);
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+}
+
+/* The site's form fields, at the estimator's own measure: a larger label,
+   a cream box, and the gold edge on focus. */
+.form-card .field {
+  gap: 0.375rem;
+  margin: 0;
+}
+
+.form-card .field label,
+.form-card .field__label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.form-card .field__hint {
+  line-height: 1.5;
+}
+
+.form-card .field__optional {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.form-card .field input,
+.form-card .field select,
+.form-card .field textarea,
+.form-card .money {
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius);
+  background: var(--band);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.form-card .field textarea {
+  min-height: 0;
+  line-height: 1.5;
+}
+
+.form-card .field input:focus,
+.form-card .field select:focus,
+.form-card .field textarea:focus,
+.form-card .money:focus-within {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--paper);
+}
+
+.form-card .field input[disabled],
+.form-card .field select[disabled],
+.form-card .field textarea[disabled] {
+  opacity: 0.6;
+}
+
+/* A money box: the `$` is part of the box, so it is a flex row whose input
+   has no edge of its own. */
+.money {
+  display: flex;
+  align-items: center;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.money__prefix {
+  padding-left: 0.875rem;
+  color: var(--ink-muted);
+  font-size: 1rem;
+}
+
+.form-card .money input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0.75rem 0.875rem 0.75rem 0.375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-card .money input:focus {
+  background: transparent;
+}
+
+/* Purchase or refinance, as one control with two halves. */
+.seg {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.seg button {
+  padding: 0.625rem 1.125rem;
+  border: 0;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.seg button + button {
+  border-left: 1px solid var(--rule-card);
+}
+
+.seg button[aria-checked='true'] {
+  background: var(--accent-dark);
+  color: var(--paper);
+}
+
+.check {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.check input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--accent);
+  flex: none;
+}
+
+.check strong {
+  font-weight: 600;
+}
+
+.check__sub {
+  color: var(--ink-muted);
+}
+
+/* The prior-policy box, set in under the checkbox that revealed it. */
+.indent {
+  padding-left: 1.875rem;
+}
+
+.two-up {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* Page counts, folded away: a label and a gold plus that turns when open. */
+.disclosure {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.25rem;
+}
+
+.disclosure__toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.disclosure__plus {
+  color: var(--accent);
+  font-size: 1.375rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.disclosure__toggle[aria-expanded='true'] .disclosure__plus {
+  transform: rotate(45deg);
+}
+
+.disclosure__body {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.disclosure__body .field label {
+  font-size: 0.875rem;
+}
+
+/* --- address suggestions --- */
+/* The dropdown under the address box. Positioned rather than in flow: the
+   fields below it must not jump every time another keystroke changes how many
+   properties match. */
 
 .combo {
   position: relative;
@@ -2115,53 +2301,58 @@ ul.estimate-caveat {
 .combo__list {
   position: absolute;
   z-index: 20;
-  top: calc(100% + 2px);
   left: 0;
   right: 0;
-  margin: 0;
-  padding: 0;
+  /* Under the input, which is the third thing in the field. */
+  top: calc(100% - 1.6em);
+  margin: 0.375rem 0 0;
+  padding: 0.375rem;
   list-style: none;
-  max-height: 20rem;
+  max-height: 22rem;
   overflow-y: auto;
   background: var(--paper);
   border: 1px solid var(--rule-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(47, 36, 8, 0.1);
 }
 
 .combo__option {
-  display: block;
-  padding: 0.55rem 0.7rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 1rem;
+  align-items: center;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius);
   cursor: pointer;
-  border-bottom: 1px solid var(--rule);
-}
-
-.combo__option:last-child {
-  border-bottom: 0;
 }
 
 .combo__option--active {
-  background: var(--accent-wash);
+  background: var(--band);
 }
 
 .combo__address {
-  display: block;
-  font-family: var(--font-body);
   font-size: 0.9375rem;
+  font-weight: 600;
   color: var(--ink);
 }
 
-.combo__meta,
 .combo__value {
-  display: block;
-  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.combo__meta {
+  grid-column: 1 / -1;
   font-size: 0.8125rem;
   color: var(--ink-muted);
 }
 
-.combo__value {
-  font-variant-numeric: tabular-nums;
-  color: var(--accent-deep);
+/* Holds its line so the fields below do not shift when "Looking…" appears. */
+.combo__status {
+  min-height: 1.2em;
 }
 
 /* A button that reads as a link: it changes a figure in the form rather than
@@ -2174,18 +2365,418 @@ ul.estimate-caveat {
   border: 0;
   padding: 0;
   text-decoration: underline;
+  text-underline-offset: 0.18em;
   cursor: pointer;
 }
 
-.estimate-subtotal {
+.linkish:hover {
+  color: var(--accent);
+}
+
+/* --- the figures card --- */
+/* The verdict shell, pinned beside the form as the reader scrolls it. */
+
+.figure-card {
+  position: sticky;
+  top: 1.5rem;
+  background: var(--paper);
+}
+
+.figure-card__eyebrow {
+  margin-bottom: 0.375rem;
+}
+
+.figure-card__total {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.375rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.figure-card__sub {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--cream-muted);
+}
+
+.figure-card__body {
+  padding: 0.5rem 1.5rem 0.25rem;
+  font-family: var(--font-body);
+}
+
+.figure-group {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.figure-group--last {
+  border-bottom: 0;
+}
+
+.figure-group__title {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+  margin: 0 0 0.5rem;
+}
+
+.figure-group__body {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.figure-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 1rem;
+  padding: 0.5rem 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.figure-line__label {
+  min-width: 0;
+}
+
+.figure-line__note {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  margin-top: 0.125rem;
+}
+
+.figure-line__cite {
+  /* Its own line whether or not a note sits above it, at its own width so
+     the underline stops where the citation does. */
+  display: block;
+  width: fit-content;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--accent-deep);
+}
+
+.figure-line__amount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.figure-subtotal {
   display: flex;
   justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0.5rem 0 0;
-  font-family: var(--font-body);
+  gap: 1rem;
+  padding-top: 0.5rem;
+  margin-top: 0.25rem;
+  border-top: 1px dashed var(--rule);
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.figure-subtotal .figure-line__amount {
+  font-weight: 400;
+}
+
+.figure-total {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  padding: 1rem 0 1.125rem;
+  font-size: 1rem;
+}
+
+.figure-card__foot {
+  display: grid;
+  gap: 0.625rem;
+  padding: 1rem 1.5rem 1.375rem;
+  background: var(--band);
+  border-top: 1px solid var(--rule);
   font-size: 0.8125rem;
-  letter-spacing: 0.02em;
-  color: var(--ink-muted);}
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.figure-card__foot p {
+  margin: 0;
+}
+
+.figure-card__foot strong {
+  color: var(--ink);
+}
+
+.figure-card__empty {
+  margin: 0;
+  padding: 1.25rem 1.5rem 1.375rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+/* --- the contract --- */
+
+.drop {
+  display: grid;
+  gap: 0.375rem;
+  justify-items: center;
+  text-align: center;
+  padding: 1.75rem 1.25rem;
+  border: 1.5px dashed var(--rule-dashed);
+  border-radius: 8px;
+  background: var(--band);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.drop:hover,
+.drop--active {
+  border-color: var(--accent);
+}
+
+.drop--active {
+  background: var(--accent-wash);
+}
+
+.drop:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.drop__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.drop__sub {
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+}
+
+.contract-files {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.375rem;
+}
+
+.contract-files li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+}
+
+.contract-files__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.contract-files__size {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.contract-files__remove {
+  border: 0;
+  background: none;
+  padding: 0 0.25rem;
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.contract-files__remove:hover {
+  color: var(--accent);
+}
+
+.form-card__foot {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.form-card__status {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  max-width: 22rem;
+}
+
+.form-card__status--error {
+  color: var(--flag);
+}
+
+/* The send button at the page's own button size, not the masthead's. */
+.btn--send {
+  padding: 0.875rem 1.75rem;
+}
+
+.btn--send[disabled] {
+  opacity: 0.6;
+}
+
+/* What replaces the form once the contract is in. */
+.received {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.received__eyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+.received__title {
+  margin: 0;
+  font-size: 1.625rem;
+  line-height: 1.2;
+}
+
+.received__body {
+  margin: 0;
+  color: var(--ink-body);
+  line-height: 1.55;
+}
+
+.received__again {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+/* --- the detail column --- */
+
+.schedule__intro p {
+  margin-bottom: 1.5rem;
+}
+
+.schedule-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.schedule-card {
+  padding: 1.25rem;
+  border: 1px solid var(--rule-card);
+  border-radius: var(--radius-card);
+}
+
+.schedule-card__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+.schedule-card__rows {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.schedule-card__rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.schedule-card__rows dt {
+  color: var(--ink-muted);
+}
+
+.schedule-card__rows dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.schedule__note {
+  margin: 1.25rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+  max-width: 40rem;
+}
+
+/* The reissue conditions: three sentences, each behind a numeral set in the
+   display face. */
+.num-list {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  max-width: 40rem;
+}
+
+.num-list li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.75rem;
+}
+
+.num-list__numeral {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.1;
+  color: var(--accent);
+}
+
+/* When the figures were last read against their sources. */
+.estimate-note {
+  max-width: 40rem;
+  margin: 1.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+@media (max-width: 62rem) {
+  .mode-tabs,
+  .calc-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Under the form rather than beside it, so it no longer follows the reader. */
+  .figure-card {
+    position: static;
+  }
+}
+
+@media (max-width: 40rem) {
+  .two-up,
+  .schedule-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 
 /* ---------- breadcrumbs ---------- */
 /* Where this page sits, said once, quietly. The separators are decorative: the

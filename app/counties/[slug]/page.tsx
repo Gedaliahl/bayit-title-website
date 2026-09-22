@@ -229,10 +229,10 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         <CitedFigures figures={REISSUE_SCHEDULE} />
 
         <p>
-          <Link href="/calculator">
+          <Link href="/estimate?mode=numbers">
             Work the premium, tax and recording out for a specific price
           </Link>{' '}
-          — the calculator uses this schedule and cites the same rule.
+          — the estimate page uses this schedule and cites the same rule.
         </p>
 
         <p className="muted">

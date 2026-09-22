@@ -154,8 +154,8 @@ export default async function PartnersPage() {
           Both work without a form, a name or an email address, so you can send the link and it will
           not turn into a lead-capture ambush on someone you referred:{' '}
           <Link href="/estimate">estimate title insurance from a property address</Link>, and the{' '}
-          <Link href="/calculator">premium and closing cost calculator</Link> for when there is a
-          contract price. The{' '}
+          <Link href="/estimate?mode=numbers">premium and closing cost calculator</Link> for when
+          there is a contract price. The{' '}
           <Link href="/title-problems">title problems library</Link> is written for the same
           purpose — send a page instead of explaining an open permit for the ninth time this year.
         </p>

@@ -144,8 +144,8 @@ sets its own clamp, up to `3.75rem`.
 **Conversion**
 - `/order` — title order form, the largest form
 - `/quote` — closing cost quote request
-- `/calculator` — premium and closing cost calculator, the one interactive page
-  that asks for nothing and stores nothing
+- `/estimate` — three ways to price a closing: from an address, from the numbers, or by sending the contract. `/calculator` redirects into it. The first two are interactive tools
+  that ask for nothing and store nothing; the third sends a contract to the office
 
 **Machine-facing** (no visual design, but they exist)
 - `/llms.txt`, `/robots.txt`, `/sitemap.xml`, `/api/leads`, `/api/orders`

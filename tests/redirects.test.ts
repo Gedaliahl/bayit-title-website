@@ -36,7 +36,7 @@ function find(all: Redirect[], source: string): Redirect | undefined {
  */
 const ROUTES = new Set([
   '/', '/about', '/team', '/services', '/counties', '/title-problems',
-  '/reviews', '/contact', '/order', '/quote', '/calculator', '/estimate',
+  '/reviews', '/contact', '/order', '/quote', '/estimate',
   '/partners', '/privacy', '/icon.svg',
 ]);
 
@@ -49,9 +49,9 @@ describe('pages live on Wix today', () => {
     ['/order-title', '/order'],
     ['/process', '/services'],
     ['/titleinsurance', '/services'],
-    // The calculator publishes the promulgated schedule and works a specific
-    // price out, which is what /rates was asked for.
-    ['/rates', '/calculator'],
+    // The estimate page's second option publishes the promulgated schedule
+    // and works a specific price out, which is what /rates was asked for.
+    ['/rates', '/estimate?mode=numbers'],
   ];
 
   it.each(expected)('sends %s to %s, permanently', async (source, destination) => {
@@ -78,6 +78,23 @@ describe('pages live on Wix today', () => {
   });
 });
 
+describe('the calculator', () => {
+  // The premium calculator had its own page until the estimate page took in
+  // all three ways of pricing a closing. Its address is linked from other
+  // people's pages and indexed, so it lands on the same tool rather than a 404.
+  it('lands on the estimate page with the numbers open', async () => {
+    const entry = find(await redirects(), '/calculator');
+
+    expect(entry).toBeDefined();
+    expect(entry!.destination).toBe('/estimate?mode=numbers');
+    expect(entry!.permanent).toBe(true);
+  });
+
+  it('no longer has a page of its own to redirect to', () => {
+    expect(ROUTES.has('/calculator')).toBe(false);
+  });
+});
+
 describe('Pennsylvania', () => {
   // The firm holds a Florida license only. These 404 on Wix already, but the
   // handoff records that the old site carried them, so they may still be
@@ -96,7 +113,10 @@ describe('Pennsylvania', () => {
 describe('the map as a whole', () => {
   it('never points anywhere this site does not serve', async () => {
     for (const entry of await redirects()) {
-      expect(ROUTES.has(entry.destination), `${entry.source} -> ${entry.destination}`).toBe(true);
+      // A destination may open a page at a particular mode; the page is what
+      // has to exist.
+      const pathname = entry.destination.split('?')[0];
+      expect(ROUTES.has(pathname), `${entry.source} -> ${entry.destination}`).toBe(true);
     }
   });
 

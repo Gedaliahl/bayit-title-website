@@ -15,7 +15,7 @@ import { SiteNav, type NavItem } from '@/components/SiteNav';
  * transforms case.
  *
  * What is not here is still reachable and still in the sitemap: /partners,
- * /team, /reviews, /quote, /calculator and /contact all sit in the footer, and
+ * /team, /reviews, /quote and /contact all sit in the footer, and
  * the hub pages cross-link them in prose, which is where a reader who wants
  * them is already looking. /about stays in the footer too — a masthead link
  * does not make the footer one redundant.

@@ -165,7 +165,8 @@ export default async function BuyerClosingCostsPage() {
           time on the same land is <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong> for
           coverage up to the owner&rsquo;s amount — {formatMoney(loanPremium)} on a{' '}
           {formatMoney(EXAMPLE_LOAN)} loan.{' '}
-          <Link href="/calculator">The calculator</Link> works both out for any price and loan.
+          <Link href="/estimate?mode=numbers">The estimate page</Link> works both out for any price
+          and loan.
         </p>
 
         <h3>Who pays for the owner&rsquo;s policy</h3>
