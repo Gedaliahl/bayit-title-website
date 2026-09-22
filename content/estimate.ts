@@ -64,7 +64,7 @@ export const ROUTER = {
     },
     upload: {
       label: 'Yes — send us the contract',
-      sub: 'We read it and reply with exact pricing, itemised, within one business day.',
+      sub: 'We read it and reply with exact pricing, itemized, within one business day.',
     },
   },
   prompt: 'Rather talk it through?',
@@ -101,7 +101,7 @@ export const TABS: Record<EstimateMode, { eyebrow: string; short: string; title:
     title: 'Exact, from us',
     body:
       'Upload the signed contract. We read the price, the parties and the dates off it and reply ' +
-      'with the full itemised figure — our fees included — within one business day.',
+      'with the full itemized figure — our fees included — within one business day.',
   },
 };
 
@@ -343,7 +343,7 @@ export const UPLOAD = {
       { value: 'attorney', label: 'Attorney' },
     ],
   },
-  email: { label: 'Email', hint: 'Where the itemised figure goes.' },
+  email: { label: 'Email', hint: 'Where the itemized figure goes.' },
   phone: { label: 'Phone', optional: '(optional)', hint: 'Only if a page is unreadable.' },
   note: {
     label: 'Anything we should know',
@@ -379,7 +379,7 @@ export const UPLOAD = {
         ? 'Your details reached us, but none of the contract did, so there is nothing for us to ' +
           'price yet.'
         : `${count} file${count === 1 ? '' : 's'} received. We will read the contract and email the ` +
-          `itemised figure to ${email} within one business day. If a page is unreadable we will ` +
+          `itemized figure to ${email} within one business day. If a page is unreadable we will ` +
           `${willCall ? 'call' : 'write'} first.`,
     // There is no confirmation email to reply to; the office's own address is
     // the one the pages would have gone to anyway.
@@ -394,7 +394,7 @@ export const UPLOAD = {
     eyebrow: 'Exact pricing, from the documents',
     title: 'What comes back',
     sub:
-      'A closing-cost itemisation on our letterhead, by email, within one business day of a ' +
+      'A closing-cost itemization on our letterhead, by email, within one business day of a ' +
       'readable contract.',
     sections: [
       {
@@ -555,7 +555,7 @@ export const DETAIL = {
       'Not counted: our settlement or closing fee; title search and examination; endorsements the ' +
       'lender asks for; survey, municipal lien search, estoppel letters and association fees; the ' +
       'lender’s own charges, prepaid interest, escrows and prorations. Send us the price, the ' +
-      'county and the contract date and we will itemise the rest against the actual documents.',
+      'county and the contract date and we will itemize the rest against the actual documents.',
   },
   privacy: {
     title: 'What happens to the address you typed',
@@ -576,8 +576,8 @@ export const DETAIL = {
     p3:
       'The third option is different, and says so: a contract you upload goes to the office over ' +
       'an encrypted connection with your name and email, so we can read it and write back. It is ' +
-      'opened by a person, kept only as long as the quote is open unless you go on to open an ' +
-      'order, and never sold or shared.',
+      `opened by a person, kept on this site for no longer than ${QUOTE_RETENTION_DAYS} days, ` +
+      'and never sold.',
     /** "Premium read from {rule} on {date}; the rule was last amended {date}. Taxes … on {date}." */
     note: (rule: string, premiumRead: string, amended: string, statutesRead: string) =>
       `Premium read from ${rule} on ${premiumRead}; the rule was last amended ${amended}. Taxes ` +
@@ -587,6 +587,6 @@ export const DETAIL = {
 };
 
 export const CTA = {
-  text: `Send the contract and ${site.name} will itemise the rest against the actual documents.`,
+  text: `Send the contract and ${site.name} will itemize the rest against the actual documents.`,
   action: 'Upload the contract',
 };

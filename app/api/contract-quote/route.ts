@@ -140,7 +140,7 @@ export async function POST(request: Request) {
                   : `Contract: ${uploads.length} of the ${documents.length} files the sender chose are being ` +
                     `uploaded. Ask them to email the other ${shortfall}.`,
               person.phone ? null : 'No phone given — write back rather than call.',
-              'The page promises the sender an itemised figure within one business day of a readable contract.',
+              'The page promises the sender an itemized figure within one business day of a readable contract.',
             ].filter((line): line is string => line !== null),
             { ...person, role: roleLabel, note: message },
           ),

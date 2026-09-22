@@ -227,7 +227,7 @@ export default function PrivacyPage() {
         <h2>6. How we protect it</h2>
         <p>
           We maintain reasonable administrative, technical and physical safeguards designed to
-          protect personal information from unauthorised access, disclosure or misuse. Documents you
+          protect personal information from unauthorized access, disclosure or misuse. Documents you
           attach to an order, and a contract you send from the estimate page, do not pass through
           this website: your browser sends them directly to private storage using a single-use
           link, and our office opens them through links that expire after {DOWNLOAD_LINK_HOURS}{' '}
