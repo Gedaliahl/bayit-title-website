@@ -24,7 +24,13 @@ export async function GET(request: Request) {
       `[cron/purge] deleted ${report.quotePages} contract page(s), ${report.orderDocuments} order document(s), ` +
         `${report.abandonedUploads} abandoned upload(s).`,
     );
-    return NextResponse.json({ ok: true, ...report }, { headers: { 'Cache-Control': 'no-store' } });
+    // A part that failed is a 500, so Vercel's cron log shows the day it did
+    // not all happen, even though the other parts did.
+    const ok = report.failed.length === 0;
+    return NextResponse.json(
+      { ok, ...report },
+      { status: ok ? 200 : 500, headers: { 'Cache-Control': 'no-store' } },
+    );
   } catch (error) {
     console.error('[cron/purge] failed:', (error as Error).message);
     return NextResponse.json({ ok: false }, { status: 500 });

@@ -29,8 +29,10 @@ import {
   type Rejection,
 } from './documents';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 /** A confirmation can only ever cover an order opened in this window. */
-const CONFIRM_WINDOW_MS = 24 * 60 * 60 * 1000;
+const CONFIRM_WINDOW_MS = DAY_MS;
 
 /**
  * How long the office's download links stay live. A day: long enough to open
@@ -39,8 +41,6 @@ const CONFIRM_WINDOW_MS = 24 * 60 * 60 * 1000;
  */
 export const DOWNLOAD_LINK_HOURS = 24;
 const DOWNLOAD_URL_TTL_SECONDS = DOWNLOAD_LINK_HOURS * 60 * 60;
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Which kind of submission a document belongs to. An order's documents sit
@@ -176,11 +176,11 @@ async function vetUploads(
   const supabase = requireServiceClient();
   const bucket = supabase.storage.from(BUCKET);
 
-  // One listing per owner rather than one call per path.
-  const { data: objects, error } = await bucket.list(`${folder}/${ownerId}`, { limit: MAX_FILES * 4 });
-  if (error) throw new Error(`could not list uploads: ${error.message}`);
-
-  const present = new Map((objects ?? []).map((object) => [`${folder}/${ownerId}/${object.name}`, object]));
+  // One listing per owner rather than one call per path, and all of it: each
+  // retry mints fresh tickets, so a folder can hold more objects than the file
+  // limit, and a page cut off the listing would be skipped without a word.
+  const objects = (await listAll(`${folder}/${ownerId}`)).filter((object) => object.id);
+  const present = new Map(objects.map((object) => [`${folder}/${ownerId}/${object.name}`, object]));
   const seen = new Set(alreadyKept.map((doc) => doc.path));
   let count = alreadyKept.length;
   let total = alreadyKept.reduce((sum, doc) => sum + doc.sizeBytes, 0);
@@ -342,10 +342,12 @@ export async function registerUploadedDocuments(
   // A retried confirmation — a flaky connection, an impatient second click —
   // must not record the same document twice, and what it already recorded
   // counts towards the limits.
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from('order_documents')
     .select('storage_path, size_bytes')
     .eq('order_id', orderId);
+  // Without them a retry would be vetted as new and could stretch the limits.
+  if (existingError) throw new Error(`could not read recorded documents: ${existingError.message}`);
 
   const { kept, rejected } = await vetUploads(
     'orders',
@@ -373,7 +375,11 @@ export async function registerUploadedDocuments(
     });
 
     if (insertError) {
-      console.error(`[documents] could not record ${doc.path}:`, insertError.message);
+      // Another confirmation for the same upload got there first, and it is
+      // the one that tells the office. Anything else is a real failure.
+      if (insertError.code !== UNIQUE_VIOLATION) {
+        console.error(`[documents] could not record ${doc.path}:`, insertError.message);
+      }
       continue;
     }
 
@@ -389,41 +395,76 @@ export async function registerUploadedDocuments(
   return { kept: registered, rejected };
 }
 
+const UNIQUE_VIOLATION = '23505';
+
+/** Until 20260922000500_document_claims.sql is applied, quote_documents does not exist. */
+function isMissingTable(error: { code?: string }): boolean {
+  return error.code === 'PGRST205' || error.code === '42P01';
+}
+
+let warnedNoClaims = false;
+
 /**
  * The contract pages a reader sent from /estimate, once they have landed.
  *
- * There is no table for these — a quote is a lead, and `order_documents` hangs
- * off an order — so the bucket listing is the record. Each path is checked
- * against what is actually in the folder before a link is signed, for the same
- * reason as above: a confirmation can only ever describe objects that exist.
+ * A quote is a lead, and `order_documents` hangs off an order, so the pages
+ * have a table of their own only for one purpose: `quote_documents` records
+ * each page the office has been sent. A repeated confirmation counts those
+ * pages towards the limits and does not send them again. Claiming a page is a
+ * single insert keyed on its path, so two confirmations arriving together
+ * cannot both win it.
  *
- * `notifiedAt` is when the office was last sent this lead's pages. Anything
- * stored before then has been emailed already, so a repeated confirmation
- * does not send the same contract twice; it still counts towards the limits.
+ * Before that table exists, every confirmation sends every page it vetted.
+ * The office may get a page twice; it never misses one.
  */
 export async function signQuoteDocuments(
   leadId: string,
   documents: UploadedDocument[],
-  notifiedAt: string | null,
 ): Promise<Confirmation> {
   const supabase = requireServiceClient();
 
-  let alreadySent: { path: string; sizeBytes: number }[] = [];
-  if (notifiedAt) {
-    const { data: objects } = await supabase.storage
-      .from(BUCKET)
-      .list(`quotes/${leadId}`, { limit: MAX_FILES * 4 });
-    // Compared as instants: storage and PostgREST write timestamps differently.
-    const sentAt = new Date(notifiedAt).getTime();
-    alreadySent = (objects ?? [])
-      .filter((object) => object.created_at && new Date(object.created_at).getTime() <= sentAt)
-      .map((object) => ({ path: `quotes/${leadId}/${object.name}`, sizeBytes: Number(object.metadata?.size ?? 0) }));
+  const { data: claims, error: claimsError } = await supabase
+    .from('quote_documents')
+    .select('storage_path, size_bytes')
+    .eq('lead_id', leadId);
+  const claiming = !claimsError;
+  if (claimsError && !isMissingTable(claimsError)) {
+    throw new Error(`could not read sent pages: ${claimsError.message}`);
+  }
+  if (!claiming && !warnedNoClaims) {
+    warnedNoClaims = true;
+    console.warn('[documents] quote_documents is missing; contract pages are sent without de-duplication.');
   }
 
-  const { kept, rejected } = await vetUploads('quotes', leadId, documents, alreadySent, CONTRACT_LIMITS);
+  const { kept, rejected } = await vetUploads(
+    'quotes',
+    leadId,
+    documents,
+    (claims ?? []).map((row) => ({ path: row.storage_path, sizeBytes: Number(row.size_bytes ?? 0) })),
+    CONTRACT_LIMITS,
+  );
+
+  let toSend = kept;
+  if (claiming && kept.length > 0) {
+    const { data: won, error: claimError } = await supabase
+      .from('quote_documents')
+      .upsert(
+        kept.map((doc) => ({ storage_path: doc.path, lead_id: leadId, size_bytes: doc.sizeBytes })),
+        { onConflict: 'storage_path', ignoreDuplicates: true },
+      )
+      .select('storage_path');
+    if (claimError) {
+      // Sent anyway: a page emailed twice costs the office a glance, a page
+      // not emailed costs the sender their quote.
+      console.error(`[documents] could not record sent pages for quotes/${leadId}:`, claimError.message);
+    } else {
+      const ours = new Set((won ?? []).map((row) => row.storage_path));
+      toSend = kept.filter((doc) => ours.has(doc.path));
+    }
+  }
 
   const signed: RegisteredDocument[] = [];
-  for (const doc of kept) {
+  for (const doc of toSend) {
     signed.push({
       originalName: doc.name,
       storagePath: doc.path,
@@ -509,36 +550,41 @@ export interface PurgeReport {
   quotePages: number;
   orderDocuments: number;
   abandonedUploads: number;
+  /** The parts that did not finish. Each part runs whatever the others do. */
+  failed: string[];
 }
 
-/**
- * The retention the pages promise, carried out.
- *
- * - A contract sent for pricing is deleted before it is older than
- *   `quoteRetentionDays()`. Nothing in `leads` points at the file, so the
- *   folder is the whole of it; the lead itself, a name and an email, is kept
- *   like any other enquiry.
- * - An order document is deleted, object and row, on its `purge_after` date.
- * - An order upload that was never confirmed — the tab closed, or it was
- *   refused and the delete failed — is deleted once the confirm window has
- *   shut, because no row and no email will ever point at it.
- */
-export async function purgeExpiredDocuments(now = new Date()): Promise<PurgeReport> {
+/** Contract pages older than the limit, and the record that they were sent. */
+async function purgeQuotePages(now: Date): Promise<number> {
   const supabase = requireServiceClient();
 
   // A day early, because the run is daily: the pages promise "no longer than",
   // so nothing may be found older than the limit between one run and the next.
-  const quoteCutoff = new Date(now.getTime() - (quoteRetentionDays() - 1) * DAY_MS);
-  const quotePaths: string[] = [];
+  const cutoff = new Date(now.getTime() - (quoteRetentionDays() - 1) * DAY_MS);
+  const paths: string[] = [];
   for (const folder of await listAll('quotes')) {
     if (folder.id) continue;
     for (const object of await listAll(`quotes/${folder.name}`)) {
-      if (object.id && object.created_at && isOlderThan(object.created_at, quoteCutoff)) {
-        quotePaths.push(`quotes/${folder.name}/${object.name}`);
+      if (object.id && object.created_at && isOlderThan(object.created_at, cutoff)) {
+        paths.push(`quotes/${folder.name}/${object.name}`);
       }
     }
   }
 
+  const removed = await removeAll(paths);
+  for (let start = 0; start < paths.length; start += 100) {
+    const { error } = await supabase
+      .from('quote_documents')
+      .delete()
+      .in('storage_path', paths.slice(start, start + 100));
+    if (error && !isMissingTable(error)) throw new Error(`could not delete sent-page rows: ${error.message}`);
+  }
+  return removed;
+}
+
+/** Order documents on their `purge_after` date, object and row. */
+async function purgeExpiredOrderDocuments(now: Date): Promise<number> {
+  const supabase = requireServiceClient();
   const today = now.toISOString().slice(0, 10);
   const { data: expired, error } = await supabase
     .from('order_documents')
@@ -546,7 +592,7 @@ export async function purgeExpiredDocuments(now = new Date()): Promise<PurgeRepo
     .lte('purge_after', today);
   if (error) throw new Error(`could not read expired documents: ${error.message}`);
 
-  const orderDocuments = await removeAll((expired ?? []).map((row) => row.storage_path));
+  const removed = await removeAll((expired ?? []).map((row) => row.storage_path));
   if (expired && expired.length > 0) {
     const { error: deleteError } = await supabase
       .from('order_documents')
@@ -554,13 +600,18 @@ export async function purgeExpiredDocuments(now = new Date()): Promise<PurgeRepo
       .in('id', expired.map((row) => row.id));
     if (deleteError) throw new Error(`could not delete expired rows: ${deleteError.message}`);
   }
+  return removed;
+}
 
-  const abandonedCutoff = new Date(now.getTime() - CONFIRM_WINDOW_MS - DAY_MS);
+/** Order uploads that were never confirmed, once the confirm window has shut. */
+async function purgeAbandonedUploads(now: Date): Promise<number> {
+  const supabase = requireServiceClient();
+  const cutoff = new Date(now.getTime() - CONFIRM_WINDOW_MS - DAY_MS);
   const abandoned: string[] = [];
   for (const folder of await listAll('orders')) {
     if (folder.id) continue;
     const objects = (await listAll(`orders/${folder.name}`)).filter(
-      (object) => object.id && object.created_at && isOlderThan(object.created_at, abandonedCutoff),
+      (object) => object.id && object.created_at && isOlderThan(object.created_at, cutoff),
     );
     if (objects.length === 0) continue;
 
@@ -577,10 +628,38 @@ export async function purgeExpiredDocuments(now = new Date()): Promise<PurgeRepo
       if (!recorded.has(path)) abandoned.push(path);
     }
   }
+  return removeAll(abandoned);
+}
 
-  return {
-    quotePages: await removeAll(quotePaths),
-    orderDocuments,
-    abandonedUploads: await removeAll(abandoned),
-  };
+/**
+ * The retention the pages promise, carried out.
+ *
+ * - A contract sent for pricing is deleted before it is older than
+ *   `quoteRetentionDays()`. The lead itself, a name and an email, is kept like
+ *   any other enquiry.
+ * - An order document is deleted, object and row, on its `purge_after` date.
+ * - An order upload that was never confirmed — the tab closed, or it was
+ *   refused and the delete failed — is deleted once the confirm window has
+ *   shut, because no row and no email will ever point at it.
+ *
+ * Each runs whether or not the others finished: a storage error on the order
+ * side must not keep a contract past the 30 days the page promised.
+ */
+export async function purgeExpiredDocuments(now = new Date()): Promise<PurgeReport> {
+  const report: PurgeReport = { quotePages: 0, orderDocuments: 0, abandonedUploads: 0, failed: [] };
+  const parts = [
+    ['quotePages', purgeQuotePages],
+    ['orderDocuments', purgeExpiredOrderDocuments],
+    ['abandonedUploads', purgeAbandonedUploads],
+  ] as const;
+
+  for (const [name, run] of parts) {
+    try {
+      report[name] = await run(now);
+    } catch (error) {
+      console.error(`[documents] purge of ${name} failed:`, (error as Error).message);
+      report.failed.push(name);
+    }
+  }
+  return report;
 }

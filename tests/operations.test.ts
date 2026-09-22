@@ -100,6 +100,6 @@ describe('the daily purge', () => {
 
     const response = await GET(call('Bearer the-secret'));
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, quotePages: 0, orderDocuments: 0, abandonedUploads: 0 });
+    expect(await response.json()).toEqual({ ok: true, quotePages: 0, orderDocuments: 0, abandonedUploads: 0, failed: [] });
   });
 });

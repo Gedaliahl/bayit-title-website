@@ -108,6 +108,23 @@ describe('confirming an order’s documents', () => {
     expect(result.rejected[0]?.reason).toBe('over 60 MB in all');
   });
 
+  it('leaves a document to the confirmation that recorded it first, without calling it a failure', async () => {
+    vi.resetModules();
+    const fake = fakeSupabase((query) =>
+      query.table === 'order_documents' && query.op === 'insert'
+        ? { data: null, error: { code: '23505', message: 'duplicate key value' } }
+        : { data: [] },
+    );
+    fake.bucket.list.mockResolvedValue({ data: [stored('a.pdf', 12)], error: null });
+    state.client = fake.client;
+    serve({ [`orders/${ORDER}/a.pdf`]: PDF });
+    const storage = await import('@/lib/document-storage');
+
+    const result = await storage.registerUploadedDocuments(ORDER, [{ path: `orders/${ORDER}/a.pdf`, name: 'a.pdf' }]);
+    expect(result.kept).toEqual([]);
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
   it('keeps a file it could not read, marked so the office knows', async () => {
     const { storage } = await setUp([stored('a.pdf', 12)]);
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('timeout'); }));
@@ -121,16 +138,67 @@ describe('confirming an order’s documents', () => {
 describe('a contract sent for pricing', () => {
   it('holds the whole contract to 25 MB', async () => {
     const objects = [stored('1.pdf', 20 * MB), stored('2.pdf', 10 * MB)];
-    const { storage } = await setUp(objects);
-    serve(Object.fromEntries(objects.map((object) => [`quotes/${ORDER}/${object.name}`, PDF])));
+    const { storage } = await quoteSetUp(objects, {});
 
     const result = await storage.signQuoteDocuments(
       ORDER,
       objects.map((object) => ({ path: `quotes/${ORDER}/${object.name}`, name: object.name })),
-      null,
     );
     expect(result.kept).toHaveLength(1);
     expect(result.rejected[0]?.reason).toBe('over 25 MB in all');
+  });
+
+  /** A lead's folder, with quote_documents answering as `claims` says. */
+  async function quoteSetUp(
+    objects: ReturnType<typeof stored>[],
+    claims: {
+      sent?: { storage_path: string; size_bytes: number }[];
+      won?: (paths: string[]) => string[];
+      missing?: boolean;
+    },
+  ) {
+    vi.resetModules();
+    const missing = { code: 'PGRST205', message: 'no such table' };
+    const fake = fakeSupabase((query) => {
+      if (query.table !== 'quote_documents') return { data: null };
+      if (claims.missing) return { data: null, error: missing };
+      if (query.op === 'select') return { data: claims.sent ?? [] };
+      const rows = query.payload as unknown as { storage_path: string }[];
+      const paths = rows.map((row) => row.storage_path);
+      return { data: (claims.won ?? ((all) => all))(paths).map((path) => ({ storage_path: path })) };
+    });
+    fake.bucket.list.mockResolvedValue({ data: objects, error: null });
+    state.client = fake.client;
+    serve(Object.fromEntries(objects.map((object) => [`quotes/${ORDER}/${object.name}`, PDF])));
+    return { fake, storage: await import('@/lib/document-storage') };
+  }
+
+  const pages = (...names: string[]) => names.map((name) => ({ path: `quotes/${ORDER}/${name}`, name }));
+
+  it('does not send the office a page it has already been sent', async () => {
+    const { storage } = await quoteSetUp([stored('1.pdf', MB), stored('2.pdf', MB)], {
+      sent: [{ storage_path: `quotes/${ORDER}/1.pdf`, size_bytes: MB }],
+    });
+
+    const result = await storage.signQuoteDocuments(ORDER, pages('1.pdf', '2.pdf'));
+    expect(result.kept.map((doc) => doc.storagePath)).toEqual([`quotes/${ORDER}/2.pdf`]);
+  });
+
+  it('leaves a page to the confirmation that claimed it first', async () => {
+    const { storage } = await quoteSetUp([stored('1.pdf', MB), stored('2.pdf', MB)], {
+      won: (paths) => paths.filter((path) => path.endsWith('2.pdf')),
+    });
+
+    const result = await storage.signQuoteDocuments(ORDER, pages('1.pdf', '2.pdf'));
+    expect(result.kept.map((doc) => doc.storagePath)).toEqual([`quotes/${ORDER}/2.pdf`]);
+  });
+
+  it('sends every page while the table that records them does not exist yet', async () => {
+    const { storage } = await quoteSetUp([stored('1.pdf', MB), stored('2.pdf', MB)], { missing: true });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const result = await storage.signQuoteDocuments(ORDER, pages('1.pdf', '2.pdf'));
+    expect(result.kept).toHaveLength(2);
   });
 });
 
@@ -207,6 +275,30 @@ describe('the daily purge', () => {
     // Recorded, or still inside the window to be confirmed: left alone.
     expect(removed).not.toContain(`orders/${ORDER}/kept.pdf`);
     expect(removed).not.toContain(`orders/${ORDER}/fresh.pdf`);
-    expect(report).toEqual({ quotePages: 1, orderDocuments: 1, abandonedUploads: 1 });
+    expect(report).toEqual({ quotePages: 1, orderDocuments: 1, abandonedUploads: 1, failed: [] });
+  });
+
+  it('still deletes the contracts when the order side cannot be read', async () => {
+    vi.resetModules();
+    const now = new Date('2026-10-30T09:00:00Z');
+    const fake = fakeSupabase((query) =>
+      query.table === 'order_documents' ? { data: null, error: { message: 'connection reset' } } : { data: null },
+    );
+    fake.bucket.list.mockImplementation((async (prefix: string) => {
+      const listing: Record<string, unknown[]> = {
+        quotes: [{ name: 'lead-a', id: null }],
+        'quotes/lead-a': [{ name: 'old.pdf', id: '1', created_at: '2026-09-01T00:00:00Z' }],
+      };
+      return { data: listing[prefix] ?? [], error: null };
+    }) as never);
+    state.client = fake.client;
+    const { purgeExpiredDocuments } = await import('@/lib/document-storage');
+
+    const report = await purgeExpiredDocuments(now);
+
+    expect(report.quotePages).toBe(1);
+    expect(report.failed).toEqual(['orderDocuments']);
+    const deletedRows = fake.queries.filter((query) => query.table === 'quote_documents' && query.op === 'delete');
+    expect(deletedRows[0]?.filters).toContainEqual(['in', 'storage_path', ['quotes/lead-a/old.pdf']]);
   });
 });

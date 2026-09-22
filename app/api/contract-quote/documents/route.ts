@@ -1,10 +1,10 @@
 // Called by the browser once the contract pages have finished uploading.
 //
-// Nothing is recorded in a table here — the lead already is, and a quote has
-// no document table of its own — so this does one thing: it checks that the
+// The lead is already recorded, so this does one thing: it checks that the
 // paths the browser names are really under this lead's folder and really in
-// the bucket, checks each page's bytes and size, signs a link to each, and
-// sends the office the email it needs to open the contract. Holding a lead id
+// the bucket, checks each page's bytes and size, signs a link to each page the
+// office has not been sent yet, and sends the email it needs to open the
+// contract. Holding a lead id
 // is not enough to plant a page: writing to the folder needs a signed upload
 // URL that only the sender received.
 import { after, NextResponse } from 'next/server';
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     const { data: lead, error } = await supabase
       .from('leads')
-      .select('id, full_name, email, status, created_at, updated_at')
+      .select('id, full_name, email, created_at')
       .eq('id', leadId)
       .single();
 
@@ -69,20 +69,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'That request is no longer accepting pages.' }, { status: 409 });
     }
 
-    // A lead is written with updated_at equal to created_at, and the office
-    // being emailed is what moves it (see below). So a later updated_at is the
-    // moment the pages already stored were sent, and they are not sent again.
-    const notifiedAt =
-      new Date(lead.updated_at).getTime() > new Date(lead.created_at).getTime() ? lead.updated_at : null;
-    const { kept, rejected } = await signQuoteDocuments(leadId, own, notifiedAt);
+    const { kept, rejected } = await signQuoteDocuments(leadId, own);
 
     if (kept.length > 0 || rejected.length > 0) {
-      // Marked before the email goes rather than after it, so a second
-      // confirmation arriving on its heels finds the pages already claimed.
-      // Writing the status back unchanged is enough: the table's trigger
-      // stamps updated_at on every update.
-      await supabase.from('leads').update({ status: lead.status }).eq('id', leadId);
-
       const days = quoteRetentionDays();
       after(() =>
         notify(

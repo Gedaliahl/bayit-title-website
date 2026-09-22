@@ -8,7 +8,7 @@ import { vi } from 'vitest';
 
 export interface Query {
   table: string;
-  op: 'select' | 'insert' | 'update' | 'delete';
+  op: 'select' | 'insert' | 'upsert' | 'update' | 'delete';
   payload?: Record<string, unknown>;
   filters: [string, string, unknown][];
   head?: boolean;
@@ -42,6 +42,11 @@ export function fakeSupabase(respond: Responder = () => ({ data: null, error: nu
       },
       insert: (payload: Record<string, unknown>) => {
         query.op = 'insert';
+        query.payload = payload;
+        return chain;
+      },
+      upsert: (payload: Record<string, unknown>) => {
+        query.op = 'upsert';
         query.payload = payload;
         return chain;
       },

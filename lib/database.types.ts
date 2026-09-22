@@ -209,6 +209,22 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['order_documents']['Insert']>;
         Relationships: [];
       };
+      quote_documents: {
+        Row: {
+          lead_id: string;
+          sent_at: string;
+          size_bytes: number | null;
+          storage_path: string;
+        };
+        Insert: {
+          lead_id: string;
+          sent_at?: string;
+          size_bytes?: number | null;
+          storage_path: string;
+        };
+        Update: Partial<Database['public']['Tables']['quote_documents']['Insert']>;
+        Relationships: [];
+      };
       orders: {
         Row: {
           buyer_name: string | null;
