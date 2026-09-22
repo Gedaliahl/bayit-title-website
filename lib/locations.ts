@@ -1,5 +1,7 @@
 // County and city data. Read at build time with the service role; falls back to
-// the canonical priority counties in lib/site.ts when Supabase is unconfigured.
+// the canonical priority counties in lib/site.ts when Supabase is unconfigured,
+// except on a build that is required to be complete — see
+// `requireCompleteLocations` below.
 import 'server-only';
 
 import { cache } from 'react';
@@ -74,9 +76,46 @@ function fallbackCounties(): Location[] {
   }));
 }
 
+/**
+ * Whether this build must have every county, or fail.
+ *
+ * The fallback is six counties. A build that takes it ships six county pages
+ * instead of sixty-seven, the other sixty-one return 404 and drop out of the
+ * sitemap, and nothing fails — one such deploy to production could de-index
+ * most of the county pages. So the production deployment refuses it, and so
+ * does any CI build that sets REQUIRE_LOCATIONS=1 to catch the problem before
+ * a deploy does. Development and preview builds keep the fallback, loudly, so
+ * the site still runs without credentials.
+ */
+export function requireCompleteLocations(): boolean {
+  return process.env.VERCEL_ENV === 'production' || process.env.REQUIRE_LOCATIONS === '1';
+}
+
+/**
+ * Says why this build does not have every county, and fails it if it must.
+ * `consequence` is what the reader of the site would get instead.
+ */
+function reportIncomplete(reason: string, consequence: string): void {
+  const message = `[locations] ${reason} ${consequence}`;
+  if (requireCompleteLocations()) {
+    throw new Error(
+      `${message} This build requires all ${site.floridaCounties} counties ` +
+        '(VERCEL_ENV=production or REQUIRE_LOCATIONS=1).',
+    );
+  }
+  console.warn(`${message} Building anyway; a production build would fail here.`);
+}
+
+const FALLBACK_CONSEQUENCE =
+  `The fallback has only the ${site.priorityCounties.length} priority counties, so every other ` +
+  'county page would 404 and drop out of the sitemap.';
+
 export const getLocations = cache(async (): Promise<Location[]> => {
   const supabase = getServiceClient();
-  if (!supabase) return fallbackCounties();
+  if (!supabase) {
+    reportIncomplete('Supabase is not configured.', FALLBACK_CONSEQUENCE);
+    return fallbackCounties();
+  }
 
   const { data, error } = await supabase
     .from('locations')
@@ -88,7 +127,10 @@ export const getLocations = cache(async (): Promise<Location[]> => {
     .order('name');
 
   if (error || !data) {
-    if (error) console.warn(`[locations] fetch failed, using canonical fallback: ${error.message}`);
+    reportIncomplete(
+      `The locations fetch failed: ${error?.message ?? 'no data returned'}.`,
+      FALLBACK_CONSEQUENCE,
+    );
     return fallbackCounties();
   }
 
@@ -98,12 +140,23 @@ export const getLocations = cache(async (): Promise<Location[]> => {
   // rows were filtered out rather than absent: almost always the anon key in
   // place of the service role key, where RLS returns zero rows and no error.
   if (data.length === 0) {
-    console.warn(
-      '[locations] query returned zero rows, using canonical fallback. The table is seeded, ' +
-        'so this usually means SUPABASE_SERVICE_ROLE_KEY holds the anon key: RLS then filters ' +
-        'every row and reports no error.',
+    reportIncomplete(
+      'The query returned zero rows. The table is seeded, so this usually means ' +
+        'SUPABASE_SERVICE_ROLE_KEY holds the anon key: RLS then filters every row and reports no error.',
+      FALLBACK_CONSEQUENCE,
     );
     return fallbackCounties();
+  }
+
+  // A partial table is the same failure by degrees: every county missing from
+  // it is a page that 404s. Here the rows that did come back are kept, since
+  // they are real, and only a required build refuses them.
+  const countyRows = data.filter((row) => row.kind === 'county').length;
+  if (countyRows < site.floridaCounties) {
+    reportIncomplete(
+      `The locations table has ${countyRows} of the ${site.floridaCounties} counties.`,
+      'The missing county pages would 404.',
+    );
   }
 
   return data.map((row) => ({
@@ -245,6 +298,23 @@ export const RECORDER_STATUTE = {
   cite: 'Fla. Stat. § 28.222(1)',
   url: 'https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.222.html',
 } as const;
+
+/**
+ * A recording office's turnaround, ready to set in a blockquote.
+ *
+ * Some rows store the office's words as a run of quoted sentences — `"We
+ * cannot guarantee…" "Documents submitted…"` — because they were lifted from
+ * two places on one page. Inside a blockquote those marks double up: the block
+ * already says it is a quotation. When every part of the text is quoted, the
+ * marks come off and the sentences run on. When the row mixes quoted words with
+ * our own description of the page, the marks are what tell the two apart, so
+ * they stay.
+ */
+export function turnaroundForQuote(text: string): string {
+  const parts = text.trim().match(/"[^"]*"/g);
+  if (!parts || parts.join('').replace(/\s/g, '') !== text.replace(/\s/g, '')) return text.trim();
+  return parts.map((part) => part.slice(1, -1).trim()).join(' ');
+}
 
 export function recorderName(county: Pick<Location, 'name' | 'clerkName'>): string {
   return county.clerkName ?? `${county.name} Clerk of the Circuit Court`;

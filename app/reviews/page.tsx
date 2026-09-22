@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { getReviews, getReviewSnapshot } from '@/lib/reviews';
+import { unlistedReviewsNote } from '@/lib/review-order';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ReviewBrowser } from '@/components/ReviewBrowser';
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 
 export default async function ReviewsPage() {
   const [reviews, snapshot] = await Promise.all([getReviews(), getReviewSnapshot()]);
+  const unlisted = unlistedReviewsNote(snapshot?.reviewCount ?? null, reviews.length);
 
   return (
     <div className="frame section">
@@ -37,17 +39,18 @@ export default async function ReviewsPage() {
           />
         ) : null}
         <p className="form-note">
-          Some reviews carry no date. Google reports the older ones only as relative labels
-          (&ldquo;a year ago&rdquo;), and rather than print a date we would be guessing at, we
-          print none. The order below can be changed; nothing is filtered out of it.
+          {unlisted ? `${unlisted} ` : ''}Some reviews carry no date. Their dates were worked out
+          from relative labels such as &ldquo;12 weeks ago&rdquo;, and rather than print a date we
+          would be guessing at, we print none. The order below can be changed; nothing is filtered
+          out of it.
         </p>
 
         {reviews.length > 0 ? (
           <ReviewBrowser reviews={reviews} />
         ) : (
           <p className="muted">
-            Reviews load from our Google Business Profile at build time and are not available right
-            now. They can be read on{' '}
+            Reviews load from our database of Google reviews at build time and are not available
+            right now. They can be read on{' '}
             <a href={site.googleProfileUrl} rel="nofollow noopener">
               our Google profile
             </a>

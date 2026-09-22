@@ -40,7 +40,7 @@ export default async function QuotePage() {
         />
 
         <p>
-          Send the county and the price and we will itemise it. If a figure depends on something we
+          Send the county and the price and we will itemize it. If a figure depends on something we
           have not seen yet — a survey, an existing policy, an entity buyer — the quote will say so
           rather than average it out.
         </p>
@@ -52,13 +52,17 @@ export default async function QuotePage() {
           for anything. If you have an address but not a price yet,{' '}
           <Link href="/estimate">estimate from the address</Link>: it prices the premium off the
           county and the assessed value the property appraiser publishes. If you have the contract,{' '}
-          <Link href="/estimate?mode=upload">send it</Link> and we itemise everything, our fees
+          <Link href="/estimate?mode=upload">send it</Link> and we itemize everything, our fees
           included.
         </p>
         <p className="form-note">
-          Neither tool prices the part that is ours rather than the rule&rsquo;s — our settlement
-          fee, the search and examination, endorsements — so a person still prepares the quote. See{' '}
-          <Link href="/counties">counties we close in</Link> for what differs locally.
+          The address and the numbers estimates stop at the rule&rsquo;s and the statute&rsquo;s
+          figures. The part that is ours — our settlement fee, the search and examination,
+          endorsements — is priced by a person, from this form or from the contract. The{' '}
+          <Link href="/closing-costs/buyer">buyer</Link> and{' '}
+          <Link href="/closing-costs/seller">seller</Link> closing cost pages say what each line is
+          and who sets it, and <Link href="/counties">counties we close in</Link> says what differs
+          locally.
         </p>
 
         <LeadForm
@@ -66,7 +70,7 @@ export default async function QuotePage() {
           showTransactionFields
           counties={counties.map((c) => ({ value: c.slug, label: c.name }))}
           submitLabel="Request the quote"
-          successMessage={`Received. We will come back with an itemised quote, usually the same business day. If it is urgent, call ${site.phoneDisplay}.`}
+          successMessage={`Received. We will come back with an itemized quote, usually the same business day. If it is urgent, call ${site.phoneDisplay}.`}
         />
       </div>
     </div>

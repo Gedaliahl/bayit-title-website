@@ -5,7 +5,7 @@ slug: "litigation-against-seller-flip-florida"
 cluster: "distressed"
 direct_answer: "A lawsuit against a seller only affects title if it reaches the property — most directly through a recorded lis pendens, which puts the world on notice that the outcome could affect the parcel. A short hold since the seller acquired the property does not itself create a title defect, but it does change what the search has to look at."
 counties: []
-review_tags: ["litigation", "lis-pendens", "flip", "clearing-title"]
+review_tags: ["title-clearing"]
 related:
   - "judgment-against-seller-before-closing-florida"
   - "buying-property-bankruptcy-estate-florida"

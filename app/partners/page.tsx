@@ -19,24 +19,14 @@ export const metadata: Metadata = {
 };
 
 /**
- * Tags on the Google reviews written by the people this page is addressed to —
- * agents, loan officers, signing agents and repeat referrers. The reviews are
- * not chosen by hand: whatever carries these tags is what appears, ranked by
- * how many of them overlap. Nothing is written for this page and nothing is
- * edited into it.
+ * The tag on the Google reviews written by people who work in the business:
+ * agents, lenders and signing agents. The page says that is who wrote the reviews
+ * it shows, so it pulls only this tag: the broader ones (`agent`, `lender`,
+ * `referral`) are also on reviews by buyers and sellers who mention their agent
+ * or their loan. The reviews are not chosen by hand, and nothing is written for
+ * this page or edited into it.
  */
-const PARTNER_REVIEW_TAGS = [
-  'agent',
-  'lender',
-  'industry-professional',
-  'partner',
-  'signing-agent',
-  'referral',
-  'lender-coordination',
-  'lender-issues',
-  'clear-to-close',
-  'volume',
-];
+const PARTNER_REVIEW_TAGS = ['industry-professional'];
 
 export default async function PartnersPage() {
   const reviews = await getReviewsByTags(PARTNER_REVIEW_TAGS, 6);
@@ -71,12 +61,13 @@ export default async function PartnersPage() {
           your client called back. That is the whole of our pitch, and everything below is a
           specific about how it is done.
         </p>
-        <p>
-          You do not have to take it from us. The{' '}
-          <Link href="/reviews">reviews</Link> on this page are not ours; they were left on Google,
-          mostly by agents, loan officers and signing agents, and they are reproduced in full,
-          unedited.
-        </p>
+        {reviews.length > 0 ? (
+          <p>
+            You do not have to take it from us. The <Link href="/reviews">reviews</Link> on this page
+            are not ours; they were left on Google by people who work in the business, and they are
+            reproduced in full, unedited.
+          </p>
+        ) : null}
 
         <h2>For real estate agents</h2>
         <ul>
@@ -110,9 +101,9 @@ export default async function PartnersPage() {
         <h2>For mortgage brokers and loan officers</h2>
         <ul>
           <li>
-            <strong>Conditions get answered, not forwarded.</strong> Title conditions, CPL,
-            wiring instructions, the closing protection letter and the fee sheet come back from
-            someone who can actually resolve them.
+            <strong>Conditions get answered, not forwarded.</strong> Title conditions, wiring
+            instructions, the closing protection letter and the fee sheet come back from someone who
+            can actually resolve them.
           </li>
           <li>
             <strong>Your numbers and ours reconcile before the borrower sees them.</strong> The
@@ -132,8 +123,8 @@ export default async function PartnersPage() {
           </li>
           <li>
             <strong>Wire discipline.</strong> We never send wire instructions by email and never
-            email a change to instructions already given. Tell your borrowers that; it is the single
-            most useful thing either of us can say to them.
+            email a change to instructions already given. Tell your borrowers that, on every
+            file.
           </li>
         </ul>
 

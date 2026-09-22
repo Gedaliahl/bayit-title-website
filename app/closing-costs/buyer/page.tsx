@@ -98,6 +98,7 @@ export default async function BuyerClosingCostsPage() {
         <Breadcrumbs
           trail={[
             { name: 'Home', path: '/' },
+            { name: 'Closing costs', path: '/closing-costs' },
             { name: 'Buyer closing costs', path: '/closing-costs/buyer' },
           ]}
         />
@@ -119,7 +120,13 @@ export default async function BuyerClosingCostsPage() {
             'How the standard Florida contract forms allocate each line by default',
           ]}
           variant="withheld"
+          scope="statewide"
         />
+
+        <p>
+          The other side of the same closing statement is on the{' '}
+          <Link href="/closing-costs/seller">seller closing costs</Link> page.
+        </p>
 
         <h2>What the statute sets, on a financed purchase</h2>
         <p>
@@ -239,7 +246,7 @@ export default async function BuyerClosingCostsPage() {
         </p>
 
         <QuietCta
-          text="Send us the price, the loan amount and the county and we will itemise the buyer’s side against the actual documents."
+          text="Send us the price, the loan amount and the county and we will itemize the buyer’s side against the actual documents."
           action="Request a quote"
           href="/quote"
         />

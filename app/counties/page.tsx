@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 import { COUNTY_REGIONS, getCounties, type Location } from '@/lib/locations';
 import { FLORIDA_COUNTIES, countySlugFor } from '@/lib/florida-counties';
+import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { deedStampTax, discretionarySurtax } from '@/lib/statutory-rates';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -31,10 +32,10 @@ const WHAT_CHANGES = [
       'contract.',
   },
   {
-    title: 'What the clerk charges to record',
+    title: 'Which office records',
     body:
-      'And which office does the recording — in Orange it is the Comptroller rather than the ' +
-      'Clerk of Courts.',
+      'In Orange it is the Comptroller rather than the Clerk of Courts. What recording costs is ' +
+      'set by statute, the same at every office.',
   },
   {
     title: 'How the appraiser publishes data',
@@ -65,13 +66,8 @@ function countyNote(county: Location): string | null {
   const surtax = discretionarySurtax(county.slug);
   if (surtax) {
     return (
-      `Deed doc stamps are ${deedStampTax(county.slug).amount.replace(
-        ' of consideration, or part of $100',
-        '',
-      )} here, plus a ${surtax.amount.replace(
-        ' of consideration, or part of $100',
-        '',
-      )} surtax on non-single-family property.`
+      `Deed doc stamps are ${perHundred(deedStampTax(county.slug).amount)} here, plus a ` +
+      `${perHundred(surtax.amount)} surtax on non-single-family property.`
     );
   }
 
@@ -86,6 +82,12 @@ export default async function CountiesPage() {
   // The band carries the six busiest counties. The other sixty-one are linked
   // from the full list below.
   const bySlug = new Map(counties.map((county) => [county.slug, county]));
+  // True on a complete build. A development build without Supabase has only the
+  // priority counties, and the caption must not promise the other sixty-one.
+  const everyCountyHasAPage = FLORIDA_COUNTIES.every((county) => bySlug.has(county.slug));
+  // A city page renders its county's figures, so it exists only where the
+  // county does — the same filter the city route's static params apply.
+  const cities = FLORIDA_CITIES.filter((city) => bySlug.has(city.countySlug));
 
   return (
     <div>
@@ -119,8 +121,13 @@ export default async function CountiesPage() {
           rows={[
             { term: 'Premium', detail: `Promulgated — same in all ${site.floridaCounties}` },
             { term: 'Who pays', detail: 'Local custom, negotiable in the contract' },
-            { term: 'Doc stamps', detail: '70¢ per $100; Miami-Dade 60¢ plus surtax' },
-            { term: 'Recording', detail: 'The clerk’s fee and the clerk’s turnaround' },
+            {
+              term: 'Doc stamps',
+              detail:
+                `${perHundred(deedStampTax(countySlugFor('Broward')).amount)}; Miami-Dade ` +
+                `${perHundred(deedStampTax(countySlugFor('Miami-Dade')).amount)} plus surtax`,
+            },
+            { term: 'Recording', detail: 'Set by statute; each office’s own turnaround' },
           ]}
           action={{
             prompt: 'Price a specific property',
@@ -167,6 +174,7 @@ export default async function CountiesPage() {
             { id: 'changes', label: 'What changes county to county' },
             { id: 'same', label: 'What does not' },
             { id: 'elsewhere', label: 'Elsewhere in Florida' },
+            ...(cities.length > 0 ? [{ id: 'cities', label: 'Cities' }] : []),
           ]}
         />
 
@@ -210,8 +218,9 @@ export default async function CountiesPage() {
             <div className="section__head">
               <h2>Elsewhere in Florida</h2>
               <span className="caption">
-                Every county has a page. Each states what the statute and the rule set, and holds
-                back what only the recording office or this team can confirm.
+                {everyCountyHasAPage ? 'Every county has a page. ' : null}Each county page states
+                what the statute and the rule set, and holds back what only the recording office or
+                this team can confirm.
               </span>
             </div>
             <ul className="county-list">
@@ -230,6 +239,24 @@ export default async function CountiesPage() {
               })}
             </ul>
           </section>
+
+          {cities.length > 0 ? (
+            <section id="cities">
+              <div className="section__head">
+                <h2>Cities</h2>
+                <span className="caption">
+                  A city page carries its county&rsquo;s figures, addressed to the place.
+                </span>
+              </div>
+              <ul className="county-list">
+                {cities.map((city) => (
+                  <li key={city.slug}>
+                    <Link href={`/cities/${city.slug}`}>{city.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
         </div>
       </div>
 
@@ -239,6 +266,11 @@ export default async function CountiesPage() {
       />
     </div>
   );
+}
+
+/** "70¢ per $100 of consideration, or part of $100" at the length of a card line. */
+function perHundred(amount: string): string {
+  return amount.replace(' of consideration, or part of $100', '');
 }
 
 /** "Broward County" reads as "Broward" in a list of six of them. */

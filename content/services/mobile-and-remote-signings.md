@@ -5,7 +5,7 @@ slug: "mobile-and-remote-signings"
 cluster: "process"
 direct_answer: "We hold closings three ways: in our Coral Springs office, wherever the signer happens to be, or online by remote online notarization. The choice is about what the file needs — a seller abroad, a buyer who cannot take a morning off, a signer who would rather sit across a table — not about a service tier."
 counties: []
-review_tags: ["mobile-signing", "remote-online-notarization", "ron", "closing"]
+review_tags: ["mobile-signing", "remote-closing"]
 author: "shevy"
 reviewed_on: "2026-09-22"
 next_review: "2027-09-22"
@@ -25,7 +25,7 @@ quick_facts:
 
 The closing happens at 3301 N University Drive in Coral Springs. Documents are on the table, the closer walks through them, and questions get answered by the person who prepared the file rather than relayed.
 
-Office hours are Monday through Thursday, 9:00 to 5:00, and Friday 9:00 to 12:00. Signings outside those hours are arranged in advance on a specific file; we do not staff the office after hours as a standing matter.
+Office hours are Monday through Friday, 9:00 to 5:00. Signings outside those hours are arranged in advance on a specific file; we do not staff the office after hours as a standing matter.
 
 ## Wherever the signer is
 
@@ -37,13 +37,13 @@ Three days is what we ask for, not a cut-off. Where a file needs a signing soone
 
 ## Online, by remote online notarization
 
-Florida authorises remote online notarization: the signer appears before a Florida-commissioned online notary by audio-video link, with identity verification and a recorded session. For a signer out of state or out of the country, this is often the practical route.
+Florida authorizes remote online notarization: the signer appears before a Florida-commissioned online notary by audio-video link, with identity verification and a recorded session. For a signer out of state or out of the country, this is often the practical route.
 
-The act has to be performed by a notary who holds a current Florida notary commission **and** is separately registered with the Department of State as an online notary public. [Fla. Stat. § 117.225](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.225.html) sets out what that registration requires: the underlying commission, a course covering the duties and the technology, a $25,000 bond, and errors and omissions coverage of at least $25,000. A standard Florida notary commission on its own does not authorise a remote online notarization.
+The act has to be performed by a notary who holds a current Florida notary commission **and** is separately registered with the Department of State as an online notary public. [Fla. Stat. § 117.225](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.225.html) sets out what that registration requires: the underlying commission, a course covering the duties and the technology, a $25,000 bond, and errors and omissions coverage of at least $25,000. A standard Florida notary commission on its own does not authorize a remote online notarization.
 
-Nobody here holds that registration. The commissions held at Bayit Title were checked against the Department of State record and are standard Florida notary commissions, which authorise an in-person notarial act and not an online one.
+Nobody here holds that registration. The commissions held at Bayit Title were checked against the Department of State record and are standard Florida notary commissions, which authorize an in-person notarial act and not an online one.
 
-So a remote online notarization on one of our files is performed by a Florida-registered online notary, under that notary's own registration, through the platform the session runs on — not by one of our own notaries. Nothing else about the closing moves: the file is prepared here, the documents are reviewed here, and the closer who built it is reachable during the session. What changes is who takes the acknowledgment, and it is someone the statute authorises to take it.
+So a remote online notarization on one of our files is performed by a Florida-registered online notary, under that notary's own registration, through the platform the session runs on — not by one of our own notaries. Nothing else about the closing moves: the file is prepared here, the documents are reviewed here, and the closer who built it is reachable during the session. What changes is who takes the acknowledgment, and it is someone the statute authorizes to take it.
 
 Two things decide whether RON can be used on a given file, and neither is up to the signer: the lender has to accept remotely notarized documents, and so does the underwriter. We confirm both before scheduling rather than after.
 
@@ -51,7 +51,7 @@ Underwriters also keep their own lists of approved RON platforms, so the platfor
 
 That is also why the platform is worth raising early rather than late. A lender that will only accept a particular platform, or an underwriter that will not accept the one a signer has used before, is a constraint we would rather find at the start of the file than the night before a closing.
 
-The exclusions written into the statute apply whatever the lender and the underwriter allow. Solemnising marriage is outside RON under [Fla. Stat. § 117.209](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html)(1). Wills, trusts with testamentary aspects, health care advance directives and powers of attorney carry the extra screening requirements in [Fla. Stat. § 117.285](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.285.html), and electronic witnessing is not valid where the principal is a vulnerable adult as defined in s. 415.102.
+The exclusions written into the statute apply whatever the lender and the underwriter allow. Solemnizing marriage is outside RON under [Fla. Stat. § 117.209](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html)(1). Wills, trusts with testamentary aspects, health care advance directives and powers of attorney carry the extra screening requirements in [Fla. Stat. § 117.285](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.285.html), and electronic witnessing is not valid where the principal is a vulnerable adult as defined in s. 415.102.
 
 ## Which one should we use?
 
@@ -65,9 +65,9 @@ Where someone is signing under a power of attorney, where a signer's capacity is
 
 ### Is a remote online notarization as valid as an in-person one?
 
-It is a notarial act authorised by Florida law with its own identity verification and recording requirements.
+It is a notarial act authorized by Florida law with its own identity verification and recording requirements.
 
-Part II of chapter 117 is the authority. An online notary public — a Florida notary who has separately registered with the Department of State to perform online notarizations ([Fla. Stat. § 117.201(10)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.201.html)) — may perform any notarial act authorised under part I of the chapter online, except solemnising a marriage ([§ 117.209(1)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html)). Where a law requires a signer to appear before a notary, appearing by audio-video communication technology satisfies it, and [§ 117.215](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.215.html) provides that an online notarization performed under part II satisfies any requirement that a document be notarized, acknowledged, sworn or made under oath.
+Part II of chapter 117 is the authority. An online notary public — a Florida notary who has separately registered with the Department of State to perform online notarizations ([Fla. Stat. § 117.201(10)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.201.html)) — may perform any notarial act authorized under part I of the chapter online, except solemnizing a marriage ([§ 117.209(1)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.209.html)). Where a law requires a signer to appear before a notary, appearing by audio-video communication technology satisfies it, and [§ 117.215](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.215.html) provides that an online notarization performed under part II satisfies any requirement that a document be notarized, acknowledged, sworn or made under oath.
 
 The limits worth knowing are these. The **notary** has to be physically in Florida; the **signer** does not — § 117.209(3) says an online notarization may be performed regardless of whether the principal or the witnesses are in the state, and § 117.209(4) makes Florida law the measure of the act’s validity wherever the signer was. Identity is established by credential analysis and identity proofing rather than by looking at a license across a table, and the session is recorded and journalled. None of that is optional, which is why RON is a different act rather than a video call with a notary on it.
 

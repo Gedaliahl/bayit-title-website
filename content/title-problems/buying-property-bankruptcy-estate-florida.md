@@ -3,9 +3,9 @@ status: reviewed
 title: "We're buying from a bankruptcy estate. What does the title work need?"
 slug: "buying-property-bankruptcy-estate-florida"
 cluster: "distressed"
-direct_answer: "In a bankruptcy sale the court's order authorising the sale is a title document. The trustee's authority, the terms the order approves, whether liens are stripped or ride through, and whether the appeal period has run all come from that order — so it is read as carefully as the deed, and the closing is scheduled around it."
+direct_answer: "In a bankruptcy sale the court's order authorizing the sale is a title document. The trustee's authority, the terms the order approves, whether liens are stripped or ride through, and whether the appeal period has run all come from that order — so it is read as carefully as the deed, and the closing is scheduled around it."
 counties: []
-review_tags: ["bankruptcy", "court-ordered-sale", "distressed", "clearing-title"]
+review_tags: ["title-clearing"]
 author: "shevy"
 reviewed_on: "2026-09-22"
 next_review: "2027-09-22"
@@ -18,7 +18,7 @@ quick_facts:
   - term: "Who this affects"
     detail: "Buyers and investors purchasing from a Chapter 7 trustee or a Chapter 11 or 13 debtor in possession."
   - term: "The core document"
-    detail: "The bankruptcy court's order authorising the sale, plus the motion and notice behind it."
+    detail: "The bankruptcy court's order authorizing the sale, plus the motion and notice behind it."
   - term: "Typical timeline"
     detail: "The dates are set before the order exists: a proposed sale outside the ordinary course needs at least 21 days' notice under Fed. R. Bankr. P. 2002(a)(2), and objections are due at least 7 days before the date set for the sale under Fed. R. Bankr. P. 6004(b). Then plan on the sale order being entered and a further 14 days before closing, because Fed. R. Bankr. P. 6004(h) stays a sale order for 14 days after entry unless the court orders otherwise. Where the order waives that stay — many do, expressly — closing can follow entry directly. The closing date itself is not one we pick and pad: it is the date in the contract, as approved by the court. Getting the motion and the proposed order in front of us before the hearing, rather than after, is what keeps that date reachable."
   - term: "Cost impact"
@@ -29,7 +29,7 @@ quick_facts:
 
 Because in an ordinary sale the seller's authority comes from the deed record, and here it does not. A trustee sells property they never owned personally, under powers a federal court granted for this specific sale. The order is where that authority is written down.
 
-Everything that matters flows from it: who is authorised to sign, what is being sold, on what terms, what happens to the liens, and when the sale can actually close.
+Everything that matters flows from it: who is authorized to sign, what is being sold, on what terms, what happens to the liens, and when the sale can actually close.
 
 ## What is read in that order?
 
@@ -37,7 +37,7 @@ We ask for a **certified or docket-stamped copy of the entered order**, together
 
 - the case number, chapter, court and division, and that the debtor is the record owner;
 - the legal description of the property being sold, matching the commitment;
-- the named seller and signatory, and the capacity in which they sign — trustee, debtor in possession, or someone authorised by the order;
+- the named seller and signatory, and the capacity in which they sign — trustee, debtor in possession, or someone authorized by the order;
 - the purchase price and material terms, and whether they match the executed contract;
 - whether the sale is free and clear under 11 U.S.C. § 363(f), which interests that covers, and which of the section's five grounds is relied on;
 - a finding that the buyer is a good-faith purchaser under 11 U.S.C. § 363(m);
@@ -80,7 +80,7 @@ It can be. A bankruptcy that closed years ago can still matter to the chain of t
 
 The question is always the same one: at the moment of the conveyance in the chain, who had authority to convey — the debtor, or the estate?
 
-Filing a bankruptcy petition brings the debtor's property into the estate. So a deed signed by the debtor personally, during the case, may be void or voidable unless the property had been abandoned, exempted or released first, or the court authorised the conveyance. A deed signed before the petition, or after the case closed and the property revested, is a different matter.
+Filing a bankruptcy petition brings the debtor's property into the estate. So a deed signed by the debtor personally, during the case, may be void or voidable unless the property had been abandoned, exempted or released first, or the court authorized the conveyance. A deed signed before the petition, or after the case closed and the property revested, is a different matter.
 
 What we look for is the docket, and the document we pull from it is the final order — the order that disposed of the property and closed the case. The petition date and that order bracket the period that matters, and the order is what says whether the property was administered, abandoned under 11 U.S.C. § 554, exempted or sold, and therefore who had authority to convey it while the case was open. Where a deed in the chain falls inside that window and the final order does not explain it, the deed is a requirement rather than a curiosity, and more of the docket gets pulled.
 

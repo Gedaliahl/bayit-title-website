@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { officeHoursLine, site } from '@/lib/site';
+import { team } from '@/lib/team';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
 import { Verdict } from '@/components/Verdict';
@@ -232,13 +233,15 @@ export default function AboutPage() {
               </Link>
             </div>
             <ul className="team-grid">
-              {site.team.map((member) => (
+              {team.map((member) => (
                 <li key={member.slug} className="team-card">
                   <span className="avatar avatar--large" aria-hidden="true">
                     {initials(member.name)}
                   </span>
                   <div>
-                    <p className="team-card__name">{member.name}</p>
+                    <p className="team-card__name">
+                      <Link href={`/team/${member.slug}`}>{member.name}</Link>
+                    </p>
                     <p className="team-card__role">{member.role}</p>
                     {/* No credential line is invented for somebody who does not
                         hold one: the page's whole claim is that every line on it

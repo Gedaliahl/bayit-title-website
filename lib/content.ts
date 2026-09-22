@@ -9,7 +9,7 @@ import { remark } from 'remark';
 import remarkGfm from 'remark-gfm';
 import remarkHtml from 'remark-html';
 
-import { isFaqHeading } from './faq';
+import { faqEntries, isFaqHeading, toPlainText, type FaqItem } from './faq';
 
 export const CLUSTERS = [
   'liens',
@@ -116,7 +116,7 @@ export interface DocSection {
   id: string;
   /** The heading, as plain text. */
   title: string;
-  /** The body under the heading, rendered. Empty for a section with no prose. */
+  /** The body under the heading, rendered. Never empty: see `splitSections`. */
   html: string;
   kind: SectionKind;
 }
@@ -172,6 +172,12 @@ export interface Doc extends DocFrontMatter {
   html: string;
   /** The same body, split at its `## ` headings so each part can be laid out. */
   sections: DocSection[];
+  /**
+   * The questions under the FAQ heading, each answer rendered as the page shows
+   * it. Unfiltered: a draft's flagged answer is shown with its flag, as every
+   * other flag on the page is. `extractFaq` is what filters for the JSON-LD.
+   */
+  faq: FaqItem[];
   /** Raw Markdown body, used to detect unresolved [VERIFY] flags. */
   raw: string;
   /** Every `[VERIFY: ...]` flag on the page — answer, quick facts and body. */
@@ -465,8 +471,13 @@ const PRACTICE_HEADING = /\bhandles this\b/i;
  *
  * Anything before the first heading is kept as a leading section with no title,
  * so a body that opens with a paragraph does not lose it.
+ *
+ * A heading with nothing under it, or the same question asked twice, fails the
+ * build. Both have reached a reviewed page before: the second copy of a heading
+ * rendered as an empty section and the rail listed the question twice, and
+ * neither is something a reader can be shown while the page claims a review.
  */
-async function splitSections(markdown: string): Promise<DocSection[]> {
+async function splitSections(markdown: string, file: string): Promise<DocSection[]> {
   const lines = markdown.split('\n');
   const parts: { title: string; body: string[] }[] = [];
   let fenced = false;
@@ -487,6 +498,19 @@ async function splitSections(markdown: string): Promise<DocSection[]> {
     parts[parts.length - 1].body.push(line);
   }
 
+  const asked = new Set<string>();
+  for (const part of parts) {
+    if (!part.title) continue;
+    if (part.body.join('').trim() === '') {
+      throw new Error(`${file}: the section "${part.title}" has no body under its heading.`);
+    }
+    const question = part.title.toLowerCase();
+    if (asked.has(question)) {
+      throw new Error(`${file}: the heading "${part.title}" appears twice on the page.`);
+    }
+    asked.add(question);
+  }
+
   const used = new Map<string, number>();
 
   return Promise.all(
@@ -505,6 +529,16 @@ async function splitSections(markdown: string): Promise<DocSection[]> {
         kind: sectionKind(part.title),
       };
     }),
+  );
+}
+
+async function renderFaq(markdown: string): Promise<FaqItem[]> {
+  return Promise.all(
+    faqEntries(markdown).map(async (entry) => ({
+      question: entry.question,
+      answer: toPlainText(entry.markdown),
+      html: await toHtml(entry.markdown),
+    })),
   );
 }
 
@@ -550,11 +584,12 @@ export async function getDoc(collection: Collection, slug: string): Promise<Doc 
 
   const source = fs.readFileSync(file, 'utf8');
   const { data, content } = matter(source);
-  const frontMatter = assertFrontMatter(data, content, `content/${collection}/${slug}.md`);
+  const relativePath = `content/${collection}/${slug}.md`;
+  const frontMatter = assertFrontMatter(data, content, relativePath);
 
   if (frontMatter.slug !== slug) {
     throw new Error(
-      `content/${collection}/${slug}.md: front-matter slug "${frontMatter.slug}" does not match its filename.`,
+      `${relativePath}: front-matter slug "${frontMatter.slug}" does not match its filename.`,
     );
   }
 
@@ -568,7 +603,8 @@ export async function getDoc(collection: Collection, slug: string): Promise<Doc 
     quick_facts: quickFacts,
     ...(frontMatter.verdict ? { verdict: { ...frontMatter.verdict, rows: verdictRows } } : {}),
     html: await toHtml(content),
-    sections: await splitSections(content),
+    sections: await splitSections(content, relativePath),
+    faq: await renderFaq(content),
     raw: content,
     verifyFlags: findVerifyFlags(flaggableText(frontMatter, content)),
     collection,

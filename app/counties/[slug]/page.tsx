@@ -9,6 +9,7 @@ import {
   getCounties,
   getLocation,
   recorderName,
+  turnaroundForQuote,
   type Location,
 } from '@/lib/locations';
 import { citiesInCounty } from '@/lib/florida-cities';
@@ -195,8 +196,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <p>
           So a {formatMoney(EXAMPLE_PRICE)} purchase in {county.name} is{' '}
-          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong> — the first{' '}
-          {formatMoney(100_000)} at $5.75 per thousand and the rest at $5.00. The minimum premium on
+          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong> — the{' '}
+          {ORIGINAL_SCHEDULE[0].label.toLowerCase()} at {ORIGINAL_SCHEDULE[0].amount} and the rest
+          at {ORIGINAL_SCHEDULE[1].amount}. The minimum premium on
           a conveyance is {formatMoney(MINIMUM_PREMIUM)}, and a fraction of $100 counts as a full
           $100 before the arithmetic starts.
         </p>
@@ -235,6 +237,11 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             Work the premium, tax and recording out for a specific price
           </Link>{' '}
           — the estimate page uses this schedule and cites the same rule.
+        </p>
+        <p>
+          What each side pays, line by line, is on the{' '}
+          <Link href="/closing-costs/buyer">buyer closing costs</Link> and{' '}
+          <Link href="/closing-costs/seller">seller closing costs</Link> pages.
         </p>
 
         <p className="muted">
@@ -340,13 +347,17 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
               {recorderName(county)} publishes this:
             </p>
             <blockquote>
-              {county.recordingTurnaround}
+              {turnaroundForQuote(county.recordingTurnaround)}
               <footer>
-                <a href={county.recordingTurnaroundSourceUrl!} rel="nofollow">
-                  Read from the office&rsquo;s own page
-                </a>
+                {county.recordingTurnaroundSourceUrl ? (
+                  <a href={county.recordingTurnaroundSourceUrl} rel="nofollow">
+                    Read from the office&rsquo;s own page
+                  </a>
+                ) : (
+                  'Read from the office’s own page'
+                )}
                 {county.recordingTurnaroundCheckedOn
-                  ? ` on ${county.recordingTurnaroundCheckedOn}`
+                  ? ` on ${formatLongDate(county.recordingTurnaroundCheckedOn)}`
                   : ''}
               </footer>
             </blockquote>

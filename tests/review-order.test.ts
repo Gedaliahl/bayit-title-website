@@ -13,6 +13,7 @@ import {
   REVIEW_ORDERS,
   isReviewOrder,
   sortReviews,
+  unlistedReviewsNote,
   type Review,
 } from '@/lib/review-order';
 
@@ -98,5 +99,20 @@ describe('reading an order off a select', () => {
     expect(isReviewOrder('relevance')).toBe(true);
     expect(isReviewOrder('rating')).toBe(false);
     expect(isReviewOrder('')).toBe(false);
+  });
+});
+
+describe('the count beside the list', () => {
+  it('says how many reviews are ratings with nothing to list, from the numbers it is given', () => {
+    expect(unlistedReviewsNote(92, 85)).toBe(
+      '85 of the 92 include written text and are listed below. The other 7 are star ratings ' +
+        'with no text we can reproduce in full.',
+    );
+    expect(unlistedReviewsNote(10, 9)).toMatch(/The other 1 is a star rating/);
+  });
+
+  it('says nothing when the list and the count agree, or there is no count', () => {
+    expect(unlistedReviewsNote(85, 85)).toBeNull();
+    expect(unlistedReviewsNote(null, 85)).toBeNull();
   });
 });

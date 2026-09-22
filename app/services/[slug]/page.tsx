@@ -6,6 +6,7 @@ import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
 import { absoluteUrl, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
+import { getTeamMember } from '@/lib/team';
 import { AnswerPanel, Byline, Prose, VerifyBanner } from '@/components/Prose';
 import { DraftBanner } from '@/components/DraftBanner';
 import { QuickFacts } from '@/components/QuickFacts';
@@ -48,7 +49,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   if (!doc || !isPublishable(doc)) notFound();
 
   const matchedReviews = await getReviewsByTags(doc.review_tags, 1);
-  const author = doc.author ? site.team.find((member) => member.slug === doc.author) : undefined;
+  const author = doc.author ? getTeamMember(doc.author) : undefined;
   const path = `/services/${doc.slug}`;
 
   return (
@@ -86,7 +87,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         {doc.status === 'reviewed' ? (
           <Byline
             authorName={author?.name ?? site.agentInCharge.displayName}
-            authorRole={author?.role ?? 'Founder'}
+            authorRole={author?.role ?? 'Agent in Charge'}
             credential={author?.credential ?? null}
             reviewedOn={doc.reviewed_on!}
             nextReview={doc.next_review!}

@@ -29,65 +29,100 @@ export const metadata: Metadata = {
 };
 
 /**
- * The four questions the card asks, and the cluster each one lands in.
+ * The questions the card asks, and the cluster each one lands in.
  *
  * Written in the reader's terms rather than the library's: somebody holding a
  * search result knows a court is involved before they know the word
  * "distressed". A row is dropped when its cluster has no published page, so the
- * card never routes to an empty heading.
+ * card never routes to an empty heading, and each example under a row names the
+ * page it stands for, so the card never promises a page that is still a draft.
  */
 const ROUTES = [
   {
     cluster: 'liens',
     label: 'Something recorded against the property or seller',
-    sub: 'Judgments, permits, liens',
+    examples: [
+      ['judgments', 'judgment-against-seller-before-closing-florida'],
+      ['permits', 'open-permits-before-closing-florida'],
+    ],
   },
   {
     cluster: 'distressed',
     label: 'A court is involved',
-    sub: 'Bankruptcy, lawsuits, lis pendens',
+    examples: [
+      ['bankruptcy', 'buying-property-bankruptcy-estate-florida'],
+      ['lawsuits, lis pendens', 'litigation-against-seller-flip-florida'],
+    ],
   },
   {
     cluster: 'process',
     label: 'A signing or contract question',
-    sub: 'Overseas sellers, non-standard contracts',
+    examples: [
+      ['overseas sellers', 'foreign-seller-signing-from-abroad-florida'],
+      ['non-standard contracts', 'non-standard-purchase-contract-florida-closing'],
+    ],
   },
   {
     cluster: 'property-type',
     label: 'The property itself',
-    sub: 'HOA approval, access, boundaries',
+    examples: [['HOA and condominium approval', 'hoa-approval-delay-closing-florida']],
+  },
+  {
+    cluster: 'survey',
+    label: 'How the property is reached',
+    examples: [['legal access, easements', 'no-legal-access-landlocked-property-florida']],
   },
 ] as const;
 
-/** How every page in the library is built, said once, here. */
-const HOW_PAGES_ARE_BUILT = [
-  {
-    label: 'First',
-    title: 'Does it stop the closing?',
-    body:
-      'A verdict card at the top: who resolves it, how long, what it costs, whether a lawyer is ' +
-      'needed.',
-  },
-  {
-    label: 'Then',
-    title: 'What happens, in order',
-    body: 'The steps from search to resolution, so you can see where your file is.',
-  },
-  {
-    label: 'Then',
-    title: 'The detail, with the statute',
-    body:
-      'Why it works the way it does, what the underwriter will want, and when it is a ' +
-      'lawyer’s question.',
-  },
-  {
-    label: 'Always',
-    title: 'Who reviewed it, and when',
-    body:
-      'Name, license number, review date and next review. Where a fact is unconfirmed, the page ' +
-      'says so.',
-  },
-];
+/**
+ * How every page in the library is built, said once, here.
+ *
+ * Only what every published page has. The verdict card and the step band are
+ * optional front-matter, and a page without them would make this band a promise
+ * the page does not keep, so each is described only while every page carries it.
+ */
+function howPagesAreBuilt(docs: Doc[]) {
+  const every = (has: (doc: Doc) => boolean) => docs.length > 0 && docs.every(has);
+
+  return [
+    every((doc) => Boolean(doc.verdict?.headline))
+      ? {
+          label: 'First',
+          title: 'Does it stop the closing?',
+          body:
+            'A verdict card at the top: who resolves it, how long, what it costs, whether a ' +
+            'lawyer is needed.',
+        }
+      : {
+          label: 'First',
+          title: 'The short answer',
+          body: 'A few sentences at the top that answer the question on their own.',
+        },
+    ...(every((doc) => (doc.steps?.length ?? 0) > 0)
+      ? [
+          {
+            label: 'Then',
+            title: 'What happens, in order',
+            body: 'The steps from search to resolution, so you can see where your file is.',
+          },
+        ]
+      : []),
+    {
+      label: 'Then',
+      title: 'The detail, with the statute',
+      body:
+        'Why it works the way it does, what the underwriter will want, and when it is a ' +
+        'lawyer’s question.',
+    },
+    {
+      label: 'Always',
+      title: 'Who reviewed it, and when',
+      body:
+        'Name, license number, review date and next review. Where a fact is unconfirmed, the ' +
+        'page says so.',
+    },
+  ];
+}
 
 /** The line under each card: when it was reviewed, or that it has not been. */
 function cardMeta(doc: Doc): string | null {
@@ -103,8 +138,19 @@ export default async function TitleProblemsIndex() {
     getAllDocs('title-problems'),
   ]);
 
-  const populated = new Set(groups.map((group) => group.cluster));
-  const routes = ROUTES.filter((route) => populated.has(route.cluster));
+  const published = new Set(all.map((doc) => doc.slug));
+  const routes = ROUTES.map((route) => {
+    const sub = route.examples
+      .filter(([, slug]) => published.has(slug))
+      .map(([example]) => example)
+      .join(', ');
+    return {
+      cluster: route.cluster,
+      label: route.label,
+      sub: sub.charAt(0).toUpperCase() + sub.slice(1),
+    };
+  }).filter((route) => route.sub);
+  const howBuilt = howPagesAreBuilt(all);
 
   return (
     <div>
@@ -128,7 +174,7 @@ export default async function TitleProblemsIndex() {
               {all.length} page{all.length === 1 ? '' : 's'}, each reviewed by a licensed Florida
               title agent
             </span>
-            <span>Dated, and re-reviewed every six months</span>
+            <span>Dated, and re-reviewed every 12 months</span>
           </p>
         </div>
 
@@ -159,8 +205,8 @@ export default async function TitleProblemsIndex() {
       <StepBand
         heading="How every page is built"
         caption="Same shape each time, so you know where to look"
-        columns={4}
-        steps={HOW_PAGES_ARE_BUILT}
+        columns={howBuilt.length >= 4 ? 4 : 3}
+        steps={howBuilt}
       />
 
       <div className="frame cols cols--tight">
