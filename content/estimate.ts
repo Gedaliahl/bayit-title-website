@@ -9,6 +9,7 @@
 // The figures the copy sits beside come from lib/ — the promulgated schedule,
 // the statutory rates and the two estimators — and are never restated here.
 
+import { QUOTE_RETENTION_DAYS } from '@/lib/documents';
 import { site } from '@/lib/site';
 
 export type EstimateMode = 'address' | 'numbers' | 'upload';
@@ -253,6 +254,8 @@ export const UPLOAD = {
     dropSub: 'or click to choose a file',
     dropSubMore: 'Add another page or choose a different file',
     remove: (name: string) => `Remove ${name}`,
+    /** Ends the reason a file was not added: "… — PDF, JPG, PNG or HEIC only". */
+    typeLabel: 'PDF, JPG, PNG or HEIC',
   },
   name: { label: 'Your name' },
   role: {
@@ -278,25 +281,37 @@ export const UPLOAD = {
   status: 'One business day for a readable contract. No obligation.',
   sending: 'Sending…',
   uploading: (done: number, total: number) => `Sending page ${done} of ${total}…`,
+  /** While pages are in flight: leaving now loses them. */
+  uploadingNote: 'Keep this page open until the pages have gone.',
   submit: `Send it to ${site.name}`,
   errors: {
     noFiles: 'Add the contract first — a PDF or a photo of each page.',
     tooLarge: 'That is over 25 MB together. Drop a page or send the rest by email.',
-    notReadable: 'Only a PDF or a photo — JPG, PNG or HEIC — can be read here.',
     noName: 'Tell us your name so we know who to write back to.',
     badEmail: 'That email does not look complete.',
     failed: `We could not send that. Email ${site.email} or call ${site.phoneDisplay}.`,
+    // No answer is not the same as a refusal: the request may be in the office.
+    noAnswer:
+      `We did not hear back, so we cannot tell whether that reached us. Call ${site.phoneDisplay} ` +
+      'before sending it again.',
+    botCheck: 'Wait a moment for the check above the button to finish, then send again.',
   },
   sent: {
     eyebrow: 'Received',
     title: (firstName: string) =>
       `Thank you${firstName ? `, ${firstName}` : ''}. It is in the office.`,
     body: (count: number, email: string, willCall: boolean) =>
-      `${count} file${count === 1 ? '' : 's'} received. We will read the contract and email the ` +
-      `itemised figure to ${email} within one business day. If a page is unreadable we will ` +
-      `${willCall ? 'call' : 'write'} first.`,
+      count === 0
+        ? 'Your details reached us, but none of the contract did, so there is nothing for us to ' +
+          'price yet.'
+        : `${count} file${count === 1 ? '' : 's'} received. We will read the contract and email the ` +
+          `itemised figure to ${email} within one business day. If a page is unreadable we will ` +
+          `${willCall ? 'call' : 'write'} first.`,
+    // There is no confirmation email to reply to; the office's own address is
+    // the one the pages would have gone to anyway.
     missing: (count: number) =>
-      `${count} file${count === 1 ? ' did' : 's did'} not upload — reply to our email with ${count === 1 ? 'it' : 'them'}.`,
+      `${count === 1 ? 'This file' : 'These files'} did not reach us — email ` +
+      `${count === 1 ? 'it' : 'them'} to ${site.ordersEmail}:`,
     wrongFile: 'Sent the wrong file?',
     again: 'Send another',
     orCall: `or call ${site.phoneDisplay}.`,
@@ -326,7 +341,8 @@ export const UPLOAD = {
       title: 'What we do with the file',
       body:
         'It goes to the office over an encrypted connection and is read by a person, not sold, ' +
-        'not kept past the quote unless you open an order with us. No obligation either way.',
+        `and kept on this site for no longer than ${QUOTE_RETENTION_DAYS} days. No obligation ` +
+        'either way.',
       more: 'More',
     },
   },

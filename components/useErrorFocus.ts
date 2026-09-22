@@ -34,8 +34,9 @@ export function useErrorFocus() {
     const target =
       form.querySelector<HTMLElement>('[aria-invalid="true"]') ??
       // No single field to blame — a rate limit, or an outage. Send them to the
-      // banner that explains it, which is otherwise off-screen too.
-      form.querySelector<HTMLElement>('.form-status--error');
+      // banner that explains it, which is otherwise off-screen too. The contract
+      // form on /estimate says it in the line beside its button instead.
+      form.querySelector<HTMLElement>('.form-status--error, .form-card__status--error');
 
     target?.focus();
   }, [failures]);

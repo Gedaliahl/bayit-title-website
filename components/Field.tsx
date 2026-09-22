@@ -1,8 +1,9 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 
-import { formatBytes } from '@/lib/documents';
+import { formatBytes, type Rejection } from '@/lib/documents';
+import { HONEYPOT_FIELD } from '@/lib/schemas';
 
 interface BaseProps {
   name: string;
@@ -32,8 +33,11 @@ function Wrapper({
         </span>
       ) : null}
       {children}
+      {/* Not an alert. A failed submit renders every error at once, and each
+          one shouting over the last read as noise; focus moves to the first
+          field instead, and its aria-describedby reads this with it. */}
       {error ? (
-        <span className="field__error" id={`${name}-error`} role="alert">
+        <span className="field__error" id={`${name}-error`}>
           {error}
         </span>
       ) : null}
@@ -120,6 +124,7 @@ export function SelectField({
  */
 export function FileField({
   files,
+  rejected,
   onAdd,
   onRemove,
   accept,
@@ -127,6 +132,8 @@ export function FileField({
   ...props
 }: BaseProps & {
   files: File[];
+  /** Files picked but not attached, each with the reason. */
+  rejected: Rejection[];
   onAdd: (added: File[]) => void;
   onRemove: (index: number) => void;
   accept: string;
@@ -168,16 +175,306 @@ export function FileField({
           ))}
         </ul>
       ) : null}
+
+      <RejectedFiles rejected={rejected} />
     </Wrapper>
   );
 }
 
-/** Off-screen field. A real person never sees it; a bot fills it in. */
+/**
+ * The files that were picked and not attached, by name, with the reason.
+ *
+ * The live region is always in the page and only its contents come and go: a
+ * region that arrives already holding its text is not read out.
+ */
+export function RejectedFiles({ rejected }: { rejected: Rejection[] }) {
+  return (
+    <div className="file-rejects" role="status">
+      {rejected.length > 0 ? (
+        <>
+          <p className="file-rejects__title">Not attached:</p>
+          <ul className="file-rejects__list">
+            {rejected.map((file, index) => (
+              <li key={`${file.name}-${index}`}>
+                <span className="file-rejects__name">{file.name}</span> — {file.reason}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * One upload in flight: which file, how far it has got, and a way to stop.
+ *
+ * Only the file line is announced. The byte count changes several times a
+ * second and would never let a screen reader finish a sentence; the progress
+ * bar carries it for anyone who looks.
+ */
+export function UploadMeter({
+  name,
+  position,
+  count,
+  sent,
+  total,
+  onCancel,
+}: {
+  name: string;
+  position: number;
+  count: number;
+  sent: number;
+  total: number;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="upload-meter">
+      <p className="upload-meter__file" aria-live="polite">
+        Sending {name}
+        {count > 1 ? ` (${position} of ${count})` : ''}
+      </p>
+      <progress className="upload-meter__bar" max={total || 1} value={sent} aria-label={`Upload of ${name}`} />
+      <div className="upload-meter__foot">
+        <span className="upload-meter__bytes">
+          {formatBytes(sent)} of {formatBytes(total)}
+        </span>
+        <button type="button" className="upload-meter__cancel" onClick={onCancel}>
+          Stop uploading
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Asks before the tab closes while files are still going up. The order itself
+ * is already safe by then; the documents in flight are not.
+ */
+export function useLeaveWarning(active: boolean) {
+  useEffect(() => {
+    if (!active) return;
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      // Still required by some browsers for the prompt to appear at all.
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [active]);
+}
+
+/**
+ * Off-screen field. A real person never sees it; a bot fills it in.
+ *
+ * `new-password` is the one autocomplete value browsers reliably honor by
+ * leaving a field alone. `off` is ignored by several of them, which is how the
+ * old `company` field came to be filled on real orders.
+ */
 export function Honeypot() {
   return (
     <div className="hp" aria-hidden="true">
-      <label htmlFor="company">Company</label>
-      <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+      <label htmlFor={HONEYPOT_FIELD}>Leave this empty</label>
+      <input
+        id={HONEYPOT_FIELD}
+        name={HONEYPOT_FIELD}
+        type="text"
+        tabIndex={-1}
+        autoComplete="new-password"
+      />
     </div>
   );
+}
+
+/** The error list at the top of a long form, each entry a link to its field. */
+export function ErrorSummary({
+  errors,
+  labels,
+  summaryRef,
+}: {
+  errors: Record<string, string>;
+  labels: Record<string, string>;
+  summaryRef: RefObject<HTMLDivElement | null>;
+}) {
+  const entries = Object.entries(errors).filter(([field, message]) => message && labels[field]);
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="form-status form-status--error error-summary" ref={summaryRef} tabIndex={-1}>
+      <p className="error-summary__title">
+        {entries.length === 1 ? 'One thing needs another look:' : `${entries.length} things need another look:`}
+      </p>
+      <ul>
+        {entries.map(([field, message]) => (
+          <li key={field}>
+            <a href={`#${field}`}>
+              {labels[field]}: {message}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * A form's field errors, and the handler that clears one the moment the
+ * person starts fixing it. A message left standing over a corrected field
+ * reads as though the correction did not take.
+ */
+export function useFieldErrors() {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const clearOnInput = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    const field = (event.target as HTMLInputElement).name;
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }, []);
+  return { errors, setErrors, clearOnInput };
+}
+
+/** What came back from a form endpoint. Status 0 means no answer arrived at all. */
+export interface Reply<T> {
+  status: number;
+  body: T | null;
+}
+
+/** Longer than a normal submission ever takes, short enough that nobody gives up first. */
+const SUBMIT_TIMEOUT_MS = 30_000;
+
+/**
+ * Posts a form as JSON, and never throws.
+ *
+ * A body is read only when the server says it is JSON. A platform timeout or
+ * a proxy error answers with an HTML page, and `.json()` on that used to throw
+ * straight into "could not reach the server" — which is not what happened,
+ * and told the sender to try again when the order may well have landed.
+ */
+export async function postJson<T>(url: string, payload: unknown): Promise<Reply<T>> {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(SUBMIT_TIMEOUT_MS),
+    });
+    const isJson = (response.headers.get('content-type') ?? '').includes('application/json');
+    return { status: response.status, body: isJson ? ((await response.json().catch(() => null)) as T | null) : null };
+  } catch {
+    return { status: 0, body: null };
+  }
+}
+
+/**
+ * Whether a reply leaves it unknown if the submission landed: no answer, or a
+ * server error that did not come from our own handler. Our handler's own
+ * failures are JSON and say plainly that nothing was recorded.
+ */
+export function outcomeUnknown(reply: Reply<unknown>): boolean {
+  return reply.status === 0 || (reply.status >= 500 && reply.body === null);
+}
+
+/**
+ * One id per submission, kept across retries and replaced once it succeeds.
+ * The server uses it to recognise a retry of something it already has.
+ */
+export function useSubmissionId() {
+  const id = useRef<string | null>(null);
+  const current = useCallback(() => {
+    id.current ??= crypto.randomUUID();
+    return id.current;
+  }, []);
+  const settle = useCallback(() => {
+    id.current = null;
+  }, []);
+  return { current, settle };
+}
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+interface TurnstileApi {
+  render: (element: HTMLElement, options: Record<string, unknown>) => string;
+  reset: (widget: string) => void;
+  remove: (widget: string) => void;
+}
+
+let turnstileScript: Promise<TurnstileApi> | null = null;
+
+function loadTurnstile(): Promise<TurnstileApi> {
+  turnstileScript ??= new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.onload = () => {
+      const api = (window as unknown as { turnstile?: TurnstileApi }).turnstile;
+      if (api) resolve(api);
+      else reject(new Error('Turnstile did not load'));
+    };
+    script.onerror = () => {
+      turnstileScript = null;
+      reject(new Error('Turnstile did not load'));
+    };
+    document.head.appendChild(script);
+  });
+  return turnstileScript;
+}
+
+/**
+ * Cloudflare Turnstile, when NEXT_PUBLIC_TURNSTILE_SITE_KEY is set, and
+ * nothing at all when it is not: no script, no box, no token.
+ *
+ * A token is good for one submission, so `reset` is called after every answer
+ * from the server and the widget issues a fresh one for the next try.
+ */
+export function useBotCheck() {
+  const [box, setBox] = useState<HTMLDivElement | null>(null);
+  const widget = useRef<string | null>(null);
+  const api = useRef<TurnstileApi | null>(null);
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !box) return;
+    let cancelled = false;
+
+    loadTurnstile()
+      .then((turnstile) => {
+        if (cancelled) return;
+        api.current = turnstile;
+        widget.current = turnstile.render(box, {
+          sitekey: TURNSTILE_SITE_KEY,
+          // The normal widget is a fixed 300px, wider than the form on a small
+          // phone; the compact one is 150px.
+          size: box.clientWidth < 300 ? 'compact' : 'normal',
+          'response-field': false,
+          callback: (value: string) => setToken(value),
+          'expired-callback': () => setToken(''),
+          'error-callback': () => setToken(''),
+        });
+      })
+      .catch(() => {
+        // Blocked or offline: the form still sends, and the server's answer
+        // says what to do instead.
+      });
+
+    return () => {
+      cancelled = true;
+      if (widget.current) api.current?.remove(widget.current);
+      widget.current = null;
+    };
+  }, [box]);
+
+  const reset = useCallback(() => {
+    setToken('');
+    if (widget.current) api.current?.reset(widget.current);
+  }, []);
+
+  return { enabled: Boolean(TURNSTILE_SITE_KEY), token, reset, attach: setBox };
+}
+
+export function BotCheck({ enabled, attach }: { enabled: boolean; attach: (box: HTMLDivElement | null) => void }) {
+  if (!enabled) return null;
+  return <div className="bot-check" ref={attach} />;
 }

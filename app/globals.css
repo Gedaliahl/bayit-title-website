@@ -1061,9 +1061,9 @@ th {
 
 .file-list li {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
-  padding: 0.45rem 0;
+  padding: 0.1rem 0;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -1081,13 +1081,17 @@ th {
   font-variant-numeric: tabular-nums;
 }
 
+/* 44px square at the least: it sits beside a filename, and a near miss on a
+   phone removes the wrong document. */
 .file-list__remove {
   font-family: var(--font-body);
   font-size: 0.8125rem;
   color: var(--flag);
   background: none;
   border: 0;
-  padding: 0;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -1096,6 +1100,71 @@ th {
 .file-list__remove[disabled] {
   color: var(--ink-muted);
   cursor: default;
+}
+
+/* Files picked but not attached, each with its reason. */
+.file-rejects {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--flag);
+}
+
+.file-rejects__title {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 600;
+}
+
+.file-rejects__list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.file-rejects__name {
+  overflow-wrap: anywhere;
+}
+
+/* One upload in flight, with its bytes and a way to stop it. */
+.upload-meter {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+}
+
+.upload-meter__file {
+  margin: 0 0 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.upload-meter__bar {
+  display: block;
+  width: 100%;
+  height: 0.5rem;
+  accent-color: var(--accent);
+}
+
+.upload-meter__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.upload-meter__bytes {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.upload-meter__cancel {
+  font: inherit;
+  color: var(--flag);
+  background: none;
+  border: 0;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .field-row {
@@ -1129,6 +1198,27 @@ th {
   border-color: var(--accent);
 }
 
+.form-status__list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+/* The long order form's list of what to fix, each item a link to its field. */
+.error-summary__title {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.error-summary a {
+  color: inherit;
+}
+
 /* Honeypot. Off-screen rather than display:none so bots that check
    computed style still fill it in. */
 .hp {
@@ -1137,6 +1227,11 @@ th {
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* Cloudflare's check, when it is switched on. It draws its own box. */
+.bot-check {
+  margin-bottom: 1rem;
 }
 
 fieldset {
@@ -2577,7 +2672,7 @@ legend {
   grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.75rem;
   align-items: center;
-  padding: 0.5rem 0.75rem;
+  padding: 0 0 0 0.75rem;
   border: 1px solid var(--rule-card);
   border-radius: var(--radius);
   font-size: 0.875rem;
@@ -2595,10 +2690,13 @@ legend {
   font-variant-numeric: tabular-nums;
 }
 
+/* 44px square, as on the order form's file list. */
 .contract-files__remove {
   border: 0;
   background: none;
-  padding: 0 0.25rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
   font: inherit;
   font-size: 1.125rem;
   line-height: 1;
@@ -2666,6 +2764,13 @@ legend {
   margin: 0;
   color: var(--ink-body);
   line-height: 1.55;
+}
+
+.received__list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--ink-body);
+  overflow-wrap: anywhere;
 }
 
 .received__again {
