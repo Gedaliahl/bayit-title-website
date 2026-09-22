@@ -29,10 +29,8 @@ export function isEstimateMode(value: string | null | undefined): value is Estim
 export const META = {
   title: 'What a Florida closing costs, before anyone’s fee',
   description:
-    'Price a Florida closing three ways: from an address alone, off the county’s own record; ' +
-    'from the contract numbers; or send us the contract and we reply with the exact figure. ' +
-    'The premium is promulgated and the taxes are statutory, and every line is cited to whoever ' +
-    'sets it.',
+    'Price a Florida closing from an address, from the contract numbers, or by sending us the ' +
+    'contract. Every line is cited to whoever sets it.',
 };
 
 export const HERO = {

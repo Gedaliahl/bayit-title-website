@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getDoc, listRoutableSlugs, isPublishable } from '@/lib/content';
 import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
-import { baseOpenGraph, fittedTitle, metaDescription } from '@/lib/seo';
+import { absoluteUrl, baseOpenGraph, fittedTitle, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { getTeamMember } from '@/lib/team';
 import { AnswerPanel, Byline, Prose, VerifyBanner } from '@/components/Prose';
@@ -62,6 +62,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           authorName={author?.name ?? site.agentInCharge.displayName}
           authorSlug={doc.author!}
           reviewedOn={doc.reviewed_on!}
+          image={absoluteUrl(`${path}/opengraph-image`)}
         />
       ) : null}
       <FaqSchema items={extractFaq(doc.raw)} />
