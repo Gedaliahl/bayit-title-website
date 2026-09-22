@@ -105,6 +105,19 @@ export const FORM = {
     listLabel: 'Matching properties',
     looking: 'Looking…',
     nothing: 'No property found for that. Type the value in below and the figures still work.',
+    /** Announced as the list opens, so there is something to say it is there. */
+    found: (count: number) =>
+      count === 1
+        ? '1 matching property. Arrow down to choose it.'
+        : `${count} matching properties. Arrow down to choose one.`,
+    floridaOnly: 'Florida properties only — that address reads as another state’s.',
+    rateLimited: 'That is more lookups than we can pass on in a minute.',
+    unavailable:
+      'The county services did not answer just then, so the property may still be there. The ' +
+      'figures work if you type the value in below.',
+    tryAgain: 'Try again',
+    justValue: (amount: string) => `Just value ${amount}`,
+    assessedValue: (amount: string) => `Assessed ${amount}`,
     valueOnPick: 'Value on pick',
     noRoll: 'No roll to read',
   },
@@ -132,7 +145,7 @@ export const FORM = {
     elsewhere: 'Another Florida county',
   },
   assessed: {
-    label: 'Assessed value',
+    label: 'Value used',
     reading: 'Reading the parcel off the roll…',
     /** "{Assessed value} on the {2025} roll, from the {source} · parcel {id}." */
     onRoll: {
@@ -142,11 +155,21 @@ export const FORM = {
       fromThe: ', from the ',
       parcel: (id: string | null) => (id ? ` · parcel ${id}` : ''),
       filedAs: (address: string) => ` The roll files that parcel as ${address}.`,
+      homestead:
+        ' The roll lists it as a homestead, where Save Our Homes caps how fast the assessed value can rise.',
+      sale: (price: string, year: number) => ` The roll records a sale at ${price} in ${year}.`,
     },
-    declined:
-      'The roll would not confirm a parcel at that address, so this one is yours to fill in. Look the parcel up on the ',
-    unavailable:
-      'The state’s parcel service did not answer just then — pick the property again, or look it up on the ',
+    /** Why a picked property came back without a figure; the appraiser's link follows. */
+    missed: {
+      declined: 'The roll would not confirm a parcel at that address, so this one is yours to fill in.',
+      'which-unit':
+        'That address is a building of several units, and the roll values each one. Add the unit ' +
+        'to the address — “Unit 1001” — and pick it again.',
+      unavailable: 'The state’s parcel service did not answer just then.',
+      'rate-limited': 'That is more lookups than we can pass on in a minute.',
+      expired: 'That list of properties is more than an hour old.',
+    },
+    tryAgain: 'Try again',
     pickOr: 'Pick the property above and this fills itself in, or look the parcel up on the ',
     lookUp: 'Look the parcel up on the ',
     appraiser: (countyName: string) => `${countyName} Property Appraiser`,
@@ -470,11 +493,14 @@ export const DETAIL = {
   privacy: {
     title: 'What happens to the address you typed',
     p1:
-      'It is sent to this site while you type, and this site asks the county property appraiser ' +
-      'and the geocoder about it. That is the whole of it: nothing is written down, nothing is ' +
-      'emailed to the office, no cookie is set, and the request is a POST so the address does not ' +
-      'end up in a server log the way a search in a URL would. Turn the page and there is no ' +
-      'record you were here.',
+      'It is sent to this site while you type, in the body of the request rather than its ' +
+      'address, so it does not end up in a server log the way a search in a URL would. This site ' +
+      'then asks about it: the county and city services that publish property records, the U.S. ' +
+      'Census Bureau’s geocoder and, where it is switched on, Esri’s. Those requests carry the ' +
+      'address in their URLs, so it reaches those services and their logs. Here nothing is written ' +
+      'down: nothing is emailed to the office, no cookie is set, and an answer is held in the ' +
+      'server’s memory for at most an hour so the same search is not sent twice. Turn the page ' +
+      'and there is no record you were here.',
     p2:
       'The two estimators ask for nothing else because the premium is the rule’s, not ours, so ' +
       'there is nothing to trade for it. If you would rather send nothing at all, use the second ' +
