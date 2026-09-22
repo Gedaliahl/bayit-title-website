@@ -32,7 +32,6 @@ import {
   PREMIUM_RULE,
   SIMULTANEOUS_LOAN_PREMIUM,
   originalPremium,
-  simultaneousLoanPremium,
 } from '@/lib/promulgated-premium';
 import type { FaqItem } from '@/lib/faq';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -59,7 +58,6 @@ export default async function BuyerClosingCostsPage() {
   const sellerCustom = counties.filter((county) => county.customaryOwnerPolicyPayer === 'seller');
 
   const ownerPremium = originalPremium(EXAMPLE_PRICE);
-  const loanPremium = simultaneousLoanPremium(EXAMPLE_LOAN, EXAMPLE_PRICE);
   const mortgageStamps = mortgageStampTaxDue(EXAMPLE_LOAN);
   const intangible = intangibleTaxDue(EXAMPLE_LOAN);
   const recording = recordingChargeDue(MORTGAGE_PAGES);
@@ -164,8 +162,7 @@ export default async function BuyerClosingCostsPage() {
           An owner&rsquo;s policy on a {formatMoney(EXAMPLE_PRICE)} purchase is{' '}
           <strong>{formatMoney(ownerPremium)}</strong>. A lender&rsquo;s policy issued at the same
           time on the same land is <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong> for
-          coverage up to the owner&rsquo;s amount — {formatMoney(loanPremium)} on a{' '}
-          {formatMoney(EXAMPLE_LOAN)} loan. {LENDER_POLICY_BESIDE_RULE}{' '}
+          coverage up to the owner&rsquo;s amount. {LENDER_POLICY_BESIDE_RULE}{' '}
           <Link href="/estimate?mode=numbers">The estimate page</Link> works both out for any price
           and loan.
         </p>
