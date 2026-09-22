@@ -711,4 +711,815 @@ export const MUNICIPAL_RECORDS: MunicipalRecord[] = [
     notes:
       'Gainesville publishes no lien-search or estoppel service; permit history is self-service in PermitGNV, code cases go through the Special Magistrate, and utility balances are GRU’s. The reduction form itself refused an automated request on 22 September; its words were read from the copy saved two days earlier, and the Forms and Documents page that carries it was read live.',
   },
+  // ----------------------------------------------------------------- Hialeah
+  {
+    citySlug: 'hialeah',
+    government: 'City of Hialeah',
+    building: {
+      office: { name: 'Building Department', url: 'https://www.hialeahfl.gov/154/Building-Department' },
+      portal: {
+        name: 'the Tyler Customer Self Service portal',
+        url: 'https://hialeahfl-energovpub.tylerhost.net/apps/selfservice#/home',
+      },
+      expiredPermits: q(
+        'CLOSE OUT INSPECTION BD805 Inspections for the purpose of violations, work without permits, open permits, expired permits, close out inspections, etc. (per inspection) … $75.00 […] In circumstances were permits have become expired but are lacking final inspections or unusual circumstances are given the Building Official has the authority to charge the necessary fees to cover for expenses incurred to bring into compliance. […] Where a permit has expired pursuant to paragraph 104.5 Florida Building Code, a credit of fifty percent (50%) of the permit fee shall be applied to any re-application (Renewal) fee for a permit covering the same project and involving the same plans, provided that the complete re-application is made within six (6) months of the expiration date of the original permit',
+        'https://www.hialeahfl.gov/DocumentCenter/View/21520/Building-Department-Fee-Schedule-Effective-March-20-2026pdf',
+        '2026-09-22',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Code Compliance Division', url: 'https://www.hialeahfl.gov/152/Code-Compliance' },
+      hearingBody: q(
+        'The Special Magistrate is vested with the statutory authority outlined in Chapter 162 of the Florida Statutes to hear code enforcement cases. […] The Special Magistrate is authorized to hold hearings and impose fines, liens, and other non-criminal penalties against violators. Administrative hearings are held at least once a month.',
+        'https://www.hialeahfl.gov/672/Special-Magistrate',
+        '2026-09-22',
+      ),
+      liens: q(
+        'When fines, fees or charges remain unpaid by property owners, the City of Hialeah can exercise its legal right to place a lien against an owner’s property to ensure the eventual collection of an unpaid amount.',
+        'https://www.hialeahfl.gov/780/Lien-Search',
+        '2026-09-22',
+      ),
+      release: q(
+        'The undersigned, as the owner of the property, license holder, or agent duly authorized, hereby requests a hearing before the Special Master of the City of Hialeah to consider a reduction of civil penalties accrued pursuant to that certain Order, more particularly described below: (Attach a copy of the recorded Order to this form) […] I understand that this reduction is strictly discretionary by the Special Master. This application includes a waiver of the right, if any, to seek judicial review of the Special Master’s discretionary decision of whether or not to reduce the fine and if so, by how much.',
+        'https://www.hialeahfl.gov/DocumentCenter/View/14473/Request-for-Administrative-Hearing-Lien-Reduction-Request-and-Waiverpdf',
+        '2026-09-22',
+      ),
+    },
+    lienSearch: {
+      office: { name: 'the Office of the City Clerk', url: 'https://www.hialeahfl.gov/780/Lien-Search' },
+      answeredBy: 'city',
+      how: q(
+        'The City of Hialeah, through the Office of the City Clerk, shall offer research services of real property within the limits of the City that is limited to violations of several regulatory codes enforced by the City, including unsafe structures and open or expired building permits, unpaid water, sewer or solid waste services and liens recorded as a result of the City’s enforcement actions.',
+        'https://www.hialeahfl.gov/780/Lien-Search',
+        '2026-09-22',
+      ),
+      fee: q(
+        'FEES: The cost of the service of violations and lien research is $500.00 The cost for the service of research of each additional address assigned to the same property folio number is $50.00. The cost for a pay-off or estoppel letter for all liens per property address is $75.00. The cost of an expedited lien search request is $600.00',
+        'https://www.hialeahfl.gov/780/Lien-Search',
+        '2026-09-22',
+      ),
+      turnaround: q(
+        'The processing time for a standard violations and lien research is approximately 7-10 business days. The City offers an expedited violations and lien research service with a processing time of 2 business days, for an additional $100.00 (total of $600.00). The City will not issue a refund or credit once payment is made to the City. […] In order to obtain a pay-off amount once a violation and lien search is completed, a request for lien pay-off or estoppel letter must be submitted.',
+        'https://www.hialeahfl.gov/DocumentCenter/View/21691/Violation-and-Lien-Search-Request-Form--2026',
+        '2026-09-22',
+      ),
+    },
+    utility: {
+      provider: {
+        name: 'the city’s Department of Public Works, Water & Sewer Division',
+        url: 'https://www.hialeahfl.gov/1040/Water-Sewer',
+      },
+      statement: q(
+        'The Department provides water and wastewater services throughout the city, as well as water service to portions of unincorporated Miami-Dade County. […] To maintain a reliable water supply, the City purchases most of its drinking water from Miami-Dade County.',
+        'https://www.hialeahfl.gov/1040/Water-Sewer',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'A Certificate of Re-Occupancy is required at a residential closing',
+        quote: q(
+          'A Certificate of Re-Occupancy is required for all applicable real estate closings and other transactions on residential units within the City of Hialeah. The purpose of the inspection is to ensure that the property complies with current zoning regulations. The Certificate of Re-Occupancy does not constitute any representation or warranty regarding the condition of the dwelling or other structures on the premises for which the certificate is issued. […] The inspection conducted in connection with a Certificate of Re-Occupancy is neither a structural, electrical, plumbing, nor mechanical inspection and does not indicate that the premises conform to the provisions of the Code, including the building and technical codes adopted by the city.',
+          'https://www.hialeahfl.gov/657/Re-Occupancy-Inspections',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'What the pay-off letter does and does not cover',
+        quote: q(
+          'Payoff amounts are only provided for existing liens, based on the information provided on this form. The letter will NOT include information about violations, citations, open permits, or outstanding balances for water, sewer, or solid waste services. A pay-off letter is not "research" and will not include all the information provided in a "Violation and Lien Research Request". If no lien exists, a $0 pay-off letter will be provided. […] There is a non-refundable $75 fee per folio number. Pay-off calculations may take approximately 5 business days to complete.',
+          'https://www.hialeahfl.gov/DocumentCenter/View/21692/Lien-Pay-Off-Request-Form---2026',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'A water balance for a title company',
+        quote: q(
+          'Title Company Request For verbal confirmation of an account balance: Contact Liens at 305-556-3800, ext. 2574 […] For written confirmation of an account balance: The Department of Public Works will be able to assist you by submitting a public records request on your behalf to the City Clerk’s Office. The City Clerk then contacts the Title Company directly once the request has been processed',
+          'https://www.hialeahfl.gov/1045/Account-Balance',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Mitigation of liens is a standing agenda item',
+        quote: q(
+          'Special Magistrate Hearings are held at least once a month at City Hall, in the Council Chambers on the third floor. […] The agenda is typically divided into sections such as Appeals, Referred Cases, and Mitigation of Liens/Fees.',
+          'https://www.hialeahfl.gov/929/Special-Master-Hearings',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Unpermitted work, before the city finds it',
+        quote: q(
+          'The Building Relief Program encourages voluntary compliance with the Florida Building Code and other applicable construction standards. It helps eligible participants by reducing penalties and fines if they take corrective action for unpermitted work before the City initiates enforcement. […] Am I eligible if my property has been cited for building without a permit or illegal unit? No. If the City has already begun enforcement, such as issuing a Notice of Civil Violation, the applicant is not eligible to participate.',
+          'https://www.hialeahfl.gov/685/Amnesty-Program',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Foreclosure registry',
+        quote: q(
+          'Effective July 1, 2013, the City of Hialeah requires the registration of certain real properties that are in default, foreclosure, or are mortgagee (bank) owned as a result of foreclosure, deed-in-lieu of foreclosure, or surrender to a mortgagee pursuant to a bankruptcy proceeding. […] The City has partnered with Hera Property Registry, LLC to administer its Foreclosure and Vacant Property Registration Program.',
+          'https://www.hialeahfl.gov/230/Foreclosure-Registry-Program',
+          '2026-09-22',
+        ),
+      },
+    ],
+    notes:
+      'Hialeah is the one city on these pages that requires a certificate on a residential sale: the zoning-only Certificate of Re-Occupancy, applied for in the same portal as a permit. Its lien research is also the dearest and slowest here, and the pay-off letter is a second request made after the research comes back. An older form on the Compliance Forms page still shows a lower research fee; the City Clerk’s 2026 form and the Lien Search page both say $500.',
+  },
+
+  // ----------------------------------------------------------------- Miramar
+  {
+    citySlug: 'miramar',
+    government: 'City of Miramar',
+    building: {
+      office: {
+        name: 'Building Division, in Building, Planning & Zoning',
+        url: 'https://www.miramarfl.gov/Departments/Building-Planning-Zoning/Building-Permits-Inspections',
+      },
+      portal: { name: 'the Self-Service Portal', url: 'https://miramarfl-energovweb.tylerhost.net/apps/SelfService#/home' },
+      expiredPermits: q(
+        'Every permit issued shall become null and void if work, as defined in Section 105.3.2.6 authorized by such permit is not commenced within one hundred eighty (180) days from the date the permit is issued or if the work authorized by such permit is suspended or abandoned for a period of ninety (90) days after the time the work is commenced. The Building Official may approve the renew, re-issuance or extend the permit after a written request from permit holder.',
+        'https://www.miramarfl.gov/files/assets/public/v/2/buildingplanningzoning/documents/application-and-forms/request-for-permit-renewal-extension.pdf',
+        '2026-09-22',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Code Compliance Division', url: 'https://www.miramarfl.gov/Departments/Police/About-Us/Code-Compliance' },
+      hearingBody: q(
+        'The city of Miramar currently has two compliance processes in place. […] Special Magistrate Process: The code officer identifies the violation based on the city’s ordinance. An official notice of violation is issued. Compliance renders the case closed OR Non-compliance at this stage results in a hearing. A hearing is scheduled. Fine(s) and/or lien(s) are assessed against the property. […] Administrative Hearing Process: The code officer identifies the violation An official civil violation notice is issued Compliance renders the case closed OR Non-compliance at this stage results in daily fines for up to 20 days The alleged violator must request a hearing to dispute the fines Lien(s) are assessed against the property',
+        'https://www.miramarfl.gov/Departments/Police/About-Us/Code-Compliance/Special-Magistrate-and-Administrative-Hearing-Judicial-Processes',
+        '2026-09-22',
+      ),
+      liens: q(
+        'The special magistrate listens to testimony and evidence, and determines if a property is in violation. A property owner found in violation is given a specific period of time to correct the violation. Fines can accrue daily and liens can be filed against the property as well.',
+        'https://www.miramarfl.gov/Departments/Police/About-Us/Code-Compliance/Code-Compliance-Commonly-Asked-Questions',
+        '2026-09-22',
+      ),
+      release: q(
+        'I just found out there is a code compliance lien against my property. How do I get the lien released? Once the property is in compliance, the fines can be reduced and the lien, if applicable, released. Compliance is the key. Call 954-602-3174 for more information.',
+        'https://www.miramarfl.gov/Departments/Police/About-Us/Code-Compliance/Code-Compliance-Commonly-Asked-Questions',
+        '2026-09-22',
+      ),
+    },
+    lienSearch: {
+      office: {
+        name: 'Financial Services, Lien Inquiry Processing',
+        url: 'https://www.miramarfl.gov/Departments/Financial-Services/Lien-Search',
+      },
+      answeredBy: 'city',
+      how: q(
+        'To obtain a lien search from the City of Miramar, please complete the Lien Request Form […] The City checks for the following liens: • Property Liens • Delinquent Account Balances • Water and Sewer Account Balances • Special Assessments […] Your lien request is incomplete without contacting the Building Department Permit for open building permit and Code Compliance Division for open code violations.',
+        'https://www.miramarfl.gov/Departments/Financial-Services/Lien-Search',
+        '2026-09-22',
+      ),
+      fee: q(
+        'Lien Inquiry Fee $105.00 Per Address (please allow 3-5 business days) […] For balance update, please email wbcustomerservice@miramarfl.gov (available within 60 days of request at no additional charge). […] Updates are considered a new request, and the requestor must pay the lien inquiry fees.',
+        'https://www.miramarfl.gov/Departments/Financial-Services/Lien-Search',
+        '2026-09-22',
+      ),
+      turnaround: q(
+        'Lien Inquiry Fee of $105.00 per address/folio # (please allow 3-5 business days). Lien response good for 30 days after date at the bottom of the form, with the exception of the Utility Billing balances.',
+        'https://www.miramarfl.gov/files/assets/public/v/2/financeprocurement/documents/business-tax-receipts/lien-inquiryfinal-03-06-2023.pdf',
+      ),
+    },
+    utility: {
+      provider: {
+        name: 'the city’s Utility (Water) Billing division',
+        url: 'https://www.miramarfl.gov/Departments/Financial-Services/Water-Billing-Division',
+      },
+      statement: q(
+        'An account can be closed only when a property is sold or rented. […] An account for a foreclosed property will be closed once the Certificate of Title is received. […] Effective October 1, 2024 a termination fee of $30 is applied to all accounts closed.',
+        'https://www.miramarfl.gov/Departments/Financial-Services/Water-Billing-Division/Closing-Your-Account',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'The separate permit lien search from the Building Division',
+        quote: q(
+          'RECORD SEARCH ONLY NO FIELD INSPECTIONS […] Please allow 5-7 Working days to process each property address for regular requests. […] Lien Search Requests are a point in time search and reflect the standing of the property at the time the search was completed. […] REGULAR REQUESTS $162.00 PER ADDRESS* EXPEDITED REQUESTS $270.00 PER ADDRESS* *PRICES INCLUDE CITY SURCHARGE',
+          'https://www.miramarfl.gov/files/assets/public/v/5/buildingplanningzoning/documents/application-and-forms/fy-2026-building-lien-search-form-2-9-26-fillable.pdf',
+        ),
+      },
+      {
+        label: 'A code case is not searchable by the public',
+        quote: q(
+          'Can I check the status of my Code Compliance Case online? Due to privacy and legal matters, this service is only available to those who are listed as a contact on the Code Case.',
+          'https://www.miramarfl.gov/Departments/Building-Planning-Zoning/Building-Permits-Inspections',
+        ),
+      },
+      {
+        label: 'Old plans may not exist',
+        quote: q(
+          'The City of Miramar is not likely to have records (blue prints, etc.) to satisfy public records requests for residents who live in structures built more than 10 years ago.',
+          'https://www.miramarfl.gov/Departments/Building-Planning-Zoning/Building-Permits-Inspections',
+        ),
+      },
+      {
+        label: 'Fire protection assessment',
+        quote: q(
+          'Effective 2004, all residential units in Miramar were assessed a Fire Protection Assessment for a fee.',
+          'https://www.miramarfl.gov/Departments/Fire-Rescue/Resources/Hardship-Exempt-Application',
+        ),
+      },
+    ],
+    notes:
+      'A complete Miramar search is three requests: the Finance lien inquiry, the Building Division’s permit lien search and a call to Code Compliance, and the Finance page itself says a request is incomplete without the other two. The city’s PDF forms refused our command-line requests on 22 September; the two quoted were read from copies saved two days earlier and one through a second fetcher the same day.',
+  },
+  // ------------------------------------------------------------------- Miami
+  {
+    citySlug: 'miami',
+    government: 'City of Miami',
+    building: {
+      office: { name: 'Building Department', url: 'https://www.miami.gov/My-Government/Departments/Building' },
+      portal: {
+        name: 'iBuild',
+        url: 'https://www.miami.gov/Permits-Construction/Permitting-Resources/View-Permit-HistoryPermit-Search',
+      },
+      expiredPermits: q(
+        'A Permit Extension can only be requested for active permits, and a Permit Completion must be requested if your permit has expired. […] A Permit Completion must be requested if your permit is expired, and the process is different based on the cost of the work to be performed. Once approved, this process will make your permit active again and grant 180 days from the time of request to complete all required work and finalize all required inspections. […] If the cost of the work to be performed is $10,000 or less, you can process your request via iBuild. If the cost of the work to be performed exceeds $10,001, your request must be reviewed and approved by the Chief for that specific trade, and your submission must be submitted via email.',
+        'https://www.miami.gov/Permits-Construction/Request-a-Permit-Extension-or-Completion',
+        '2026-09-22',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Department of Code Compliance', url: 'https://www.miami.gov/My-Government/Departments/Code-Compliance' },
+      hearingBody: q(
+        'Purpose: To issue orders having the force of law commanding whatever steps are necessary to bring a Code violation into compliance. […] The city commission may appoint one or more seven-member code enforcement boards.',
+        'https://www.miami.gov/My-Government/Boards-Committees/Code-Enforcement-Board',
+        '2026-09-22',
+      ),
+      liens: q(
+        'Liens are placed on violating properties that have been determined to be guilty by the Code Enforcement Board and have not come into compliance by the ordered due date. Liens are removed once the property has come into compliance, all outstanding fines have been paid, and you have made this request and received approval. […] IMPORTANT NOTE: A lien cannot be released if the violation(s) is open and/or there are unpaid fees.',
+        'https://www.miami.gov/My-Home-Neighborhood/Solve-a-Problem/Release-of-Lien-Request-RLN-for-Cityview-Citations-Only',
+        '2026-09-22',
+      ),
+      release: q(
+        'Do you have an open Code Enforcement case where you have corrected the violation, but there is an active per-diem-fine that is accruing? The City of Miami understands that you would like an opportunity to discuss your fines with either the Code Enforcement Board or the City Commission. […] Only the owner(s) or someone with legal standing (i.e. Legal Counsel, Power of Attorney) on behalf of the owner(s) can request this type of hearing. […] You must have an "Affidavit of Compliance" to request a Mitigation Hearing. All violations must be "complied". […] If your documents are correct, you will receive a notification of your hearing date, time, and location via email within 3-5 business days. At the hearing, the Board will make a Motion regarding the fines on your violation.',
+        'https://www.miami.gov/Permits-Construction/Appeals-Hearings/Request-a-Hearing-in-Code-Enforcement/Request-a-Mitigation-Hearing-for-a-Code-Enforcement-Case',
+        '2026-09-22',
+      ),
+    },
+    lienSearch: {
+      office: {
+        name: 'the city’s own lien search, run inside iBuild',
+        url: 'https://www.miami.gov/Permits-Construction/Property-Information/Run-a-Lien-or-Violation-Search',
+      },
+      answeredBy: 'city',
+      how: q(
+        'Are you purchasing a property and want to see if any liens or violations exist on it? The City of Miami makes this information public and easy to access through a lien search. […] NOTE: If the folio number does not begin with "01", this property is not in The City of Miami. You will not be able to proceed with this search here, and should contact the appropriate district.',
+        'https://www.miami.gov/Permits-Construction/Property-Information/Run-a-Lien-or-Violation-Search',
+        '2026-09-22',
+      ),
+      fee: q(
+        'A form of payment (credit card or check). The fee is $200.',
+        'https://www.miami.gov/Permits-Construction/Property-Information/Run-a-Lien-or-Violation-Search',
+        '2026-09-22',
+      ),
+      turnaround: q(
+        'NOTE: You are prompted to choose "new report" (if this is the first time you’re searching this particular property), or "print existing report" (if you ran this search previously and paid for it). […] IMPORTANT: Once you have paid for your "new report" you will have to come back to this screen and select "existing report" in order to view or print the actual report.',
+        'https://www.miami.gov/Permits-Construction/Property-Information/Run-a-Lien-or-Violation-Search',
+        '2026-09-22',
+      ),
+    },
+    utility: {
+      provider: {
+        name: 'the Miami-Dade Water and Sewer Department, a county utility',
+        url: 'https://www.miamidade.gov/global/water/my-account.page',
+      },
+      statement: q(
+        'If payment is not received and an extension is not requested by the bill due date, a final notice will be mailed. If payment is not received within 14 days of the final notice, then the service may become eligible for disconnection. If the service is disconnected and remains unpaid for an additional 7 days, the account will be closed and any available deposits applied to the balance. A final bill will be generated with the remaining balance due or a refund will be issued in the case of a credit balance.',
+        'https://www.miamidade.gov/global/water/my-account.page',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'Releasing a recorded code lien',
+        quote: q(
+          'You will need to have a ticket number or case number to complete this request. A folio number will not be accepted. […] If you have unpaid fines, please contact the Finance Department for Pay off total at finance@miamigov.com. […] If your submission is complete and accurate (no errors, omissions, or misinformation provided), then you will receive a response through email within 3-5 business days, confirming that the Release of Lien has been sent to the County for recordation.',
+          'https://www.miami.gov/My-Home-Neighborhood/Solve-a-Problem/Release-of-Lien-Request-RLN-for-Cityview-Citations-Only',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'The city’s stormwater fee rides the county water bill',
+        quote: q(
+          'The stormwater utility fee will appear on your Miami-Dade Water and Sewer Department bill, effective February 1, 2026. […] Residential properties (including single-family homes, condominium units, apartment or townhouse units, and mobile home units): $7.00 per month',
+          'https://www.miami.gov/Notices/News-Notices/Notice-Regarding-Stormwater-Utility-Fee',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Registering a vacant or abandoned structure or lot',
+        quote: q(
+          'Do you need to register a privately owned, empty lot or a vacant, blighted, unsecured or abandoned structure to avoid a fine? The City requires that these types of structures are registered with us in order to keep everyone safe. […] NOTE: If you have a violation, you will have to pay this invoice before receiving approval. […] Once your property is registered, the owner/agent is responsible for updating the registration annually.',
+          'https://www.miami.gov/My-Home-Neighborhood/Register-Vacant-or-Abandoned-Structure-or-Lot',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Building recertification',
+        quote: q(
+          'The City re-certifies structures to ensure they are safe for use and occupancy, as per the Miami-Dade County Code. […] Single family homes, duplexes, or structures that are 2,000 square feet or less and have an occupancy load of ten or less are exempt from recertification.',
+          'https://www.miami.gov/Permits-Construction/Unsafe-Structures-Services/Get-a-Building-Recertification',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Only the owner starts garbage service',
+        quote: q(
+          'Only the property owner may start new garbage and recycling service. If you are in a property with more than three units, you must contact a private, city-approved company to start your service.',
+          'https://www.miami.gov/My-Home-Neighborhood/Garbage-Recycling/Start-New-Garbage-and-Recycling-Service',
+          '2026-09-22',
+        ),
+      },
+    ],
+    notes:
+      'Miami’s lien search is a $200 report generated inside iBuild against a folio that begins 01, printable once paid, with no business-day turnaround because there is no desk behind it. A code lien is released by an online request tied to the case number, after compliance and payment; mitigation of an accruing fine is a separate Code Enforcement Board hearing that needs an Affidavit of Compliance first. Water is the county’s, not the city’s.',
+  },
+
+  // --------------------------------------------------------------- Hollywood
+  {
+    citySlug: 'hollywood',
+    government: 'City of Hollywood',
+    building: {
+      office: { name: 'Building Division', url: 'https://www.hollywoodfl.org/1545/Permits' },
+      portal: { name: 'Accela Citizen Access', url: 'https://aca-prod.accela.com/HOLLYWOOD/Default.aspx' },
+      expiredPermits: q(
+        'Does my Building Permit expire? Issued permits expire if work is not commenced within 180 days or if abandoned for a period of 90 days. When a permit expires the permit holder is to submit the expired permit form and pay a fee to reactivate the permit. Prior to the issued permit expiring a onetime extension of 180 days from the initial expiration date can be added for a fee if the request for the extension is made prior to the expiration date of the initial permit. […] Prior to submitting a request form to obtain a CO or CC, all inspections must be "PF" – Passed Full and the permit must be in closed status.',
+        'https://www.hollywoodfl.org/m/faq?cat=16',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Code Compliance', url: 'https://www.hollywoodfl.org/383/Code-Compliance' },
+      hearingBody: q(
+        'Special Magistrates, who are licensed attorneys, adjudicate cases that fail to come into voluntary compliance. […] The Special Magistrate is invested with the statutory authority found in chapter 162 of the Florida statutes to hear code enforcement cases. […] The Special Magistrate is authorized to hold hearings and impose fines, liens and other NON-criminal penalties against violators.',
+        'https://www.hollywoodfl.org/383/Code-Compliance',
+        '2026-09-22',
+      ),
+      liens: q(
+        'When a property owner does not correct an outstanding Code Enforcement violation cited against a property, the City schedules a hearing before a Special Magistrate. If the violation remains outstanding and is not corrected after two scheduled hearings, the Special Magistrate assesses a fine against the property that accrues on a daily basis. The City also records the accruing fine as a lien in the public records of Broward County.',
+        'https://www.hollywoodfl.org/492/Types-Of-Liens',
+        '2026-09-22',
+      ),
+      release: q(
+        'The City of Hollywood offers Lien Settlements for eligible property owners seeking consideration for lien reduction or release. Property owners may apply for review of qualifying property liens and submit documentation demonstrating compliance with applicable Code, Building, and Fire requirements. […] When a property owner pays an outstanding lien on a property, the property owner must also pay the accrued interest on the lien as well as a $40 fee to cover the City’s costs of processing and removing the lien from the county’s records (except for Code Enforcement liens, which are daily fines that accrue over time).',
+        'https://www.hollywoodfl.org/220/Liens',
+        '2026-09-22',
+      ),
+    },
+    lienSearch: {
+      office: { name: 'the city, through its Lien Search Request', url: 'https://www.hollywoodfl.org/489/Requesting-A-Lien-Search' },
+      answeredBy: 'city',
+      how: q(
+        'Interested parties, such as title companies and individuals, can request the City to check its records for outstanding liens against a property. For a fee, the City will search its records and report any liens that appear in the records, as well as any other known outstanding charges or assessments against the property. […] A separate lien search request form is required for each parcel and must include the property identification number, the property address, and the owner of record.',
+        'https://www.hollywoodfl.org/489/Requesting-A-Lien-Search',
+        '2026-09-22',
+      ),
+      fee: q(
+        'Lien search and certification fees are currently as follows: $160 for Residential Standard Service (8 - 10 business days) $243 for Residential Expedited Service (1 - 2 business days $321 for Non-Residential Standard Service (8 - 10 business days) $438 for Non-Residential Expedited Service (1-2 business days) Additional charges of $25 per meter may be assessed based on the number of meters on the property which must be paid separately by referencing the original request ID.',
+        'https://www.hollywoodfl.org/489/Requesting-A-Lien-Search',
+        '2026-09-22',
+      ),
+      turnaround: q(
+        'As part of the Lien Search Report, the city will also disclose whether there are pending Code Enforcement violations or Building violations, which can become liens against the property. The City will also indicate whether there are any open Building permits on the property signifying there is work in progress at the property that may need to be completed or for which a final inspection must be scheduled.',
+        'https://www.hollywoodfl.org/492/Types-Of-Liens',
+        '2026-09-22',
+      ),
+    },
+    utility: {
+      provider: {
+        name: 'the city’s Department of Public Utilities, for most addresses',
+        url: 'https://www.hollywoodfl.org/217/Utility-Billing-Customer-Service',
+      },
+      statement: q(
+        'Unpaid charges for utility service including water and sewer service, stormwater drainage, and garbage and commingled waste removal are liens against the property receiving the service. The City records most liens in the public records of Broward County. Pursuant to Florida Statutes, water and sewer service charges become statutory liens against a property upon becoming past due regardless of whether they are formally recorded in Broward County records.',
+        'https://www.hollywoodfl.org/492/Types-Of-Liens',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'Not every Hollywood address is on city water',
+        quote: q(
+          'Before applying, please confirm your address is served by the City of Hollywood Department of Public Utilities by calling Customer Service at 954-921-3938. Some addresses within the City of Hollywood are connected to Broward County or Town of Davie service providers. These properties may receive water from one provider and sewer service from another.',
+          'https://www.hollywoodfl.org/217/Utility-Billing-Customer-Service',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'The final water bill',
+        quote: q(
+          'Final utility charges will be calculated through the requested service termination date. […] A final bill will be issued after your termination date and delivered according to your billing preference on file (regular mail or e-mail) within 2-3 weeks. When a tenant account closes, utility service responsibility returns to the property owner.',
+          'https://www.hollywoodfl.org/1658/Close-Utility-Account',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Board-up and demolition costs become liens',
+        quote: q(
+          'Under limited and usually urgent circumstances, the City must take action to board up and in some cases even demolish unsafe structures on properties. The City bills the property owner for the cost of demolishing or securing the property […] If the bill is not paid within 20 days, the City records a lien against the property in the public records of Broward County.',
+          'https://www.hollywoodfl.org/492/Types-Of-Liens',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'An owner-builder permit restricts a sale',
+        quote: q(
+          'You cannot sell your house or duplex for one year after having a final inspection on any Owner builder permit.',
+          'https://www.hollywoodfl.org/m/faq?cat=16',
+        ),
+      },
+      {
+        label: 'A rented house needs a business tax receipt',
+        quote: q(
+          'Chapter 110 of Hollywood’s municipal Code of Ordinances regarding local business tax requires owners of leased or rented single-family residential housing to obtain local business tax receipts. The code recognizes such residential property rentals - including single-family homes, townhomes, condos and duplexes - as businesses and considers each single-family building as a separate business location for local business tax purposes.',
+          'https://www.hollywoodfl.org/495/Residential-Rental-Properties',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Vacant property registration for lenders',
+        quote: q(
+          'In an effort to curtail the growing problem of abandoned and neglected properties, the City of Hollywood has enacted an Ordinance that requires lenders to register these properties with Code Compliance.',
+          'https://www.hollywoodfl.org/570/Vacant-Property-Registration',
+        ),
+      },
+    ],
+    notes:
+      'Hollywood publishes the fullest lien-search terms of any city here, and its report covers pending code and building violations and open permits as well as recorded liens. It also says a past-due water or sewer charge is a lien whether or not it was ever recorded, which is the reason the search asks the utility as well as the county.',
+  },
+
+  // ---------------------------------------------------------- Pembroke Pines
+  {
+    citySlug: 'pembroke-pines',
+    government: 'City of Pembroke Pines',
+    building: {
+      office: { name: 'The Building Department', url: 'https://www.ppines.com/164/The-Building-Department' },
+      portal: { name: 'the Development Hub', url: 'https://pembrokepinesfl-energovweb.tylerhost.net/apps/selfservice#/home' },
+      expiredPermits: q(
+        'Once a permit is issued: The permit has 180 calendar days to receive its first approved inspection. After the first approved inspection, the permit must have another approved inspection within 90 days. Failure to meet these deadlines will result in the expiration of the permit. […] If the Permit Expired Less Than 90 Days Ago Submit the following to the Building Department: Permit Renewal / Extension Request Form Updated Broward County Uniform Building Permit Application Updated Notice of Commencement Payment of the renewal fee (50% of the original permit fee) […] If the Permit Expired More Than 90 Days Ago […] Payment of the renewal fee (100% of the original permit fee) […] Important: Permits will not be renewed or extended until all applicable fees have been paid in full.',
+        'https://www.ppines.com/1770/FAQs-EngSpan',
+        '2026-09-22',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Code Compliance Unit', url: 'https://www.ppines.com/176/Code-Compliance' },
+      hearingBody: q(
+        'Code Compliance Magistrate Hearing Thursday, September 24, 2026',
+        'https://www.ppines.com/Calendar.aspx?EID=7344',
+        '2026-09-22',
+      ),
+      liens: q(
+        'When various fines, fees, or charges remain unpaid by property owners, the City can exercise its legal right to place a lien against an owner’s property to ensure the eventual collection of an unpaid amount. […] For outstanding code violations (including violations that have not yet reached the lien status), please call 954-431-4466.',
+        'https://www.ppines.com/236/Lien-Search',
+        '2026-09-22',
+      ),
+      release: null,
+    },
+    lienSearch: {
+      office: { name: 'the Finance Department’s Lien Search Program', url: 'https://www.ppines.com/236/Lien-Search' },
+      answeredBy: 'city',
+      how: q(
+        'Interested parties, such as title companies and individuals, can request the City to check its records for outstanding liens against a property. To submit a manual search, please complete the Lien Inquiry Form and return it to: […] Note: The information we are providing refers to encumbrances that may exist on the property. Please contact the Building Department for open building permit searches. There may be other encumbrances against the property imposed by Broward County. Please contact the appropriate Broward County agency to obtain information about other encumbrances.',
+        'https://www.ppines.com/236/Lien-Search',
+        '2026-09-22',
+      ),
+      fee: null,
+      turnaround: null,
+    },
+    utility: {
+      provider: { name: 'the city’s Utilities Department', url: 'https://www.ppines.com/461/Utilities-Department' },
+      statement: q(
+        'Pursuant to section 50.33 (Am. Ord. 1978, passed 11-17-21) […] of the City of Pembroke Pines Code of Ordinances in accordance with Ch. 50.08, new utility accounts can only be opened in the owner’s name by the property owner or their designated representative. The security deposits for all new residential utility accounts shall be $100. […] The owner is fully responsible for all charges at the property until transferred to a new owner. […] Please note: All security deposits are applied to the final bill, therefore, all balances are to be settled at closing between the seller/buyer before starting the new service.',
+        'https://www.ppines.com/1494/NEW-RESIDENTIAL-UTILITY-ACCOUNT',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'Searching a code case yourself',
+        quote: q(
+          'If you are looking for information regarding a previous Code Compliance violation or any active Code violations for a particular property, please visit our Public Records page.',
+          'https://www.ppines.com/176/Code-Compliance',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Closing a permit',
+        quote: q(
+          'Certificate of Completion (CC) Confirms permitted work has been completed and all required inspections have passed. […] This certificate closes the permit once work is completed. […] Once you are ready to request your certificate, or if you have any questions regarding the close-out process, please contact the Building Department by email: PpinesCloseOutDocuments@cgasolutions.com',
+          'https://www.ppines.com/1770/FAQs-EngSpan',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Abandoned property registration',
+        quote: q(
+          'The City Commission of the City of Pembroke Pines adopted Ordinance 1660, which established Chapter 90.20 of the Code of Ordinances […] NOTE: Inspection and registration of the property by mortgagee must be done prior to the issuance of a notice of default.',
+          'https://www.ppines.com/1047/AbandonedVacant-Property-Registration',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Buildings of 25 years and older',
+        quote: q(
+          'Subsequent building safety inspections shall be required at 10-year intervals from the year the building or structure reaches 25 years of age, regardless of when the previous inspection report for the building or structure was finalized or filed.',
+          'https://www.ppines.com/1484/BSIP-Building-Safety-Inspection-Program',
+          '2026-09-22',
+        ),
+      },
+    ],
+    notes:
+      'Pembroke Pines names its hearing officer only on its calendar, as the Code Compliance Magistrate, and publishes no route for reducing or releasing a code lien, no fee and no turnaround for its lien search, which sits behind a login. The Building Department is staffed through a contractor and answers open-permit searches separately from the Finance lien search.',
+  },
+
+  // ------------------------------------------------------------- Tallahassee
+  {
+    citySlug: 'tallahassee',
+    government: 'City of Tallahassee',
+    building: {
+      office: {
+        name: 'Building Inspection Division, in Growth Management',
+        url: 'https://www.talgov.com/growth/gm_permits_buildins',
+      },
+      portal: { name: 'the Customer Permit Portal', url: 'https://cwpll.talgov.com/TallahasseePortal' },
+      expiredPermits: q(
+        'A building permit is valid for 180 days. Please note that a building permit’s expiration date is extended another 180 days each time a project receives an approved inspection. […] Yes, a building permit can be reinstated within 180 days after the expiration date of the permit.',
+        'https://www.talgov.com/growth/gm_faqs/72.aspx',
+        '2026-09-22',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Code Enforcement', url: 'https://www.talgov.com/publicsafety/CodeEnforcement' },
+      hearingBody: q(
+        'Citizen volunteer Magistrates and Code Board members provide a fair public hearing where they can order compliance actions or consider appeal requests.',
+        'https://www.talgov.com/publicsafety/CodeEnforcement',
+        '2026-09-22',
+      ),
+      liens: null,
+      release: null,
+    },
+    lienSearch: {
+      office: { name: 'the Treasurer-Clerk’s records office', url: 'https://www.talgov.com/doingbusiness/lien-search-request.aspx' },
+      answeredBy: 'city',
+      how: q(
+        'Each request must be submitted using the online request system. Faxed or e-mailed requests will not be accepted. Payment must be made via credit card at the time each request is submitted. […] As part of each request, the City will search for the existence of liens or unpaid debts resulting from: City of Tallahassee Utilities (electric, water, sewer, gas, solid waste, etc.) S.H.I.P. / HOME / CDBG program loans for home repairs, accessibility improvements, etc. Leon County Fire Service Fees (for properties on the quarterly billing system)',
+        'https://www.talgov.com/doingbusiness/lien-search-request.aspx',
+        '2026-09-22',
+      ),
+      fee: q(
+        'Fees assessed are per search. The Lien Search fee is $60.00 for each parcel number searched. Any subsequent requests for "updates" or "updated information" on a previous request will require the payment of an additional, full search fee.',
+        'https://www.talgov.com/doingbusiness/lien-search-request.aspx',
+        '2026-09-22',
+      ),
+      turnaround: q(
+        'Requests require three to four working days to complete. City staff will not respond to inquiries regarding the "status" of a request. […] We encourage requestors to submit inquiries well in advance of the date needed as no "rush" requests will be accepted or honored. […] Please be advised that this information does not constitute an estoppel letter, in no way is a guarantee of clear title, and should not be used as a substitute for conducting a proper title search.',
+        'https://www.talgov.com/doingbusiness/lien-search-request.aspx',
+        '2026-09-22',
+      ),
+    },
+    utility: {
+      provider: { name: 'City of Tallahassee Utilities', url: 'https://www.talgov.com/you/you.aspx' },
+      statement: q(
+        'Residential deposits will be returned as a credit after three years if a customer maintains a good payment record or when the account is closed.',
+        'https://www.talgov.com/you/you-customer-helpful-fees',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'The city’s utility reaches beyond the city',
+        quote: q(
+          'the City of Tallahassee provides utility services to properties within the municipal boundaries (corporate limits) and to other properties within Leon, Gadsden, and Wakulla counties.',
+          'https://www.talgov.com/doingbusiness/lien-search-request.aspx',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'The county fire fee, and where it lands when unpaid',
+        quote: q(
+          'County residents who are served by City of Tallahassee utilities have the County fire service fee included on their utility bill. All other properties are billed quarterly by the City of Tallahassee, on behalf of Leon County. Owners who fail to pay the quarterly County fire service fee are removed from the quarterly billing system, and the Fees are then placed on the Property Tax bill of the subject property.',
+          'https://www.talgov.com/doingbusiness/lien-search-request.aspx',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Some ordinance fines are the Clerk’s to collect',
+        quote: q(
+          'Collection of fines for some violations of municipal ordinances, such as animal control violations and false fire or burglar alarm violations, are administered by the Leon County Clerk of the Courts.',
+          'https://www.talgov.com/doingbusiness/lien-search-request.aspx',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Finishing a permit',
+        quote: q(
+          'A Certificate of Occupancy/Certificate of Completion is obtained by successfully completing all inspections that apply, including all subtrade permits. They are received through the Customer Permit Portal.',
+          'https://www.talgov.com/growth/gm_faqs/77.aspx',
+          '2026-09-22',
+        ),
+      },
+    ],
+    notes:
+      'Tallahassee is its own electric, gas, water, sewer and solid-waste utility, and the city’s lien search is built around those accounts and the housing-programme loans it holds; the city says the result is not an estoppel letter. Its Code Enforcement page names magistrates and a code board but publishes nothing about how a code lien is reduced or released.',
+  },
+  // ------------------------------------------------------------------- Tampa
+  {
+    citySlug: 'tampa',
+    government: 'City of Tampa',
+    building: {
+      office: { name: 'Construction Services Division', url: 'https://www.tampa.gov/construction-services' },
+      portal: { name: 'Accela Citizen Access', url: 'https://aca-prod.accela.com/Tampa/Welcome.aspx' },
+      expiredPermits: null,
+    },
+    codeEnforcement: {
+      office: { name: 'Neighborhood Enhancement Division', url: 'https://www.tampa.gov/neighborhood-enhancement' },
+      hearingBody: q(
+        'The City of Tampa Code Enforcement Board ("CEB") is authorized under Chapter 162, Part I, Florida Statutes, and Chapter 9, Tampa City Code. This administrative board has the authority to issue administrative fines and other noncriminal penalties to provide an equitable, expeditious, effective, and inexpensive method of enforcing codes and ordinances where a pending or repeated violation continues to exist. Presently this function is handled through local code enforcement magistrates.',
+        'https://www.tampa.gov/neighborhood-enhancement/code-enforcement-board-public-nuisance-abatement-board',
+        '2026-09-22',
+      ),
+      liens: q(
+        'The owner of record has the responsibility of resolving any active code action, failure to resolve the violations may result in a lien against the property after conveyance.',
+        'https://www.tampa.gov/neighborhood-enhancement/lien-search',
+        '2026-09-22',
+      ),
+      release: q(
+        'The Legal Department, with the assistance of the Neighborhood Enhancement Department (NED), shall be responsible, upon the expiration of the jurisdiction of the CEB or CESM, for negotiating the settlement of fines imposed by the CEB and CESM. NED shall be responsible for the release the lien(s) from the properties. […] compliance with the relevant code requirements is determined by NED inspectors and reduced to writing through an affidavit of compliance. […] hard costs expenses expended by the City to abate a violation, are not negotiable and shall be paid in full prior to the execution and recordation of the release of lien(s).',
+        'https://www.tampa.gov/sites/default/files/document/2025/253fc73b-8e6f-42b8-9782-75dd4cb89fa4_e.o-2022-16-policy-and-guidelines-for-the-settlement-and-recovery-of-code-enforcement-board-and-code-enforcement-special-magistrate-liens-2_remediated.pdf',
+        '2026-09-22',
+      ),
+    },
+    lienSearch: {
+      office: {
+        name: 'Conduits, a Net Assets Corporation system the Neighborhood Enhancement Division publishes through',
+        url: 'https://www.tampa.gov/neighborhood-enhancement/lien-search',
+      },
+      answeredBy: 'vendor',
+      how: q(
+        'Search Code Enforcement Liens and Utility Balances — CONDUITS - City of Tampa — If you wish to obtain a lien payoff letter, visit http://conduits.nassets.net/fl/tampa.html. The City of Tampa provides this information through Conduits which is operated and supported by Net Assets Corporation.',
+        'https://www.tampa.gov/neighborhood-enhancement/lien-search',
+        '2026-09-22',
+      ),
+      fee: q(
+        'There is a $25 non-refundable fee for this service, upon payment, you will be prompted to enter the property address, folio number, or PIN.',
+        'https://www.tampa.gov/neighborhood-enhancement/lien-search',
+        '2026-09-22',
+      ),
+      turnaround: q(
+        'Lien searches are provided within 7 business days. The payoff settlement letter is valid for 45 days from the date of issuance.',
+        'https://www.tampa.gov/neighborhood-enhancement/lien-search',
+        '2026-09-22',
+      ),
+    },
+    utility: {
+      provider: { name: 'City of Tampa Utilities, in the Water Department', url: 'https://www.tampa.gov/city-of-tampa-utilities' },
+      statement: q(
+        'City of Tampa Utilities provides drinking water and wastewater (sanitary sewer) services to customers located in the City of Tampa, as well as parts of unincorporated Hillsborough County and Temple Terrace.',
+        'https://www.tampa.gov/city-of-tampa-utilities',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'The city’s published settlement schedule for a fine lien, once the property complies',
+        quote: q(
+          'Homestead Exempt Property: Where the violation(s) giving rise to the fine has been corrected and the property has been brought into compliance with code requirements, a fine which exceeds $250 on homestead exempt property, may be settled in accordance with the following guidelines: 1. $250 when correction of violation(s) occurred within 1 year of compliance deadlines. 2. $500.00 when correction of violation(s) occurred between 1 and 2 years of compliance deadline. 3. $1,000.00 when correction of violation(s) occurred after 2 years of compliance deadline. […] Non-Homestead Exempt Property: […] 1. $500.00 when correction of violation(s) occurred within 1 year of compliance deadline. 2. $1,000.00 when correction of violation(s) occurred between 1 and 2 years of compliance deadline. 3. $3,000.00 when correction of violation(s) occurred between 2 and 3 years of compliance deadline 4. $4,000.00 when correction of violations occurred between 3 and 4 years of compliance deadline 5. $5,000.00 when correction of violations occurred after 4 years of compliance deadline.',
+          'https://www.tampa.gov/sites/default/files/document/2025/253fc73b-8e6f-42b8-9782-75dd4cb89fa4_e.o-2022-16-policy-and-guidelines-for-the-settlement-and-recovery-of-code-enforcement-board-and-code-enforcement-special-magistrate-liens-2_remediated.pdf',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'A buyer of a property that still does not comply',
+        quote: q(
+          'NEW OWNER PROGRAM: When the code violation(s) giving rise to the fine has not been brought into compliance and the property is being or has been transferred to a bona-fide third party in an arm’s length transaction, the Legal Department may propose an offer of settlement to the new owner or proposed purchaser requiring the active violation(s) be brought into compliance within a time certain in order to negotiate a settlement consistent with the guidelines set forth in Section II herein. The offer of settlement provided by the Legal Department shall not be transferrable.',
+          'https://www.tampa.gov/sites/default/files/document/2025/253fc73b-8e6f-42b8-9782-75dd4cb89fa4_e.o-2022-16-policy-and-guidelines-for-the-settlement-and-recovery-of-code-enforcement-board-and-code-enforcement-special-magistrate-liens-2_remediated.pdf',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'A tax deed buyer gets no negotiated settlement',
+        quote: q(
+          'Pursuant to Executive Order 2022-16, properties sold via tax deed sale are not eligible for negotiated settlements pursuant to the guidelines established in the Executive Order. Accordingly, tax deed purchasers have the option of allowing the tax deed process to complete to determine any remaining lien amounts or expediting the release of the liens by satisfying the total amount of the existing liens at the time of purchase.',
+          'https://www.tampa.gov/neighborhood-enhancement/lien-search',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Why a completion certificate is held up',
+        quote: q(
+          'Top reasons your Completion Certificate(s) may be delayed […] Fees due not paid. Contact: CSDhelp@tampagov.net for assistance. […] Child Permit Record(s) expired Contact: CSDhelp@tampagov.net for assistance. […] Final Inspections (MEP, FIRE & BLD) on Parent and/or Child Record(s) are not approved',
+          'https://www.tampa.gov/construction-services/ready-for-completion',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'The final water bill, and split providers',
+        quote: q(
+          'A final bill will be sent to you at your forwarding address. Please allow up to 5 business days for your request to be processed. […] Please note that locations serviced by multiple utility providers will receive separate utility bills from each provider. For example, a location with water provided by the City of Tampa, and wastewater and solid waste serviced by Hillsborough County will receive two separate utility bills',
+          'https://www.tampa.gov/city-of-tampa-utilities/stop-service',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Two stormwater assessments ride the tax bill',
+        quote: q(
+          'Service Assessment - Annual Non-Ad Valorem assessment that pays for operations and maintenance of the existing stormwater system. […] Improvement Assessment - Annual Non-Ad Valorem assessment, that pays for capital improvements associated with the stormwater system in the Central and Lower Improvement Area.',
+          'https://www.tampa.gov/mobility/stormwater/programs/assessment',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Foreclosure registry',
+        quote: q(
+          'This is an ordinance which requires the registration of vacant properties that are in foreclosure or have been foreclosed to register annually with the City of Tampa. See City of Tampa Code of Ordinances 19-133 and 19-135. […] Q. Is there a fee to register? A. Yes, there is an annual $125.00 fee',
+          'https://www.tampa.gov/document/foreclosure-registry-frequently-asked-questions-and-answers-7676',
+          '2026-09-22',
+        ),
+      },
+    ],
+    notes:
+      'Tampa is unusual in publishing a fixed settlement schedule for a code fine lien, by how late compliance came and whether the property is homestead, in an executive order; the city’s abatement costs are never negotiable under it. The lien and payoff letter is a $25 vendor product through Conduits. The city publishes no procedure for reinstating an expired permit, only the reasons a completion certificate is delayed.',
+  },
+
+  // ---------------------------------------------------------------- Palm Bay
+  {
+    citySlug: 'palm-bay',
+    government: 'City of Palm Bay',
+    building: {
+      office: {
+        name: 'Building Department',
+        url: 'https://www.palmbayfl.gov/government/city-departments-a-to-e/building-permits-inspections',
+      },
+      portal: { name: 'the iMS e-Portal', url: 'https://ims.palmbayfl.gov' },
+      expiredPermits: null,
+    },
+    codeEnforcement: {
+      office: {
+        name: 'Code Compliance Division, in Growth Management',
+        url: 'https://www.palmbayfl.gov/government/city-departments-f-to-z/growth-management/code-compliance-violations-complaints',
+      },
+      hearingBody: q(
+        'Code Enforcement Special Magistrate Board - 2nd Wednesday of each month, 1:00 p.m. […] Special Magistrate Hearing - 3rd Wednesday of each month, 1:00 p.m.',
+        'https://www.palmbayfl.gov/government/city-departments-f-to-z/legislative/boards-committees/code-enforcement-board-special-magistrate-hearings',
+      ),
+      liens: null,
+      release: q(
+        'To apply for a reduction of a lien due to a code violation with the City of Palm Bay, please download the Petition for Relief Form and once completed, return it to the City of Palm Bay Code Compliance.',
+        'https://www.palmbayfl.gov/government/city-departments-f-to-z/growth-management/code-compliance-violations-complaints',
+      ),
+    },
+    lienSearch: {
+      office: {
+        name: 'Orange Data, under contract to the city',
+        url: 'https://www.palmbayfl.gov/business/business-resources/lien-research',
+      },
+      answeredBy: 'vendor',
+      how: q(
+        'Effective March 1, 2022, Orange Data has been contracted to provide liens searches for the City of Palm Bay. Follow the link to access the City of Palm Bay Open lien Search Request Portal on the Orange Data website. You will need to create an account with Orange Data to submit lien requests. […] City Lien documents are recorded in the "Official Records" of the Brevard County Clerk of Courts. Documents are recorded by property owner name.',
+        'https://www.palmbayfl.gov/business/business-resources/lien-research',
+      ),
+      fee: q(
+        'Each lien search is $60.00 and requests will be expedited.',
+        'https://www.palmbayfl.gov/business/business-resources/lien-research',
+      ),
+      turnaround: null,
+    },
+    utility: {
+      provider: { name: 'City of Palm Bay Utilities', url: 'https://www.palmbayfl.gov/government/city-departments-f-to-z/utilities' },
+      statement: q(
+        'The Utilities Department will be transitioning residents currently on quarterly billing for Republic Services and Stormwater to monthly billing. The last quarterly bill will be issued on 04/23/2026, with the first monthly bill to be issued on 07/23/2026.',
+        'https://www.palmbayfl.gov/government/city-departments-f-to-z/utilities',
+      ),
+    },
+    other: [
+      {
+        label: 'What the Petition for Relief asks an applicant to attest',
+        quote: q(
+          'APPLICANT MUST ATTEST TO THE FOLLOWING BY INITIALING EACH ITEM: All ad valorem property taxes, special assessments, utility charges and other government liens against the real property have been paid. All Code violations have been corrected or a repair agreement has been executed. […] NOTE: IF THE HOUSE IS OCCUPIED, YOU MUST BE PRESENT AT THE RESIDENCE ON THE DATE OF INSPECTION.',
+          'https://www.palmbayfl.gov/home/showpublisheddocument/22817/637021509378270000',
+        ),
+      },
+      {
+        label: 'Code payments and inquiries go through the same portal as permits',
+        quote: q(
+          'Beginning March 6, 2023, the City of Palm Bay will offer a new online software solution, Intuitive Municipal Solutions (iMS), to streamline the process for code complaints, lien payments, and inquiries that can be found on the City website at www.pbfl.org/code.',
+          'https://www.palmbayfl.gov/government/city-departments-f-to-z/growth-management/code-compliance-violations-complaints',
+        ),
+      },
+      {
+        label: 'Zoning and public-works permits are permits too',
+        quote: q(
+          'Zoning and Public Works permits are not exempt from permits as these are ordinances and not Florida Building Code related. Fences not involving a pool, concrete flatwork not involving a future structure, and small sheds under 120 sq ft will still require permits through Land Development. These permits are applied for through the IMS system and will be assigned a building permit number but are not reviewed by the Building Department.',
+          'https://www.palmbayfl.gov/government/city-departments-a-to-e/building-permits-inspections',
+        ),
+      },
+    ],
+    notes:
+      'Palm Bay contracts its lien search to Orange Data and its foreclosure registry to a second vendor; the Petition for Relief to the Special Magistrate, which a prospective buyer may file, is the one lien matter the city handles itself. Every Palm Bay page was read on 20 September; on 22 September the city’s site refused all automated requests, so nothing here could be re-read that day.',
+  },
 ];
