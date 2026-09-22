@@ -1,23 +1,21 @@
 # What is left
 
 Current as of 22 September 2026, after the pre-launch answers were folded in
-and five pages published. This is the short list: one line per item, grouped by
+and six pages published. Every article is live except one. This is the short list: one line per item, grouped by
 who can close it. The reasoning behind each is in
 [`outstanding-questions.md`](./outstanding-questions.md) and
 [`go-live-status.md`](./go-live-status.md).
 
-Seven of the nine articles are live. Two are not, and each is held by exactly
-one item.
+Eight of the nine articles are live. One is not, and it is held by one item.
 
 ## Blocking a page
 
 | # | Who | Item | Page |
 | - | --- | ---- | ---- |
 | 1 | Bayit Title | **The underlying file (LT-05).** What the search returned, what the claim was, what was required to close, how long it took. Standing instruction: if the file does not come back, drop the page rather than publish it. | `litigation-against-seller-flip-florida` |
-| 2 | Bayit Title | **Name the RON platform (SG-04, second half).** The registry half is answered: the commissions held here are standard notary commissions only, with no § 117.225 online registration, and the page says so. But the page still describes a RON session running on a platform, and SG-05 confirms that platform is on the underwriter's approved list — so it has a name, and that name is the last thing the page needs. | `mobile-and-remote-signings` |
 
-Both pages are otherwise finished: every other pending item on them is answered
-and in the prose.
+The page is otherwise finished: every other pending item on it is answered and
+in the prose.
 
 **Closed 22 September 2026:**
 
@@ -30,9 +28,14 @@ and in the prose.
   and still does, the debt is not joint and separate judgments cannot be
   aggregated (*Williams v. M & R Construction*), and a federal tax lien is a
   federal question the rule does not answer. The judgment page is live.
-- **The online notary registration (SG-04, first half)** — confirmed against the
-  Department of State record: standard commissions only, no RON registration.
-  The signings page now says so plainly rather than implying in-house RON.
+- **The online notary registration and the platform (SG-04, both halves)** —
+  the commissions were confirmed against the Department of State record as
+  standard commissions only, with no § 117.225 registration, and the page now
+  says so plainly rather than implying in-house RON. On the platform: there is
+  no single one. Different remote signings run on different platforms, and the
+  page names BlueNotary and Proof as ones we have closed on, among others. The
+  page makes the test rather than the name the constant — whichever platform a
+  session runs on is one the underwriter accepts. The signings page is live.
 
 ## Worth counsel's eye, blocking nothing
 
@@ -62,8 +65,8 @@ the priority without changing the status.
    page.
 9. **Order of publication.** The worklist's priority — open permits and no
    legal access first — is now spent; both are live. Nothing is queued behind
-   the two blockers, so there is no order left to confirm unless new pages
-   are commissioned.
+   the one remaining blocker, so there is no order left to confirm unless new
+   pages are commissioned.
 
 The cost-publishing policy question is settled by the answers themselves and
 needs no further decision: published municipal schedules are quoted
@@ -81,14 +84,14 @@ courier on the foreign-seller page).
 11. **22 CFR 22.1.** The temporary amendment at 91 FR 34772 runs to
     31 December 2026. It does not touch item 41, so the $50 consular seal on
     the foreign-seller page is unaffected. Worth a glance in January.
-12. **Next review.** The five pages published on 22 September 2026 carry
+12. **Next review.** The six pages published on 22 September 2026 carry
     `next_review: 2027-09-22`; the two published on 20 September carry
     `2027-09-20`.
 
 ## Not content — the site itself
 
 None of these is an article question, and the site can go live with what is
-reviewed while the two drafts stay invisible. Full detail in
+reviewed while the one remaining draft stays invisible. Full detail in
 [`go-live-status.md`](./go-live-status.md).
 
 13. **Export the Wix DNS zone before touching nameservers.** The zone carries

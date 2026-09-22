@@ -18,8 +18,15 @@
 > live. The online notary registration was confirmed from the Department of
 > State record as standard commissions only, with no § 117.225 registration;
 > the signings page now says that rather than implying in-house RON, and what
-> is left on it is the platform's name. The list immediately below is the
-> state before those two answers.
+> is left on it is the platform's name.
+>
+> **Later still, same day:** the platform question is answered too, and the
+> signings page is published — eight of nine live. There is no single platform:
+> different remote signings run on different ones, and the page names
+> BlueNotary and Proof among those we have closed on, with the constant being
+> that whichever platform a session runs on is one the underwriter accepts.
+> Only `litigation-against-seller-flip-florida` is still a draft, on LT-05.
+> The list immediately below is the state before all three answers.
 >
 > **Still draft, and why:**
 >
