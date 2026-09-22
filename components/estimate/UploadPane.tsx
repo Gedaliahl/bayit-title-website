@@ -452,7 +452,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
               >
                 {statusText}
               </span>
-              <button type="submit" className="btn btn--dark btn--send" disabled={busy}>
+              <button type="submit" className="btn btn--primary btn--send" disabled={busy}>
                 {status.kind === 'uploading'
                   ? UPLOAD.uploading(status.position, status.count)
                   : busy

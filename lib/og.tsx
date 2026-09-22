@@ -23,9 +23,8 @@ export const OG_CONTENT_TYPE = 'image/png';
 // no custom properties — if these drift, the card stops matching the site.
 const INK = '#111';
 const PAPER = '#fff';
-const ACCENT = '#97701a';
-const ACCENT_DEEP = '#6b4f0c';
-const ACCENT_DARK = '#2f2408';
+const ACCENT = '#966d2c';
+const ACCENT_DEEP = '#866227';
 const ACCENT_WASH = '#f7efdc';
 const INK_MUTED = '#555';
 
@@ -185,7 +184,7 @@ export function iconImage(size: number): ImageResponse {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: ACCENT_DARK,
+          background: ACCENT,
         }}
       >
         <svg width={size * 0.7} height={size * 0.7} viewBox="0 0 32 32">

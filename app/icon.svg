@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Bayit Title">
-  <rect width="32" height="32" rx="7" fill="#2f2408"/>
+  <rect width="32" height="32" rx="7" fill="#966d2c"/>
   <path d="M16 6 L27 15 V25 H5 V15 Z" fill="#f7efdc"/>
-  <rect x="5" y="22.4" width="22" height="2.6" fill="#97701a"/>
+  <rect x="5" y="22.4" width="22" height="2.6" fill="#966d2c"/>
 </svg>

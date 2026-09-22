@@ -1,5 +1,7 @@
 /* Design tokens. White ground, black text, one antique gold carrying every
-   action — the same gold as the masthead mark. See HANDOFF.md.
+   action — the gold of the masthead mark, sampled from public/brand/mark-t.png.
+   There is no dark brown: a filled button, toggle or panel cap is that gold
+   with white type on it, which is 4.65:1. See HANDOFF.md.
 
    Breakpoints, which custom properties cannot carry into a media query, so
    they are listed here instead: 22rem (the smallest phones), 40rem (one
@@ -13,13 +15,9 @@
   --ink: #111;             /* body text */
   --paper: #fff;
   --band: #faf7f0;         /* alternating section grounds */
-  --accent: #97701a;       /* primary actions, rules, the live timeline */
-  --accent-deep: #6b4f0c;  /* links, labels, chip text */
-  --accent-dark: #2f2408;  /* the one dark button, in the masthead */
+  --accent: #966d2c;       /* the logo's gold: every fill, rules, the live timeline */
+  --accent-deep: #866227;  /* links, labels, chip text, a gold fill under the pointer */
   --accent-wash: #f7efdc;  /* chips, icon discs, answer panel ground */
-  --accent-light: #d3a93a; /* the gold that reads on the dark brown, and only there */
-  --accent-dark-hover: #46360f;
-  --cream-muted: #d9cfb4;  /* the quieter cream on the dark brown, under a figure */
   --flag: #6f1d2b;         /* unresolved facts and form errors only */
 
   --ink-body: #333;        /* lede and disclosure answers, one step off the body ink */
@@ -116,11 +114,11 @@ a {
   text-underline-offset: 0.18em;
 }
 
-/* Darker on hover, not lighter: the action gold is under 4.5:1 on the band and
-   the wash, and a link is small text wherever it sits. */
+/* Ink on hover, not a lighter gold: the action gold is under 4.5:1 on the band
+   and the wash, and a link is small text wherever it sits. */
 @media (hover: hover) {
   a:hover {
-    color: var(--accent-dark);
+    color: var(--ink);
   }
 }
 
@@ -348,20 +346,10 @@ main:focus {
   }
 }
 
-/* The masthead's single dark button. Near-black bronze rather than the action
-   gold so the one call to action that follows the reader down every page is
-   the darkest thing in the chrome. */
-.btn--dark {
-  background: var(--accent-dark);
-  color: var(--paper);
+/* The masthead's button: the same gold as every other action, a size down so
+   it sits in the chrome rather than competing with the page's own. */
+.btn--masthead {
   padding: 0.75rem 1.375rem;
-}
-
-@media (hover: hover) {
-  .btn--dark:hover {
-    background: var(--accent-dark-hover);
-    color: var(--paper);
-  }
 }
 
 .btn--quiet {
@@ -2500,7 +2488,7 @@ legend {
 /* Focus is a second ring outside the card, so a focused card that is not the
    chosen one never looks chosen, and the chosen one shows focus as well. */
 .mode-tab:focus-visible {
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent-dark);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent-deep);
 }
 
 /* The one-word name a phone shows in place of the card. */
@@ -2732,7 +2720,7 @@ legend {
 }
 
 .seg__option input:checked + span {
-  background: var(--accent-dark);
+  background: var(--accent);
   color: var(--paper);
 }
 
@@ -2973,7 +2961,7 @@ legend {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--cream-muted);
+  color: var(--paper);
 }
 
 .figure-card__body {
@@ -3166,8 +3154,8 @@ legend {
     align-items: baseline;
     gap: 0.75rem;
     padding: 0.75rem var(--gutter) calc(0.75rem + env(safe-area-inset-bottom, 0px));
-    background: var(--accent-dark);
-    color: var(--accent-wash);
+    background: var(--accent);
+    color: var(--paper);
     font-size: 0.875rem;
     box-shadow: 0 -8px 24px rgba(47, 36, 8, 0.12);
   }
@@ -3192,7 +3180,7 @@ legend {
   flex: none;
   margin-left: auto;
   padding-block: 0.5rem;
-  color: var(--accent-light);
+  color: var(--paper);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -3312,11 +3300,6 @@ legend {
 
 .form-card__status--error {
   color: var(--flag);
-}
-
-/* The send button at the page's own button size, not the masthead's. */
-.btn--send {
-  padding: 0.875rem 1.75rem;
 }
 
 .btn--send[disabled] {
@@ -3507,7 +3490,7 @@ legend {
   }
 
   .mode-tab[aria-pressed='true'] {
-    background: var(--accent-dark);
+    background: var(--accent);
     color: var(--paper);
   }
 
@@ -3680,8 +3663,8 @@ legend {
 }
 
 .verdict__cap {
-  background: var(--accent-dark);
-  color: var(--accent-wash);
+  background: var(--accent);
+  color: var(--paper);
   padding: 1.25rem 1.5rem;
 }
 
@@ -3691,7 +3674,7 @@ legend {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent-light);
+  color: var(--paper);
   margin: 0 0 0.25rem;
 }
 

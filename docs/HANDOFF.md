@@ -107,15 +107,14 @@ Nine tables in `public`, all with RLS enabled:
 
 ## Design system
 
-White ground, black text, one antique gold carrying every action — the same gold as the masthead mark.
+White ground, black text, one antique gold carrying every action — the gold of the masthead mark, sampled from `public/brand/mark-t.png`. There is no dark brown: a filled button, toggle or panel cap is that gold with white type on it.
 
 ```
 --ink: #111            body text
 --paper: #fff          page ground
 --band: #faf7f0        alternating section grounds
---accent: #97701a      primary actions, rules, the live timeline step
---accent-deep: #6b4f0c links, eyebrows, chip text
---accent-dark: #2f2408 the masthead button, and nothing else
+--accent: #966d2c      the logo's gold: every fill, rules, the live timeline step
+--accent-deep: #866227 links, eyebrows, chip text, a gold fill under the pointer
 --accent-wash: #f7efdc chips, icon discs, answer panel
 --flag: #6f1d2b        VERIFY banners and form errors only
 ```

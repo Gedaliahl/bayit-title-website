@@ -153,7 +153,7 @@ export function SiteNav({
             {item.label}
           </Link>
         ))}
-        <Link href={action.href} className="btn btn--dark" onClick={onLinkClick}>
+        <Link href={action.href} className="btn btn--primary btn--masthead" onClick={onLinkClick}>
           {action.label}
         </Link>
       </nav>

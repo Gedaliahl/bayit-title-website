@@ -66,9 +66,8 @@ ticker and the two figures that count up once on load.
 | `--ink` | `#111` | Body text. |
 | `--paper` | `#fff` | Page ground. |
 | `--band` | `#faf7f0` | Alternating section grounds. |
-| `--accent` | `#97701a` | Primary actions, rules, the live timeline step. |
-| `--accent-deep` | `#6b4f0c` | Links, eyebrows, chip text. |
-| `--accent-dark` | `#2f2408` | The masthead button, and nothing else. |
+| `--accent` | `#966d2c` | The logo's gold. Every fill — buttons, the chosen toggle, panel caps, the phone total bar — rules, the live timeline step. White on it is 4.65:1. |
+| `--accent-deep` | `#866227` | Links, eyebrows, chip text, and a gold fill under the pointer. 4.5:1 on white, band and wash. |
 | `--accent-wash` | `#f7efdc` | Chips, icon discs, answer panel, CTA. |
 | `--flag` | `#6f1d2b` | VERIFY banners and form errors only. |
 | `--ink-muted` | `#555` | Secondary text, labels, credential line. |
@@ -77,8 +76,8 @@ ticker and the two figures that count up once on load.
 | `--rule-card` | `#e3ded2` | Card, pill and panel edges. |
 | `--rule-strong` | `#8a7f6a` | Form-control borders. Over 3:1 on white, band and wash, which a control's edge needs. |
 
-Two off-token colours exist: `#fdf6f2`, the warm blush ground of the VERIFY
-banner, and `#46360f` as the dark button's hover.
+One off-token colour exists: `#fdf6f2`, the warm blush ground of the VERIFY
+banner.
 
 There is currently **no dark mode**.
 
@@ -207,8 +206,8 @@ This sequence is fixed and is the core of the site:
 ### Other pieces
 
 - **Buttons** — `.btn--primary` gold on white; `.btn--quiet` transparent with a
-  1.5px ink border, pale gold on hover; `.btn--dark` is the masthead's and is
-  used nowhere else. DM Sans 0.9375rem/600, `6px` radius.
+  1.5px ink border, pale gold on hover; `.btn--masthead` is the masthead's
+  primary button a size down. DM Sans 0.9375rem/600, `6px` radius.
 - **Cards** (`.card-grid` / `.card`) — `auto-fill` grid at `17rem` min,
   `1.25rem` gap; `.card-grid--three` pins the homepage row to three columns.
   1px border, `12px` radius, no shadow. Optional `.chip` (pale gold pill,
