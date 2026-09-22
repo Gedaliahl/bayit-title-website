@@ -442,4 +442,23 @@ describe('the bot check', () => {
     expect((await POST(post('/api/leads', body))).status).toBe(403);
     vi.unstubAllGlobals();
   });
+
+  it('names a secret Cloudflare does not recognize, rather than calling it an outage', async () => {
+    vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', 'site-key');
+    vi.stubEnv('TURNSTILE_SECRET_KEY', 'mistyped');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => Response.json({ success: false, 'error-codes': ['invalid-input-secret'] }, { status: 400 })),
+    );
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await load();
+    const { POST } = await import('@/app/api/leads/route');
+
+    const response = await POST(
+      post('/api/leads', { full_name: 'Jane Agent', email: 'jane@example.com', turnstile_token: 'token' }),
+    );
+    expect(response.status).toBe(201);
+    expect(logged.mock.calls.flat().join(' ')).toMatch(/refused TURNSTILE_SECRET_KEY/);
+    vi.unstubAllGlobals();
+  });
 });

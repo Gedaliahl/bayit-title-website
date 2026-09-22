@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 
 import { getServiceClient } from '@/lib/supabase';
+import { botCheckEnabled, siteverify } from '@/lib/submissions';
 import { BUCKET } from '@/lib/documents';
 
 export const runtime = 'nodejs';
@@ -19,7 +20,7 @@ interface Check {
 
 interface Health {
   ok: boolean;
-  checks: Record<'supabase' | 'bucket' | 'resend', Check>;
+  checks: Partial<Record<'supabase' | 'bucket' | 'resend' | 'turnstile', Check>>;
 }
 
 /**
@@ -88,9 +89,29 @@ async function resendCheck(): Promise<Check> {
   }
 }
 
+/**
+ * Only when the bot check is switched on. Cloudflare answers a made-up token
+ * with "invalid-input-response" when the secret is right, and names the secret
+ * when it is not, which is the failure worth catching: the check lets every
+ * submission through rather than stop them all.
+ */
+async function turnstileCheck(): Promise<Check | null> {
+  if (!botCheckEnabled()) return null;
+  try {
+    const { secretRefused } = await siteverify('health-check');
+    return { configured: !secretRefused, reachable: true };
+  } catch {
+    return { configured: true, reachable: false };
+  }
+}
+
 async function check(): Promise<Health> {
-  const [{ database, bucket }, resend] = await Promise.all([supabaseCheck(), resendCheck()]);
-  const checks = { supabase: database, bucket, resend };
+  const [{ database, bucket }, resend, turnstile] = await Promise.all([
+    supabaseCheck(),
+    resendCheck(),
+    turnstileCheck(),
+  ]);
+  const checks = { supabase: database, bucket, resend, ...(turnstile ? { turnstile } : {}) };
   const ok = Object.values(checks).every((entry) => entry.configured && entry.reachable);
   return { ok, checks };
 }

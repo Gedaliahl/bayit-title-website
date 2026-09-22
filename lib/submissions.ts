@@ -87,24 +87,45 @@ const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverif
  * unreachable is not the sender's fault, and refusing on it would turn an
  * outage somewhere else into lost orders here, so that case is let through and
  * logged — the rate limit still stands behind it.
+ *
+ * A secret Cloudflare does not recognize is let through as well, for the same
+ * reason: refusing would stop every order until someone noticed. But it is
+ * named as what it is, not as an outage, and /api/health fails on it, because
+ * it means the check is off for everyone.
  */
 export async function passesBotCheck(token: string | undefined): Promise<boolean> {
   if (!botCheckEnabled()) return true;
   if (!token) return false;
 
   try {
-    const response = await fetch(SITEVERIFY_URL, {
-      method: 'POST',
-      body: new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY ?? '', response: token }),
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) throw new Error(`siteverify answered ${response.status}`);
-    const result = (await response.json()) as { success?: boolean };
-    return result.success === true;
+    const result = await siteverify(token);
+    if (result.secretRefused) {
+      console.error('[bot-check] Cloudflare refused TURNSTILE_SECRET_KEY; the bot check is off until it is fixed.');
+      return true;
+    }
+    return result.success;
   } catch (error) {
     console.error('[bot-check] could not verify, allowing through:', (error as Error).message);
     return true;
   }
+}
+
+/** Cloudflare's own codes for a missing or wrong secret, which it answers with a 400. */
+const SECRET_ERRORS = new Set(['missing-input-secret', 'invalid-input-secret']);
+
+/** One siteverify call. Throws only when Cloudflare did not answer. */
+export async function siteverify(token: string): Promise<{ success: boolean; secretRefused: boolean }> {
+  const response = await fetch(SITEVERIFY_URL, {
+    method: 'POST',
+    body: new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY ?? '', response: token }),
+    signal: AbortSignal.timeout(5000),
+  });
+  if (response.status >= 500 || response.status === 429) throw new Error(`siteverify answered ${response.status}`);
+  const result = (await response.json().catch(() => ({}))) as { success?: boolean; 'error-codes'?: string[] };
+  return {
+    success: result.success === true,
+    secretRefused: (result['error-codes'] ?? []).some((code) => SECRET_ERRORS.has(code)),
+  };
 }
 
 /** What the bot check says to a person it has turned away. */

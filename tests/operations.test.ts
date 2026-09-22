@@ -65,6 +65,26 @@ describe('the health check', () => {
     expect(resend).toHaveBeenCalledTimes(1);
   });
 
+  it('fails when the bot check is on with a secret Cloudflare refuses', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_key');
+    vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', 'site-key');
+    vi.stubEnv('TURNSTILE_SECRET_KEY', 'mistyped');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) =>
+        url.includes('siteverify')
+          ? Response.json({ success: false, 'error-codes': ['invalid-input-secret'] }, { status: 400 })
+          : Response.json({ name: 'restricted_api_key' }, { status: 401 }),
+      ),
+    );
+    const { GET } = await import('@/app/api/health/route');
+
+    const response = await GET();
+    const body = await response.json();
+    expect(response.status).toBe(503);
+    expect(body.checks.turnstile).toEqual({ configured: false, reachable: true });
+  });
+
   it('fails when Supabase is not configured at all', async () => {
     state.client = null;
     vi.stubEnv('RESEND_API_KEY', 're_key');
