@@ -82,6 +82,8 @@ export interface AssessedInput {
   ownerPolicyCustom: string | null;
   /** The county's assessed (or just value) figure for the parcel, in dollars. */
   assessedValue: number;
+  /** Which figure assessedValue is, so the premium line can say what it was priced on. */
+  valueBasis: ValueBasis;
   /** 0 for a cash purchase. On a refinance this is the whole of it. */
   loanAmount: number;
   /** The rule's reissue conditions are met — see REISSUE_CONDITIONS. */
@@ -105,6 +107,25 @@ export interface AssessedEstimate {
   ownerPolicyUnassigned: boolean;
 }
 
+/**
+ * The figure in the value box. The roll's two figures are floors for
+ * different reasons; a figure the reader typed may be the price itself, so
+ * it is not called one.
+ */
+export type ValueBasis = 'just' | 'assessed' | 'typed';
+
+const VALUE_NAMES: Record<ValueBasis, string> = {
+  just: 'the just value',
+  assessed: 'the assessed value',
+  typed: 'the value entered',
+};
+
+const FLOOR_NOTES: Record<ValueBasis, string> = {
+  just: ' The just value on the roll is a tax figure, not a sale price, so read this as a floor.',
+  assessed: ' Assessed value is usually lower, so read this as a floor.',
+  typed: '',
+};
+
 export const ASSESSED_DEFAULTS: AssessedInput = {
   purpose: 'purchase',
   countySlug: 'broward-county',
@@ -112,6 +133,7 @@ export const ASSESSED_DEFAULTS: AssessedInput = {
   party: 'buyer',
   ownerPolicyCustom: null,
   assessedValue: 0,
+  valueBasis: 'assessed',
   loanAmount: 0,
   reissue: false,
   priorPolicyAmount: 0,
@@ -202,13 +224,13 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
     premiumLines.push(
       allocate(
         {
-          label: `Owner’s policy at the assessed value, ${input.reissue ? 'reissue rate' : 'original rate'}`,
+          label: `Owner’s policy at ${VALUE_NAMES[input.valueBasis]}, ${input.reissue ? 'reissue rate' : 'original rate'}`,
           value: ownerRate(coverage),
           cite: rateCite,
           sourceUrl: PREMIUM_RULE.url,
           note:
-            'A policy is written for the full insurable value — in a sale, the price. Assessed value ' +
-            'is usually lower, so read this as a floor.' +
+            'A policy is written for the full insurable value — in a sale, the price.' +
+            FLOOR_NOTES[input.valueBasis] +
             (input.reissue ? ` ${reissueExcessNote(coverage, prior)}` : ''),
         },
         ownerPolicy,
@@ -420,7 +442,7 @@ export function otherRateLabel(reissue: boolean): string {
 
 /** What an assessed-value estimate cannot tell you, printed rather than omitted. */
 export const ASSESSED_UNKNOWNS = [
-  'The policy is written at the purchase price or full insurable value, not at the assessed value — on most Florida homes the assessed figure is the lower of the two.',
+  'The policy is written at the purchase price or full insurable value, not at the value on the county roll — on most Florida homes the roll’s figure is the lower of the two.',
   'Documentary stamp tax and the surtax are charged on the consideration. Until there is a contract price, the figures above compute them on the appraiser’s value instead, which is the same substitution and the same direction of error.',
   'Which side pays for the owner’s policy and the deed tax is the contract’s to settle. The split shown is ordinary Florida practice, and it is only the starting point.',
   'Our settlement or closing fee, and the title search and examination.',

@@ -3,7 +3,12 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { ACTIONS, FORM, RESULT, type EstimateMode } from '@/content/estimate';
-import { estimateFromAssessedValue, otherRateLabel, type Purpose } from '@/lib/assessed-estimate';
+import {
+  estimateFromAssessedValue,
+  otherRateLabel,
+  type Purpose,
+  type ValueBasis,
+} from '@/lib/assessed-estimate';
 import {
   DEFAULTS as CLOSING_DEFAULTS,
   estimate,
@@ -56,9 +61,6 @@ const DEBOUNCE_MS = 300;
  * cut off, and one that is not does not leave "Reading the parcel…" up.
  */
 const VALUE_TIMEOUT_MS = 40_000;
-
-/** Where the figure in the value box came from. */
-type ValueOrigin = 'typed' | 'assessed' | 'just';
 
 /** Long enough to be a pause in typing, so the address bar is not rewritten on every key. */
 const QUERY_WRITE_MS = 400;
@@ -339,7 +341,7 @@ export function CalculatorPane({
   const [parcel, setParcel] = useState<OfferedSuggestion | null>(null);
   /** Where the figure in the box came from, once it is the appraiser's. */
   const [record, setRecord] = useState<ParcelValue | null>(null);
-  const [valueOrigin, setValueOrigin] = useState<ValueOrigin>('typed');
+  const [valueOrigin, setValueOrigin] = useState<ValueBasis>('typed');
   /** Counties that publish addresses but not values need a second request. */
   const [lookingUp, setLookingUp] = useState(false);
   const [valueMissed, setValueMissed] = useState<ValueMiss | null>(null);
@@ -682,6 +684,7 @@ export function CalculatorPane({
         party: side,
         ownerPolicyCustom,
         assessedValue: assessed,
+        valueBasis: valueOrigin,
         loanAmount: addressLoan,
         reissue,
         priorPolicyAmount: prior,
@@ -731,6 +734,7 @@ export function CalculatorPane({
     countySlug,
     side,
     assessed,
+    valueOrigin,
     addressLoan,
     price,
     numbersLoan,

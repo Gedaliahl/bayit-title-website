@@ -56,7 +56,7 @@ export const ROUTER = {
   rows: {
     address: {
       label: 'Not yet — start from the address',
-      sub: 'County and assessed value off the appraiser’s roll. A floor, not a quote.',
+      sub: 'County and value off the appraiser’s roll. A floor, not a quote.',
     },
     numbers: {
       label: 'Yes — enter the numbers',
@@ -84,7 +84,7 @@ export const TABS: Record<EstimateMode, { eyebrow: string; short: string; title:
     short: 'Address',
     title: 'Approximate, off the county record',
     body:
-      'Type the address and pick the property. The county and the assessed value come off the ' +
+      'Type the address and pick the property. The county and the value come off the ' +
       'appraiser’s roll, and the premium, deed tax and recording are priced on them.',
   },
   numbers: {
@@ -113,7 +113,7 @@ export const FORM = {
   },
   address: {
     label: 'Property address',
-    hint: 'Start typing and pick the property. Where the roll can be read, the assessed value comes with it.',
+    hint: 'Start typing and pick the property. Where the roll can be read, its value comes with it.',
     placeholder: '1409 NW 48th St, Boca Raton',
     listLabel: 'Matching properties',
     looking: 'Looking…',
@@ -281,8 +281,8 @@ export const RESULT = {
     'contract’s to settle.',
   unknowns: {
     address:
-      'The policy is written at the purchase price, not the assessed value — on most Florida ' +
-      'homes the assessed figure is the lower of the two. Our settlement fee, the search and ' +
+      'The policy is written at the purchase price, not the value on the county roll — on most ' +
+      'Florida homes the roll’s figure is the lower of the two. Our settlement fee, the search and ' +
       'examination, endorsements, survey, municipal lien search, estoppels and association fees. ' +
       'Which side pays each line above is the contract’s to settle.',
     numbers:
@@ -293,7 +293,7 @@ export const RESULT = {
       'starting point.',
   },
   empty: {
-    addressPurchase: 'Pick the property above, or enter the assessed value, and the figures appear here.',
+    addressPurchase: 'Pick the property above, or enter a value, and the figures appear here.',
     addressRefinance: 'Enter the loan amount and the figures appear here.',
     // A loan without a price is not a purchase yet, on either side of it.
     numbersPurchase: 'Enter the price and the figures appear here.',
@@ -425,10 +425,10 @@ export const UPLOAD = {
 export const RAIL = {
   label: 'The detail',
   items: [
-    { id: 'assessed-value', label: 'Where the assessed value comes from' },
+    { id: 'assessed-value', label: 'Where the value comes from' },
     { id: 'county', label: 'What the county changes' },
     { id: 'sides', label: 'Which side pays what' },
-    { id: 'floor', label: 'Why assessed value reads low' },
+    { id: 'floor', label: 'Why the roll’s value reads low' },
     { id: 'schedule', label: 'The schedule it works from' },
     { id: 'reissue', label: 'When the reissue rate applies' },
     { id: 'unknowns', label: 'What this does not know' },
@@ -438,7 +438,7 @@ export const RAIL = {
 
 export const DETAIL = {
   assessedValue: {
-    title: 'Where the assessed value comes from',
+    title: 'Where the value comes from',
     p1:
       'Picking a property fills the figure in, and the line under the box says which office it ' +
       'came from, which parcel it belongs to and which year’s roll it is on. Nothing is estimated ' +
@@ -473,7 +473,7 @@ export const DETAIL = {
     p2b:
       ' — the price — and an estimate that starts from an address has no price in it. So the ' +
       'address option computes it on the appraiser’s value instead, says so on every line that ' +
-      'does it, and keeps it in its own group away from the premium. On a sale above the assessed ' +
+      'does it, and keeps it in its own group away from the premium. On a sale above the roll’s ' +
       'value, which is most sales, the real tax is higher.',
   },
   sides: {
@@ -500,15 +500,18 @@ export const DETAIL = {
       'these lines on either party. Read the paragraph that does it rather than assuming.',
   },
   floor: {
-    title: 'Why assessed value, and where it goes wrong',
+    title: 'Why the roll’s value, and where it goes wrong',
     p1a: 'A policy is written for the full insurable value of the property — on a sale, the purchase price. Florida’s ',
     p1em: 'assessed',
     p1b:
       ' value is a tax figure. On homestead property the annual increase in assessed value is ' +
       'capped by the Save Our Homes provision, so a house held for years can be assessed far below ' +
-      'what it would sell for today. Other exemptions and classifications pull it down further.',
+      'what it would sell for today. Other exemptions and classifications pull it down further. ' +
+      'The box leads with the just value where the roll has one, because it sits before the cap ' +
+      'and the exemptions, and offers the assessed value beside it. The just value is still a ' +
+      'figure for the tax roll rather than a sale price, so the same caution applies to it.',
     p2:
-      'That makes an assessed-value estimate useful and one-sided: the premium on the real coverage ' +
+      'That makes an estimate off the roll useful and one-sided: the premium on the real coverage ' +
       'amount is usually higher than the figure it gives, rarely lower. If you have a contract ' +
       'price, use it — the second option works from a price and a loan amount and adds documentary ' +
       'stamp tax, intangible tax and recording on top. If you have the contract itself, the third ' +

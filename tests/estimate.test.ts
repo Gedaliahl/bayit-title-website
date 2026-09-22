@@ -123,6 +123,18 @@ describe('pricing from an assessed value', () => {
     expect(labels.some((label) => label.includes('intangible'))).toBe(true);
   });
 
+  it('names the figure the owner’s policy was priced on, and calls only the roll’s a floor', () => {
+    const ownerLine = (valueBasis: 'just' | 'assessed' | 'typed') =>
+      premiumOf(estimateFromAssessedValue({ ...ASSESSED_DEFAULTS, assessedValue: 400_000, valueBasis }))
+        ?.lines[0];
+
+    expect(ownerLine('just')?.label).toMatch(/at the just value/);
+    expect(ownerLine('assessed')?.label).toMatch(/at the assessed value/);
+    expect(ownerLine('typed')?.label).toMatch(/at the value entered/);
+    expect(ownerLine('just')?.note).toMatch(/floor/);
+    expect(ownerLine('typed')?.note).not.toMatch(/floor/);
+  });
+
   it('says nothing at all until it has been given a number', () => {
     const result = estimateFromAssessedValue(ASSESSED_DEFAULTS);
 
