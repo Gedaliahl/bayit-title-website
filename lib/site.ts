@@ -22,7 +22,7 @@ export const site = {
     inTitleSince: '2017',    // never write "Florida licensed since 2017"
     linkedin: 'https://www.linkedin.com/in/shevy-lowenstein-25404922a/',
   },
-  // Where a reader checks the two licence numbers above for themselves. The
+  // Where a reader checks the two license numbers above for themselves. The
   // About page puts this at the top of the page rather than in a footnote: the
   // agency's whole argument is that nothing here has to be taken on trust.
   dfsLicenseeSearchUrl: 'https://licenseesearch.fldfs.com/',
@@ -100,13 +100,6 @@ export const site = {
     name: 'Bayit Exchange Company',
     relationship: 'a separate company under different ownership',
   },
-
-  team: [
-    { slug: 'shevy',    name: 'Shevy Lowenstein',    role: 'Founder',                 credential: 'Florida Title Agent, License W766033' },
-    { slug: 'gedaliah', name: 'Gedaliah Lowenstein', role: 'Chief Operating Officer', credential: null },
-    { slug: 'jennifer', name: 'Jennifer Simon',      role: 'Processor',               credential: 'Florida Notary Public, Commission HH 795313' },
-    { slug: 'chaya',    name: 'Chaya Brooks',        role: 'Closer',                  credential: 'Florida Notary Public, Commission HH 817398' },
-  ],
 } as const;
 
 /**

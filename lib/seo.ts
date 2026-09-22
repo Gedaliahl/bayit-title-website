@@ -184,7 +184,9 @@ export function metaDescription(text: string, max = 155): string {
 
 export function formatReviewDate(iso: string | null): string | null {
   if (!iso) return null;
-  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  // UTC for the same reason as formatLongDate: a bare YYYY-MM-DD read in a
+  // US time zone is the evening before, which near the 1st is last month.
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
 export function formatLongDate(iso: string): string {
