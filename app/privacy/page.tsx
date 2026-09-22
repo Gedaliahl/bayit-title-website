@@ -212,8 +212,9 @@ export default function PrivacyPage() {
           )}
           <li>
             We measure page views and page speed using tools served from our own domain. They set no
-            cookie and build no profile of you. They tell us which pages are read and how quickly
-            they load.
+            cookie and build no profile of you. They tell us which pages are read, how quickly
+            they load, and on which page a form was sent or a phone number or email address was
+            tapped — never what was typed into a form.
           </li>
         </ul>
         <p>

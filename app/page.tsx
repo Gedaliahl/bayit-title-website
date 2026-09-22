@@ -95,6 +95,14 @@ export default async function HomePage() {
                   <path d="M13 6l6 6-6 6" />
                 </svg>
               </Link>
+              {/* The two other things a visitor with a live deal wants: an exact
+                  figure from a person, or the person. */}
+              <Link href="/quote" className="btn btn--quiet btn--caps">
+                Get a quote
+              </Link>
+            </p>
+            <p className="hero__call">
+              Or call <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>, {officeHoursLine}.
             </p>
           </div>
 

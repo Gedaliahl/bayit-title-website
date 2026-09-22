@@ -5,6 +5,7 @@ import { team } from '@/lib/team';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PersonSchema } from '@/components/Schema';
+import { QuietCta } from '@/components/QuietCta';
 import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
@@ -60,6 +61,8 @@ export default function TeamPage() {
             ) : null}
           </section>
         ))}
+
+        <QuietCta text="Send us the address and the contract date and one of the four of us will tell you what the search shows." />
       </div>
     </div>
   );
