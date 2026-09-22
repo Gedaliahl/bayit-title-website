@@ -11,6 +11,7 @@ import { ServicesTicker } from '@/components/ServicesTicker';
 import { FileTimeline } from '@/components/FileTimeline';
 import { FeaturedQuote } from '@/components/Reviews';
 import { UnderwriterBadge } from '@/components/UnderwriterBadge';
+import { WebSiteSchema } from '@/components/Schema';
 
 export const metadata: Metadata = {
   // Absolute, because the layout's "| Bayit Title" template applies only to the
@@ -45,6 +46,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <WebSiteSchema />
       <section className="section hero">
         <div className="frame hero__inner">
           <div>

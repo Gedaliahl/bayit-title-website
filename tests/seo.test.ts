@@ -317,4 +317,15 @@ describe('the organization every page describes', () => {
     expect(description).not.toMatch(new RegExp(site.exchangeCompany.name));
     expect(description).toMatch(/whichever qualified intermediary/);
   });
+
+  it('is a local business Google can draw a knowledge panel from', () => {
+    const { data } = (OrganizationSchema() as { props: { data: Record<string, unknown> } }).props;
+
+    expect(data['@type']).toEqual(expect.arrayContaining(['InsuranceAgency']));
+    // Google wants a logo of at least 112px each side; the route draws 512.
+    expect(data.logo).toMatchObject({ url: expect.stringMatching(/\/logo\.png$/), width: 512, height: 512 });
+    // The agent is named where she is referenced, not left as a bare id.
+    expect(data.employee).toMatchObject({ '@type': 'Person', name: site.agentInCharge.displayName });
+    expect((data.makesOffer as unknown[]).length).toBeGreaterThan(3);
+  });
 });

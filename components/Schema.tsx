@@ -8,6 +8,7 @@
 import { site } from '@/lib/site';
 import { absoluteUrl, SITE_URL } from '@/lib/seo';
 import type { FaqItem } from '@/lib/faq';
+import { getTeamMember } from '@/lib/team';
 
 function JsonLd({ data }: { data: Record<string, unknown> }) {
   return (
@@ -20,7 +21,9 @@ function JsonLd({ data }: { data: Record<string, unknown> }) {
 }
 
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
-const AGENT_ID = `${SITE_URL}/team/${site.agentInCharge.displayName.split(' ')[0].toLowerCase()}#person`;
+const AGENT_SLUG = site.agentInCharge.displayName.split(' ')[0].toLowerCase();
+const AGENT_ID = `${SITE_URL}/team/${AGENT_SLUG}#person`;
+const agentInCharge = getTeamMember(AGENT_SLUG);
 
 const WEEK = [
   'Monday',
@@ -51,6 +54,17 @@ function daysInRange(label: string): string[] {
   return WEEK.slice(start, end + 1) as unknown as string[];
 }
 
+/** The services the firm offers, as the services page names them. */
+export const SERVICES = [
+  'Title search and examination',
+  'Owner’s and lender’s title insurance',
+  'Escrow and settlement',
+  'Residential closings',
+  'Commercial title and closings',
+  'Mobile and remote online signings',
+  'The closing side of 1031 like-kind exchanges',
+] as const;
+
 export function openingHoursSpecification() {
   return site.hours
     .filter((entry) => entry.opens !== null)
@@ -67,13 +81,21 @@ export function OrganizationSchema() {
     <JsonLd
       data={{
         '@context': 'https://schema.org',
-        // ProfessionalService is already a LocalBusiness subtype; naming both
-        // says the same thing twice.
-        '@type': 'ProfessionalService',
+        // Both are LocalBusiness subtypes, so LocalBusiness itself is not named
+        // again. InsuranceAgency is what the DFS license says the firm is — a
+        // title insurance agency — and ProfessionalService is the closing work.
+        '@type': ['InsuranceAgency', 'ProfessionalService'],
         '@id': ORGANIZATION_ID,
         name: site.name,
         legalName: site.legalName,
         url: SITE_URL,
+        logo: {
+          '@type': 'ImageObject',
+          url: absoluteUrl('/logo.png'),
+          width: 512,
+          height: 512,
+        },
+        image: absoluteUrl('/opengraph-image'),
         // The 1031 clause says what the agency does — the closing side, with the
         // client's own intermediary — and never "through" the similarly named
         // exchange company, which has no connection to the agency (lib/site.ts).
@@ -101,7 +123,23 @@ export function OrganizationSchema() {
           '@type': 'State',
           name: 'Florida',
         },
+        hasMap: site.googleProfileUrl,
         openingHoursSpecification: openingHoursSpecification(),
+        knowsAbout: [
+          'Title insurance',
+          'Title search and examination',
+          'Real estate closings',
+          'Escrow and settlement',
+          'Commercial title insurance',
+          'Remote online notarization',
+          'Florida documentary stamp tax',
+        ],
+        // What the firm does, each in the words the services page uses for it.
+        // No prices: the premium is the rule's, and the rest is quoted per file.
+        makesOffer: SERVICES.map((name) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name, areaServed: { '@type': 'State', name: 'Florida' } },
+        })),
         hasCredential: {
           '@type': 'EducationalOccupationalCredential',
           credentialCategory: 'Florida Title Insurance Agency License',
@@ -111,7 +149,15 @@ export function OrganizationSchema() {
             name: 'Florida Department of Financial Services',
           },
         },
-        employee: { '@id': AGENT_ID },
+        // Named in full here, because the Person node is only printed on the
+        // team pages and a bare @id means nothing on the other pages.
+        employee: {
+          '@type': 'Person',
+          '@id': AGENT_ID,
+          name: site.agentInCharge.displayName,
+          ...(agentInCharge ? { jobTitle: agentInCharge.role } : {}),
+        },
+        founder: { '@id': AGENT_ID },
         sameAs: [site.googleProfileUrl, ...site.profiles],
       }}
     />
@@ -235,6 +281,60 @@ export function BreadcrumbSchema({ trail }: { trail: { name: string; path: strin
           name: crumb.name,
           item: absoluteUrl(crumb.path),
         })),
+      }}
+    />
+  );
+}
+
+/**
+ * The site itself, on the homepage. It is what Google reads for the site name
+ * it prints above a result, which would otherwise be guessed from the domain.
+ */
+export function WebSiteSchema() {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#website`,
+        url: `${SITE_URL}/`,
+        name: site.name,
+        alternateName: site.legalName,
+        inLanguage: 'en-US',
+        publisher: { '@id': ORGANIZATION_ID },
+      }}
+    />
+  );
+}
+
+/**
+ * The firm's work, offered in one place: a county, a city, or the state. The
+ * provider is always the one office in lib/site.ts. A county or city page is
+ * an area the firm serves from Coral Springs, never an office of its own, so
+ * the place goes in `areaServed` and nowhere else.
+ */
+export function ServiceSchema({
+  name,
+  description,
+  path,
+  areaServed,
+}: {
+  name: string;
+  description: string;
+  path: string;
+  areaServed: Record<string, unknown>;
+}) {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name,
+        serviceType: 'Title insurance and real estate closings',
+        description,
+        url: absoluteUrl(path),
+        provider: { '@id': ORGANIZATION_ID },
+        areaServed,
       }}
     />
   );

@@ -52,6 +52,7 @@ import { AnswerPanel, VerifyBanner } from '@/components/Prose';
 import { CitedFigures } from '@/components/CitedFigures';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
+import { ServiceSchema } from '@/components/Schema';
 
 export const dynamicParams = false;
 
@@ -121,6 +122,12 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
   return (
     <div className="frame section">
       <div className="measure">
+        <ServiceSchema
+          name={`Title insurance and closings in ${county.name}`}
+          description={`Title search and examination, title insurance, escrow and closings in ${county.name}, Florida, from ${site.legalName} in ${site.address.city}.`}
+          path={`/counties/${county.slug}`}
+          areaServed={{ '@type': 'AdministrativeArea', name: `${county.name}, Florida` }}
+        />
         <Breadcrumbs
           trail={[
             { name: 'Home', path: '/' },

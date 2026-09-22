@@ -13,6 +13,7 @@ import { QuietCta } from '@/components/QuietCta';
 import { Verdict } from '@/components/Verdict';
 import { StepBand } from '@/components/StepBand';
 import { Rail } from '@/components/Rail';
+import { ServiceSchema } from '@/components/Schema';
 
 export const metadata: Metadata = {
   title: 'Title, escrow and closing services in Florida',
@@ -121,6 +122,12 @@ export default async function ServicesIndex() {
 
   return (
     <div>
+      <ServiceSchema
+        name="Title, escrow and closing services in Florida"
+        description="Title search and examination, title insurance, escrow and settlement, residential and commercial closings, and the closing side of 1031 exchanges, throughout Florida."
+        path="/services"
+        areaServed={{ '@type': 'State', name: 'Florida' }}
+      />
       <section className="frame page-hero">
         <div className="page-hero__copy">
           <Breadcrumbs

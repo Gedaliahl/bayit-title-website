@@ -44,6 +44,7 @@ import { AnswerPanel, VerifyBanner } from '@/components/Prose';
 import { CitedFigures } from '@/components/CitedFigures';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
+import { ServiceSchema } from '@/components/Schema';
 
 export const dynamicParams = false;
 
@@ -113,6 +114,16 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   return (
     <div className="frame section">
       <div className="measure">
+        <ServiceSchema
+          name={`Title insurance and closings in ${city.name}`}
+          description={`Title search and examination, title insurance, escrow and closings in ${city.name}, ${county.name}, Florida, from ${site.legalName} in ${site.address.city}.`}
+          path={`/cities/${city.slug}`}
+          areaServed={{
+            '@type': 'City',
+            name: `${city.name}, Florida`,
+            containedInPlace: { '@type': 'AdministrativeArea', name: `${county.name}, Florida` },
+          }}
+        />
         <Breadcrumbs
           trail={[
             { name: 'Home', path: '/' },
