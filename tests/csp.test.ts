@@ -46,6 +46,7 @@ afterEach(() => {
 
 describe('what the policy refuses', () => {
   it('closes every source it does not need', async () => {
+    vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '');
     const csp = await policy();
 
     expect(directive(csp, 'default-src')).toEqual(["'self'"]);
@@ -58,6 +59,7 @@ describe('what the policy refuses', () => {
   });
 
   it('allows no outside origin to serve a script', async () => {
+    vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '');
     const scriptSrc = directive(await policy(), 'script-src') ?? [];
 
     expect(scriptSrc).toContain("'self'");
@@ -95,6 +97,27 @@ describe('the one origin the browser may talk to', () => {
 
     expect(csp).not.toContain('*.supabase.co');
     expect(csp).not.toContain("'unsafe-hashes'");
+  });
+});
+
+describe('Cloudflare Turnstile', () => {
+  it('is nowhere in the policy while its site key is unset', async () => {
+    vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '');
+    const csp = await policy();
+
+    expect(csp).not.toContain('cloudflare');
+    expect(directive(csp, 'frame-src')).toEqual(["'none'"]);
+  });
+
+  it('opens exactly its own origin, for its script and its frame, once the key is set', async () => {
+    vi.stubEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '0x4AAAAAAA-test');
+    const csp = await policy();
+
+    expect(directive(csp, 'script-src')).toContain('https://challenges.cloudflare.com');
+    expect(directive(csp, 'frame-src')).toEqual(['https://challenges.cloudflare.com']);
+    // Everything else stays as closed as it was.
+    expect(directive(csp, 'connect-src')).toEqual(["'self'", SUPABASE_URL]);
+    expect(csp).not.toContain('*.cloudflare.com');
   });
 });
 

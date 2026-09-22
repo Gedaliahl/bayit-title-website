@@ -51,11 +51,17 @@ function storageOrigin() {
  */
 function contentSecurityPolicy() {
   const storage = storageOrigin();
+  // Cloudflare Turnstile, only when its site key is set (lib/submissions.ts).
+  // Its script draws the check inside a frame served from the same host, so
+  // the one origin opens both. Unset, the policy is exactly what it was.
+  const turnstile = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()
+    ? 'https://challenges.cloudflare.com'
+    : null;
 
   const directives = {
     'default-src': ["'self'"],
     // Vercel's analytics scripts are same-origin, under /_vercel/.
-    'script-src': ["'self'", "'unsafe-inline'", isDev ? "'unsafe-eval'" : null],
+    'script-src': ["'self'", "'unsafe-inline'", turnstile, isDev ? "'unsafe-eval'" : null],
     // JSX style attributes, of which the pages carry a handful.
     'style-src': ["'self'", "'unsafe-inline'"],
     // next/font self-hosts, so no font CDN is needed.
@@ -65,7 +71,7 @@ function contentSecurityPolicy() {
     'form-action': ["'self'"],
     // Matches X-Frame-Options below; the two must not disagree.
     'frame-ancestors': ["'self'"],
-    'frame-src': ["'none'"],
+    'frame-src': turnstile ? [turnstile] : ["'none'"],
     'object-src': ["'none'"],
     'base-uri': ["'none'"],
     'worker-src': ["'self'", 'blob:'],

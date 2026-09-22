@@ -84,12 +84,34 @@ describe('claims about the website that the code has to keep true', () => {
     expect(page).toContain('sets no cookies');
   });
 
-  it('claims the IP address is not stored, which lib/submissions.ts must honour', () => {
-    expect(page).toMatch(/do not store your IP address/i);
+  it('says only a fingerprint of the IP is kept, which lib/submissions.ts must honour', () => {
+    // The old line, "we do not store your IP address", was untrue as written:
+    // the host's request logs hold it. What this site stores is the hash.
+    expect(page).not.toMatch(/do not store your IP address/i);
+    expect(page).toMatch(/fingerprint of your IP address, not the address itself/i);
+    expect(page).toMatch(/hosting provider[\s\S]{0,80}request logs/i);
 
     const submissions = readFileSync(join(process.cwd(), 'lib/submissions.ts'), 'utf8');
     expect(submissions).toContain('createHash');
     expect(submissions).not.toMatch(/ip:\s*ip\b/);
+  });
+
+  it('states the two retention limits the purge enforces, from the same constants', () => {
+    // The numbers are rendered from lib/documents.ts, so the page cannot drift
+    // from what app/api/cron/purge actually deletes.
+    expect(page).toContain('{QUOTE_RETENTION_DAYS}');
+    expect(page).toContain('{RETENTION_DAYS}');
+    expect(page).toMatch(/contract sent for pricing/i);
+  });
+
+  it('scopes the three required fields to the order form', () => {
+    expect(page).toMatch(/On the order form, only your name, your email address and the property/);
+  });
+
+  it('keeps the no-third-party-scripts claim true when the bot check is on', () => {
+    expect(page).toMatch(/botCheck \?/);
+    expect(page).toContain('This site loads no');
+    expect(page).toMatch(/one outside\s+script this site loads is Cloudflare/);
   });
 });
 

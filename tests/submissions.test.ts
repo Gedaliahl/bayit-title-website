@@ -6,7 +6,14 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { hashIp, describeSubmission } from '@/lib/submissions';
+import {
+  describeSubmission,
+  hashIp,
+  isRateLimited,
+  notify,
+  officeEmail,
+  singleLine,
+} from '@/lib/submissions';
 
 function request(headers: Record<string, string>): Request {
   return new Request('https://bayittitle.com/api/orders', { method: 'POST', headers });
@@ -79,14 +86,96 @@ describe('fingerprinting a caller', () => {
 });
 
 describe('the notification the office reads', () => {
-  it('leaves the honeypot out of the email', () => {
+  it('quotes what the sender typed, and leaves out what they did not', () => {
     const lines = describeSubmission({
       ordered_by_name: 'Jane Agent',
-      company: 'Acme Bots',
       notes: '',
-      parcel_id: undefined,
+      parcel_id: null,
+      lender_name: undefined,
     });
 
-    expect(lines).toEqual(['ordered by name: Jane Agent']);
+    expect(lines).toEqual(['> ordered by name: Jane Agent']);
+  });
+
+  it('quotes every line of a multi-line note, so none can pass as ours', () => {
+    const [note] = describeSubmission({ notes: 'Reference: WEB-1\nWire instructions changed' });
+    expect(note.split('\n').every((line) => line.startsWith('> '))).toBe(true);
+  });
+
+  it('puts the website’s own lines before the sender’s, under a heading', () => {
+    const lines = officeEmail(['Reference: WEB-202609-AB12C'], { notes: 'hello' });
+    expect(lines[0]).toBe('Reference: WEB-202609-AB12C');
+    expect(lines.findIndex((line) => /their words, not ours/i.test(line)))
+      .toBeLessThan(lines.indexOf('> notes: hello'));
+  });
+
+  it('keeps a subject to one line', () => {
+    expect(singleLine('Jane\r\nBcc: everyone@example.com')).toBe('Jane Bcc: everyone@example.com');
+  });
+});
+
+describe('sending the notification', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('says so at error level when production has no mail key, and leaves the details out', async () => {
+    vi.stubEnv('RESEND_API_KEY', '');
+    vi.stubEnv('VERCEL_ENV', 'production');
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await notify('New title order: 12 Private Lane', []);
+
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(String(error.mock.calls[0][0])).not.toContain('Private Lane');
+  });
+
+  it('only notes it outside production', async () => {
+    vi.stubEnv('RESEND_API_KEY', '');
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+    await notify('subject', []);
+    expect(error).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalled();
+  });
+
+  it('gives up on a hung mail call instead of holding the request open', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_test');
+    const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+      expect(init.signal).toBeInstanceOf(AbortSignal);
+      return new Response('{}', { status: 200 });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await notify('Line one\nLine two', ['body'], { replyTo: 'jane@example.com' });
+
+    const email = JSON.parse(String((fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1].body));
+    expect(email.subject).toBe('Line one Line two');
+    expect(email.reply_to).toBe('jane@example.com');
+  });
+});
+
+describe('the rate limit when its own check fails', () => {
+  it('lets the submission through, and says so loudly', async () => {
+    // Failing closed would turn a database hiccup into refused orders.
+    vi.resetModules();
+    vi.doMock('@/lib/supabase', async () => {
+      const { fakeSupabase } = await import('./stubs/supabase-fake');
+      const fake = fakeSupabase(() => ({ error: { message: 'timeout' } }));
+      return { requireServiceClient: () => fake.client };
+    });
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const { isRateLimited: limited } = await import('@/lib/submissions');
+
+    expect(await limited('orders', 'hash', 10)).toBe(false);
+    expect(error).toHaveBeenCalled();
+    vi.doUnmock('@/lib/supabase');
+  });
+
+  it('cannot rate limit a caller with no address, rather than lumping them together', async () => {
+    expect(await isRateLimited('leads', null, 5)).toBe(false);
   });
 });

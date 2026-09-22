@@ -1,16 +1,33 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { track } from '@vercel/analytics';
 
 import { UPLOAD } from '@/content/estimate';
 import {
   CONTRACT_ACCEPT_ATTRIBUTE,
   MAX_CONTRACT_TOTAL_BYTES,
   MAX_FILES,
+  MAX_FILE_BYTES,
   formatBytes,
   isContractFile,
+  screenFiles,
+  uploadWithProgress,
+  type Rejection,
 } from '@/lib/documents';
-import { Honeypot } from '@/components/Field';
+import { contractQuoteSchema, fieldErrors, HONEYPOT_FIELD } from '@/lib/schemas';
+import {
+  BotCheck,
+  Honeypot,
+  RejectedFiles,
+  UploadMeter,
+  outcomeUnknown,
+  postJson,
+  useBotCheck,
+  useLeaveWarning,
+  useSubmissionId,
+} from '@/components/Field';
+import { useErrorFocus } from '@/components/useErrorFocus';
 
 interface UploadTicket {
   index: number;
@@ -24,29 +41,17 @@ type Status =
   | { kind: 'idle' }
   | { kind: 'sending' }
   /** The request is already with the office; only the pages are in flight. */
-  | { kind: 'uploading'; done: number; total: number }
-  | { kind: 'sent'; count: number; attached: number; email: string; willCall: boolean; firstName: string }
+  | { kind: 'uploading'; name: string; position: number; count: number; sent: number; total: number }
+  | { kind: 'sent'; attached: number; missing: Rejection[]; email: string; willCall: boolean; firstName: string }
   | { kind: 'failed'; message: string };
 
-/** Sends one page straight to storage with the signed URL the server minted. */
-async function uploadOne(ticket: UploadTicket, file: File): Promise<boolean> {
-  try {
-    const response = await fetch(ticket.url, {
-      method: 'PUT',
-      headers: {
-        'content-type': ticket.contentType,
-        'cache-control': 'max-age=3600',
-        'x-upsert': 'false',
-      },
-      body: file,
-    });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SCREEN_RULES = {
+  accepts: isContractFile,
+  typeLabel: UPLOAD.contract.typeLabel,
+  maxFiles: MAX_FILES,
+  maxFileBytes: MAX_FILE_BYTES,
+  maxTotalBytes: MAX_CONTRACT_TOTAL_BYTES,
+};
 
 /**
  * The third way in: the contract itself, sent to the office for the exact
@@ -56,159 +61,219 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function UploadPane({ hidden }: { hidden: boolean }) {
   const id = useId();
   const [files, setFiles] = useState<File[]>([]);
+  const [rejected, setRejected] = useState<Rejection[]>([]);
   const [dragging, setDragging] = useState(false);
   const [name, setName] = useState('');
   const [role, setRole] = useState(UPLOAD.role.options[0].value);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [note, setNote] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const { formRef, reportFailure } = useErrorFocus();
+  const submission = useSubmissionId();
+  const botCheck = useBotCheck();
+  const uploads = useRef<AbortController | null>(null);
+  const successRef = useRef<HTMLHeadingElement>(null);
 
   const busy = status.kind === 'sending' || status.kind === 'uploading';
-  const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
+  useLeaveWarning(status.kind === 'uploading');
 
-  /** De-duplicated by name and size, PDFs and photographs only. */
+  useEffect(() => {
+    if (status.kind === 'sent') successRef.current?.focus();
+  }, [status.kind]);
+
+  /** Every page that is not added is named, with the reason. */
   function addFiles(list: FileList | File[] | null) {
-    const incoming = Array.from(list ?? []);
-    const readable = incoming.filter((file) => isContractFile(file.name));
-    const next = [...files];
-    for (const file of readable) {
-      if (next.length >= MAX_FILES) break;
-      if (!next.some((existing) => existing.name === file.name && existing.size === file.size)) {
-        next.push(file);
-      }
-    }
-    setFiles(next);
+    const screened = screenFiles(files, Array.from(list ?? []), SCREEN_RULES);
+    setFiles(screened.files);
+    setRejected(screened.rejected);
     setDragging(false);
-
-    const total = next.reduce((sum, file) => sum + file.size, 0);
-    if (total > MAX_CONTRACT_TOTAL_BYTES) setError(UPLOAD.errors.tooLarge);
-    else if (incoming.length > 0 && readable.length === 0) setError(UPLOAD.errors.notReadable);
-    else if (readable.length > 0) setError('');
+    if (screened.files.length > 0) clearError('documents');
   }
 
   function removeFile(index: number) {
     setFiles((current) => current.filter((_, position) => position !== index));
-    setError('');
+    setRejected([]);
+  }
+
+  function clearError(field: string) {
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
   }
 
   function reset() {
     setFiles([]);
-    setError('');
+    setRejected([]);
+    setErrors({});
     setStatus({ kind: 'idle' });
+  }
+
+  function fail(found: Record<string, string>, outcome: string) {
+    setErrors(found);
+    setStatus({ kind: 'idle' });
+    reportFailure();
+    track('form_submit', { form: 'contract', outcome });
   }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
 
-    // The same order the page's copy describes: the file, its size, the
-    // person, the address to write back to.
-    if (files.length === 0) return setError(UPLOAD.errors.noFiles);
-    if (totalBytes > MAX_CONTRACT_TOTAL_BYTES) return setError(UPLOAD.errors.tooLarge);
-    if (!name.trim()) return setError(UPLOAD.errors.noName);
-    if (!EMAIL.test(email.trim())) return setError(UPLOAD.errors.badEmail);
+    const honeypot = (new FormData(event.currentTarget).get(HONEYPOT_FIELD) as string | null) ?? '';
+    const payload = {
+      full_name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim() || undefined,
+      role,
+      message: note.trim() || undefined,
+      page_path: '/estimate',
+      documents: files.map((file) => ({ name: file.name, size: file.size })),
+      [HONEYPOT_FIELD]: honeypot,
+    };
 
-    setError('');
+    // The same schema the server runs; its messages are the page's own. The
+    // file comes first because it is the first thing on the form.
+    const checked = contractQuoteSchema.safeParse(payload);
+    if (!checked.success) return fail(fieldErrors(checked.error), 'invalid');
+    if (botCheck.enabled && !botCheck.token) return fail({ form: UPLOAD.errors.botCheck }, 'bot_check');
+
+    setErrors({});
     setStatus({ kind: 'sending' });
 
-    const company = (new FormData(event.currentTarget).get('company') as string | null) ?? '';
+    const reply = await postJson<{
+      lead_id?: string;
+      uploads?: UploadTicket[];
+      error?: string;
+      errors?: Record<string, string>;
+    }>('/api/contract-quote', {
+      ...payload,
+      submission_id: submission.current(),
+      turnstile_token: botCheck.token || undefined,
+    });
+    botCheck.reset();
 
-    let body: { lead_id?: string; uploads?: UploadTicket[]; error?: string; errors?: Record<string, string> };
-    try {
-      const response = await fetch('/api/contract-quote', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          full_name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim() || undefined,
-          role,
-          message: note.trim() || undefined,
-          page_path: '/estimate',
-          documents: files.map((file) => ({ name: file.name, size: file.size })),
-          company,
-        }),
-      });
-      body = await response.json();
-
-      if (!response.ok) {
-        const message = body.errors ? Object.values(body.errors)[0] : body.error;
-        setStatus({ kind: 'idle' });
-        setError(message || UPLOAD.errors.failed);
-        return;
-      }
-    } catch {
-      setStatus({ kind: 'idle' });
-      setError(UPLOAD.errors.failed);
-      return;
+    if (outcomeUnknown(reply)) return fail({ form: UPLOAD.errors.noAnswer }, 'no_answer');
+    if (reply.status >= 400 || !reply.body) {
+      const found = reply.body?.errors ?? { form: reply.body?.error ?? UPLOAD.errors.failed };
+      return fail(found, reply.status === 422 ? 'invalid' : 'refused');
     }
-
-    const tickets = body.uploads ?? [];
-    const leadId = body.lead_id;
-    const done = (attached: number) =>
-      setStatus({
-        kind: 'sent',
-        count: files.length,
-        attached,
-        email: email.trim(),
-        willCall: phone.trim().length > 0,
-        firstName: name.trim().split(/\s+/)[0] ?? '',
-      });
 
     // Past this line the office has the request. Nothing that follows may
     // present itself as a failed request.
-    if (tickets.length === 0 || !leadId) return done(0);
+    submission.settle();
+    track('form_submit', { form: 'contract', outcome: 'sent' });
 
-    setStatus({ kind: 'uploading', done: 0, total: tickets.length });
+    const tickets = reply.body.uploads ?? [];
+    const leadId = reply.body.lead_id;
+    const ticketed = new Set(tickets.map((ticket) => ticket.index));
+    const missing: Rejection[] = files
+      .filter((_, index) => !ticketed.has(index))
+      .map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
 
-    // One at a time, so the count stays honest and a phone on a weak
-    // connection is not asked to hold every page open at once.
     const uploaded: { path: string; name: string }[] = [];
-    for (const [position, ticket] of tickets.entries()) {
-      const file = files[ticket.index];
-      if (file && (await uploadOne(ticket, file))) uploaded.push({ path: ticket.path, name: file.name });
-      setStatus({ kind: 'uploading', done: position + 1, total: tickets.length });
+    if (leadId && tickets.length > 0) {
+      const controller = new AbortController();
+      uploads.current = controller;
+
+      // One at a time, so the progress stays honest and a phone on a weak
+      // connection is not asked to hold every page open at once.
+      for (const [position, ticket] of tickets.entries()) {
+        const file = files[ticket.index];
+        if (!file) continue;
+        if (controller.signal.aborted) {
+          missing.push({ name: file.name, reason: 'not sent, because the upload was stopped' });
+          continue;
+        }
+
+        setStatus({ kind: 'uploading', name: file.name, position: position + 1, count: tickets.length, sent: 0, total: file.size });
+        const ok = await uploadWithProgress(
+          ticket,
+          file,
+          (sent, total) => setStatus((current) => (current.kind === 'uploading' ? { ...current, sent, total } : current)),
+          controller.signal,
+        );
+        if (ok) uploaded.push({ path: ticket.path, name: file.name });
+        else missing.push({ name: file.name, reason: controller.signal.aborted ? 'stopped before it finished' : 'the upload failed' });
+      }
+      uploads.current = null;
     }
 
     let attached = 0;
     if (uploaded.length > 0) {
-      try {
-        const response = await fetch('/api/contract-quote/documents', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ lead_id: leadId, documents: uploaded }),
-        });
-        const result = await response.json();
-        attached = response.ok ? (result.recorded ?? 0) : 0;
-      } catch {
-        attached = 0;
+      const confirmed = await postJson<{ recorded?: number; rejected?: Rejection[] }>(
+        '/api/contract-quote/documents',
+        { lead_id: leadId, documents: uploaded },
+      );
+      if (confirmed.status >= 200 && confirmed.status < 300 && confirmed.body) {
+        attached = confirmed.body.recorded ?? 0;
+        const refused = confirmed.body.rejected ?? [];
+        missing.push(...refused);
+        const unaccounted = uploaded.length - attached - refused.length;
+        if (unaccounted > 0) {
+          missing.push({ name: `${unaccounted} other file${unaccounted === 1 ? '' : 's'}`, reason: 'did not arrive' });
+        }
+      } else {
+        missing.push(...uploaded.map((doc) => ({ name: doc.name, reason: 'uploaded, but could not be passed on' })));
       }
     }
 
-    done(attached);
+    if (missing.length > 0) track('upload_failed', { form: 'contract', count: missing.length });
+    setStatus({
+      kind: 'sent',
+      attached,
+      missing,
+      email: payload.email,
+      willCall: payload.phone !== undefined,
+      firstName: payload.full_name.split(/\s+/)[0] ?? '',
+    });
   }
 
+  const formError = errors.form;
   const statusText =
-    error ||
+    formError ||
     (status.kind === 'uploading'
-      ? UPLOAD.uploading(status.done, status.total)
+      ? UPLOAD.uploadingNote
       : status.kind === 'sending'
         ? UPLOAD.sending
         : UPLOAD.status);
 
+  const describe = (field: string, hint?: string) =>
+    [hint, errors[field] ? `${id}-${field}-error` : null].filter(Boolean).join(' ') || undefined;
+
+  const fieldError = (field: string) =>
+    errors[field] ? (
+      <span className="field__error" id={`${id}-${field}-error`}>
+        {errors[field]}
+      </span>
+    ) : null;
+
   return (
     <div className="calc-grid" hidden={hidden}>
-      <form className="form-card" onSubmit={submit} noValidate>
+      <form className="form-card" onSubmit={submit} noValidate ref={formRef}>
         {status.kind === 'sent' ? (
           <div className="received">
             <p className="received__eyebrow">{UPLOAD.sent.eyebrow}</p>
-            <h3 className="received__title">{UPLOAD.sent.title(status.firstName)}</h3>
+            <h3 className="received__title" ref={successRef} tabIndex={-1}>
+              {UPLOAD.sent.title(status.firstName)}
+            </h3>
             <p className="received__body">{UPLOAD.sent.body(status.attached, status.email, status.willCall)}</p>
             {/* Never let a silent upload failure pass as success. */}
-            {status.attached < status.count ? (
-              <p className="received__body">{UPLOAD.sent.missing(status.count - status.attached)}</p>
+            {status.missing.length > 0 ? (
+              <>
+                <p className="received__body">{UPLOAD.sent.missing(status.missing.length)}</p>
+                <ul className="received__list">
+                  {status.missing.map((doc, index) => (
+                    <li key={`${doc.name}-${index}`}>
+                      {doc.name} — {doc.reason}
+                    </li>
+                  ))}
+                </ul>
+              </>
             ) : null}
             <p className="received__again">
               {UPLOAD.sent.wrongFile}{' '}
@@ -220,7 +285,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
           </div>
         ) : (
           <>
-            <div className="field">
+            <div className={errors.documents ? 'field field--error' : 'field'}>
               <span className="field__label">{UPLOAD.contract.label}</span>
               <span className="field__hint" id={`${id}-contract-hint`}>
                 {UPLOAD.contract.hint}
@@ -250,10 +315,13 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
                 </span>
                 <input
                   id={`${id}-contract`}
+                  name="documents"
                   type="file"
                   multiple
+                  required
                   accept={CONTRACT_ACCEPT_ATTRIBUTE}
-                  aria-describedby={`${id}-contract-hint`}
+                  aria-invalid={errors.documents ? true : undefined}
+                  aria-describedby={describe('documents', `${id}-contract-hint`)}
                   disabled={busy}
                   className="visually-hidden"
                   onChange={(event) => {
@@ -263,6 +331,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
                   }}
                 />
               </label>
+              {fieldError('documents')}
               {files.length > 0 ? (
                 <ul className="contract-files">
                   {files.map((file, index) => (
@@ -282,18 +351,27 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
                   ))}
                 </ul>
               ) : null}
+              <RejectedFiles rejected={rejected} />
             </div>
 
             <div className="two-up">
-              <div className="field">
+              <div className={errors.full_name ? 'field field--error' : 'field'}>
                 <label htmlFor={`${id}-name`}>{UPLOAD.name.label}</label>
                 <input
                   id={`${id}-name`}
+                  name="full_name"
                   autoComplete="name"
+                  required
+                  aria-invalid={errors.full_name ? true : undefined}
+                  aria-describedby={describe('full_name')}
                   value={name}
                   disabled={busy}
-                  onChange={(event) => setName(event.target.value)}
+                  onChange={(event) => {
+                    setName(event.target.value);
+                    clearError('full_name');
+                  }}
                 />
+                {fieldError('full_name')}
               </div>
               <div className="field">
                 <label htmlFor={`${id}-role`}>{UPLOAD.role.label}</label>
@@ -313,23 +391,30 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
             </div>
 
             <div className="two-up">
-              <div className="field">
+              <div className={errors.email ? 'field field--error' : 'field'}>
                 <label htmlFor={`${id}-email`}>{UPLOAD.email.label}</label>
                 <span className="field__hint" id={`${id}-email-hint`}>
                   {UPLOAD.email.hint}
                 </span>
                 <input
                   id={`${id}-email`}
+                  name="email"
                   type="email"
                   inputMode="email"
                   autoComplete="email"
-                  aria-describedby={`${id}-email-hint`}
+                  required
+                  aria-invalid={errors.email ? true : undefined}
+                  aria-describedby={describe('email', `${id}-email-hint`)}
                   value={email}
                   disabled={busy}
-                  onChange={(event) => setEmail(event.target.value)}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    clearError('email');
+                  }}
                 />
+                {fieldError('email')}
               </div>
-              <div className="field">
+              <div className={errors.phone ? 'field field--error' : 'field'}>
                 <label htmlFor={`${id}-phone`}>
                   {UPLOAD.phone.label} <span className="field__optional">{UPLOAD.phone.optional}</span>
                 </label>
@@ -338,18 +423,24 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
                 </span>
                 <input
                   id={`${id}-phone`}
+                  name="phone"
                   type="tel"
                   inputMode="tel"
                   autoComplete="tel"
-                  aria-describedby={`${id}-phone-hint`}
+                  aria-invalid={errors.phone ? true : undefined}
+                  aria-describedby={describe('phone', `${id}-phone-hint`)}
                   value={phone}
                   disabled={busy}
-                  onChange={(event) => setPhone(event.target.value)}
+                  onChange={(event) => {
+                    setPhone(event.target.value);
+                    clearError('phone');
+                  }}
                 />
+                {fieldError('phone')}
               </div>
             </div>
 
-            <div className="field">
+            <div className={errors.message ? 'field field--error' : 'field'}>
               <label htmlFor={`${id}-note`}>
                 {UPLOAD.note.label} <span className="field__optional">{UPLOAD.note.optional}</span>
               </label>
@@ -358,25 +449,49 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
               </span>
               <textarea
                 id={`${id}-note`}
+                name="message"
                 rows={3}
-                aria-describedby={`${id}-note-hint`}
+                aria-invalid={errors.message ? true : undefined}
+                aria-describedby={describe('message', `${id}-note-hint`)}
                 value={note}
                 disabled={busy}
-                onChange={(event) => setNote(event.target.value)}
+                onChange={(event) => {
+                  setNote(event.target.value);
+                  clearError('message');
+                }}
               />
+              {fieldError('message')}
             </div>
 
             <Honeypot />
 
+            <BotCheck enabled={botCheck.enabled} attach={botCheck.attach} />
+
+            {status.kind === 'uploading' ? (
+              <UploadMeter
+                name={status.name}
+                position={status.position}
+                count={status.count}
+                sent={status.sent}
+                total={status.total}
+                onCancel={() => uploads.current?.abort()}
+              />
+            ) : null}
+
             <div className="form-card__foot">
               <span
-                className={error ? 'form-card__status form-card__status--error' : 'form-card__status'}
+                className={formError ? 'form-card__status form-card__status--error' : 'form-card__status'}
                 aria-live="polite"
+                tabIndex={formError ? -1 : undefined}
               >
                 {statusText}
               </span>
               <button type="submit" className="btn btn--dark btn--send" disabled={busy}>
-                {busy ? UPLOAD.sending : UPLOAD.submit}
+                {status.kind === 'uploading'
+                  ? UPLOAD.uploading(status.position, status.count)
+                  : busy
+                    ? UPLOAD.sending
+                    : UPLOAD.submit}
               </button>
             </div>
           </>
