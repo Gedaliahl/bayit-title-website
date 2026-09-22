@@ -1,7 +1,15 @@
 /* Design tokens. White ground, black text, one antique gold carrying every
-   action — the same gold as the masthead mark. See HANDOFF.md. */
+   action — the same gold as the masthead mark. See HANDOFF.md.
+
+   Breakpoints, which custom properties cannot carry into a media query, so
+   they are listed here instead: 22rem (the smallest phones), 40rem (one
+   column), 58rem (the nav collapses), 62rem (the rail and hero stack) and
+   120rem (large monitors). A new layout step should use one of these. */
 
 :root {
+  /* Light only; see the viewport export in app/layout.tsx. */
+  color-scheme: light;
+
   --ink: #111;             /* body text */
   --paper: #fff;
   --band: #faf7f0;         /* alternating section grounds */
@@ -16,10 +24,10 @@
 
   --ink-body: #333;        /* lede and disclosure answers, one step off the body ink */
   --ink-muted: #555;
-  --ink-faint: #8a8070;
+  --ink-faint: #756b5c;    /* counts and quiet numerals; 4.5:1 on white, band and wash */
   --rule: #e8e4db;         /* chrome and section rules */
   --rule-card: #e3ded2;    /* card, pill and panel edges */
-  --rule-strong: #bdb3a0;  /* form controls, which need a visible edge */
+  --rule-strong: #8a7f6a;  /* form controls: over 3:1 on white, band and wash, so the box is seen */
   --rule-dashed: #cfc7b4;  /* the drop zone's dashed edge, between the two above */
 
   --font-display: var(--font-libre-caslon), Georgia, 'Times New Roman', serif;
@@ -42,7 +50,6 @@
   --step-1: 1.25rem;
   --step-2: 1.5rem;
   --step-3: 1.9375rem;
-  --step-4: 2.5rem;
   /* Caslon sets wider than the face this replaced, and library titles are
      whole questions inside a 34rem column, so the top step comes down. */
   --step-5: clamp(2.125rem, 1.35rem + 3.2vw, 3.25rem);
@@ -76,6 +83,9 @@ body {
   line-height: 1.65;
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
+  /* A statute URL, an email address or a license string is one unbroken word,
+     and at 280px it is wider than the column. Break it rather than the page. */
+  overflow-wrap: break-word;
 }
 
 h1,
@@ -106,8 +116,12 @@ a {
   text-underline-offset: 0.18em;
 }
 
-a:hover {
-  color: var(--accent);
+/* Darker on hover, not lighter: the action gold is under 4.5:1 on the band and
+   the wash, and a link is small text wherever it sits. */
+@media (hover: hover) {
+  a:hover {
+    color: var(--accent-dark);
+  }
 }
 
 strong { font-weight: 600; }
@@ -134,6 +148,12 @@ blockquote footer {
   margin-top: 0.5rem;
   font-size: 0.85em;
   font-style: normal;
+}
+
+/* A detail is often a single long value — a commission number, an address, a
+   URL — in a narrow column. */
+dd {
+  overflow-wrap: anywhere;
 }
 
 code {
@@ -172,12 +192,24 @@ th {
   padding-inline: var(--gutter);
 }
 
-.measure {
-  max-width: var(--measure);
+/* 27 to 32 inch monitors. At 1240px the frame left about 60% of a 2560px
+   screen empty, so above 1920px the type grows with the window, to at most
+   18px at 2240px and beyond, and the frame opens to 82rem: about 1300px at
+   1920, 1480px at 2560. The grids — counties, reviews, the estimate — take the
+   width. Reading columns are set in rem, so they grow with the type and keep
+   the same measure in characters rather than getting wider. */
+@media (min-width: 120rem) {
+  :root {
+    --wide: 82rem;
+  }
+
+  html {
+    font-size: clamp(100%, 0.4rem + 0.5vw, 112.5%);
+  }
 }
 
-.stack > * + * {
-  margin-top: var(--stack-gap, 1.1rem);
+.measure {
+  max-width: var(--measure);
 }
 
 .eyebrow {
@@ -245,6 +277,44 @@ th {
   border-radius: 2px;
 }
 
+/* A text field matches :focus-visible however it was focused, so this is the
+   ring on every input, click or Tab. Set close in, so it reads as the box's own
+   edge rather than a second box around it. */
+:where(input, textarea, select):focus-visible {
+  outline-offset: 1px;
+}
+
+/* <main> takes focus from the skip link and from the mobile menu. It is the
+   destination, not a control, so it is not ringed like one. */
+main:focus {
+  outline: none;
+}
+
+/* Spacing that pages used to set inline. The heading after a breadcrumb trail
+   sits closer to it than a heading after body copy, and a role line under a
+   name is tucked up to the name it belongs to. */
+.after-crumbs {
+  margin-top: 1.5rem;
+}
+
+.eyebrow--after-title {
+  margin-top: -0.5rem;
+}
+
+.flush-top {
+  margin-top: 0;
+}
+
+.text-small {
+  font-size: 0.875rem;
+}
+
+.link-quiet,
+.link-quiet:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* ---------- buttons ---------- */
 
 .btn {
@@ -266,9 +336,11 @@ th {
   color: var(--paper);
 }
 
-.btn--primary:hover {
-  background: var(--accent-deep);
-  color: var(--paper);
+@media (hover: hover) {
+  .btn--primary:hover {
+    background: var(--accent-deep);
+    color: var(--paper);
+  }
 }
 
 /* The masthead's single dark button. Near-black bronze rather than the action
@@ -280,9 +352,11 @@ th {
   padding: 0.75rem 1.375rem;
 }
 
-.btn--dark:hover {
-  background: var(--accent-dark-hover);
-  color: var(--paper);
+@media (hover: hover) {
+  .btn--dark:hover {
+    background: var(--accent-dark-hover);
+    color: var(--paper);
+  }
 }
 
 .btn--quiet {
@@ -291,9 +365,11 @@ th {
   border-color: var(--ink);
 }
 
-.btn--quiet:hover {
-  background: var(--accent-wash);
-  color: var(--ink);
+@media (hover: hover) {
+  .btn--quiet:hover {
+    background: var(--accent-wash);
+    color: var(--ink);
+  }
 }
 
 /* A button that carries icons alongside its label. `.btn` is inline-block so
@@ -391,8 +467,13 @@ th {
 }
 
 .nav__toggle-glyph {
-  font-size: 1.125rem;
-  line-height: 1;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
 }
 
 /* `:not(.btn)` is load-bearing, not tidiness. `.nav a` outranks `.btn--primary`
@@ -409,9 +490,11 @@ th {
   border-bottom: 1px solid transparent;
 }
 
-.nav a:not(.btn):hover {
-  border-bottom-color: var(--accent);
-  color: var(--ink);
+@media (hover: hover) {
+  .nav a:not(.btn):hover {
+    border-bottom-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 /* Below this width the list collapses behind the Menu button above.
@@ -460,6 +543,45 @@ th {
   }
 }
 
+/* The smallest phones, 280px to 350px: the wordmark and the Menu button stop
+   fitting on one row at the usual gutter, and the button dropped under the
+   wordmark, taking the header from 81px to 111px. Narrower gutters and gap, a
+   slightly smaller wordmark, and the button down to its glyph put the row back.
+   The word stays in the markup, visually hidden, so the button is still
+   announced as "Menu". The gutter change is page-wide on purpose: at this
+   width every column wants the 16px back. */
+@media (max-width: 22rem) {
+  :root {
+    --gutter: 1rem;
+  }
+
+  .masthead__inner {
+    gap: 0.75rem;
+  }
+
+  .wordmark {
+    gap: 0.5rem;
+  }
+
+  .wordmark__mark {
+    width: 32px;
+    height: auto;
+  }
+
+  .wordmark__name {
+    font-size: 1.25rem;
+  }
+
+  .nav__toggle-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 /* No scripting, no button worth showing: the panel could never be opened, so
    the nav stays as it was — wrapped and long, but every link reachable. */
 @media (max-width: 58rem) and (scripting: none) {
@@ -488,12 +610,38 @@ th {
   border-bottom-color: var(--accent);
 }
 
+/* Windows High Contrast repaints every border in the one text color, the
+   transparent ones included, so each desktop nav link grew an underline and
+   the current page's stopped meaning anything. The row's resting borders take
+   the page color instead, and the current link is marked with a system color
+   the theme keeps distinct. On a phone the rules between rows are separators
+   and stay as the theme draws them; the current row is underlined instead. */
+@media (forced-colors: active) {
+  .nav a[aria-current] {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+}
+
+@media (forced-colors: active) and (width > 58rem) {
+  .nav a:not(.btn) {
+    border-bottom-color: Canvas;
+  }
+
+  .nav a[aria-current] {
+    border-bottom-color: Highlight;
+    text-decoration: none;
+  }
+}
+
 .sitefoot {
   border-top: 1px solid var(--rule);
   background: var(--paper);
   padding-block: 3rem 2.5rem;
   font-family: var(--font-body);
   font-size: 0.9375rem;
+  /* The email address is one word, and the footer columns are 13rem. */
+  overflow-wrap: anywhere;
 }
 
 .sitefoot__cols {
@@ -525,11 +673,19 @@ th {
 .sitefoot a:not(.btn) {
   color: var(--ink);
   text-decoration: none;
+  /* The text alone is a 20px target. The padding makes it 31px, and the
+     matching negative margin keeps the lines where they were, so the list
+     looks the same and the targets meet without overlapping. */
+  display: inline-block;
+  padding-block: 0.2rem;
+  margin-block: -0.2rem;
 }
 
-.sitefoot a:not(.btn):hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .sitefoot a:not(.btn):hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 /* The credential line. Required disclosure, and the specificity that
@@ -541,6 +697,29 @@ th {
   font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--ink-muted);
+}
+
+/* On paper the chrome is only a letterhead. The nav, its button and the skip
+   link cannot be used there, and the footer's link columns are the site's
+   navigation again; the address, the hours and the credential line are what a
+   printed page needs to say whose it is. */
+@media print {
+  .skip-link,
+  .nav__toggle,
+  .nav,
+  .sitefoot nav {
+    display: none;
+  }
+
+  .masthead__inner {
+    min-height: 0;
+    padding-block: 0.5rem;
+  }
+
+  .sitefoot {
+    padding-block: 1.5rem 0;
+    break-inside: avoid;
+  }
 }
 
 /* ---------- the answer panel ---------- */
@@ -601,7 +780,7 @@ th {
   margin: 0;
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 40rem) {
   .quick-facts dl {
     grid-template-columns: 1fr;
     gap: 0.15rem;
@@ -641,7 +820,7 @@ th {
   font-size: 0.8125rem;
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 40rem) {
   .quick-facts--rail dl {
     gap: 0.75rem;
   }
@@ -680,6 +859,9 @@ th {
 
 .prose {
   max-width: var(--measure);
+  /* Markdown carries statute URLs and citations with no spaces in them; in a
+     34rem column at 280px they are the one thing that can push the page wide. */
+  overflow-wrap: anywhere;
 }
 
 .prose h2 {
@@ -696,10 +878,34 @@ th {
   margin-top: 0.35rem;
 }
 
-.prose table {
-  display: block;
-  overflow-x: auto;
+/* The table keeps display: table, which is what tells a screen reader it is a
+   table: set to block, Safari and VoiceOver read it as a run of cells. The
+   scrolling is done by the wrapper the Markdown renderer puts around it. */
+.prose .table-scroll {
   max-width: 100%;
+  overflow-x: auto;
+  margin: 1.6em 0;
+}
+
+.prose .table-scroll > table {
+  margin: 0;
+  /* Back to whole words: breaking anywhere would let the table crush its
+     columns to a letter wide rather than scroll. */
+  overflow-wrap: normal;
+}
+
+@media print {
+  /* Where a link goes is the part of it paper can keep. In-page anchors are
+     left alone: they point at something already on the sheet. */
+  .prose a[href]:not([href^='#'])::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: var(--ink-muted);
+  }
+
+  .prose .table-scroll {
+    overflow: visible;
+  }
 }
 
 /* An inline [VERIFY: ...] flag inside body copy, marked up by the renderer. */
@@ -768,8 +974,10 @@ th {
   white-space: nowrap;
 }
 
-.section__head-link:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .section__head-link:hover {
+    text-decoration: underline;
+  }
 }
 
 .card {
@@ -796,9 +1004,11 @@ th {
   text-decoration: none;
 }
 
-.card h3 a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .card h3 a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 .card p {
@@ -806,16 +1016,6 @@ th {
   font-size: 0.9375rem;
   color: var(--ink-muted);
   line-height: 1.55;
-}
-
-.card__meta {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-top: auto;
-  padding-top: 0.5rem;
 }
 
 .linklist {
@@ -835,16 +1035,10 @@ th {
   text-decoration: none;
 }
 
-.linklist a:not(.btn):hover {
-  color: var(--accent);
-}
-
-.linklist__sub {
-  display: block;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  color: var(--ink-muted);
-  margin-top: 0.15rem;
+@media (hover: hover) {
+  .linklist a:not(.btn):hover {
+    color: var(--accent-deep);
+  }
 }
 
 /* ---------- reviews ---------- */
@@ -2813,11 +3007,19 @@ legend {
 .crumbs a {
   color: inherit;
   text-decoration: none;
+  /* A 21px target on its own. Padded to 29px and pulled back by the same
+     amount, so the trail looks as it did and a wrapped second row's targets
+     meet the first's without overlapping. */
+  display: inline-block;
+  padding-block: 0.25rem;
+  margin-block: -0.25rem;
 }
 
-.crumbs a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .crumbs a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 /* ---------- the interior page system ---------- */
@@ -2971,8 +3173,10 @@ legend {
   border-bottom: 0;
 }
 
-.verdict__link:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .verdict__link:hover {
+    color: var(--accent-deep);
+  }
 }
 
 .verdict__link strong {
@@ -3019,9 +3223,11 @@ legend {
   transition: background-color 120ms ease;
 }
 
-.verdict__action:hover {
-  background: var(--accent-deep);
-  color: var(--paper);
+@media (hover: hover) {
+  .verdict__action:hover {
+    background: var(--accent-deep);
+    color: var(--paper);
+  }
 }
 
 /* ---------- step band ---------- */
@@ -3127,9 +3333,11 @@ legend {
   transition: border-color 120ms ease;
 }
 
-.step-card--link:hover {
-  border-color: var(--accent);
-  color: var(--ink);
+@media (hover: hover) {
+  .step-card--link:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 .step-card__more {
@@ -3194,10 +3402,16 @@ legend {
   transition: border-left-color 120ms ease, color 120ms ease;
 }
 
-.rail__link:hover,
 .rail__link.is-active {
   border-left-color: var(--accent);
   color: var(--ink);
+}
+
+@media (hover: hover) {
+  .rail__link:hover {
+    border-left-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 .rail__count {
@@ -3439,8 +3653,10 @@ legend {
   display: none;
 }
 
-.faq summary:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .faq summary:hover {
+    color: var(--accent-deep);
+  }
 }
 
 .faq__plus {
@@ -3485,9 +3701,11 @@ legend {
   transition: border-color 120ms ease;
 }
 
-.card-link:hover {
-  border-color: var(--accent);
-  color: var(--ink);
+@media (hover: hover) {
+  .card-link:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
 }
 
 .card-link--tight {
@@ -3501,12 +3719,13 @@ legend {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  /* A card link has no ground of its own, so on a banded section this 12px
+     label sits on the band, where only the deep gold reaches 4.5:1. */
+  color: var(--accent-deep);
 }
 
 .card-link__eyebrow--deep {
   letter-spacing: 0.08em;
-  color: var(--accent-deep);
 }
 
 .card-link__title {
@@ -3674,9 +3893,11 @@ legend {
   text-decoration: none;
 }
 
-.county-list a:hover {
-  color: var(--accent);
-  text-decoration: underline;
+@media (hover: hover) {
+  .county-list a:hover {
+    color: var(--accent-deep);
+    text-decoration: underline;
+  }
 }
 
 .county-list__priority {
@@ -3714,8 +3935,57 @@ legend {
 
 /* The band's ground is the wash, so the ghost button's hover has to leave it
    rather than land on it. */
-.cta--band .btn--quiet:hover {
-  background: var(--paper);
+@media (hover: hover) {
+  .cta--band .btn--quiet:hover {
+    background: var(--paper);
+  }
+}
+
+/* ---------- interior system, print ---------- */
+/* One card should not be split across two sheets. The verdict's dark cap is
+   printed as it is, since without it the cream headline is white on white. The
+   rail's contents list is links into the page it sits beside, and the closing
+   CTA asks for a click; neither means anything on paper. The rail's quick-facts
+   box does, and stays, above the detail. */
+@media print {
+  .card,
+  .card-link,
+  .step-card,
+  .flat-card,
+  .num-card,
+  .team-card,
+  .verdict,
+  .callout,
+  .quick-facts,
+  .review,
+  .faq details {
+    break-inside: avoid;
+  }
+
+  .verdict__cap {
+    print-color-adjust: exact;
+  }
+
+  .rail > nav,
+  .cta {
+    display: none;
+  }
+
+  .cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    position: static;
+  }
+}
+
+/* The current section in the rail is marked by its edge alone, and in Windows
+   High Contrast every edge is the same color. */
+@media (forced-colors: active) {
+  .rail__link.is-active {
+    border-left-color: Highlight;
+  }
 }
 
 /* ---------- interior system, narrow ---------- */
