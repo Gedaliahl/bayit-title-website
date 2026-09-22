@@ -2326,8 +2326,13 @@ legend {
   transition: outline-color 120ms ease, border-color 120ms ease;
 }
 
-.mode-tab:hover {
-  border-color: var(--accent);
+/* Hover only where there is a pointer to hover with: on a phone the tap
+   leaves the hover state behind, and a card that stays lit after the reader
+   has moved on reads as selected. The same goes for the other hovers below. */
+@media (hover: hover) {
+  .mode-tab:hover {
+    border-color: var(--accent);
+  }
 }
 
 .mode-tab[aria-pressed='true'] {
@@ -2439,7 +2444,9 @@ legend {
 .form-card .field textarea,
 .form-card .money {
   padding: 0.75rem 0.875rem;
-  border: 1px solid var(--rule-card);
+  /* The box's only edge, so it carries the 3:1 a control's boundary needs;
+     the band fill alone is barely distinguishable from the white card. */
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
   background: var(--band);
   transition: border-color 120ms ease, background-color 120ms ease;
@@ -2454,9 +2461,19 @@ legend {
 .form-card .field select:focus,
 .form-card .field textarea:focus,
 .form-card .money:focus-within {
-  outline: none;
   border-color: var(--accent);
   background: var(--paper);
+}
+
+/* The money box clips its contents, so the ring goes on the box and not on
+   the input inside it, where it would be cut off. */
+.form-card .money:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.form-card .money input:focus-visible {
+  outline: none;
 }
 
 .form-card .field input[disabled],
@@ -2537,6 +2554,16 @@ legend {
 .seg__option input:checked + span {
   background: var(--accent-dark);
   color: var(--paper);
+}
+
+/* The chosen half is marked by its fill alone, and Windows High Contrast
+   repaints every fill the same. */
+@media (forced-colors: active) {
+  .seg__option input:checked + span {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
 }
 
 /* Inside the half rather than around it, since the group clips its corners: a
@@ -2724,8 +2751,10 @@ legend {
   cursor: pointer;
 }
 
-.linkish:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .linkish:hover {
+    color: var(--accent);
+  }
 }
 
 /* --- the figures card --- */
@@ -2803,6 +2832,9 @@ legend {
 
 .figure-line__label {
   min-width: 0;
+  /* A county or an address in a label has no break point of its own, and the
+     column beside it is fixed; at 280px it would otherwise push the figure out. */
+  overflow-wrap: anywhere;
 }
 
 .figure-line__note {
@@ -2980,9 +3012,14 @@ legend {
   transition: border-color 120ms ease, background-color 120ms ease;
 }
 
-.drop:hover,
 .drop--active {
   border-color: var(--accent);
+}
+
+@media (hover: hover) {
+  .drop:hover {
+    border-color: var(--accent);
+  }
 }
 
 .drop--active {
@@ -3050,8 +3087,10 @@ legend {
   cursor: pointer;
 }
 
-.contract-files__remove:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  .contract-files__remove:hover {
+    color: var(--accent);
+  }
 }
 
 .form-card__foot {
