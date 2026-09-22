@@ -12,7 +12,6 @@ import {
   formatBytes,
   isContractFile,
   screenFiles,
-  uploadWithProgress,
   type Rejection,
 } from '@/lib/documents';
 import { contractQuoteSchema, fieldErrors, HONEYPOT_FIELD } from '@/lib/schemas';
@@ -24,21 +23,15 @@ import {
   outcomeUnknown,
   postJson,
   RejectedFiles,
+  sendUploads,
   UploadMeter,
+  type UploadTicket,
   useBotCheck,
   useLeaveWarning,
   useSubmissionId,
   withoutBlanks,
 } from '@/components/Field';
 import { useErrorFocus } from '@/components/useErrorFocus';
-
-interface UploadTicket {
-  index: number;
-  name: string;
-  path: string;
-  contentType: string;
-  url: string;
-}
 
 type Status =
   | { kind: 'idle' }
@@ -179,56 +172,19 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
 
     const tickets = reply.body.uploads ?? [];
     const leadId = reply.body.lead_id;
-    const ticketed = new Set(tickets.map((ticket) => ticket.index));
-    const missing: Rejection[] = files
-      .filter((_, index) => !ticketed.has(index))
-      .map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
-
-    const uploaded: { path: string; name: string }[] = [];
-    if (leadId && tickets.length > 0) {
+    let attached = 0;
+    let missing: Rejection[] = files.map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
+    if (leadId) {
       const controller = new AbortController();
       uploads.current = controller;
-
-      // One at a time, so the progress stays honest and a phone on a weak
-      // connection is not asked to hold every page open at once.
-      for (const [position, ticket] of tickets.entries()) {
-        const file = files[ticket.index];
-        if (!file) continue;
-        if (controller.signal.aborted) {
-          missing.push({ name: file.name, reason: 'not sent, because the upload was stopped' });
-          continue;
-        }
-
-        setStatus({ kind: 'uploading', name: file.name, position: position + 1, count: tickets.length, sent: 0, total: file.size });
-        const ok = await uploadWithProgress(
-          ticket,
-          file,
-          (sent, total) => setStatus((current) => (current.kind === 'uploading' ? { ...current, sent, total } : current)),
-          controller.signal,
-        );
-        if (ok) uploaded.push({ path: ticket.path, name: file.name });
-        else missing.push({ name: file.name, reason: controller.signal.aborted ? 'stopped before it finished' : 'the upload failed' });
-      }
+      ({ attached, missing } = await sendUploads({
+        files,
+        tickets,
+        signal: controller.signal,
+        onProgress: (state) => setStatus({ kind: 'uploading', ...state }),
+        confirm: (documents) => postJson('/api/contract-quote/documents', { lead_id: leadId, documents }),
+      }));
       uploads.current = null;
-    }
-
-    let attached = 0;
-    if (uploaded.length > 0) {
-      const confirmed = await postJson<{ recorded?: number; rejected?: Rejection[] }>(
-        '/api/contract-quote/documents',
-        { lead_id: leadId, documents: uploaded },
-      );
-      if (confirmed.status >= 200 && confirmed.status < 300 && confirmed.body) {
-        attached = confirmed.body.recorded ?? 0;
-        const refused = confirmed.body.rejected ?? [];
-        missing.push(...refused);
-        const unaccounted = uploaded.length - attached - refused.length;
-        if (unaccounted > 0) {
-          missing.push({ name: `${unaccounted} other file${unaccounted === 1 ? '' : 's'}`, reason: 'did not arrive' });
-        }
-      } else {
-        missing.push(...uploaded.map((doc) => ({ name: doc.name, reason: 'uploaded, but could not be passed on' })));
-      }
     }
 
     if (missing.length > 0) track('upload_failed', { form: 'contract', count: missing.length });

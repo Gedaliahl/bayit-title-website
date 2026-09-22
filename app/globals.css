@@ -1393,6 +1393,11 @@ main:focus {
   line-height: 1.6;
 }
 
+/* Under a form's button, set apart from it. */
+.form-note--after {
+  margin-top: 1rem;
+}
+
 .form-status {
   font-family: var(--font-body);
   font-size: 0.9375rem;
@@ -1409,6 +1414,20 @@ main:focus {
 .form-status--ok {
   background: var(--accent-wash);
   border-color: var(--accent);
+}
+
+/* A confirmation can run to several lines: what arrived, what did not, what next. */
+.form-status--ok p {
+  margin: 0 0 0.5rem;
+}
+
+.form-status--ok p:last-child {
+  margin-bottom: 0;
+}
+
+/* The line that introduces a list sits close to it. */
+.form-status--ok .form-status__lead {
+  margin-bottom: 0.25rem;
 }
 
 .form-status__list {

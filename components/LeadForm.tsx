@@ -118,7 +118,7 @@ export function LeadForm({
   if (status.kind === 'sent') {
     return (
       <div className="form-status form-status--ok" role="status">
-        <p style={{ margin: 0 }} ref={successRef} tabIndex={-1}>
+        <p ref={successRef} tabIndex={-1}>
           {successMessage}
         </p>
       </div>
@@ -227,7 +227,7 @@ export function LeadForm({
         {status.kind === 'sending' ? 'Sending…' : submitLabel}
       </button>
 
-      <p className="form-note" style={{ marginTop: '1rem' }}>
+      <p className="form-note form-note--after">
         Please do not send bank account or wire details through this form. We will never email you
         wire instructions, and we will never change instructions once given. Call{' '}
         {site.phoneDisplay} to verify anything that claims to come from us. What we do with what

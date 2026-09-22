@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 
-import { formatBytes, type Rejection } from '@/lib/documents';
+import { formatBytes, uploadWithProgress, type Rejection } from '@/lib/documents';
 import { HONEYPOT_FIELD } from '@/lib/schemas';
 import { site } from '@/lib/site';
 
@@ -402,6 +402,87 @@ export async function postJson<T>(url: string, payload: unknown): Promise<Reply<
   } catch {
     return { status: 0, body: null };
   }
+}
+
+/** One signed upload the server issued for a file the browser declared, by its place in that list. */
+export interface UploadTicket {
+  index: number;
+  name: string;
+  path: string;
+  contentType: string;
+  url: string;
+}
+
+/** Where the uploads have got to, for the meter. */
+export interface UploadState {
+  name: string;
+  position: number;
+  count: number;
+  sent: number;
+  total: number;
+}
+
+/**
+ * The uploads that follow a submission the server has already recorded, then
+ * the confirmation that tells the office they are there. Shared by the order
+ * form and the contract box, which differ only in where they confirm.
+ *
+ * Every file the sender picked comes back either counted as attached or named
+ * in `missing` with the reason, so the success screen never implies a file
+ * went that did not.
+ */
+export async function sendUploads({
+  files,
+  tickets,
+  signal,
+  onProgress,
+  confirm,
+}: {
+  files: File[];
+  tickets: UploadTicket[];
+  signal: AbortSignal;
+  onProgress: (state: UploadState) => void;
+  confirm: (documents: { path: string; name: string }[]) => Promise<Reply<{ recorded?: number; rejected?: Rejection[] }>>;
+}): Promise<{ attached: number; missing: Rejection[] }> {
+  const ticketed = new Set(tickets.map((ticket) => ticket.index));
+  const missing: Rejection[] = files
+    .filter((_, index) => !ticketed.has(index))
+    .map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
+
+  // One at a time: the progress stays honest and a phone on a weak connection
+  // is not asked to hold ten uploads open at once.
+  const uploaded: { path: string; name: string }[] = [];
+  for (const [position, ticket] of tickets.entries()) {
+    const file = files[ticket.index];
+    if (!file) continue;
+    if (signal.aborted) {
+      missing.push({ name: file.name, reason: 'not sent, because the upload was stopped' });
+      continue;
+    }
+
+    const state = { name: file.name, position: position + 1, count: tickets.length, sent: 0, total: file.size };
+    onProgress(state);
+    const ok = await uploadWithProgress(ticket, file, (sent, total) => onProgress({ ...state, sent, total }), signal);
+    if (ok) uploaded.push({ path: ticket.path, name: file.name });
+    else missing.push({ name: file.name, reason: signal.aborted ? 'stopped before it finished' : 'the upload failed' });
+  }
+
+  if (uploaded.length === 0) return { attached: 0, missing };
+
+  const confirmed = await confirm(uploaded);
+  if (confirmed.status < 200 || confirmed.status >= 300 || !confirmed.body) {
+    missing.push(...uploaded.map((doc) => ({ name: doc.name, reason: 'uploaded, but could not be passed on' })));
+    return { attached: 0, missing };
+  }
+
+  const attached = confirmed.body.recorded ?? 0;
+  const refused = confirmed.body.rejected ?? [];
+  missing.push(...refused);
+  const unaccounted = uploaded.length - attached - refused.length;
+  if (unaccounted > 0) {
+    missing.push({ name: `${unaccounted} other file${unaccounted === 1 ? '' : 's'}`, reason: 'did not arrive in storage' });
+  }
+  return { attached, missing };
 }
 
 /**

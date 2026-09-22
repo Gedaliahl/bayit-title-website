@@ -14,9 +14,11 @@ import {
   outcomeUnknown,
   postJson,
   SelectField,
+  sendUploads,
   TextArea,
   TextField,
   UploadMeter,
+  type UploadTicket,
   useBotCheck,
   useFieldErrors,
   useLeaveWarning,
@@ -33,7 +35,6 @@ import {
   contentTypeFor,
   formatBytes,
   screenFiles,
-  uploadWithProgress,
   type Rejection,
 } from '@/lib/documents';
 import { fieldErrors, orderSchema } from '@/lib/schemas';
@@ -42,14 +43,6 @@ import { site } from '@/lib/site';
 interface CountyOption {
   value: string;
   label: string;
-}
-
-interface UploadTicket {
-  index: number;
-  name: string;
-  path: string;
-  contentType: string;
-  url: string;
 }
 
 type Status =
@@ -202,56 +195,19 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
     const reference = reply.body.reference ?? '';
     const orderId = reply.body.order_id;
     const tickets = reply.body.uploads ?? [];
-    const ticketed = new Set(tickets.map((ticket) => ticket.index));
-    const missing: Rejection[] = files
-      .filter((_, index) => !ticketed.has(index))
-      .map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
-
-    const uploaded: { path: string; name: string }[] = [];
-    if (orderId && tickets.length > 0) {
+    let attached = 0;
+    let missing: Rejection[] = files.map((file) => ({ name: file.name, reason: 'not accepted for upload' }));
+    if (orderId) {
       const controller = new AbortController();
       uploads.current = controller;
-
-      // One at a time: the progress stays honest and a phone on a weak
-      // connection is not asked to hold ten uploads open at once.
-      for (const [position, ticket] of tickets.entries()) {
-        const file = files[ticket.index];
-        if (!file) continue;
-        if (controller.signal.aborted) {
-          missing.push({ name: file.name, reason: 'not sent, because the upload was stopped' });
-          continue;
-        }
-
-        setStatus({ kind: 'uploading', name: file.name, position: position + 1, count: tickets.length, sent: 0, total: file.size });
-        const ok = await uploadWithProgress(
-          ticket,
-          file,
-          (sent, total) => setStatus((current) => (current.kind === 'uploading' ? { ...current, sent, total } : current)),
-          controller.signal,
-        );
-        if (ok) uploaded.push({ path: ticket.path, name: file.name });
-        else missing.push({ name: file.name, reason: controller.signal.aborted ? 'stopped before it finished' : 'the upload failed' });
-      }
+      ({ attached, missing } = await sendUploads({
+        files,
+        tickets,
+        signal: controller.signal,
+        onProgress: (state) => setStatus({ kind: 'uploading', ...state }),
+        confirm: (documents) => postJson('/api/orders/documents', { order_id: orderId, documents }),
+      }));
       uploads.current = null;
-    }
-
-    let attached = 0;
-    if (uploaded.length > 0) {
-      const confirmed = await postJson<{ recorded?: number; rejected?: Rejection[] }>('/api/orders/documents', {
-        order_id: orderId,
-        documents: uploaded,
-      });
-      if (confirmed.status >= 200 && confirmed.status < 300 && confirmed.body) {
-        attached = confirmed.body.recorded ?? 0;
-        const refused = confirmed.body.rejected ?? [];
-        missing.push(...refused);
-        const unaccounted = uploaded.length - attached - refused.length;
-        if (unaccounted > 0) {
-          missing.push({ name: `${unaccounted} other file${unaccounted === 1 ? '' : 's'}`, reason: 'did not arrive in storage' });
-        }
-      } else {
-        missing.push(...uploaded.map((doc) => ({ name: doc.name, reason: 'uploaded, but could not be attached' })));
-      }
     }
 
     if (missing.length > 0) track('upload_failed', { form: 'order', count: missing.length });
@@ -261,11 +217,11 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
   if (status.kind === 'sent') {
     return (
       <div className="form-status form-status--ok" role="status">
-        <p style={{ marginBottom: '0.5rem' }} ref={successRef} tabIndex={-1}>
+        <p ref={successRef} tabIndex={-1}>
           <strong>Order received{status.reference ? ` — ${status.reference}` : ''}.</strong>
         </p>
         {status.attached > 0 ? (
-          <p style={{ marginBottom: '0.5rem' }}>
+          <p>
             {status.attached} document{status.attached === 1 ? '' : 's'} attached to the file.
           </p>
         ) : null}
@@ -273,7 +229,7 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
             be waiting on a document nobody sent. */}
         {status.missing.length > 0 ? (
           <>
-            <p style={{ marginBottom: '0.25rem' }}>
+            <p className="form-status__lead">
               {status.missing.length === 1 ? 'This did' : 'These did'} not reach us:
             </p>
             <ul className="form-status__list">
@@ -283,14 +239,14 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
                 </li>
               ))}
             </ul>
-            <p style={{ marginBottom: '0.5rem' }}>
+            <p>
               The order is recorded either way. Email {status.missing.length === 1 ? 'it' : 'them'} to{' '}
               <a href={`mailto:${site.ordersEmail}`}>{site.ordersEmail}</a>
               {status.reference ? ` with the reference ${status.reference}` : ''}.
             </p>
           </>
         ) : null}
-        <p style={{ margin: 0 }}>
+        <p>
           We will confirm by email and tell you what the search turns up.
         </p>
       </div>
@@ -475,7 +431,7 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
             : 'Open the order'}
       </button>
 
-      <p className="form-note" style={{ marginTop: '1rem' }}>
+      <p className="form-note form-note--after">
         This form opens a file and nothing more. Do not send bank account or wire details through
         it — not in a field, not in an attachment — or through email. We will never send you wire
         instructions by email, and we will not change instructions once given. Call{' '}
