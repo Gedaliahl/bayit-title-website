@@ -14,7 +14,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
 import { Verdict } from '@/components/Verdict';
 import { Rail } from '@/components/Rail';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Florida title company by county and city',
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
       'stamp rate, recording, and what a policy costs.',
   ),
   alternates: { canonical: '/counties' },
-  openGraph: { ...baseOpenGraph, url: '/counties' },
+  openGraph: { ...siteOpenGraph, url: '/counties' },
 };
 
 const WHAT_CHANGES = [

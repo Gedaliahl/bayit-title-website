@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Florida closing costs, buyer and seller',
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
       'promulgated title premium, and the fees no rule sets, each cited.',
   ),
   alternates: { canonical: '/closing-costs' },
-  openGraph: { ...baseOpenGraph, url: '/closing-costs' },
+  openGraph: { ...siteOpenGraph, url: '/closing-costs' },
 };
 
 const TOOLS = [

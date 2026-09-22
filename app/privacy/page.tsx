@@ -5,7 +5,7 @@ import { site } from '@/lib/site';
 import { PRIVACY_EFFECTIVE_DATE } from '@/lib/privacy';
 import { DOWNLOAD_LINK_HOURS } from '@/lib/document-storage';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 
 /**
  * The website's privacy policy.
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: metaDescription(`How ${site.legalName} collects, uses and protects information submitted through this website.`),
   alternates: { canonical: '/privacy' },
-  openGraph: { ...baseOpenGraph, url: '/privacy' },
+  openGraph: { ...siteOpenGraph, url: '/privacy' },
 };
 
 /** Read at build time, like the CSP: the page and the policy header agree. */

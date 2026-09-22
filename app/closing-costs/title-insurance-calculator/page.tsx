@@ -13,7 +13,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   MINIMUM_PREMIUM,
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
       'owner’s policy, the reissue rate and the lender’s policy, each cited to the rule.',
   ),
   alternates: { canonical: PATH },
-  openGraph: { ...baseOpenGraph, url: PATH },
+  openGraph: { ...siteOpenGraph, url: PATH },
 };
 
 /** The prices a reader is most likely to be looking for, from starter home to estate. */

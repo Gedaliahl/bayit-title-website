@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getAllDocs } from '@/lib/content';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
       'the closing side of a 1031 exchange, anywhere in Florida.',
   ),
   alternates: { canonical: '/services' },
-  openGraph: { ...baseOpenGraph, url: '/services' },
+  openGraph: { ...siteOpenGraph, url: '/services' },
 };
 
 /** The RON card links here when the page exists, and says nothing when it does not. */

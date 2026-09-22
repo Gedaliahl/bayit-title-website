@@ -12,7 +12,7 @@ import {
   CLUSTER_CAPTIONS,
   type Doc,
 } from '@/lib/content';
-import { baseOpenGraph, formatReviewDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatReviewDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
       'closing, and how it gets cleared. Written and reviewed by a licensed Florida title agent.',
   ),
   alternates: { canonical: '/title-problems' },
-  openGraph: { ...baseOpenGraph, url: '/title-problems' },
+  openGraph: { ...siteOpenGraph, url: '/title-problems' },
 };
 
 /**

@@ -7,7 +7,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel } from '@/components/Prose';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Title company for Florida realtors and lenders',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
       'read in the first week, lender conditions answered directly.',
   ),
   alternates: { canonical: '/partners' },
-  openGraph: { ...baseOpenGraph, url: '/partners' },
+  openGraph: { ...siteOpenGraph, url: '/partners' },
 };
 
 /**

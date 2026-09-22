@@ -11,7 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import {
   CHECKED_ON,
   DOR_DOC_STAMP_GUIDANCE,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
       'intangible tax, from a price, a loan and a county. Each rate cited to the statute.',
   ),
   alternates: { canonical: PATH },
-  openGraph: { ...baseOpenGraph, url: PATH },
+  openGraph: { ...siteOpenGraph, url: PATH },
 };
 
 const TABLE_PRICES = [

@@ -4,7 +4,7 @@ import { getCounties } from '@/lib/locations';
 import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LeadForm } from '@/components/LeadForm';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: { absolute: `Contact ${site.name} — ${site.address.city}, FL title company` },
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
       `${site.address.city}, FL ${site.address.postalCode}. ${officeHoursLine}.`,
   ),
   alternates: { canonical: '/contact' },
-  openGraph: { ...baseOpenGraph, url: '/contact' },
+  openGraph: { ...siteOpenGraph, url: '/contact' },
 };
 
 export default async function ContactPage() {

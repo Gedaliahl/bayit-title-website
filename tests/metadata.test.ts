@@ -30,6 +30,8 @@ interface PageModule {
 interface Route {
   path: string;
   metadata: Metadata;
+  /** The page has an opengraph-image file beside it, which is its card. */
+  ownCard: boolean;
 }
 
 function pageFiles(dir: string): string[] {
@@ -47,15 +49,20 @@ async function routes(): Promise<Route[]> {
   for (const file of pageFiles(appDir)) {
     const pattern = `/${path.relative(appDir, path.dirname(file)).split(path.sep).join('/')}`.replace(/\/$/, '') || '/';
     const mod = (await import(file)) as PageModule;
+    const ownCard = fs.readdirSync(path.dirname(file)).some((name) => name.startsWith('opengraph-image.'));
 
     if (mod.generateMetadata) {
       const params = mod.generateStaticParams ? await mod.generateStaticParams() : [{}];
       for (const param of params) {
         const route = pattern.replace(/\[(\w+)\]/g, (_, key: string) => param[key]);
-        found.push({ path: route, metadata: await mod.generateMetadata({ params: Promise.resolve(param) }) });
+        found.push({
+          path: route,
+          metadata: await mod.generateMetadata({ params: Promise.resolve(param) }),
+          ownCard,
+        });
       }
     } else {
-      found.push({ path: pattern, metadata: mod.metadata ?? {} });
+      found.push({ path: pattern, metadata: mod.metadata ?? {}, ownCard });
     }
   }
 
@@ -97,6 +104,16 @@ describe('page metadata', () => {
       expect(metadata.openGraph).toMatchObject({ siteName: 'Bayit Title', locale: 'en_US' });
     },
   );
+
+  // A page's own openGraph replaces the layout's, card included, so a page
+  // without a card file of its own names the site card. A page with one must
+  // not: a configured image outranks the file beside it, and every county,
+  // city and article would be shared under the site card instead.
+  it.each(all.map((route) => [route.path, route] as const))('%s is shared with a card', (_, route) => {
+    const images = route.metadata.openGraph?.images;
+    if (route.ownCard) expect(images).toBeUndefined();
+    else expect(images).toEqual([expect.objectContaining({ url: '/opengraph-image', width: 1200 })]);
+  });
 
   it.each(all.map((route) => [route.path, route.metadata] as const))(
     '%s has a title a results page can show whole',

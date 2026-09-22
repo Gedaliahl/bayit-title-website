@@ -24,7 +24,7 @@ import {
 import { REISSUE_CONDITIONS } from '@/lib/closing-estimate';
 import { CHECKED_ON as STATUTE_CHECKED_ON } from '@/lib/statutory-rates';
 import type { CitedFigure } from '@/lib/cited-figures';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Rail } from '@/components/Rail';
 import { EstimateModeProvider } from '@/components/estimate/EstimateMode';
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   title: META.title,
   description: metaDescription(META.description),
   alternates: { canonical: '/estimate' },
-  openGraph: { ...baseOpenGraph, url: '/estimate' },
+  openGraph: { ...siteOpenGraph, url: '/estimate' },
 };
 
 /** "Broward, Palm Beach, Miami-Dade and Hillsborough". */

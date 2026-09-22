@@ -7,7 +7,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ReviewBrowser } from '@/components/ReviewBrowser';
 import { ReviewSummaryLine } from '@/components/Reviews';
 import { QuietCta } from '@/components/QuietCta';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: { absolute: `${site.name} reviews: ${site.address.city}, FL title company` },
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
       `in ${site.address.city}, reproduced in full and unedited.`,
   ),
   alternates: { canonical: '/reviews' },
-  openGraph: { ...baseOpenGraph, url: '/reviews' },
+  openGraph: { ...siteOpenGraph, url: '/reviews' },
 };
 
 export default async function ReviewsPage() {

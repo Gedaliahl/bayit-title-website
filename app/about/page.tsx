@@ -13,7 +13,7 @@ import { Verdict } from '@/components/Verdict';
 import { StepBand } from '@/components/StepBand';
 import { Rail } from '@/components/Rail';
 import { initials } from '@/components/Prose';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: { absolute: `About ${site.name}, a ${site.address.city}, FL title company` },
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
       `are not, and how the work is done.`,
   ),
   alternates: { canonical: '/about' },
-  openGraph: { ...baseOpenGraph, url: '/about' },
+  openGraph: { ...siteOpenGraph, url: '/about' },
 };
 
 const WHAT_AN_AGENCY_DOES = [

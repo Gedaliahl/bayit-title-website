@@ -6,7 +6,7 @@ import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LeadForm } from '@/components/LeadForm';
 import { AnswerPanel } from '@/components/Prose';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Request a Florida title and closing cost quote',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
       'Office of Insurance Regulation; the quote itemizes everything else.',
   ),
   alternates: { canonical: '/quote' },
-  openGraph: { ...baseOpenGraph, url: '/quote' },
+  openGraph: { ...siteOpenGraph, url: '/quote' },
 };
 
 export default async function QuotePage() {

@@ -11,7 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
       'owner’s policy where custom puts it on the seller, and the payoff.',
   ),
   alternates: { canonical: '/closing-costs/seller' },
-  openGraph: { ...baseOpenGraph, url: '/closing-costs/seller' },
+  openGraph: { ...siteOpenGraph, url: '/closing-costs/seller' },
 };
 
 const STATEWIDE_SLUG = 'broward-county';

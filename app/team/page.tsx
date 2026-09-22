@@ -6,7 +6,7 @@ import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PersonSchema } from '@/components/Schema';
 import { QuietCta } from '@/components/QuietCta';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Our team: Florida-licensed title agent and notaries',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
       'their Florida title agent license and notary commission numbers.',
   ),
   alternates: { canonical: '/team' },
-  openGraph: { ...baseOpenGraph, url: '/team' },
+  openGraph: { ...siteOpenGraph, url: '/team' },
 };
 
 export default function TeamPage() {

@@ -14,7 +14,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties, type Location } from '@/lib/locations';
-import { baseOpenGraph, fittedTitle, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, fittedTitle, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import type { FaqItem } from '@/lib/faq';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       'where the custom has been confirmed, and why the contract decides it.',
   ),
   alternates: { canonical: PATH },
-  openGraph: { ...baseOpenGraph, url: PATH },
+  openGraph: { ...siteOpenGraph, url: PATH },
 };
 
 /** "Broward, Collier and Sarasota", without the word County on each. */
