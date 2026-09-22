@@ -52,6 +52,19 @@ describe('the health check', () => {
     expect(text).not.toContain('supabase.co');
   });
 
+  it('asks Resend at most once a minute, however often it is called', async () => {
+    vi.stubEnv('RESEND_API_KEY', 're_key');
+    const resend = vi.fn(async () => Response.json({ name: 'restricted_api_key' }, { status: 401 }));
+    vi.stubGlobal('fetch', resend);
+    const { GET } = await import('@/app/api/health/route');
+
+    await GET();
+    await GET();
+    await GET();
+
+    expect(resend).toHaveBeenCalledTimes(1);
+  });
+
   it('fails when Supabase is not configured at all', async () => {
     state.client = null;
     vi.stubEnv('RESEND_API_KEY', 're_key');

@@ -17,6 +17,30 @@ interface Check {
   reachable: boolean;
 }
 
+interface Health {
+  ok: boolean;
+  checks: Record<'supabase' | 'bucket' | 'resend', Check>;
+}
+
+/**
+ * How long one answer stands. Anyone can call this, and every uncached call
+ * spends a request against Resend's per-second limit — the same limit the
+ * office's order emails are sent under. A monitor polls once a minute at most,
+ * so it never sees the difference.
+ */
+const CACHE_MS = 60_000;
+const CHECK_TIMEOUT_MS = 5000;
+
+let cached: { at: number; health: Health } | null = null;
+
+/** The storage client takes no abort signal, so the deadline is raced instead. Null is a timeout. */
+function withDeadline<T>(work: Promise<T>): Promise<T | null> {
+  return Promise.race([
+    work,
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), CHECK_TIMEOUT_MS)),
+  ]);
+}
+
 async function supabaseCheck(): Promise<{ database: Check; bucket: Check }> {
   const supabase = getServiceClient();
   if (!supabase) {
@@ -31,14 +55,17 @@ async function supabaseCheck(): Promise<{ database: Check; bucket: Check }> {
       .from('locations')
       .select('id', { head: true, count: 'exact' })
       .limit(1)
-      .abortSignal(AbortSignal.timeout(5000)),
-    supabase.storage.getBucket(BUCKET),
+      .abortSignal(AbortSignal.timeout(CHECK_TIMEOUT_MS)),
+    withDeadline(supabase.storage.getBucket(BUCKET)),
   ]);
 
   return {
     database: { configured: true, reachable: !database.error },
     // A bucket that has gone public would still "answer"; it is not healthy.
-    bucket: { configured: true, reachable: !bucket.error && bucket.data?.public === false },
+    bucket: {
+      configured: true,
+      reachable: bucket !== null && !bucket.error && bucket.data?.public === false,
+    },
   };
 }
 
@@ -49,7 +76,7 @@ async function resendCheck(): Promise<Check> {
   try {
     const response = await fetch('https://api.resend.com/domains', {
       headers: { Authorization: `Bearer ${apiKey}` },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
     });
     // A key scoped to sending only is refused here by name, which still proves
     // Resend knows the key — and sending-only is the scope it should have.
@@ -61,13 +88,21 @@ async function resendCheck(): Promise<Check> {
   }
 }
 
-export async function GET() {
+async function check(): Promise<Health> {
   const [{ database, bucket }, resend] = await Promise.all([supabaseCheck(), resendCheck()]);
   const checks = { supabase: database, bucket, resend };
-  const ok = Object.values(checks).every((check) => check.configured && check.reachable);
+  const ok = Object.values(checks).every((entry) => entry.configured && entry.reachable);
+  return { ok, checks };
+}
 
-  return NextResponse.json(
-    { ok, checks },
-    { status: ok ? 200 : 503, headers: { 'Cache-Control': 'no-store' } },
-  );
+export async function GET() {
+  if (!cached || Date.now() - cached.at > CACHE_MS) {
+    cached = { at: Date.now(), health: await check() };
+  }
+  const { health } = cached;
+
+  return NextResponse.json(health, {
+    status: health.ok ? 200 : 503,
+    headers: { 'Cache-Control': 'no-store' },
+  });
 }
