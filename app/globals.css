@@ -183,6 +183,44 @@ th {
   letter-spacing: 0.02em;
 }
 
+/* Worked figures (components/FigureTable.tsx). The wrapper scrolls rather
+   than the page: see the .prose rule of the same name for why the table
+   itself stays display: table. */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.6em 0;
+}
+
+.table-scroll > table {
+  margin: 0;
+  overflow-wrap: normal;
+}
+
+.figure-table caption {
+  caption-side: top;
+  text-align: left;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+}
+
+.figure-table tbody th {
+  font-weight: 500;
+}
+
+.figure-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 22rem) {
+  .figure-table th,
+  .figure-table td {
+    padding-inline: 0.4rem;
+  }
+}
+
 /* ---------- layout primitives ---------- */
 
 .frame {

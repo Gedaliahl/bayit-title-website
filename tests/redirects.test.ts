@@ -39,6 +39,8 @@ const ROUTES = new Set([
   '/', '/about', '/team', '/services', '/counties', '/title-problems',
   '/reviews', '/contact', '/order', '/quote', '/estimate', '/closing-costs',
   '/partners', '/privacy', '/icon.svg',
+  '/closing-costs/title-insurance-calculator', '/closing-costs/doc-stamp-calculator',
+  '/closing-costs/who-pays-title-insurance',
 ]);
 
 describe('pages live on Wix today', () => {
@@ -50,9 +52,9 @@ describe('pages live on Wix today', () => {
     ['/order-title', '/order'],
     ['/process', '/services'],
     ['/titleinsurance', '/services'],
-    // The estimate page's second option publishes the promulgated schedule
-    // and works a specific price out, which is what /rates was asked for.
-    ['/rates', '/estimate?mode=numbers'],
+    // The title insurance calculator publishes the promulgated schedule and
+    // works a specific price out, which is what /rates was asked for.
+    ['/rates', '/closing-costs/title-insurance-calculator'],
   ];
 
   it.each(expected)('sends %s to %s, permanently', async (source, destination) => {
@@ -80,14 +82,14 @@ describe('pages live on Wix today', () => {
 });
 
 describe('the calculator', () => {
-  // The premium calculator had its own page until the estimate page took in
-  // all three ways of pricing a closing. Its address is linked from other
-  // people's pages and indexed, so it lands on the same tool rather than a 404.
-  it('lands on the estimate page with the numbers open', async () => {
+  // The premium calculator's old address is linked from other people's pages
+  // and indexed, so it lands on the title insurance calculator, which is the
+  // same tool at the address it is searched for by, rather than on a 404.
+  it('lands on the title insurance calculator', async () => {
     const entry = find(await redirects(), '/calculator');
 
     expect(entry).toBeDefined();
-    expect(entry!.destination).toBe('/estimate?mode=numbers');
+    expect(entry!.destination).toBe('/closing-costs/title-insurance-calculator');
     expect(entry!.permanent).toBe(true);
   });
 

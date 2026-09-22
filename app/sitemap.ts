@@ -39,6 +39,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/closing-costs'), changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/closing-costs/buyer'), changeFrequency: 'yearly', priority: 0.8 },
     { url: absoluteUrl('/closing-costs/seller'), changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs/title-insurance-calculator'), changeFrequency: 'yearly', priority: 0.9 },
+    { url: absoluteUrl('/closing-costs/doc-stamp-calculator'), changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs/who-pays-title-insurance'), changeFrequency: 'monthly', priority: 0.8 },
     { url: absoluteUrl('/partners'), changeFrequency: 'monthly', priority: 0.7 },
     // Same rule as a draft content page: nothing unreviewed is listed for crawlers.
     ...(PRIVACY_PUBLISHED

@@ -150,17 +150,17 @@ const nextConfig = {
       { source: '/order-title', destination: '/order', permanent: true },
       { source: '/process', destination: '/services', permanent: true },
       { source: '/titleinsurance', destination: '/services', permanent: true },
-      // /rates asked what a closing costs. The estimate page's second option
-      // is now the page that answers it — the promulgated premium schedule,
-      // the transfer taxes and recording, each cited to the rule or statute —
-      // so the redirect follows the topic rather than the form it used to
-      // land on.
-      { source: '/rates', destination: '/estimate?mode=numbers', permanent: true },
+      // /rates was the Wix page for the title insurance rates. The title
+      // insurance calculator is the page that answers it now — the promulgated
+      // schedule in full, the premium at common prices and the calculator
+      // itself, each cited to the rule — so the redirect follows the topic
+      // rather than the form it used to land on.
+      { source: '/rates', destination: '/closing-costs/title-insurance-calculator', permanent: true },
 
-      // The premium calculator had its own page here until the estimate page
-      // took in all three ways of pricing a closing. Its links live on in the
+      // The premium calculator had its own page here, then lived inside the
+      // estimate page, and has its own page again. Its links live on in the
       // index and in other people's pages, and land on the same tool.
-      { source: '/calculator', destination: '/estimate?mode=numbers', permanent: true },
+      { source: '/calculator', destination: '/closing-costs/title-insurance-calculator', permanent: true },
 
       // 404 on Wix today, so they are already gone. Kept because the handoff
       // records that the old site carried Pennsylvania pages, which means they
