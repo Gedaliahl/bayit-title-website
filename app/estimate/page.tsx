@@ -6,7 +6,8 @@
 //
 // The arithmetic is lib/'s: the promulgated schedule, the statutory rates and
 // the two estimators built on them. Nothing on this page prices anything on
-// its own, and every figure is cited to the rule or the section it comes from.
+// its own, and every figure is cited to whoever sets it: the rule, the section,
+// or this office for the two charges that are ours.
 
 import type { Metadata } from 'next';
 

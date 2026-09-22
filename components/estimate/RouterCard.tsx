@@ -13,7 +13,7 @@ export function RouterCard() {
   const { setMode } = useEstimateMode();
 
   return (
-    <div className="verdict">
+    <div className="verdict router-card">
       <div className="verdict__cap">
         <p className="verdict__eyebrow">{ROUTER.eyebrow}</p>
         <p className="verdict__headline">{ROUTER.headline}</p>
@@ -25,7 +25,7 @@ export function RouterCard() {
             key={mode}
             type="button"
             className="verdict__link verdict__link--button"
-            onClick={() => setMode(mode)}
+            onClick={() => setMode(mode, { reveal: true })}
           >
             <span>
               <strong>{ROUTER.rows[mode].label}</strong>

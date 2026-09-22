@@ -6,14 +6,30 @@ import { DEFAULT_MODE, isEstimateMode, type EstimateMode } from '@/content/estim
 
 interface ModeContext {
   mode: EstimateMode;
-  /** Sets the mode and, on a narrow screen, brings the estimator into view. */
-  setMode: (mode: EstimateMode) => void;
+  /**
+   * Sets the mode. From outside the estimator — the router card, the call to
+   * action — `reveal` also brings the estimator into view and puts focus on
+   * the heading of the panel that opened, so a keyboard or screen reader user
+   * lands where a sighted reader is looking. The mode buttons themselves leave
+   * focus where it is.
+   */
+  setMode: (mode: EstimateMode, options?: { reveal?: boolean }) => void;
 }
 
 const Context = createContext<ModeContext>({ mode: DEFAULT_MODE, setMode: () => {} });
 
 /** Below this the hero and the estimator no longer share a screen. */
 const NARROW = '(max-width: 62rem)';
+
+/** The heading focus is moved to. Address and numbers share one panel. */
+export function panelHeadingId(mode: EstimateMode): string {
+  return mode === 'upload' ? 'estimator-heading-upload' : 'estimator-heading-figures';
+}
+
+/** Asked for less motion, the page jumps rather than glides. */
+export function scrollBehavior(): ScrollBehavior {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
 
 /**
  * Which of the three ways in is open, shared by the router card in the hero,
@@ -43,7 +59,7 @@ export function EstimateModeProvider({ children }: { children: React.ReactNode }
     return () => window.removeEventListener('popstate', read);
   }, []);
 
-  const setMode = useCallback((next: EstimateMode) => {
+  const setMode = useCallback((next: EstimateMode, options?: { reveal?: boolean }) => {
     setModeState(next);
 
     const url = new URL(window.location.href);
@@ -52,11 +68,20 @@ export function EstimateModeProvider({ children }: { children: React.ReactNode }
     // Next's router listens to this, so usePathname and useSearchParams stay in step.
     window.history.replaceState(window.history.state, '', url);
 
-    // At desktop width the estimator is already beside or just under the
-    // router card and updates in place. On a phone it is a screen away.
-    if (window.matchMedia(NARROW).matches) {
-      document.getElementById('estimator')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!options?.reveal) return;
+
+    // At desktop width the estimator is usually already on screen, just under
+    // the router card, and updates in place. On a phone, or from the foot of
+    // the page, it is a screen or more away.
+    const estimator = document.getElementById('estimator');
+    const top = estimator?.getBoundingClientRect().top ?? 0;
+    if (window.matchMedia(NARROW).matches || top < 0 || top > window.innerHeight * 0.75) {
+      estimator?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
     }
+    // After the render that unhides the panel, or there is nothing to focus.
+    requestAnimationFrame(() => {
+      document.getElementById(panelHeadingId(next))?.focus({ preventScroll: true });
+    });
   }, []);
 
   return <Context.Provider value={{ mode, setMode }}>{children}</Context.Provider>;
