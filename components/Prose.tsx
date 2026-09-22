@@ -99,9 +99,12 @@ export function AnswerPanel({ text }: { text: string }) {
 export function VerifyBanner({
   flags,
   variant = 'flagged',
+  scope = 'county',
 }: {
   flags: string[];
   variant?: 'flagged' | 'withheld';
+  /** What the withheld facts are about, for the banner's first line. */
+  scope?: 'county' | 'city';
 }) {
   if (flags.length === 0) return null;
 
@@ -122,7 +125,7 @@ export function VerifyBanner({
       ) : (
         <>
           <strong>
-            {flags.length} item{plural} we have not published for this county
+            {flags.length} item{plural} we have not published for this {scope}
           </strong>
           {flags.length === 1 ? 'It is not stated' : 'These are not stated'} anywhere on this page.
           We publish a figure once it is tied to a source we are willing to stand behind, and{' '}

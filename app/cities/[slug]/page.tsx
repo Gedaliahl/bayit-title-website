@@ -234,12 +234,12 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           }
         />
 
-        <VerifyBanner flags={openItems} variant="withheld" />
+        <VerifyBanner flags={openItems} variant="withheld" scope="city" />
 
         <h2>What does a municipal lien search find in {city.name}?</h2>
         <p>
           The title search reads {county.name}&rsquo;s official records: deeds, mortgages, recorded
-          judgments and recorded liens. It does not read the {government}&rsquo;s files. Four things
+          judgments and recorded liens. It does not read what the {government} holds. Four things
           live there and can attach to the property or hold up the closing: a code enforcement
           case and the fine it has become; a building permit that was opened and never closed, or
           work that was never permitted; a water, sewer or solid-waste balance; and a special

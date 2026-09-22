@@ -43,6 +43,13 @@ function officesOf(record: (typeof MUNICIPAL_RECORDS)[number]) {
 }
 
 describe('the city records', () => {
+  it('cover every city that has a page', () => {
+    const recorded = new Set(MUNICIPAL_RECORDS.map((record) => record.citySlug));
+    for (const city of FLORIDA_CITIES) {
+      expect(recorded.has(city.slug), `${city.name} has no record`).toBe(true);
+    }
+  });
+
   it('each belong to a city that has a page, once', () => {
     const slugs = new Set(FLORIDA_CITIES.map((city) => city.slug));
     const seen = new Set<string>();

@@ -1522,4 +1522,142 @@ export const MUNICIPAL_RECORDS: MunicipalRecord[] = [
     notes:
       'Palm Bay contracts its lien search to Orange Data and its foreclosure registry to a second vendor; the Petition for Relief to the Special Magistrate, which a prospective buyer may file, is the one lien matter the city handles itself. Every Palm Bay page was read on 20 September; on 22 September the city’s site refused all automated requests, so nothing here could be re-read that day.',
   },
+  // ----------------------------------------------------------- Coral Springs
+  {
+    citySlug: 'coral-springs',
+    government: 'City of Coral Springs',
+    building: {
+      office: { name: 'Building Department', url: 'https://www.coralsprings.gov/Government/Departments/Building' },
+      portal: { name: 'eTRAKiT', url: 'https://www.coralsprings.gov/Government/Departments/Building/Online-Permitting-eTrakit' },
+      expiredPermits: q(
+        'Permits expire and become null and void if work is not started and an inspection requested within 180 days from the issuance date of the permit. After such work has commenced, the permit will expire when work is suspended or abandoned for a period of 90 days. Lack of an approved inspection within 90 days will validate the job has been suspended or abandoned. Otherwise, permit will remain in effect until the completion of the job. […] You may also request that we conduct the search for you by submitting an Open/Expired Permit Search (PDF, 222KB) form to buildingpermits@coralsprings.gov. (Fees apply)',
+        'https://www.coralsprings.gov/Government/Departments/Building/Online-Permitting-eTrakit/FAQs',
+        '2026-09-22',
+      ),
+    },
+    codeEnforcement: {
+      office: { name: 'Code Compliance', url: 'https://www.coralsprings.gov/Government/Departments/Code-Compliance' },
+      hearingBody: q(
+        'The property owner is sent a Notice of Violation/Notice of Hearing to appear before a Magistrate for non-compliance of the violation(s). If a Final Order is issued by the Magistrate, the owner will have a final date to comply the violation(s) or a daily fine may accrue until the violation(s) are corrected. […] The Special Magistrate hearing is a quasi-judicial process. The magistrate has the authority to impose daily fines and liens on a property.',
+        'https://www.coralsprings.gov/Government/Departments/Code-Compliance/Code-Process',
+        '2026-09-22',
+      ),
+      liens: q(
+        'Upon non-compliance of the final order date given by the Magistrate the property owner is sent a Notice of Hearing for certification of lien. […] If daily fines and/or administrative costs are not paid, the city may place a lien on a property. The magistrate does not have the ability to waive administrative costs that are assessed once the Final Order has been issued regardless of compliance, as per adopted Resolution 2011-039.',
+        'https://www.coralsprings.gov/Government/Departments/Code-Compliance/Code-Process',
+        '2026-09-22',
+      ),
+      release: q(
+        'The Reduction of Fine process is a system set up for property owners who have liens on their property and would like to request that the lien be reduced. […] If a property owner requests a reduction of fine for a case that is not in compliance, and there is a pending transaction, the Escrow Release of Lien process is used. […] If you feel that the lien on your property is barred by foreclosure, you may apply for the barred lien process.',
+        'https://www.coralsprings.gov/Government/Departments/Code-Compliance/Code-Process',
+        '2026-09-22',
+      ),
+    },
+    lienSearch: {
+      office: {
+        name: 'Water Billing, with separate replies from Code Compliance and Fire Inspections',
+        url: 'https://www.coralsprings.gov/Government/Departments/Building/Fees',
+      },
+      answeredBy: 'city',
+      how: q(
+        'Make checks payable to "City of Coral Springs" and remit to: City of Coral Springs, Attn: Water Billing, 9500 West Sample Road, Coral Springs, FL 33065 For questions, email liens@coralsprings.org. […] Total does not include final water bill for open accounts. […] For properties not in the City’s water and sewer district, contact: Coral Springs Improvement District 954-753-0380 North Springs Improvement District 954-752-0400 Royal Utilities Works 866-753-8292 Ext. 244 […] You will receive two separate replies to your request (one from Code Compliance and one from Fire Inspections).',
+        'https://www.coralsprings.gov/files/assets/public/v/3/documents/development-services/code-compliance/liensearchinquiryform_v2__20210219.pdf',
+      ),
+      fee: q(
+        '$75.00 fee is required per property […] $125.00 fee for an expedited lien search […] Water Billing will provide a one-time water balance update at no cost if requested within 30 days of the original received date.',
+        'https://www.coralsprings.gov/files/assets/public/v/3/documents/development-services/code-compliance/liensearchinquiryform_v2__20210219.pdf',
+      ),
+      turnaround: q(
+        'Allow ten (10) business days to respond via email. […] Allow one (1) business day to respond via email. Requests received after 12:00 pm will be dated next business day.',
+        'https://www.coralsprings.gov/files/assets/public/v/3/documents/development-services/code-compliance/liensearchinquiryform_v2__20210219.pdf',
+      ),
+    },
+    utility: {
+      provider: {
+        name: 'one of four providers; the city’s own Coral Springs Water District serves part of the city',
+        url: 'https://www.coralsprings.gov/Government/Departments/Coral-Springs-Water-District-Customer-Billing',
+      },
+      statement: q(
+        'Water services in the City are facilitated by four providers. […] City of Coral Springs Water District 954-345-2160 3800 NW 85 Avenue Coral Springs Improvement District 954-753-0380 10300 N.W. 11 Manor North Springs Improvement District 954-752-0400 9700 NW 52 Street Royal Water Works 888-228-2134 / 866-753-8292 (after 7:00 PM and weekends) 8900 N.W. 44 Ct.',
+        'https://www.coralsprings.gov/Government/Departments/Public-Works',
+        '2026-09-22',
+      ),
+    },
+    other: [
+      {
+        label: 'A release of lien for a sale that cannot wait for compliance',
+        quote: q(
+          'Who can enter into a Escrow Release of Lien? The current owner of the property and the buyer who is listed on a valid Real Estate contract. Both the buyer and seller must authorize the application. […] Does the property have to be in compliance first? No, the property cannot be in compliance in order to qualify for the Escrow Release of Lien process. […] How much does it cost? There is a $300.00 application fee per case. […] How long will the process take? The process may take approximately 3-6 weeks. […] Once the amount of the reduced lien is paid, the lien will be released and recorded with the Broward Clerk of Courts. Please allow approximately 30 business days for the lien release process.',
+          'https://www.coralsprings.gov/Government/Departments/Code-Compliance/Code-Process/Escrow-Release-of-Lien-Process-FAQs',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Reduction of Fine, once the property complies',
+        quote: q(
+          'Does the property have to be in compliance first? The property must be in compliance with all City Codes and Ordinances. […] A hearing may be requested if the applicant rejects the initial recommendation of fine. […] Typically, the Magistrate will offer a time-range from one (1) month to (6) months to pay the reduced amount. If the amount due is not paid by the date agreed upon by the Magistrate and property owner, the lien will revert to the original amount.',
+          'https://www.coralsprings.gov/Government/Departments/Code-Compliance/Code-Process/Reduction-of-Fine-Process',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'A lien barred by a foreclosure',
+        quote: q(
+          'The process will take approximately two (2) to four (4) weeks. […] I have a sales contract on my house, does that matter? Yes, properties that have a signed sales contract do receive priority processing. […] If the lien is barred, the total lien amount will be reduced to administrative cost. Administrative cost consists of recording cost, abatement cost, inspection fees and hearing fees. […] Once the amount of the reduced lien is paid, the lien will be released and recorded with the Broward Clerk of Courts.',
+          'https://www.coralsprings.gov/Government/Departments/Code-Compliance/Code-Process/Barred-Lien-Review',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'What any of the three applications costs, and what must be current',
+        quote: q(
+          'Please submit one completed application per case along with a non-refundable application fee of $300 per case. Only completed applications will be accepted. […] All applicable accounts with the City, e.g. water bill, required registrations (Landlord, Abandoned Property), fees, building permits, etc., must be up to date.',
+          'https://www.coralsprings.gov/files/assets/public/v/4/reduction_of_fine_application_final.pdf',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Renewing an expired permit',
+        quote: q(
+          'Renewal-expired permits - All disciplines: a. Minimum Fee or 50% of Original Permit Fee (whichever is lower)',
+          'https://www.coralsprings.gov/Government/Departments/Building/Fees',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'A water account is the owner’s',
+        quote: q(
+          'New property owners will need to provide proof of ownership (warranty deed or closing statement), a picture I.D. or tax I.D. number for businesses, and will need to place a security deposit. The deposit will appear on your first bill. […] Water accounts can only be made in the property owner’s name.',
+          'https://www.coralsprings.gov/Government/Departments/Coral-Springs-Water-District-Customer-Billing',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Landlord registration',
+        quote: q(
+          'The program requires all persons or companies who lease or offer for lease, any residential unit or residential property to register that property with the city’s Code Compliance Division, by submitting the a Landlord Registration Application. […] The current registration/renewal fee is $56.00, with the registration period running from October 1 through September 30 of each year. […] Landlord Registrations are issued per property folio and are not transferable.',
+          'https://www.coralsprings.gov/Government/Departments/Business-Tax-Office/Landlord-Registration',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'Abandoned property registration for lenders',
+        quote: q(
+          'Mortgagees of abandoned residential real property, holding a mortgage that is in default, must register the property through the Registration of Abandoned Real Property. […] The mortgagee pays an annual registration fee of $150 per property that expires one year after registration. It must be renewed each year until the property is sold or is no longer in default on the mortgage.',
+          'https://www.coralsprings.gov/Government/Departments/Business-Tax-Office/Abandoned-Registration',
+          '2026-09-22',
+        ),
+      },
+      {
+        label: 'The stormwater assessment',
+        quote: q(
+          'Coral Springs implemented a Stormwater program, which is funded by an annual assessment effective for Fiscal Year 2020 and will appear on the November 2019 tax bill. […] Assessments are not based on property value, rather at a rate of impervious area per parcel (estimated amount of runoff from the property).',
+          'https://www.coralsprings.gov/Government/Departments/Public-Works',
+          '2026-09-22',
+        ),
+      },
+    ],
+    notes:
+      'Coral Springs, where our office is, publishes three routes for a lien: Reduction of Fine once the property complies, Barred Lien Review where a foreclosure cut the lien off, and an Escrow Release of Lien that a buyer and seller under contract apply for together when the property cannot comply before closing. The city’s lien letter covers only its own Water District; a property served by one of the three other districts needs that district’s balance separately, and the letter excludes the final bill on an open account either way. The forms quoted are PDFs that refused our command-line requests on 22 September and were read from copies saved two days earlier or through a second fetcher that day.',
+  },
 ];
