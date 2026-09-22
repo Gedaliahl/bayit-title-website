@@ -26,6 +26,7 @@ import { getReviewsByTags } from '@/lib/reviews';
 import { extractFaq } from '@/lib/faq';
 import { absoluteUrl, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
+import { getTeamMember } from '@/lib/team';
 import { Byline, Prose, VerifyBanner, VerifyText } from '@/components/Prose';
 import { DraftBanner } from '@/components/DraftBanner';
 import { QuickFacts } from '@/components/QuickFacts';
@@ -104,7 +105,7 @@ export default async function TitleProblemPage({
     getReviewsByTags(doc.review_tags, 1),
   ]);
 
-  const author = doc.author ? site.team.find((member) => member.slug === doc.author) : undefined;
+  const author = doc.author ? getTeamMember(doc.author) : undefined;
   const authorName = author?.name ?? site.agentInCharge.displayName;
   // The page shows every question with its answer rendered; the JSON-LD gets
   // plain text, and none of the questions still carrying a flag.
@@ -266,7 +267,7 @@ export default async function TitleProblemPage({
           {doc.status === 'reviewed' ? (
             <Byline
               authorName={authorName}
-              authorRole={author?.role ?? 'Founder'}
+              authorRole={author?.role ?? 'Agent in Charge'}
               credential={author?.credential ?? null}
               reviewedOn={doc.reviewed_on!}
               nextReview={doc.next_review!}
