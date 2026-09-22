@@ -95,6 +95,8 @@ export function requireCompleteLocations(): boolean {
  * Says why this build does not have every county, and fails it if it must.
  * `consequence` is what the reader of the site would get instead.
  */
+const reported = new Set<string>();
+
 function reportIncomplete(reason: string, consequence: string): void {
   const message = `[locations] ${reason} ${consequence}`;
   if (requireCompleteLocations()) {
@@ -103,6 +105,10 @@ function reportIncomplete(reason: string, consequence: string): void {
         '(VERCEL_ENV=production or REQUIRE_LOCATIONS=1).',
     );
   }
+  // Every page asks for the locations, so without this one build prints the
+  // same warning dozens of times and buries everything else in the log.
+  if (reported.has(message)) return;
+  reported.add(message);
   console.warn(`${message} Building anyway; a production build would fail here.`);
 }
 

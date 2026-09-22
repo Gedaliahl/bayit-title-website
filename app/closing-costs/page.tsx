@@ -10,13 +10,16 @@ import Link from 'next/link';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Florida closing costs, buyer and seller',
-  description:
-    'What a buyer and a seller pay at a Florida closing: the taxes and recording the statute ' +
-    'sets, the promulgated title premium, and the fees no rule sets, each cited.',
+  description: metaDescription(
+    'What a buyer and a seller pay at a Florida closing: statutory taxes and recording, the ' +
+      'promulgated title premium, and the fees no rule sets, each cited.',
+  ),
   alternates: { canonical: '/closing-costs' },
+  openGraph: { ...baseOpenGraph, url: '/closing-costs' },
 };
 
 const SIDES = [

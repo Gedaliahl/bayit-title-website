@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/order'), changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/quote'), changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/estimate'), changeFrequency: 'yearly', priority: 0.8 },
+    { url: absoluteUrl('/closing-costs'), changeFrequency: 'yearly', priority: 0.7 },
     { url: absoluteUrl('/closing-costs/buyer'), changeFrequency: 'yearly', priority: 0.8 },
     { url: absoluteUrl('/closing-costs/seller'), changeFrequency: 'yearly', priority: 0.8 },
     { url: absoluteUrl('/partners'), changeFrequency: 'monthly', priority: 0.7 },
