@@ -31,6 +31,16 @@ describe('the sitemap', () => {
   });
 });
 
+describe('the county pages in the sitemap', () => {
+  it('are only the ones that ask to be indexed', async () => {
+    const { getCounties, countyHasLocalFacts } = await import('@/lib/locations');
+    const listed = new Set(entries.map((entry) => entry.url));
+    for (const county of await getCounties()) {
+      expect(listed.has(absoluteUrl(`/counties/${county.slug}`)), county.name).toBe(countyHasLocalFacts(county));
+    }
+  });
+});
+
 describe('robots.txt', () => {
   afterEach(() => {
     vi.unstubAllEnvs();

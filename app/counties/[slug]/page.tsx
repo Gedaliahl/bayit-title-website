@@ -6,6 +6,7 @@ import {
   COUNTY_MARKETS,
   RECORDER_STATUTE,
   aOrAn,
+  countyHasLocalFacts,
   countyPageTitle,
   getCounties,
   getLocation,
@@ -38,11 +39,7 @@ import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
 import { EXAMPLE_PAGE_COUNTS } from '@/lib/closing-estimate';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
-  MINIMUM_PREMIUM,
-  NEW_HOME_MINIMUM_PREMIUM,
-  ORIGINAL_SCHEDULE,
   PREMIUM_RULE,
-  REISSUE_SCHEDULE,
   SIMULTANEOUS_LOAN_PREMIUM,
   originalPremium,
   reissuePremium,
@@ -82,6 +79,9 @@ export async function generateMetadata({
     ),
     alternates: { canonical: `/counties/${county.slug}` },
     openGraph: { ...baseOpenGraph, url: `/counties/${county.slug}` },
+    // Built, linked and followed, but not asked for in the index until it says
+    // something about this county the others do not — see countyHasLocalFacts.
+    ...(countyHasLocalFacts(county) ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
@@ -185,68 +185,40 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           </p>
         )}
 
-        <h2>What does the premium cost?</h2>
         <p>
-          Florida title insurance premiums are promulgated: the Office of Insurance Regulation sets
-          them by rule under{' '}
+          How the custom runs in the other counties is on{' '}
+          <Link href="/closing-costs/who-pays-title-insurance">
+            who pays for title insurance in Florida
+          </Link>
+          .
+        </p>
+
+        {/* The rule's schedule is the same in all 67 counties, so it is printed
+            once, on the title insurance calculator, rather than on every county
+            page: this section says what the rule means for a purchase here and
+            links to the schedule, and the county's own facts carry the page. */}
+        <h2>What does title insurance cost in {county.name}?</h2>
+        <p>
+          The same as anywhere in Florida. Premiums are promulgated: the Office of Insurance
+          Regulation sets them by rule under{' '}
           <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
             {PREMIUM_RULE.authorityCite}
           </a>
-          . The schedule below is that rule&rsquo;s, not ours, which is why it is printed here
-          rather than kept behind a form: you can open the rule and arrive at the same number.
+          , and an owner&rsquo;s policy is written for the full insurable value of the property. So a{' '}
+          {formatMoney(EXAMPLE_PRICE)} purchase in {county.name} is{' '}
+          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong>, or{' '}
+          {formatMoney(reissuePremium(EXAMPLE_PRICE))} at the reissue rate where the owner&rsquo;s or
+          the seller&rsquo;s own title was insured and the rule&rsquo;s conditions are met. The rule
+          sets {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} as the least a lender&rsquo;s policy issued at
+          the same time can be. {LENDER_POLICY_BESIDE_RULE}
         </p>
         <p>
-          The rate runs per $1,000 of liability, and an owner&rsquo;s policy is written for the full
-          insurable value of the property:
-        </p>
-
-        <CitedFigures figures={ORIGINAL_SCHEDULE} />
-
-        <p>
-          So a {formatMoney(EXAMPLE_PRICE)} purchase in {county.name} is{' '}
-          <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong> — the{' '}
-          {ORIGINAL_SCHEDULE[0].label.toLowerCase()} at {ORIGINAL_SCHEDULE[0].amount} and the rest
-          at {ORIGINAL_SCHEDULE[1].amount}. The minimum premium on
-          a conveyance is {formatMoney(MINIMUM_PREMIUM)}, and a fraction of $100 counts as a full
-          $100 before the arithmetic starts.
-        </p>
-        <p>Three things in the same rule move that figure, and each is worth asking about:</p>
-        <ul>
-          <li>
-            <strong>The reissue rate</strong>, where the owner&rsquo;s or the seller&rsquo;s own
-            title was insured and both we and the underwriter hold a copy of that policy. The
-            common case is a new policy dated less than three years after the one that insured the
-            owner or seller. It is a different schedule, not a discount on this one:{' '}
-            {formatMoney(reissuePremium(EXAMPLE_PRICE))} on the same{' '}
-            {formatMoney(EXAMPLE_PRICE)} purchase, or{' '}
-            {formatMoney(originalPremium(EXAMPLE_PRICE) - reissuePremium(EXAMPLE_PRICE))} less.
-          </li>
-          <li>
-            <strong>Simultaneous issue.</strong> Where a lender&rsquo;s policy is issued at the same
-            time as the owner&rsquo;s policy on the same land, the rule sets{' '}
-            {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} as the least it can be for coverage up to the
-            owner&rsquo;s amount. {LENDER_POLICY_BESIDE_RULE}
-          </li>
-          <li>
-            <strong>The new home purchase discount</strong>, on the first sale of a newly built one-
-            to four-family home the seller has neither leased nor occupied: the premium is reduced
-            by what was paid for the builder&rsquo;s loan policy, with a floor of{' '}
-            {formatMoney(NEW_HOME_MINIMUM_PREMIUM)}. It cannot be combined with the reissue rate.
-          </li>
-        </ul>
-
-        <p>The reissue schedule, in full:</p>
-
-        <CitedFigures figures={REISSUE_SCHEDULE} />
-
-        <p>
-          <Link href="/estimate?mode=numbers">
-            Work the premium, tax and recording out for a specific price
+          The{' '}
+          <Link href="/closing-costs/title-insurance-calculator">
+            Florida title insurance calculator
           </Link>{' '}
-          — the estimate page uses this schedule and cites the same rule.
-        </p>
-        <p>
-          What each side pays, line by line, is on the{' '}
+          prints both schedules in full, with the premium at common prices, and works it out for a
+          specific price and loan. What each side pays, line by line, is on the{' '}
           <Link href="/closing-costs/buyer">buyer closing costs</Link> and{' '}
           <Link href="/closing-costs/seller">seller closing costs</Link> pages.
         </p>
@@ -278,7 +250,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             ? `, plus ${formatMoney(discretionarySurtaxDue(EXAMPLE_PRICE, county.slug))} in ` +
               'surtax if what is being conveyed is anything other than a single-family residence'
             : ''}
-          . Which side pays it is decided by the purchase contract, not by the statute.
+          . Which side pays it is decided by the purchase contract, not by the statute. The{' '}
+          <Link href="/closing-costs/doc-stamp-calculator">doc stamp calculator</Link> works it out
+          for a specific price and loan.
         </p>
 
         <p>A mortgage is taxed separately, so a cash closing carries neither of these:</p>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
 import { getBestReviews, getReviewSnapshot } from '@/lib/reviews';
 import { getCounties } from '@/lib/locations';
+import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { officeHoursLine, site } from '@/lib/site';
 import { baseOpenGraph } from '@/lib/seo';
 import { CountUp } from '@/components/CountUp';
@@ -157,6 +158,8 @@ export default async function HomePage() {
             — reproduced here in full, unedited.
           </p>
           <p>
+            <Link href="/about">More about {site.name} →</Link>
+            <br />
             <Link href="/partners">How we work with realtors and mortgage brokers →</Link>
           </p>
         </div>
@@ -240,10 +243,26 @@ export default async function HomePage() {
               <Link href="/counties">All {site.floridaCounties} counties</Link>
             </li>
           </ul>
+          {/* The cities are what most readers type — "title company Fort
+              Lauderdale", not "Broward County" — and this is the one page every
+              visit can reach them from. Only cities whose county has a page. */}
+          <h3>Cities</h3>
+          <ul className="linklist">
+            {FLORIDA_CITIES.filter((city) => counties.some((county) => county.slug === city.countySlug)).map(
+              (city) => (
+                <li key={city.slug}>
+                  <Link href={`/cities/${city.slug}`}>{city.name}</Link>
+                </li>
+              ),
+            )}
+          </ul>
           <p>
             Want a number before you call?{' '}
-            <Link href="/estimate">Estimate from a property address</Link> or{' '}
-            <Link href="/estimate?mode=numbers">work it out from a price</Link>.
+            <Link href="/estimate">Estimate from a property address</Link>,{' '}
+            <Link href="/closing-costs/title-insurance-calculator">work the premium out from a price</Link>,
+            or see{' '}
+            <Link href="/closing-costs/who-pays-title-insurance">who pays for title insurance</Link>{' '}
+            in your county.
           </p>
         </div>
       </section>

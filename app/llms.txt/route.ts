@@ -2,7 +2,7 @@
 // content the site renders, so it cannot drift out of date.
 
 import { getAllDocs } from '@/lib/content';
-import { getCounties } from '@/lib/locations';
+import { countyHasLocalFacts, getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { absoluteUrl } from '@/lib/seo';
 import { site, footerCredentialLine } from '@/lib/site';
@@ -67,9 +67,12 @@ export async function GET() {
     '## Counties',
     '',
     'Each county page states who customarily pays for the owner’s policy where that custom has been',
-    'confirmed, the deed stamp rate, the recording office, and the promulgated premium at every price.',
+    'confirmed, the deed stamp rate, the recording office and what the promulgated premium comes to',
+    'there. The premium at every price is on the title insurance calculator.',
     '',
-    ...counties.map((county) => `- [${county.name}](${absoluteUrl(`/counties/${county.slug}`)})`),
+    ...counties
+      .filter(countyHasLocalFacts)
+      .map((county) => `- [${county.name}](${absoluteUrl(`/counties/${county.slug}`)})`),
     '',
     '## Cities',
     '',

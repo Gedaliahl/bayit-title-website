@@ -170,10 +170,13 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           {LENDER_POLICY_BESIDE_RULE}
         </p>
         <p>
-          <Link href={`/counties/${county.slug}`}>The {county.name} page</Link> prints the whole
-          schedule with the rule beside it, and{' '}
-          <Link href="/estimate">the estimate page</Link> prices a specific {city.name} address off
-          the {county.name} property appraiser&rsquo;s record.
+          The{' '}
+          <Link href="/closing-costs/title-insurance-calculator">
+            Florida title insurance calculator
+          </Link>{' '}
+          prints the whole schedule with the rule beside it, and{' '}
+          <Link href="/estimate">the closing cost calculator</Link> prices a specific {city.name}{' '}
+          address off the {county.name} property appraiser&rsquo;s record.
         </p>
 
         <h2>Who pays for the owner&rsquo;s policy in {city.name}?</h2>

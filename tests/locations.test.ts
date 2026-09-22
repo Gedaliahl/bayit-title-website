@@ -11,7 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FLORIDA_COUNTIES } from '@/lib/florida-counties';
-import { aOrAn } from '@/lib/locations';
+import { aOrAn, countyHasLocalFacts } from '@/lib/locations';
 
 const getServiceClient = vi.fn();
 
@@ -176,5 +176,34 @@ describe('the article before a place name', () => {
         : 'a';
       expect(aOrAn(county.name), county.name).toBe(expected);
     }
+  });
+});
+
+describe('a county page worth indexing', () => {
+  const bare = {
+    slug: 'liberty-county',
+    customaryOwnerPolicyPayer: null,
+    customaryOwnerPolicyDetail: null,
+    clerkUrl: null,
+    recordingTurnaround: null,
+  };
+
+  // Thirty-five counties were exactly this on 22 September 2026: the template
+  // with a different name in it, which is what a doorway page is.
+  it('is not one that says nothing the other counties do not', () => {
+    expect(countyHasLocalFacts(bare)).toBe(false);
+  });
+
+  it.each([
+    ['who customarily pays', { customaryOwnerPolicyPayer: 'seller' }],
+    ['why the custom varies', { customaryOwnerPolicyDetail: 'It depends on where in the Keys.' }],
+    ['the recording office’s own page', { clerkUrl: 'https://example.gov/recording' }],
+    ['the office’s words on turnaround', { recordingTurnaround: '"Same day."' }],
+  ])('is one that states %s', (_, fact) => {
+    expect(countyHasLocalFacts({ ...bare, ...fact })).toBe(true);
+  });
+
+  it('is one with a city page of its own', () => {
+    expect(countyHasLocalFacts({ ...bare, slug: 'pinellas-county' })).toBe(true);
   });
 });

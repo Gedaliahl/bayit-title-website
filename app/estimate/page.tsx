@@ -208,6 +208,12 @@ export default async function EstimatePage() {
               <ScheduleCard title={DETAIL.schedule.reissue} figures={REISSUE_SCHEDULE} />
             </div>
             <p className="schedule__note">{DETAIL.schedule.simultaneous}</p>
+            <p className="schedule__note">
+              The premium at common prices is on the{' '}
+              <Link href="/closing-costs/title-insurance-calculator">title insurance calculator</Link>,
+              and the deed and mortgage stamps at common prices on the{' '}
+              <Link href="/closing-costs/doc-stamp-calculator">doc stamp calculator</Link>.
+            </p>
           </section>
 
           <section id="reissue">

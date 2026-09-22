@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { getAllDocs } from '@/lib/content';
-import { getCounties } from '@/lib/locations';
+import { countyHasLocalFacts, getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { team } from '@/lib/team';
 import { getReviews } from '@/lib/reviews';
@@ -72,7 +72,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly' as const,
       priority: 0.7,
     })),
-    ...counties.map((county) => ({
+    // A county page with nothing local on it asks not to be indexed, so it is
+    // not asked for here either (countyHasLocalFacts).
+    ...counties.filter(countyHasLocalFacts).map((county) => ({
       url: absoluteUrl(`/counties/${county.slug}`),
      
       changeFrequency: 'monthly' as const,
@@ -80,7 +82,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     // A city page renders only when its county has a row, so the list is the
     // cities whose county is in the table — the same rule the route follows.
-    ...FLORIDA_CITIES.filter((city) => counties.some((county) => county.slug === city.countySlug)).map(
+    ...FLORIDA_CITIES.filter((city) =>
+      counties.some((county) => county.slug === city.countySlug && countyHasLocalFacts(county)),
+    ).map(
       (city) => ({
         url: absoluteUrl(`/cities/${city.slug}`),
        
