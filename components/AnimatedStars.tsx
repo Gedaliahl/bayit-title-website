@@ -56,6 +56,7 @@ export function AnimatedStars({ rating }: { rating: number }) {
     <span
       ref={ref}
       className={`review__stars${phase === 'static' ? '' : ` review__stars--${phase}`}`}
+      role="img"
       aria-label={`${rating} out of 5 stars`}
     >
       {Array.from({ length: rating }, (_, index) => (

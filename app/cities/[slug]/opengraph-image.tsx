@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { FLORIDA_CITIES, cityBySlug, cityPageTitle } from '@/lib/florida-cities';
-import { getCounties } from '@/lib/locations';
+import { getCounties, getLocation } from '@/lib/locations';
 import { ogImage, OG_SIZE, OG_CONTENT_TYPE } from '@/lib/og';
 
 export const alt = 'Bayit Title — Florida city closing detail';
@@ -20,7 +20,8 @@ export async function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const city = cityBySlug(slug);
-  if (!city) notFound();
+  // The page is a 404 until the city's county has a row, and so is its card.
+  if (!city || !(await getLocation(city.countySlug))) notFound();
 
   return ogImage({ eyebrow: 'Florida closings', title: cityPageTitle(city) });
 }

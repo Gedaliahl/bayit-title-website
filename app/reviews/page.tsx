@@ -7,11 +7,13 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ReviewBrowser } from '@/components/ReviewBrowser';
 import { ReviewSummaryLine } from '@/components/Reviews';
 import { QuietCta } from '@/components/QuietCta';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Reviews',
-  description: `What clients and agents have written about working with ${site.name} on Google.`,
+  description: metaDescription(`What clients and agents have written about working with ${site.name} on Google.`),
   alternates: { canonical: '/reviews' },
+  openGraph: { ...baseOpenGraph, url: '/reviews' },
 };
 
 export default async function ReviewsPage() {

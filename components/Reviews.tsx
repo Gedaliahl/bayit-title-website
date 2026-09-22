@@ -4,7 +4,9 @@ import { formatReviewDate } from '@/lib/seo';
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <span className="review__stars" aria-label={`${rating} out of 5 stars`}>
+    // role="img" is what lets the label be read: on a bare span, most screen
+    // readers ignore aria-label, and the hidden glyphs leave nothing at all.
+    <span className="review__stars" role="img" aria-label={`${rating} out of 5 stars`}>
       <span aria-hidden="true">{'★'.repeat(rating)}</span>
     </span>
   );

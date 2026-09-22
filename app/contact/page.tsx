@@ -4,11 +4,13 @@ import { getCounties } from '@/lib/locations';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LeadForm } from '@/components/LeadForm';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: `Reach ${site.legalName} in ${site.address.city}, Florida: ${site.phoneDisplay}, ${site.email}.`,
+  description: metaDescription(`Reach ${site.legalName} in ${site.address.city}, Florida: ${site.phoneDisplay}, ${site.email}.`),
   alternates: { canonical: '/contact' },
+  openGraph: { ...baseOpenGraph, url: '/contact' },
 };
 
 export default async function ContactPage() {

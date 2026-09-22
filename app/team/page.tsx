@@ -5,11 +5,13 @@ import { team } from '@/lib/team';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PersonSchema } from '@/components/Schema';
+import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Our team',
-  description: `The four people who work every file at ${site.legalName}, with their Florida license and commission numbers.`,
+  description: metaDescription(`The four people who work every file at ${site.legalName}, with their Florida license and commission numbers.`),
   alternates: { canonical: '/team' },
+  openGraph: { ...baseOpenGraph, url: '/team' },
 };
 
 export default function TeamPage() {

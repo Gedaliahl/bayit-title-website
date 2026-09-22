@@ -64,9 +64,11 @@ export const site = {
   ],
 
   // From the Google Business Profile. Keep in sync with GBP, not the other way round.
+  // `opens` and `closes` are the same times on the 24-hour clock, which is the
+  // only form schema.org accepts; "9:00 AM" in the JSON-LD is invalid markup.
   hours: [
-    { days: 'Monday – Friday', open: '9:00 AM', close: '5:00 PM' },
-    { days: 'Saturday – Sunday', open: null, close: null },
+    { days: 'Monday – Friday', open: '9:00 AM', close: '5:00 PM', opens: '09:00', closes: '17:00' },
+    { days: 'Saturday – Sunday', open: null, close: null, opens: null, closes: null },
   ],
 
   // Emphasis first, then the rest of the state. Every slug here must exist in

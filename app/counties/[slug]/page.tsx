@@ -15,7 +15,7 @@ import {
 import { citiesInCounty } from '@/lib/florida-cities';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -66,20 +66,19 @@ export async function generateMetadata({
   const county = await getLocation(slug);
   if (!county) return {};
 
-  const market = COUNTY_MARKETS[county.slug];
   const payer = county.customaryOwnerPolicyPayer;
 
   return {
-    title: countyPageTitle(county),
-    description:
-      `${site.legalName} is a Florida title company closing in ${county.name}` +
-      (market ? `, including ${market}` : '') +
-      `. Title insurance, escrow and closings for residential and commercial property, ` +
-      (payer
-        ? `who customarily pays for the owner’s policy here (the ${payer}), `
-        : 'who customarily pays for the owner’s policy, ') +
-      'the deed stamp rate, recording, and what a policy costs at every price.',
+    title: fittedTitle(countyPageTitle(county), `Title company in ${county.name}, FL`),
+    // What the page answers, in the order it answers it. The firm's name is
+    // left to the title, where a results page shows it anyway.
+    description: metaDescription(
+      `Closings in ${county.name}: who customarily pays for the owner’s policy` +
+        (payer ? ` (the ${payer})` : '') +
+        ', the deed stamp rate, recording, and what a policy costs.',
+    ),
     alternates: { canonical: `/counties/${county.slug}` },
+    openGraph: { ...baseOpenGraph, url: `/counties/${county.slug}` },
   };
 }
 

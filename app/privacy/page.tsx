@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { site } from '@/lib/site';
 import { PRIVACY_EFFECTIVE_DATE } from '@/lib/privacy';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 
 /**
  * The website's privacy policy.
@@ -29,8 +29,9 @@ import { formatLongDate } from '@/lib/seo';
  */
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: `How ${site.legalName} collects, uses and protects information submitted through this website.`,
+  description: metaDescription(`How ${site.legalName} collects, uses and protects information submitted through this website.`),
   alternates: { canonical: '/privacy' },
+  openGraph: { ...baseOpenGraph, url: '/privacy' },
 };
 
 export default function PrivacyPage() {

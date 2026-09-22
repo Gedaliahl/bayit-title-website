@@ -41,7 +41,10 @@ export function SiteHeader() {
             width={38}
             height={42}
             className="wordmark__mark"
-            priority
+            // Eager rather than preloaded: it is the first thing in the body, so
+            // the parser finds it at once, and a preload link would only compete
+            // with the fonts for the first round trip.
+            loading="eager"
           />
           <span className="wordmark__name">
             Bayit <span>Title</span>

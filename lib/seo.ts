@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
 import { site } from './site';
+import type { TeamMember } from './team';
+import type { Review } from './review-order';
 
 /**
  * The absolute base for canonical URLs, JSON-LD and the sitemap.
@@ -112,6 +114,60 @@ export function siteVerification(): Metadata['verification'] | undefined {
 
 export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${pathname.startsWith('/') ? pathname : `/${pathname}`}`;
+}
+
+/** The root layout's title template, which every page title below the home page runs through. */
+export const TITLE_TEMPLATE = `%s | ${site.name}`;
+
+/**
+ * About what a results page shows before it cuts a title off. Past it, the end
+ * of the title is replaced with an ellipsis, and the end is where the site name
+ * and the reader's own place name sit.
+ */
+export const TITLE_LIMIT = 60;
+
+/**
+ * A page title that fits, from candidates in order of preference. When the
+ * template's " | Bayit Title" would push one past the limit, the name comes off
+ * before the words the reader searched for do; the name is still on the card,
+ * in the byline and in the URL. Only when a candidate is too long even without
+ * it does the next, shorter one get its turn. The visible headline is not
+ * affected: this is the `<title>` alone.
+ */
+export function fittedTitle(...candidates: [string, ...string[]]): string | { absolute: string } {
+  for (const title of candidates) {
+    if (TITLE_TEMPLATE.replace('%s', title).length <= TITLE_LIMIT) return title;
+    if (title.length <= TITLE_LIMIT) return { absolute: title };
+  }
+  return { absolute: candidates[candidates.length - 1] };
+}
+
+/**
+ * The Open Graph fields every page shares. Next merges metadata shallowly, so a
+ * page that sets `openGraph` at all replaces the layout's whole object — which
+ * is how the pages with their own card lost `site_name` and `locale`. Each page
+ * spreads this and adds its own `url`. The layout carries no url: one set there
+ * is the homepage's, and it became every page's `og:url`.
+ */
+export const baseOpenGraph = {
+  siteName: site.name,
+  locale: 'en_US',
+  type: 'website',
+} satisfies NonNullable<Metadata['openGraph']>;
+
+/**
+ * Whether a team page has anything on it beyond the name and role the team page
+ * already lists. Until the person has written a bio or a review names them, the
+ * page is thin, and a thin page is kept out of the index and the sitemap rather
+ * than padded with copy nobody wrote.
+ */
+export function teamPageHasContent(
+  member: Pick<TeamMember, 'slug' | 'bio'>,
+  reviews: Pick<Review, 'teamMemberSlug'>[],
+): boolean {
+  return (
+    (member.bio?.length ?? 0) > 0 || reviews.some((review) => review.teamMemberSlug === member.slug)
+  );
 }
 
 /**

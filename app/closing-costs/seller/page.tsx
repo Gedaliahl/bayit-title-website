@@ -11,7 +11,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { formatLongDate } from '@/lib/seo';
+import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -41,11 +41,12 @@ import { QuietCta } from '@/components/QuietCta';
 
 export const metadata: Metadata = {
   title: 'Seller closing costs in Florida',
-  description:
-    'What a seller pays at a Florida closing: the documentary stamp tax on the deed (70¢ per $100, ' +
-    '60¢ in Miami-Dade), the owner’s policy where custom puts it on the seller, the mortgage payoff, ' +
-    'association and municipal balances. Each figure cited, with a worked example.',
+  description: metaDescription(
+    'Florida seller closing costs: deed stamp tax (70¢ per $100, 60¢ in Miami-Dade), the ' +
+      'owner’s policy where custom puts it on the seller, and the payoff.',
+  ),
   alternates: { canonical: '/closing-costs/seller' },
+  openGraph: { ...baseOpenGraph, url: '/closing-costs/seller' },
 };
 
 const STATEWIDE_SLUG = 'broward-county';
