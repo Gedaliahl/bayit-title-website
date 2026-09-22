@@ -1,4 +1,4 @@
-# Production-readiness plan: every page except the homepage
+# Production-readiness plan
 
 Written 22 September 2026 as the list of work, in order. **The work has since
 been done on this branch; the next section says what state it is in and what
@@ -10,14 +10,15 @@ of what was found and why each change was made.
 Every item in Phases 0–9 that could be settled in code is done, and the firm
 answered D1–D6. What the branch now proves on every run:
 
-- `npm run lint`, `npm run typecheck`, `npm test` (667 tests) and
+- `npm run lint`, `npm run typecheck`, `npm test` (668 tests) and
   `npm run build` pass, and `npm audit` finds 0 vulnerabilities.
-- `npm run test:e2e` passes, 132 tests in a real browser. It covers:
-  - every sitemap page at 14 widths from 280 to 2560px, checking for sideways
-    scroll, console errors, one h1, heading order, alt text and tap targets;
+- `npm run test:e2e` passes, 138 tests in a real browser. It covers:
+  - every sitemap page, the homepage included, at 14 widths from 280 to
+    2560px, checking for sideways scroll, console errors, one h1, heading
+    order, alt text and tap targets;
   - axe, WCAG 2.2 AA, at 375 and 1280;
   - the flows: the menu, both estimator modes and every error state, the three
-    forms, and both upload boxes.
+    forms, both upload boxes, and the homepage's pause switches.
 - `npm run lhci`, run as a phone: performance 0.93–0.96, and accessibility,
   best practices and SEO all 1.0. The pages measured are /estimate, a county
   page, a library page and /order.
@@ -28,8 +29,8 @@ answered D1–D6. What the branch now proves on every run:
 |---|---|---|
 | D1 | The rule's $25 is a minimum for a simultaneous lender's policy, not a price or a maximum. | The $125 charge stands. The county, city, buyer and estimate pages now call $25 the least the policy can be. |
 | D2 | The excess over the owner's amount is layered: the original rate at the loan amount less the original rate at the owner's amount. | `excessLoanPremium` works that way, and tests pin it. On a $1.5M loan over a $1M owner's policy the excess is $1,250, where it was $2,575. |
-| D3 | Take "excellence" out if it is a problem. | Removed from About and Partners. The homepage still has it; see below. |
-| D4 | The exchange company has no connection to us. | Services, Partners, About and llms.txt no longer say we facilitate exchanges "through" it. They say we close with whichever intermediary the client chooses. |
+| D3 | Take "excellence" out if it is a problem. | Removed from About, Partners and the homepage. |
+| D4 | The exchange company has no connection to us. | The homepage, Services, Partners, About and llms.txt no longer say we facilitate exchanges "through" it. They say we close with whichever intermediary the client chooses; the ticker's pill reads "1031 closings". |
 | D5 | Do not promise that data is deleted or not kept. | Every retention and non-retention promise is gone from the estimate page and the privacy policy. The purge stays in the code, and it runs only once `CRON_SECRET` is set. |
 | D6 | The SMS section stays; it is there for RingCentral. | Unchanged. |
 
@@ -37,7 +38,10 @@ answered D1–D6. What the branch now proves on every run:
 
 1. **Practice claims stated as fact.** Confirm each one, or say which to soften.
    - "Search ordered the same day": `app/services/page.tsx:34`,
-     `app/partners/page.tsx:77`, `:182`.
+     `app/partners/page.tsx:77`, `:182`, and on the homepage the example file
+     card's "Search and estoppel ordered the same day"
+     (`components/FileTimeline.tsx`).
+   - "In writing, the same day" (homepage hero, `app/page.tsx`).
    - "Read by a person, day one": `app/services/page.tsx:152`.
    - "Instructions confirmed by voice": `app/services/page.tsx:154`, `:244`,
      `app/about/page.tsx:49`.
@@ -49,8 +53,9 @@ answered D1–D6. What the branch now proves on every run:
      `app/cities/[slug]/page.tsx:278`, `app/closing-costs/seller/page.tsx:210`.
    - "Week one … not week six" and "the first week":
      `app/about/page.tsx:160`, `app/partners/page.tsx:16`, `:51`, `:60`.
-   - Volume: "Our busiest counties" (`app/counties/page.tsx:146`) and "Most
-     files are in" (`app/about/page.tsx:265`).
+   - Volume: "Our busiest counties" (`app/counties/page.tsx:146`), "Most
+     files are in" (`app/about/page.tsx:265`) and "Most of our files sit in"
+     (homepage, `app/page.tsx`).
 2. **"We e-record in this county."** The field records the office's own
    practice, and it is set to true for Broward, Palm Beach, Miami-Dade,
    Hillsborough, Orange and Duval. Confirm it holds for each.
@@ -64,14 +69,7 @@ answered D1–D6. What the branch now proves on every run:
    schema.
 6. **The privacy policy's effective date** moved to 22 September 2026, because
    the page promises a new date on any change.
-7. **The homepage**, left out of this pass at the firm's request, still has:
-   - "Excellent" twice (D3 applies);
-   - a "1031 Exchange" pill in the services ticker that reads as a service of
-     our own (D4);
-   - a `<title>` without the firm's name;
-   - a 400-character description;
-   - an animated ticker and timeline with no pause control (WCAG 2.2.2).
-8. Chaya's bio says signing day "doesn't have to be a stressful event", which
+7. Chaya's bio says signing day "doesn't have to be a stressful event", which
    is close to the banned "stress-free". It is her own wording.
 
 ### Still with whoever holds the accounts
