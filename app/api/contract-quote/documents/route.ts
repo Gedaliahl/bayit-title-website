@@ -3,22 +3,34 @@
 // Nothing is recorded in a table here — the lead already is, and a quote has
 // no document table of its own — so this does one thing: it checks that the
 // paths the browser names are really under this lead's folder and really in
-// the bucket, signs a link to each, and sends the office the email it needs to
-// open the contract. Holding a lead id is not enough to plant a page: writing
-// to the folder needs a signed upload URL that only the sender received.
-import { NextResponse } from 'next/server';
+// the bucket, checks each page's bytes and size, signs a link to each, and
+// sends the office the email it needs to open the contract. Holding a lead id
+// is not enough to plant a page: writing to the folder needs a signed upload
+// URL that only the sender received.
+import { after, NextResponse } from 'next/server';
 
 import { confirmQuoteDocumentsSchema, fieldErrors } from '@/lib/schemas';
 import { requireServiceClient } from '@/lib/supabase';
-import { notify } from '@/lib/submissions';
+import { notify, refuseForeignRequest } from '@/lib/submissions';
 import { isPathForQuote } from '@/lib/documents';
-import { isWithinConfirmWindow, signQuoteDocuments } from '@/lib/document-storage';
+import {
+  DOWNLOAD_LINK_HOURS,
+  describeConfirmation,
+  isWithinConfirmWindow,
+  quoteRetentionDays,
+  signQuoteDocuments,
+} from '@/lib/document-storage';
 import { site } from '@/lib/site';
 
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+
+// Each page is opened to check its bytes before the office is sent a link.
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  const refused = refuseForeignRequest(request);
+  if (refused) return refused;
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -43,7 +55,7 @@ export async function POST(request: Request) {
 
     const { data: lead, error } = await supabase
       .from('leads')
-      .select('id, full_name, email, created_at')
+      .select('id, full_name, email, status, created_at, updated_at')
       .eq('id', leadId)
       .single();
 
@@ -52,35 +64,46 @@ export async function POST(request: Request) {
     }
 
     // The pages belong to the session that sent the contract. Anything later
-    // is a reply to the office's email, where a person sees it.
+    // goes to the office by email, where a person sees it.
     if (!isWithinConfirmWindow(lead.created_at)) {
       return NextResponse.json({ error: 'That request is no longer accepting pages.' }, { status: 409 });
     }
 
-    const signed = await signQuoteDocuments(leadId, own);
+    // A lead is written with updated_at equal to created_at, and the office
+    // being emailed is what moves it (see below). So a later updated_at is the
+    // moment the pages already stored were sent, and they are not sent again.
+    const notifiedAt =
+      new Date(lead.updated_at).getTime() > new Date(lead.created_at).getTime() ? lead.updated_at : null;
+    const { kept, rejected } = await signQuoteDocuments(leadId, own, notifiedAt);
 
-    if (signed.length > 0) {
-      await notify(`Contract pages from ${lead.full_name}: ${signed.length} file(s)`, [
-        `${signed.length} page(s) of the contract from ${lead.full_name} <${lead.email ?? 'no email'}>.`,
-        `Lead id: ${leadId}`,
-        '',
-        ...signed.map((doc) =>
+    if (kept.length > 0 || rejected.length > 0) {
+      // Marked before the email goes rather than after it, so a second
+      // confirmation arriving on its heels finds the pages already claimed.
+      // Writing the status back unchanged is enough: the table's trigger
+      // stamps updated_at on every update.
+      await supabase.from('leads').update({ status: lead.status }).eq('id', leadId);
+
+      const days = quoteRetentionDays();
+      after(() =>
+        notify(
+          `Contract pages from ${lead.full_name}: ${kept.length} file(s)`,
           [
-            `${doc.originalName} (${Math.round(doc.sizeBytes / 1024)} KB)`,
-            doc.downloadUrl ?? 'Link unavailable — open the file from Supabase Storage.',
+            `${kept.length} page(s) of the contract from ${lead.full_name} <${lead.email ?? 'no email'}>.`,
+            `Lead id: ${leadId}`,
             '',
-          ].join('\n'),
+            ...describeConfirmation({ kept, rejected }),
+            `These links expire in ${DOWNLOAD_LINK_HOURS} hours.`,
+            `The site deletes quotes/${leadId}/ from the bucket within ${days} days of the pages arriving,`,
+            'as the page promises the sender. If an order follows, move the pages into the title file before then.',
+          ],
+          { replyTo: lead.email ?? undefined },
         ),
-        'These links expire in a week.',
-        'The page promises the sender the contract is kept only as long as the quote is open',
-        `unless they open an order: once the figure has gone out, delete quotes/${leadId}/ from`,
-        'the bucket, or move the pages into the title file if an order follows.',
-      ]);
+      );
     }
 
-    return NextResponse.json({ ok: true, recorded: signed.length });
+    return NextResponse.json({ ok: true, recorded: kept.length, rejected });
   } catch (error) {
-    console.error('[api/contract-quote/documents] failed:', error);
+    console.error('[api/contract-quote/documents] failed:', (error as Error).message);
     return NextResponse.json(
       {
         error:

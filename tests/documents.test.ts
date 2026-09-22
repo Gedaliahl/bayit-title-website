@@ -12,6 +12,9 @@ import {
   CONTRACT_ACCEPT_ATTRIBUTE,
   MAX_CONTRACT_TOTAL_BYTES,
   MAX_FILE_BYTES,
+  MAX_FILES,
+  MAX_TOTAL_BYTES,
+  contentMatches,
   contentTypeFor,
   extensionOf,
   formatBytes,
@@ -19,6 +22,7 @@ import {
   isPathForOrder,
   isPathForQuote,
   sanitizeName,
+  screenFiles,
 } from '@/lib/documents';
 
 describe('what the bucket will take', () => {
@@ -151,5 +155,82 @@ describe('a contract sent for pricing', () => {
   it('holds the whole contract to what the page promises', () => {
     expect(MAX_CONTRACT_TOTAL_BYTES).toBe(25 * 1024 * 1024);
     expect(MAX_CONTRACT_TOTAL_BYTES).toBeLessThanOrEqual(MAX_FILE_BYTES);
+  });
+});
+
+/**
+ * The bytes, not the name. Each of these is what the first bytes of a real
+ * file of that kind look like; the check deletes anything that does not match
+ * the type its extension claims.
+ */
+describe('a file’s contents against its name', () => {
+  const bytes = (...values: number[]) => new Uint8Array(values);
+  const text = (value: string) => new TextEncoder().encode(value);
+
+  it('knows a PDF, even with a few stray bytes before the header', () => {
+    expect(contentMatches('application/pdf', text('%PDF-1.7\n'))).toBe(true);
+    expect(contentMatches('application/pdf', text('\r\n%PDF-1.4'))).toBe(true);
+    expect(contentMatches('application/pdf', text('MZ\x90\x00'))).toBe(false);
+  });
+
+  it('knows a JPEG and a PNG', () => {
+    expect(contentMatches('image/jpeg', bytes(0xff, 0xd8, 0xff, 0xe0))).toBe(true);
+    expect(contentMatches('image/png', bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a))).toBe(true);
+    // A PNG renamed .jpg is not a JPEG, whatever it is called.
+    expect(contentMatches('image/jpeg', bytes(0x89, 0x50, 0x4e, 0x47))).toBe(false);
+  });
+
+  it('knows an iPhone photo by its HEIF brand', () => {
+    const heic = (brand: string) => new Uint8Array([0, 0, 0, 0x18, ...text('ftyp'), ...text(brand)]);
+    expect(contentMatches('image/heic', heic('heic'))).toBe(true);
+    expect(contentMatches('image/heic', heic('mif1'))).toBe(true);
+    // An MP4 is an ISO box too, with a different brand.
+    expect(contentMatches('image/heic', heic('isom'))).toBe(false);
+  });
+
+  it('knows a Word file from any other zip, at either end of it', () => {
+    const docx = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const zip = (name: string) => new Uint8Array([0x50, 0x4b, 0x03, 0x04, ...new Array(26).fill(0), ...text(name)]);
+
+    expect(contentMatches(docx, zip('[Content_Types].xml'))).toBe(true);
+    expect(contentMatches(docx, zip('word/document.xml'), text('...[Content_Types].xml...'))).toBe(true);
+    expect(contentMatches(docx, zip('payload.exe'), text('payload.exe'))).toBe(false);
+    expect(contentMatches(docx, text('[Content_Types].xml'))).toBe(false);
+  });
+});
+
+describe('screening files as they are picked', () => {
+  const rules = {
+    accepts: (name: string) => contentTypeFor(name) !== null,
+    typeLabel: 'PDF',
+    maxFiles: MAX_FILES,
+    maxFileBytes: MAX_FILE_BYTES,
+    maxTotalBytes: MAX_TOTAL_BYTES,
+  };
+  const file = (name: string, size = 1000) => ({ name, size });
+
+  it('names every file it turns away, with the reason', () => {
+    const { files, rejected } = screenFiles(
+      [file('contract.pdf')],
+      [file('notes.txt'), file('contract.pdf'), file('huge.pdf', MAX_FILE_BYTES + 1), file('survey.pdf')],
+      rules,
+    );
+
+    expect(files.map((f) => f.name)).toEqual(['contract.pdf', 'survey.pdf']);
+    expect(rejected).toEqual([
+      { name: 'notes.txt', reason: 'PDF only' },
+      { name: 'contract.pdf', reason: 'already added' },
+      { name: 'huge.pdf', reason: 'over 25 MB' },
+    ]);
+  });
+
+  it('stops at the file limit and the total, and says which', () => {
+    const many = Array.from({ length: MAX_FILES + 1 }, (_, i) => file(`${i}.pdf`));
+    expect(screenFiles([], many, rules).rejected).toEqual([
+      { name: `${MAX_FILES}.pdf`, reason: `no more than ${MAX_FILES} files` },
+    ]);
+
+    const big = [file('a.pdf', 24 * 1024 * 1024), file('b.pdf', 24 * 1024 * 1024), file('c.pdf', 24 * 1024 * 1024)];
+    expect(screenFiles([], big, rules).rejected).toEqual([{ name: 'c.pdf', reason: 'over 60 MB in all' }]);
   });
 });

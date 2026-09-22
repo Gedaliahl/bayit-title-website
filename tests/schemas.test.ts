@@ -11,7 +11,9 @@ import {
   contractQuoteSchema,
   confirmQuoteDocumentsSchema,
   fieldErrors,
+  HONEYPOT_FIELD,
 } from '@/lib/schemas';
+import { MAX_FILES } from '@/lib/documents';
 
 const validOrder = {
   ordered_by_name: 'Jane Agent',
@@ -52,6 +54,78 @@ describe('money arriving as typed', () => {
     const result = orderSchema.safeParse({ ...validOrder, purchase_price: 'about four hundred k' });
     expect(result.success).toBe(false);
   });
+
+  it('keeps the cents, and reads commas only as thousands', () => {
+    expect(orderSchema.parse({ ...validOrder, purchase_price: '450,000.00' }).purchase_price).toBe(450000);
+    expect(orderSchema.parse({ ...validOrder, loan_amount: '360000.5' }).loan_amount).toBe(360000.5);
+    expect(orderSchema.safeParse({ ...validOrder, purchase_price: '4,50000' }).success).toBe(false);
+    expect(orderSchema.safeParse({ ...validOrder, purchase_price: '450000.123' }).success).toBe(false);
+  });
+
+  it('refuses what Number() would have read as money', () => {
+    // '1e5' was a hundred thousand and '0x10' was sixteen.
+    for (const typed of ['1e5', '0x10', 'Infinity', '-5', '12 000']) {
+      expect(orderSchema.safeParse({ ...validOrder, purchase_price: typed }).success).toBe(false);
+    }
+  });
+});
+
+describe('optional fields left empty', () => {
+  it('become null, never an empty string', () => {
+    // '' in county_slug failed the foreign key and turned every such order into a 500.
+    const parsed = orderSchema.parse({
+      ...validOrder,
+      county_slug: '',
+      parcel_id: '',
+      lender_name: '  ',
+      ordered_by_phone: '',
+    });
+    expect(parsed.county_slug).toBeNull();
+    expect(parsed.parcel_id).toBeNull();
+    expect(parsed.lender_name).toBeNull();
+    expect(parsed.ordered_by_phone).toBeNull();
+  });
+
+  it('do the same on a lead and a contract', () => {
+    expect(leadSchema.parse({ full_name: 'Jane Agent', email: 'jane@example.com', message: '' }).message)
+      .toBeNull();
+    expect(
+      contractQuoteSchema.parse({
+        full_name: 'Dana Buyer',
+        email: 'dana@example.com',
+        phone: '',
+        documents: [{ name: 'contract.pdf', size: 1 }],
+      }).phone,
+    ).toBeNull();
+  });
+});
+
+describe('the county', () => {
+  it('must be one of the sixty-seven', () => {
+    expect(orderSchema.parse({ ...validOrder, county_slug: 'miami-dade-county' }).county_slug)
+      .toBe('miami-dade-county');
+    const result = orderSchema.safeParse({ ...validOrder, county_slug: 'dade' });
+    expect(fieldErrors(result.error!).county_slug).toMatch(/county/i);
+  });
+});
+
+describe('phone numbers', () => {
+  it('reads the usual US shapes as ten digits', () => {
+    for (const typed of ['(954) 555-0123', '954.555.0123', '954-555-0123', '+1 954 555 0123', '1-954-555-0123']) {
+      expect(orderSchema.parse({ ...validOrder, ordered_by_phone: typed }).ordered_by_phone).toBe('9545550123');
+    }
+  });
+
+  it('keeps a number written with its country code', () => {
+    expect(orderSchema.parse({ ...validOrder, ordered_by_phone: '+44 20 7946 0958' }).ordered_by_phone)
+      .toBe('+442079460958');
+  });
+
+  it('refuses something that is not a phone number', () => {
+    for (const typed of ['call me', '555-0123', '954-555-01234', 'ext 5']) {
+      expect(orderSchema.safeParse({ ...validOrder, ordered_by_phone: typed }).success).toBe(false);
+    }
+  });
 });
 
 describe('the target closing date', () => {
@@ -62,21 +136,33 @@ describe('the target closing date', () => {
 
   it('treats an untouched date field as not provided', () => {
     expect(orderSchema.parse({ ...validOrder, closing_date_target: '' })
-      .closing_date_target).toBeUndefined();
+      .closing_date_target).toBeNull();
   });
 
   it('refuses a date in any other shape', () => {
     expect(orderSchema.safeParse({ ...validOrder, closing_date_target: '11/01/2026' }).success)
       .toBe(false);
   });
+
+  it('refuses a date that is not on the calendar', () => {
+    // This one used to pass the shape check and fail the insert with a 500.
+    expect(orderSchema.safeParse({ ...validOrder, closing_date_target: '2026-02-31' }).success)
+      .toBe(false);
+    expect(orderSchema.safeParse({ ...validOrder, closing_date_target: '2028-02-29' }).success)
+      .toBe(true);
+  });
 });
 
 describe('the honeypot', () => {
   it('validates cleanly when filled, so the response teaches a bot nothing', () => {
     // Rejecting here would name the trap in the error response. The Route
-    // Handler checks the value and discards the submission instead.
-    const parsed = orderSchema.parse({ ...validOrder, company: 'Acme Bots' });
-    expect(parsed.company).toBe('Acme Bots');
+    // Handler checks the value and files the submission as spam instead.
+    const parsed = orderSchema.parse({ ...validOrder, [HONEYPOT_FIELD]: 'Acme Bots' });
+    expect(parsed[HONEYPOT_FIELD]).toBe('Acme Bots');
+  });
+
+  it('has a name autofill has no reason to fill', () => {
+    expect(HONEYPOT_FIELD).not.toMatch(/company|organi[sz]ation|name|email|phone|address|tel|url/i);
   });
 });
 
@@ -89,12 +175,22 @@ describe('the document manifest', () => {
     expect(parsed.documents).toEqual([{ name: 'contract.pdf', size: 120_000 }]);
   });
 
-  it('refuses a negative size', () => {
+  it('refuses a negative size, and says so against the documents field', () => {
     const result = orderSchema.safeParse({
       ...validOrder,
       documents: [{ name: 'contract.pdf', size: -1 }],
     });
     expect(result.success).toBe(false);
+    // The issue is at documents.0.size, which no input is named; it is shown
+    // against the field that holds the list rather than not at all.
+    expect(Object.keys(fieldErrors(result.error!))).toEqual(['documents']);
+  });
+
+  it('allows no more files than the upload limit', () => {
+    const documents = (count: number) =>
+      Array.from({ length: count }, (_, i) => ({ name: `${i}.pdf`, size: 1 }));
+    expect(orderSchema.safeParse({ ...validOrder, documents: documents(MAX_FILES) }).success).toBe(true);
+    expect(orderSchema.safeParse({ ...validOrder, documents: documents(MAX_FILES + 1) }).success).toBe(false);
   });
 });
 
@@ -118,6 +214,11 @@ describe('confirming an upload', () => {
 });
 
 describe('leads', () => {
+  it('does not accept the source that marks a contract sent from /estimate', () => {
+    const result = leadSchema.safeParse({ full_name: 'Jane Agent', email: 'jane@example.com', source: 'calculator' });
+    expect(result.success).toBe(false);
+  });
+
   it('defaults an unlabelled submission to the quote form', () => {
     const parsed = leadSchema.parse({ full_name: 'Jane Agent', email: 'jane@example.com' });
     expect(parsed.source).toBe('quote');
