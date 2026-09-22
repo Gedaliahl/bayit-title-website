@@ -12,6 +12,15 @@
 > `foreign-seller-signing-from-abroad-florida`. With the two pages already
 > live, production now serves six of the nine.
 >
+> **Updated later on 22 September 2026:** two of the three blockers came back.
+> The entireties question was answered by a Florida real estate attorney and
+> `judgment-against-seller-before-closing-florida` is published — seven of nine
+> live. The online notary registration was confirmed from the Department of
+> State record as standard commissions only, with no § 117.225 registration;
+> the signings page now says that rather than implying in-house RON, and what
+> is left on it is the platform's name. The list immediately below is the
+> state before those two answers.
+>
 > **Still draft, and why:**
 >
 > - `judgment-against-seller-before-closing-florida` — the tenancy-by-the-

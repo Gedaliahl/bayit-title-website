@@ -8,7 +8,7 @@ counties: []
 review_tags: ["mobile-signing", "remote-online-notarization", "ron", "closing"]
 related: []
 pending_confirmation:
-  - "SG-04 (public registry): which Bayit Title team members hold a Florida online notary registration under Fla. Stat. § 117.225, read from the Department of State record at online-notary.sunbiz.org — or, if none is registered, the RON platform used and whose commission the notarial act is performed under. This is the one item keeping the page unpublished, and it must not be filled in from anything but that record"
+  - "SG-04 (Bayit Title), narrowed 22 September 2026: the registry half is answered — the commissions held here were confirmed against the Department of State record as standard notary commissions only, with no § 117.225 online registration, and the page now says so. What is left is the other half of the same question: name the RON platform a file actually uses, since the page says a session runs on one and SG-05 confirms it is on our underwriter's approved list. That is the last item keeping the page unpublished"
 quick_facts:
   - term: "Who this is for"
     detail: "Any buyer, seller or borrower on a Florida closing we are handling."
@@ -40,7 +40,9 @@ Florida authorises remote online notarization: the signer appears before a Flori
 
 The act has to be performed by a notary who holds a current Florida notary commission **and** is separately registered with the Department of State as an online notary public. [Fla. Stat. § 117.225](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.225.html) sets out what that registration requires: the underlying commission, a course covering the duties and the technology, a $25,000 bond, and errors and omissions coverage of at least $25,000. A standard Florida notary commission on its own does not authorise a remote online notarization.
 
-[VERIFY: name which Bayit Title team members hold a Florida online notary registration, with commission numbers, or name the RON platform used and state under whose commission the notarial act is performed. This is the one flag on this page that must not be filled in from anything but the Department of State commission record.]
+Nobody here holds that registration. The commissions held at Bayit Title were checked against the Department of State record and are standard Florida notary commissions, which authorise an in-person notarial act and not an online one.
+
+So a remote online notarization on one of our files is performed by a Florida-commissioned online notary who holds the separate registration, working through the platform the file uses — not by one of our own notaries. Nothing else about the closing moves: the file is prepared here, the documents are reviewed here, and the closer who built it is reachable during the session. What changes is who takes the acknowledgment, and it is someone the statute authorises to take it.
 
 Two things decide whether RON can be used on a given file, and neither is up to the signer: the lender has to accept remotely notarized documents, and so does the underwriter. We confirm both before scheduling rather than after.
 
