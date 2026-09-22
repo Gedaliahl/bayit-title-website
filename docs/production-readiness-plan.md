@@ -1,8 +1,116 @@
 # Production-readiness plan: every page except the homepage
 
-Written 22 September 2026. Nothing here has been fixed yet: this is the work, in
-the order it should be done. Every item names the file and line where the
-problem sits, what goes wrong, and what "done" looks like.
+Written 22 September 2026 as the list of work, in order. **The work has since
+been done on this branch; the next section says what state it is in and what
+is left for people to do.** The plan below it is kept as written, as the record
+of what was found and why each change was made.
+
+## Status, 22 September 2026
+
+Every item in Phases 0–9 that could be settled in code is done, and the firm
+answered D1–D6. What the branch now proves on every run:
+
+- `npm run lint`, `npm run typecheck`, `npm test` (667 tests) and
+  `npm run build` pass, and `npm audit` finds 0 vulnerabilities.
+- `npm run test:e2e` passes, 132 tests in a real browser. It covers:
+  - every sitemap page at 14 widths from 280 to 2560px, checking for sideways
+    scroll, console errors, one h1, heading order, alt text and tap targets;
+  - axe, WCAG 2.2 AA, at 375 and 1280;
+  - the flows: the menu, both estimator modes and every error state, the three
+    forms, and both upload boxes.
+- `npm run lhci`, run as a phone: performance 0.93–0.96, and accessibility,
+  best practices and SEO all 1.0. The pages measured are /estimate, a county
+  page, a library page and /order.
+
+### The firm's answers, and what changed
+
+| | Answer | Change |
+|---|---|---|
+| D1 | The rule's $25 is a minimum for a simultaneous lender's policy, not a price or a maximum. | The $125 charge stands. The county, city, buyer and estimate pages now call $25 the least the policy can be. |
+| D2 | The excess over the owner's amount is layered: the original rate at the loan amount less the original rate at the owner's amount. | `excessLoanPremium` works that way, and tests pin it. On a $1.5M loan over a $1M owner's policy the excess is $1,250, where it was $2,575. |
+| D3 | Take "excellence" out if it is a problem. | Removed from About and Partners. The homepage still has it; see below. |
+| D4 | The exchange company has no connection to us. | Services, Partners, About and llms.txt no longer say we facilitate exchanges "through" it. They say we close with whichever intermediary the client chooses. |
+| D5 | Do not promise that data is deleted or not kept. | Every retention and non-retention promise is gone from the estimate page and the privacy policy. The purge stays in the code, and it runs only once `CRON_SECRET` is set. |
+| D6 | The SMS section stays; it is there for RingCentral. | Unchanged. |
+
+### Still with the firm (the site is live-safe without them)
+
+1. **Practice claims stated as fact.** Confirm each one, or say which to soften.
+   - "Search ordered the same day": `app/services/page.tsx:34`,
+     `app/partners/page.tsx:77`, `:182`.
+   - "Read by a person, day one": `app/services/page.tsx:152`.
+   - "Instructions confirmed by voice": `app/services/page.tsx:154`, `:244`,
+     `app/about/page.tsx:49`.
+   - "Open the file today": `app/services/page.tsx:332`.
+   - "The file number the same business day": `app/partners/page.tsx:173`.
+   - "Usually the same business day" (quote): `app/quote/page.tsx:76`.
+   - "Picked up the next business morning": `app/order/page.tsx:36`.
+   - "We order a municipal lien search on every file":
+     `app/cities/[slug]/page.tsx:278`, `app/closing-costs/seller/page.tsx:210`.
+   - "Week one … not week six" and "the first week":
+     `app/about/page.tsx:160`, `app/partners/page.tsx:16`, `:51`, `:60`.
+   - Volume: "Our busiest counties" (`app/counties/page.tsx:146`) and "Most
+     files are in" (`app/about/page.tsx:265`).
+2. **"We e-record in this county."** The field records the office's own
+   practice, and it is set to true for Broward, Palm Beach, Miami-Dade,
+   Hillsborough, Orange and Duval. Confirm it holds for each.
+3. **Who-pays sources.** On about 20 county rows the source for the
+   owner's-policy custom names other title firms and a 2021 chart. Keep them
+   or replace them.
+4. **The address estimate now leads with the just value**, with the assessed
+   value offered beside it. Confirm that is the figure to lead with.
+5. **The purge.** Switch it on or leave it off (`CRON_SECRET`), and choose the
+   ages: 30 days for contracts, and 90 for order documents from the original
+   schema.
+6. **The privacy policy's effective date** moved to 22 September 2026, because
+   the page promises a new date on any change.
+7. **The homepage**, left out of this pass at the firm's request, still has:
+   - "Excellent" twice (D3 applies);
+   - a "1031 Exchange" pill in the services ticker that reads as a service of
+     our own (D4);
+   - a `<title>` without the firm's name;
+   - a 400-character description;
+   - an animated ticker and timeline with no pause control (WCAG 2.2.2).
+8. Chaya's bio says signing day "doesn't have to be a stressful event", which
+   is close to the banned "stress-free". It is her own wording.
+
+### Still with whoever holds the accounts
+
+1. **Apply the migrations** in `supabase/migrations/20260922000100` through
+   `…000500`, in order, through the SQL editor. The header of the first file
+   explains why `supabase db push` refuses until the remote history is
+   reconciled. After 000200, regenerate `lib/database.types.ts` for
+   `submission_id`.
+2. **Environment variables in Vercel.** `.env.example` documents each one.
+   - Required: `RESEND_API_KEY` and `NOTIFY_FROM_EMAIL`. Without them the
+     office is never told about a submission, and `/api/health` answers 503.
+   - `SUPABASE_URL` and the service-role key must be present at **build**
+     time. A production build now fails without all 67 counties.
+   - Recommended: `LOOKUP_SIGNING_SECRET`.
+   - Optional: the Turnstile pair, `CRON_SECRET`, `QUOTE_RETENTION_DAYS`,
+     `ARCGIS_API_KEY` and `ESRI_DAILY_GEOCODE_CAP`. Run
+     `tests/geocoder.live.test.ts` with the Esri key before switching Esri on.
+3. **A Vercel Firewall rate-limit rule on `/api/*`.** The in-process limiters
+   are a second line only.
+4. **An uptime monitor on `/api/health`.** It fails if Supabase, the bucket,
+   Resend or a configured Turnstile secret is wrong.
+5. **The first GitHub run of the new CI jobs.** The e2e job (Chromium, WebKit,
+   Firefox) and the Lighthouse job have run only locally, on Chromium.
+6. **A pass on real devices and screen readers** (Phase 9, item 7). No
+   automated run replaces it.
+7. **The cutover steps** in `docs/go-live-status.md`: DNS with the Microsoft
+   365 records kept, the domain, and Search Console.
+
+### Deliberately not done
+
+- `noUncheckedIndexedAccess` is off. Turning it on raises 136 errors across
+  lib/ and tests/, which is a change of its own.
+- TypeScript 7 and ESLint 10 wait on typescript-eslint and
+  eslint-config-next respectively; both still break lint.
+- Pixel screenshot tests would be flaky across CI fonts. The 14-width walk
+  checks layout without them.
+- Next logs `NoFallbackError` for every 404 under a segment with
+  `dynamicParams = false`. That is the framework's behaviour, not a failure.
 
 ## How this was found
 
