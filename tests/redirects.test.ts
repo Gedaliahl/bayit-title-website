@@ -36,7 +36,7 @@ function find(all: Redirect[], source: string): Redirect | undefined {
  */
 const ROUTES = new Set([
   '/', '/about', '/team', '/services', '/counties', '/title-problems',
-  '/reviews', '/contact', '/order', '/quote', '/estimate',
+  '/reviews', '/contact', '/order', '/quote', '/estimate', '/closing-costs',
   '/partners', '/privacy', '/icon.svg',
 ]);
 

@@ -56,9 +56,13 @@ export default async function QuotePage() {
           included.
         </p>
         <p className="form-note">
-          Neither tool prices the part that is ours rather than the rule&rsquo;s — our settlement
-          fee, the search and examination, endorsements — so a person still prepares the quote. See{' '}
-          <Link href="/counties">counties we close in</Link> for what differs locally.
+          The address and the numbers estimates stop at the rule&rsquo;s and the statute&rsquo;s
+          figures. The part that is ours — our settlement fee, the search and examination,
+          endorsements — is priced by a person, from this form or from the contract. The{' '}
+          <Link href="/closing-costs/buyer">buyer</Link> and{' '}
+          <Link href="/closing-costs/seller">seller</Link> closing cost pages say what each line is
+          and who sets it, and <Link href="/counties">counties we close in</Link> says what differs
+          locally.
         </p>
 
         <LeadForm
