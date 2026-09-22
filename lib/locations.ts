@@ -103,12 +103,12 @@ function reportIncomplete(reason: string, consequence: string): void {
         '(VERCEL_ENV=production or REQUIRE_LOCATIONS=1).',
     );
   }
-  console.warn(`${message} A production build would fail here.`);
+  console.warn(`${message} Building anyway; a production build would fail here.`);
 }
 
 const FALLBACK_CONSEQUENCE =
-  `Using the ${site.priorityCounties.length}-county fallback: every other county page ` +
-  'will 404 and be left out of the sitemap.';
+  `The fallback has only the ${site.priorityCounties.length} priority counties, so every other ` +
+  'county page would 404 and drop out of the sitemap.';
 
 export const getLocations = cache(async (): Promise<Location[]> => {
   const supabase = getServiceClient();
@@ -155,7 +155,7 @@ export const getLocations = cache(async (): Promise<Location[]> => {
   if (countyRows < site.floridaCounties) {
     reportIncomplete(
       `The locations table has ${countyRows} of the ${site.floridaCounties} counties.`,
-      'The missing county pages will 404.',
+      'The missing county pages would 404.',
     );
   }
 

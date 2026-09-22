@@ -129,7 +129,7 @@ export function VerifyBanner({
         <>
           <strong>
             {flags.length} item{plural} we have not published{' '}
-            {scope === 'statewide' ? 'on this page' : `for this ${scope}`}
+            {scope === 'statewide' ? 'yet' : `for this ${scope}`}
           </strong>
           {flags.length === 1 ? 'It is not stated' : 'These are not stated'} anywhere on this page.
           We publish a figure once it is tied to a source we are willing to stand behind, and{' '}

@@ -54,6 +54,12 @@ export default function ClosingCostsPage() {
           whoever provides them. Which side pays each line is decided by the purchase contract.
         </p>
 
+        <p>
+          For a specific property, <Link href="/estimate">estimate from the address</Link> or{' '}
+          <Link href="/estimate?mode=numbers">from the price and loan</Link>. For the lines no rule
+          sets, <Link href="/quote">request a quote</Link>.
+        </p>
+
         <ul className="card-grid card-grid--fit">
           {SIDES.map((side) => (
             <li key={side.href}>
@@ -65,12 +71,6 @@ export default function ClosingCostsPage() {
             </li>
           ))}
         </ul>
-
-        <p>
-          For a specific property, <Link href="/estimate">estimate from the address</Link> or{' '}
-          <Link href="/estimate?mode=numbers">from the price and loan</Link>. For the lines no rule
-          sets, <Link href="/quote">request a quote</Link>.
-        </p>
 
         <QuietCta
           text="Send the county and the price and we will itemize it."
