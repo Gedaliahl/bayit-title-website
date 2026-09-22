@@ -20,16 +20,16 @@ quick_facts:
   - term: "Where it shows up"
     detail: "Schedule B-II of the title commitment, and sometimes the survey."
   - term: "Typical timeline"
-    detail: "Three days, where the neighbouring owner cooperated from the start — that is what resolving an access exception by recorded easement has taken us. It is the short end, and it assumes a neighbour who agrees at once. What lengthens it is the survey sketch and legal description, and the neighbour's own decision-making. Where the neighbouring parcel is owned by an estate, a trust or an entity, add the time it takes to establish who can sign."
+    detail: "Three days, where the neighboring owner cooperated from the start — that is what resolving an access exception by recorded easement has taken us. It is the short end, and it assumes a neighbor who agrees at once. What lengthens it is the survey sketch and legal description, and the neighbor's own decision-making. Where the neighboring parcel is owned by an estate, a trust or an entity, add the time it takes to establish who can sign."
   - term: "Cost impact"
-    detail: "A survey sketch and legal description for the easement area typically runs $500 to $1,500 depending on the parcel. Preparing and recording the easement instrument is modest by comparison. Recording is a statutory charge, not a quote: the service charges in [Fla. Stat. § 28.24](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.24.html) come to the $10 first page and $8.50 for each additional page that clerks publish, with $1 more for each name beyond the first four, so a short easement records for something in the region of $10 to $30. The cost that is not on this list is whatever the neighbouring owner asks for the easement itself, which is a negotiation rather than a fee."
+    detail: "A survey sketch and legal description for the easement area typically runs $500 to $1,500 depending on the parcel. Preparing and recording the easement instrument is modest by comparison. Recording is a statutory charge, not a quote: the service charges in [Fla. Stat. § 28.24](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0000-0099/0028/Sections/0028.24.html) come to the $10 first page and $8.50 for each additional page that clerks publish, with $1 more for each name beyond the first four, so a short easement records for something in the region of $10 to $30. The cost that is not on this list is whatever the neighboring owner asks for the easement itself, which is a negotiation rather than a fee."
 ---
 
 ## What does "legal access" actually mean?
 
 It means the parcel has a legally enforceable right to get to a public road — usually by fronting one directly, or by a recorded easement across intervening land.
 
-What it does not mean is that a road exists. Those are different questions, and a property can fail one while passing the other. A driveway that has been used for forty years, that everyone in the neighbourhood treats as belonging to the house, that appears clearly on the survey, may still be crossing someone else's land with nothing recorded to support it.
+What it does not mean is that a road exists. Those are different questions, and a property can fail one while passing the other. A driveway that has been used for forty years, that everyone in the neighborhood treats as belonging to the house, that appears clearly on the survey, may still be crossing someone else's land with nothing recorded to support it.
 
 ## Why does this show up on Schedule B-II?
 
@@ -47,15 +47,15 @@ So where the record establishes access, an endorsement can strengthen what the p
 
 ## Why does it matter if the driveway is already there?
 
-Because use without a recorded right is permission, and permission can end. The neighbouring parcel sells. An estate is administered and the heirs see it differently. A fence goes up.
+Because use without a recorded right is permission, and permission can end. The neighboring parcel sells. An estate is administered and the heirs see it differently. A fence goes up.
 
 It also matters to whoever comes next. A future buyer's title work will raise the same exception, and a future lender may decline the loan over it. An access problem that is tolerable to a cash buyer today is a resale problem later.
 
 ## How does it get resolved?
 
-The clean route is a recorded easement: the owner of the land being crossed grants a described right of access, and it is recorded so it binds future owners. That needs a willing neighbour, a legal description prepared from a survey, and a document the underwriter will accept.
+The clean route is a recorded easement: the owner of the land being crossed grants a described right of access, and it is recorded so it binds future owners. That needs a willing neighbor, a legal description prepared from a survey, and a document the underwriter will accept.
 
-Where the neighbour will not cooperate, the routes are legal rather than clerical.
+Where the neighbor will not cooperate, the routes are legal rather than clerical.
 
 Florida writes two of them into [Fla. Stat. § 704.01](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0704/Sections/0704.01.html), and they are not the same thing.
 
@@ -63,7 +63,7 @@ Florida writes two of them into [Fla. Stat. § 704.01](https://www.leg.state.fl.
 
 **The statutory way of necessity**, in § 704.01(2), does not need that shared history — but it is narrower than it first sounds. It reaches land "being used or is desired to be used for a dwelling or dwellings or for agricultural or for timber raising or cutting or stockraising purposes" that is "shut off or hemmed in" so that no practicable route of egress or ingress is available to the nearest practicable public or private road. It covers utilities as well as people and vehicles, and it runs by the nearest practical route.
 
-Neither is free and neither is quick. Where the parties cannot agree, [Fla. Stat. § 704.04](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0704/Sections/0704.04.html) sends it to the circuit court, compensation is paid to the owner of the land crossed — by a jury if either side asked for one in its original pleadings — and the easement dates from the time the award is paid. That is litigation, with a neighbour, before anybody closes.
+Neither is free and neither is quick. Where the parties cannot agree, [Fla. Stat. § 704.04](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0704/Sections/0704.04.html) sends it to the circuit court, compensation is paid to the owner of the land crossed — by a jury if either side asked for one in its original pleadings — and the easement dates from the time the award is paid. That is litigation, with a neighbor, before anybody closes.
 
 A prescriptive easement — use that has been open, continuous and adverse for long enough — is a third route, but it is judge-made rather than statutory and its elements are proved with evidence rather than found in a section. None of these three is a form to file. Each is a case to make.
 
@@ -71,11 +71,11 @@ Those are lawsuits or statutory proceedings, not title clearance. They take time
 
 ## How Bayit Title handles this
 
-When the commitment raises an access exception, we say so plainly rather than letting it pass as one more line on Schedule B-II — including to a buyer who is looking at a perfectly ordinary driveway. We explain what the exception means, what the record does and does not show, and what a recorded easement would take. Where the fix needs the neighbouring owner, we say that early, because that is a negotiation with a stranger and it does not fit inside a two-week closing window.
+When the commitment raises an access exception, we say so plainly rather than letting it pass as one more line on Schedule B-II — including to a buyer who is looking at a perfectly ordinary driveway. We explain what the exception means, what the record does and does not show, and what a recorded easement would take. Where the fix needs the neighboring owner, we say that early, because that is a negotiation with a stranger and it does not fit inside a two-week closing window.
 
 ## When should an attorney be involved?
 
-Immediately, if the neighbouring owner will not grant an easement. A way of necessity, an easement by necessity, or a prescriptive claim is litigation or a statutory proceeding, and it needs a Florida real estate attorney. A buyer should also have counsel advising on whether to close at all where access cannot be established.
+Immediately, if the neighboring owner will not grant an easement. A way of necessity, an easement by necessity, or a prescriptive claim is litigation or a statutory proceeding, and it needs a Florida real estate attorney. A buyer should also have counsel advising on whether to close at all where access cannot be established.
 
 ## Common questions
 

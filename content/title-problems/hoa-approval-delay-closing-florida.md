@@ -35,7 +35,7 @@ The distinction matters because it changes who can fix it. A title requirement i
 
 Because the documents usually give it a window that long, and quoting the maximum is safer for the person answering the phone than quoting the likely time.
 
-That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorisation, or the interview that has not been scheduled.
+That window normally runs from a **complete** application, not from the day something was first emailed. In practice the delay is rarely the association deliberating. It is an application missing a signature, a fee, a form, a background check authorization, or the interview that has not been scheduled.
 
 ## Does Florida cap how long the association can take?
 

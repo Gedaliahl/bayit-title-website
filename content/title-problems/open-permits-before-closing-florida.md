@@ -59,7 +59,7 @@ Every file is different, but a close-out happens in one of these ways:
 
 - **The seller or the contractor completes the outstanding inspections.** The permit is live, the work will pass, and what is missing is the inspection nobody called.
 - **The municipality closes the permit on the documentation already in its file.** Where the record is enough to close it, nothing has to be opened up or re-inspected.
-- **An after-the-fact permit, or legalisation of the work.** The work was never permitted. Plans, fees and inspection follow, and this is the route that can require the work to be opened up or redone. Where the jurisdiction offers one, a contractor affidavit or a municipal amnesty programme is part of how this route is worked.
+- **An after-the-fact permit, or legalization of the work.** The work was never permitted. Plans, fees and inspection follow, and this is the route that can require the work to be opened up or redone. Where the jurisdiction offers one, a contractor affidavit or a municipal amnesty program is part of how this route is worked.
 - **Corrective work, then inspection.** The work will not pass as built, so something changes before the inspector comes back.
 - **An escrow or other contractual arrangement**, where that is appropriate and permitted by the underwriter and the applicable requirements. This lets the transaction close; it does not close the permit, which still has to be closed afterwards.
 
