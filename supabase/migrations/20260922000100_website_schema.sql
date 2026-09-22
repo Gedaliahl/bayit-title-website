@@ -6,13 +6,19 @@
 -- initial_website_schema and 20260909155022 harden_functions_and_seed_counties
 -- — and read back for this file from information_schema, pg_constraint,
 -- pg_indexes, pg_trigger, pg_policies and storage.buckets, so that the
--- project can be rebuilt from the repository.
+-- submission tables are written down somewhere other than the database.
+--
+-- It is not a full baseline. It depends on public.locations (whose slug the
+-- county columns reference), and the reviews tables, which this file does not
+-- create, so a fresh database cannot be built from the repository alone yet.
+-- The remote migration history also carries seven versions (20260908203526
+-- through 20260920191912) that have no file here, and `supabase db push` will
+-- refuse until they are reconciled — `supabase migration fetch`, or
+-- `supabase migration repair` for each. Until then, apply these files through
+-- the SQL editor, in order.
 --
 -- Written to be safe to run against the live project, where every object
--- already exists: each statement creates only what is missing. It depends on
--- public.locations (whose slug the county columns reference), which the same
--- initial migration created and later ones extended; that table is out of this
--- file's scope.
+-- already exists: each statement creates only what is missing.
 --
 -- The anon INSERT policies are recorded here as they are live, and dropped by
 -- 20260922000300_drop_anon_insert_policies.sql.
