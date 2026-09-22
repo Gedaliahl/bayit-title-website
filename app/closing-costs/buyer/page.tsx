@@ -26,6 +26,7 @@ import {
   recordingChargeDue,
 } from '@/lib/statutory-rates';
 import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
+import { EXAMPLE_PAGE_COUNTS } from '@/lib/closing-estimate';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   ORIGINAL_SCHEDULE,
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: { ...baseOpenGraph, url: '/closing-costs/buyer' },
 };
 
-const MORTGAGE_PAGES = 12;
+const MORTGAGE_PAGES = EXAMPLE_PAGE_COUNTS.mortgage;
 
 export default async function BuyerClosingCostsPage() {
   const counties = await getCounties();

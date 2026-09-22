@@ -34,6 +34,7 @@ import {
   recordingChargeDue,
 } from '@/lib/statutory-rates';
 import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
+import { EXAMPLE_PAGE_COUNTS } from '@/lib/closing-estimate';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   MINIMUM_PREMIUM,
@@ -321,8 +322,10 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         <CitedFigures figures={RECORDING_CHARGES} />
 
         <p>
-          A two-page deed is {formatMoney(recordingChargeDue(2))} and a twelve-page mortgage is{' '}
-          {formatMoney(recordingChargeDue(12))}. The clerk&rsquo;s own fee schedule covers the
+          A {EXAMPLE_PAGE_COUNTS.deed}-page deed is{' '}
+          {formatMoney(recordingChargeDue(EXAMPLE_PAGE_COUNTS.deed))} and a{' '}
+          {EXAMPLE_PAGE_COUNTS.mortgage}-page mortgage is{' '}
+          {formatMoney(recordingChargeDue(EXAMPLE_PAGE_COUNTS.mortgage))}. The clerk&rsquo;s own fee schedule covers the
           other things the office does — certified copies, searches, its own e-recording
           arrangements — and a third-party e-recording vendor may add a fee of its own, which is
           not the clerk&rsquo;s charge and not this.

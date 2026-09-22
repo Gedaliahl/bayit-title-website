@@ -143,10 +143,6 @@ const nextConfig = {
       // app/privacy/page.tsx being reviewed — until then it is a draft and does
       // not render in production, so review it before the cutover.
       { source: '/privacy-policy', destination: '/privacy', permanent: true },
-
-      // The icon is app/icon.svg, linked from the document head. Agents that
-      // still guess at /favicon.ico get sent there rather than a 404.
-      { source: '/favicon.ico', destination: '/icon.svg', permanent: false },
     ];
   },
 
