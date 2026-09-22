@@ -8,7 +8,18 @@ import nextTypeScript from 'eslint-config-next/typescript';
 // that throws on ESLint 10 ("contextOrFilename.getFilename is not a function").
 const config = [
   {
-    ignores: ['.next/**', 'out/**', 'node_modules/**', 'next-env.d.ts'],
+    // .claude/ holds Claude Code's worktrees, each a full copy of the repo. The
+    // e2e and Lighthouse output folders hold generated reports.
+    ignores: [
+      '.next/**',
+      'out/**',
+      'node_modules/**',
+      'next-env.d.ts',
+      '.claude/**',
+      'e2e/.results/**',
+      'e2e/.report/**',
+      '.lighthouseci/**',
+    ],
   },
 
   ...nextCoreWebVitals,
