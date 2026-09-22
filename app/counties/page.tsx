@@ -5,9 +5,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { COUNTY_MARKETS, COUNTY_REGIONS, getCounties, type Location } from '@/lib/locations';
+import { COUNTY_REGIONS, getCounties, type Location } from '@/lib/locations';
 import { FLORIDA_COUNTIES, countySlugFor } from '@/lib/florida-counties';
-import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { deedStampTax, discretionarySurtax } from '@/lib/statutory-rates';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -84,12 +83,9 @@ function countyNote(county: Location): string | null {
 export default async function CountiesPage() {
   const counties = await getCounties();
   const priority = counties.filter((county) => county.isPriority);
-  // The band carries the counties with a region label — the next six by
-  // volume. The other fifty-five are linked from the full list below.
-  const others = counties.filter((county) => !county.isPriority && COUNTY_REGIONS[county.slug]);
+  // The band carries the six busiest counties. The other sixty-one are linked
+  // from the full list below.
   const bySlug = new Map(counties.map((county) => [county.slug, county]));
-  const countyName = (slug: string) =>
-    bySlug.get(slug)?.name ?? FLORIDA_COUNTIES.find((county) => county.slug === slug)?.name ?? slug;
 
   return (
     <div>
@@ -138,7 +134,7 @@ export default async function CountiesPage() {
         <section className="band">
           <div className="frame band__inner">
             <div className="band__head">
-              <h2>Where most of our files are</h2>
+              <h2>Our busiest counties</h2>
               <span className="band__caption">
                 {priority.length} counties with their own pages
               </span>
@@ -164,41 +160,10 @@ export default async function CountiesPage() {
         </section>
       ) : null}
 
-      {others.length > 0 ? (
-        <section className="band">
-          <div className="frame band__inner">
-            <div className="band__head">
-              <h2>More county pages</h2>
-              <span className="band__caption">
-                The same figures, cited the same way, for the next {others.length} counties by volume
-              </span>
-            </div>
-            <ul className="band__grid band__grid--3 band__grid--links">
-              {others.map((county) => {
-                const market = COUNTY_MARKETS[county.slug];
-                return (
-                  <li key={county.slug}>
-                    <Link href={`/counties/${county.slug}`} className="step-card step-card--link">
-                      {COUNTY_REGIONS[county.slug] ? (
-                        <span className="step-card__label">{COUNTY_REGIONS[county.slug]}</span>
-                      ) : null}
-                      <span className="step-card__title step-card__title--serif">{county.name}</span>
-                      {market ? <span className="step-card__body">{market}</span> : null}
-                      <span className="step-card__more">County page →</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-      ) : null}
-
       <div className="frame cols">
         <Rail
           label="The detail"
           items={[
-            { id: 'cities', label: 'Cities' },
             { id: 'changes', label: 'What changes county to county' },
             { id: 'same', label: 'What does not' },
             { id: 'elsewhere', label: 'Elsewhere in Florida' },
@@ -206,23 +171,6 @@ export default async function CountiesPage() {
         />
 
         <div className="detail">
-          <section id="cities">
-            <div className="section__head">
-              <h2>Cities</h2>
-              <span className="caption">
-                Each city page carries its county’s figures and adds the place.
-              </span>
-            </div>
-            <ul className="linklist">
-              {FLORIDA_CITIES.map((city) => (
-                <li key={city.slug}>
-                  <Link href={`/cities/${city.slug}`}>Title company in {city.name}</Link>{' '}
-                  <span className="muted">— {countyName(city.countySlug)}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
           <section id="changes">
             <h2>What changes county to county</h2>
             <ol className="num-cards">
