@@ -245,15 +245,19 @@ th {
   border-block: 1px solid var(--rule);
 }
 
+/* Important, because a component's own rules must not undo it: `.field input`
+   outranks a single class, and once gave the contract picker a 100% width
+   that stuck out past the right edge of the page in Safari. */
 .visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
 }
 
 .skip-link {

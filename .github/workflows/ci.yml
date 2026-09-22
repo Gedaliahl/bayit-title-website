@@ -123,6 +123,8 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
+          # Both folders start with a dot, which upload-artifact skips unless told.
+          include-hidden-files: true
           path: |
             e2e/.report/
             e2e/.results/
