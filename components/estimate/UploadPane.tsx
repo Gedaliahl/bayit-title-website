@@ -28,6 +28,7 @@ import {
   useBotCheck,
   useLeaveWarning,
   useSubmissionId,
+  withoutBlanks,
 } from '@/components/Field';
 import { useErrorFocus } from '@/components/useErrorFocus';
 
@@ -160,7 +161,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
       error?: string;
       errors?: Record<string, string>;
     }>('/api/contract-quote', {
-      ...payload,
+      ...withoutBlanks(payload),
       submission_id: submission.current(),
       turnstile_token: botCheck.token || undefined,
     });

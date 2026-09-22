@@ -468,7 +468,6 @@ for (const form of FORMS) {
 
     if (form.path !== '/contact') {
       test('an untouched County select is sent as no county', async ({ page }) => {
-        test.fixme(true, 'Bug: the form posts its raw FormData, so "Select…" goes as county_slug: ""');
         let body: Record<string, unknown> = {};
         await page.route(form.endpoint, (route) => {
           body = route.request().postDataJSON();

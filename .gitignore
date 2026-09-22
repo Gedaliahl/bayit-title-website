@@ -10,3 +10,6 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Lighthouse CI writes its runs here (npm run lhci).
+.lighthouseci/

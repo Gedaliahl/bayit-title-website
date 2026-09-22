@@ -403,6 +403,17 @@ export function outcomeUnknown(reply: Reply<unknown>): boolean {
 }
 
 /**
+ * A form's fields as they are sent, leaving out any left blank. A select still
+ * on "Select…" posts an empty string, which the server has to read as no
+ * answer; leaving it out says so without making it read anything. The form is
+ * checked with the blanks still in, so a required field left empty is named
+ * as empty rather than as missing.
+ */
+export function withoutBlanks<T extends Record<string, unknown>>(fields: T): Partial<T> {
+  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== '')) as Partial<T>;
+}
+
+/**
  * One id per submission, kept across retries and replaced once it succeeds.
  * The server uses it to recognise a retry of something it already has.
  */

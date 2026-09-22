@@ -8,6 +8,7 @@
 import {
   NEVER,
   array,
+  config,
   email,
   enum as oneOf,
   iso,
@@ -24,6 +25,12 @@ import {
 
 import { FLORIDA_COUNTIES } from './florida-counties';
 import { MAX_FILES } from './documents';
+
+// Zod compiles object schemas with `new Function` when it can, and finds out
+// whether it can by trying. The site's Content-Security-Policy forbids eval,
+// which is right, so the try is refused and logged as a violation on every
+// page with a form. Told not to try, it validates the same way without it.
+config({ jitless: true });
 
 const trimmed = (max: number) => string().trim().max(max);
 

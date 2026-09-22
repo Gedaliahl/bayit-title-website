@@ -21,6 +21,7 @@ import {
   useFieldErrors,
   useLeaveWarning,
   useSubmissionId,
+  withoutBlanks,
 } from './Field';
 import { useErrorFocus } from './useErrorFocus';
 import {
@@ -175,7 +176,7 @@ export function OrderForm({ counties }: { counties: CountyOption[] }) {
       error?: string;
       errors?: Record<string, string>;
     }>('/api/orders', {
-      ...payload,
+      ...withoutBlanks(payload),
       submission_id: submission.current(),
       turnstile_token: botCheck.token || undefined,
     });

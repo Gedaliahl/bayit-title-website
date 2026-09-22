@@ -18,6 +18,7 @@ import {
   useBotCheck,
   useFieldErrors,
   useSubmissionId,
+  withoutBlanks,
 } from './Field';
 import { fieldErrors, leadSchema } from '@/lib/schemas';
 import { site } from '@/lib/site';
@@ -88,7 +89,7 @@ export function LeadForm({
 
     setStatus({ kind: 'sending' });
     const reply = await postJson<{ error?: string; errors?: Record<string, string> }>('/api/leads', {
-      ...payload,
+      ...withoutBlanks(payload),
       submission_id: submission.current(),
       turnstile_token: botCheck.token || undefined,
     });
