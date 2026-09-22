@@ -93,6 +93,8 @@ jobs:
 
     env:
       NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+      # Served over http on localhost; see next.config.mjs.
+      E2E_PLAIN_HTTP: '1'
 
     steps:
       - uses: actions/checkout@v7

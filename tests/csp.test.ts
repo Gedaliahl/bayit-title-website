@@ -75,6 +75,13 @@ describe('what the policy refuses', () => {
   it('upgrades anything still asking for http', async () => {
     expect(await policy()).toContain('upgrade-insecure-requests');
   });
+
+  it('leaves it out only for the browser suite, which serves over http', async () => {
+    // WebKit upgrades even localhost, so the suite's build would load no
+    // script or stylesheet at all.
+    vi.stubEnv('E2E_PLAIN_HTTP', '1');
+    expect(await policy()).not.toContain('upgrade-insecure-requests');
+  });
 });
 
 describe('the one origin the browser may talk to', () => {
