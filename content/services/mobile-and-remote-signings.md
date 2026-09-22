@@ -1,6 +1,7 @@
 ---
 status: reviewed
 title: "Mobile and remote signings"
+seo_title: "Mobile and remote closing signings in Florida"
 slug: "mobile-and-remote-signings"
 cluster: "process"
 direct_answer: "We hold closings three ways: in our Coral Springs office, wherever the signer happens to be, or online by remote online notarization. The choice is about what the file needs — a seller abroad, a buyer who cannot take a morning off, a signer who would rather sit across a table — not about a service tier."

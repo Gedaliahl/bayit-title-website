@@ -101,7 +101,7 @@ export default async function CountiesPage() {
               { name: 'Counties', path: '/counties' },
             ]}
           />
-          <h1>Counties we close in</h1>
+          <h1>Florida counties we close in</h1>
           <p className="page-hero__lede">
             We close throughout {site.serviceArea}, all {site.floridaCounties} counties. Most of our
             files sit in {site.priorityCounties.slice(0, -1).map(shortName).join(', ')} and{' '}

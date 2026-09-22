@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { FLORIDA_CITIES, cityBySlug, cityPageTitle, citiesInCounty } from '@/lib/florida-cities';
-import { getCounties, getLocation, recorderName, turnaroundForQuote } from '@/lib/locations';
+import { aOrAn, getCounties, getLocation, recorderName, turnaroundForQuote } from '@/lib/locations';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
 import { baseOpenGraph, fittedTitle, formatLongDate, metaDescription } from '@/lib/seo';
@@ -144,13 +144,13 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
 
         <VerifyBanner flags={openItems} variant="withheld" scope="city" />
 
-        <h2>What title insurance costs on a {city.name} purchase</h2>
+        <h2>What title insurance costs on {aOrAn(city.name)} {city.name} purchase</h2>
         <p>
           Florida title insurance premiums are set by the Office of Insurance Regulation under{' '}
           <a href={PREMIUM_RULE.authorityUrl} rel="nofollow">
             {PREMIUM_RULE.authorityCite}
           </a>
-          , so the premium on a {city.name} policy is the same figure it would be anywhere in the
+          , so the premium on {aOrAn(city.name)} {city.name} policy is the same figure it would be anywhere in the
           state. On a {formatMoney(EXAMPLE_PRICE)} purchase the owner&rsquo;s policy is{' '}
           <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong>; where the reissue
           conditions in the rule are met it is {formatMoney(reissuePremium(EXAMPLE_PRICE))}; and the
@@ -202,7 +202,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           </p>
         ) : null}
 
-        <h2>Documentary stamp tax on a {city.name} sale</h2>
+        <h2>Documentary stamp tax on {aOrAn(city.name)} {city.name} sale</h2>
         <p>
           The deed is taxed by the state at the rate that applies in {county.name}.{' '}
           {surtax
@@ -224,7 +224,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           carries neither. Which side pays each is decided by the purchase contract.
         </p>
 
-        <h2>Where a {city.name} deed is recorded</h2>
+        <h2>Where {aOrAn(city.name)} {city.name} deed is recorded</h2>
         <p>
           {city.name} is in {county.name}, so the deed and mortgage are recorded with the{' '}
           {county.clerkUrl ? (
@@ -283,7 +283,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         <p>
           {isHome
             ? `Our office is in ${city.name}, at ${site.address.street}, so a signing here is at our table. `
-            : `A ${city.name} signer can come to our office in ${site.address.city}, or we send a notary to them — a kitchen table, an office, wherever they are. `}
+            : `${aOrAn(city.name) === 'an' ? 'An' : 'A'} ${city.name} signer can come to our office in ${site.address.city}, or we send a notary to them — a kitchen table, an office, wherever they are. `}
           Remote online notarization is the third way, for a signer who is not in {city.name} on the
           day. The closer who prepared the file is reachable during the signing whichever way it
           happens.
@@ -333,7 +333,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         ) : null}
 
         <QuietCta
-          text={`Send us the address and the contract date on a ${city.name} file and we will tell you what the search shows.`}
+          text={`Send us the address and the contract date on ${aOrAn(city.name)} ${city.name} file and we will tell you what the search shows.`}
         />
       </div>
     </div>

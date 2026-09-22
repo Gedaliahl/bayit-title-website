@@ -322,6 +322,17 @@ export function turnaroundForQuote(text: string): string {
   return parts.map((part) => part.slice(1, -1).trim()).join(' ');
 }
 
+/**
+ * "a" or "an" before a place name, by how the name is said: an Orange County
+ * file, an Orlando sale, a Union County deed. The templates wrote "a" before
+ * every name, which put "a Orange County sale" into a heading on eight county
+ * and city pages.
+ */
+export function aOrAn(name: string): 'a' | 'an' {
+  if (/^u(ni|s[aeiou]|ti)/i.test(name)) return 'a';
+  return /^[aeiou]/i.test(name) ? 'an' : 'a';
+}
+
 export function recorderName(county: Pick<Location, 'name' | 'clerkName'>): string {
   return county.clerkName ?? `${county.name} Clerk of the Circuit Court`;
 }

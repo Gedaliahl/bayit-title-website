@@ -10,8 +10,11 @@ import { QuietCta } from '@/components/QuietCta';
 import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Reviews',
-  description: metaDescription(`What clients and agents have written about working with ${site.name} on Google.`),
+  title: { absolute: `${site.name} reviews: ${site.address.city}, FL title company` },
+  description: metaDescription(
+    `What clients, realtors and lenders have written on Google about closing with ${site.name} ` +
+      `in ${site.address.city}, reproduced in full and unedited.`,
+  ),
   alternates: { canonical: '/reviews' },
   openGraph: { ...baseOpenGraph, url: '/reviews' },
 };
@@ -29,7 +32,7 @@ export default async function ReviewsPage() {
             { name: 'Reviews', path: '/reviews' },
           ]}
         />
-        <h1 className="after-crumbs">Reviews</h1>
+        <h1 className="after-crumbs">{site.name} reviews</h1>
         <p className="lede">
           These were left on our Google Business Profile. They are reproduced here in full, in the
           reviewer&rsquo;s own words, with nothing edited out.

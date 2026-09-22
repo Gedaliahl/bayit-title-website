@@ -16,7 +16,7 @@ import { initials } from '@/components/Prose';
 import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'About',
+  title: { absolute: `About ${site.name}, a ${site.address.city}, FL title company` },
   description: metaDescription(
     `${site.legalName} is a Florida title insurance agency in ${site.address.city}, closing ` +
       `residential and commercial transactions throughout Florida. What we are, exactly, what we ` +

@@ -186,6 +186,18 @@ export const baseOpenGraph = {
   siteName: site.name,
   locale: 'en_US',
   type: 'website',
+  // The site-wide card from app/opengraph-image.tsx. Because a page's own
+  // `openGraph` replaces the layout's whole object, twenty pages without a card
+  // file of their own were shared with no image at all. A route that has its
+  // own opengraph-image file still gets that one: file-based metadata wins.
+  images: [
+    {
+      url: '/opengraph-image',
+      width: 1200,
+      height: 630,
+      alt: `${site.legalName}, a Florida title company in ${site.address.city}`,
+    },
+  ],
 } satisfies NonNullable<Metadata['openGraph']>;
 
 /**

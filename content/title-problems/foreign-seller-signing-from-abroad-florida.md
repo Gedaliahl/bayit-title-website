@@ -1,6 +1,8 @@
 ---
 status: reviewed
 title: "The seller is overseas. How do they sign a Florida closing?"
+summary: "A seller abroad can sign a Florida closing by remote online notarization, before a US consular officer, or before a local notary. Settle which one early."
+seo_title: "Foreign seller signing a Florida closing from abroad"
 slug: "foreign-seller-signing-from-abroad-florida"
 cluster: "process"
 direct_answer: "A seller abroad has three routes: remote online notarization with a Florida-commissioned online notary, signing before a US consular officer, or signing before a local notary whose authority is evidenced in a form Florida will accept. Which one works depends on the country, the lender and the underwriter — and it should be settled early, not the week of closing."

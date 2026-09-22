@@ -8,8 +8,11 @@ import { PersonSchema } from '@/components/Schema';
 import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Our team',
-  description: metaDescription(`The four people who work every file at ${site.legalName}, with their Florida license and commission numbers.`),
+  title: 'Our team: Florida-licensed title agent and notaries',
+  description: metaDescription(
+    `The four people who work every file at ${site.legalName} in ${site.address.city}, with ` +
+      'their Florida title agent license and notary commission numbers.',
+  ),
   alternates: { canonical: '/team' },
   openGraph: { ...baseOpenGraph, url: '/team' },
 };

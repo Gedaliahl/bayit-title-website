@@ -17,7 +17,7 @@ import {
   teamPageHasContent,
 } from '@/lib/seo';
 import { site } from '@/lib/site';
-import { openingHoursSpecification } from '@/components/Schema';
+import { OrganizationSchema, openingHoursSpecification } from '@/components/Schema';
 
 describe('meta descriptions', () => {
   it('leaves a short answer alone', () => {
@@ -303,5 +303,18 @@ describe('opening hours in the markup', () => {
   it('leaves the closed days out rather than publishing them with no times', () => {
     const days = openingHoursSpecification().flatMap((entry) => entry.dayOfWeek);
     expect(days).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  });
+});
+
+describe('the organization every page describes', () => {
+  // Rendered on every page. It once said the agency facilitates 1031 exchanges
+  // "through" the similarly named exchange company, which has no connection to
+  // it — the one thing lib/site.ts says the site must never say.
+  it('never routes a 1031 exchange through the similarly named company', () => {
+    const element = OrganizationSchema() as { props: { data: { description: string } } };
+    const { description } = element.props.data;
+
+    expect(description).not.toMatch(new RegExp(site.exchangeCompany.name));
+    expect(description).toMatch(/whichever qualified intermediary/);
   });
 });

@@ -10,7 +10,7 @@ import { ReviewList } from '@/components/Reviews';
 import { baseOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'For realtors and mortgage brokers',
+  title: 'Title company for Florida realtors and lenders',
   description: metaDescription(
     'How we work with agents and loan officers: one named processor and closer per file, title ' +
       'read in the first week, lender conditions answered directly.',

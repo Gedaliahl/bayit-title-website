@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import {
   COUNTY_MARKETS,
   RECORDER_STATUTE,
+  aOrAn,
   countyPageTitle,
   getCounties,
   getLocation,
@@ -249,7 +250,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           match what you are quoted and we will check it against the rule again.
         </p>
 
-        <h2>Documentary stamp tax on a {county.name} sale</h2>
+        <h2>Documentary stamp tax on {aOrAn(county.name)} {county.name} sale</h2>
         <p>
           The deed is taxed by the state, not by the county.{' '}
           {surtax
@@ -314,7 +315,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
 
         <p>
           What recording costs is set by statute and is charged by the page, so it is the same at
-          every clerk in Florida — a {county.name} deed and a Levy County deed of the same length
+          every clerk in Florida — {aOrAn(county.name)} {county.name} deed and a Levy County deed of the same length
           record for the same money:
         </p>
 
@@ -389,7 +390,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           </section>
         ) : null}
 
-        <h2>How Bayit Title handles a {county.name} file</h2>
+        <h2>How Bayit Title handles {aOrAn(county.name)} {county.name} file</h2>
         <p>
           The file is opened by the same four people who close it. We order the search, examine what
           comes back, and put anything that could hold up the closing in writing — with what it
@@ -419,7 +420,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         ) : null}
 
         <QuietCta
-          text={`Send us the address and the contract date on a ${county.name} file and we will tell you what the search shows.`}
+          text={`Send us the address and the contract date on ${aOrAn(county.name)} ${county.name} file and we will tell you what the search shows.`}
         />
       </div>
     </div>

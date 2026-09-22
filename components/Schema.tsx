@@ -74,10 +74,14 @@ export function OrganizationSchema() {
         name: site.name,
         legalName: site.legalName,
         url: SITE_URL,
+        // The 1031 clause says what the agency does — the closing side, with the
+        // client's own intermediary — and never "through" the similarly named
+        // exchange company, which has no connection to the agency (lib/site.ts).
         description:
           `${site.legalName} is a Florida title insurance agency in ${site.address.city}, ` +
-          `closing residential and commercial transactions throughout Florida, and facilitating ` +
-          `1031 exchanges through ${site.exchangeCompany.name}.`,
+          `closing residential and commercial transactions throughout Florida, including the ` +
+          `closing side of 1031 like-kind exchanges with whichever qualified intermediary the ` +
+          `client chooses.`,
         telephone: site.phone,
         email: site.email,
         address: {

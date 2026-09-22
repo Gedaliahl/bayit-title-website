@@ -15,10 +15,10 @@ import { UnderwriterBadge } from '@/components/UnderwriterBadge';
 export const metadata: Metadata = {
   // Absolute, because the layout's "| Bayit Title" template applies only to the
   // segments below it; without the name here the homepage's title had none.
-  title: { absolute: `${site.name} — Florida title insurance agency in ${site.address.city}` },
+  title: { absolute: `${site.name} — Florida title company in ${site.address.city}` },
   description:
-    `${site.legalName}, a Florida title insurance agency in ${site.address.city}: title search and ` +
-    'insurance, escrow, and residential and commercial closings statewide.',
+    `${site.legalName}, a Florida title company in ${site.address.city}: title search and ` +
+    'insurance, escrow, and residential and commercial closings in all 67 counties.',
   alternates: { canonical: '/' },
   openGraph: { ...baseOpenGraph, url: '/' },
 };
@@ -48,7 +48,15 @@ export default async function HomePage() {
       <section className="section hero">
         <div className="frame hero__inner">
           <div>
-            <h1>Got a Florida deal to close? We make the title and closing simple.</h1>
+            {/* The line above the hook is what the page is searched for by. It is
+                inside the heading, so the h1 says "Florida title company" as
+                well as the question a reader arrives with. */}
+            <h1>
+              <span className="eyebrow hero__eyebrow">
+                Florida title company in {site.address.city}
+              </span>
+              Got a Florida deal to close? We make the title and closing simple.
+            </h1>
             <p className="hero__lede">
               We search title, examine what comes back, issue policies, hold the escrow and run
               the closing — anywhere in Florida. When something turns up on a file, we tell you

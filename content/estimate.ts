@@ -25,16 +25,23 @@ export function isEstimateMode(value: string | null | undefined): value is Estim
 }
 
 /** The masthead's own description of the page. */
+/**
+ * "Calculator" is the word the page is searched for by — "Florida closing cost
+ * calculator" — so the title and the headline say it. The line the headline
+ * used to be, "what a Florida closing costs, before anyone's fee", is still the
+ * page's argument and opens the lede.
+ */
 export const META = {
-  title: 'What a Florida closing costs, before anyone’s fee',
+  title: 'Florida closing cost calculator',
   description:
-    'Price a Florida closing from an address, from the contract numbers, or by sending us the ' +
-    'contract. Every line is cited to whoever sets it.',
+    'Estimate Florida closing costs from an address or a contract price: the promulgated title ' +
+    'premium, doc stamps, intangible tax and recording, each cited.',
 };
 
 export const HERO = {
   crumb: 'Estimate',
-  title: 'What a Florida closing costs, before anyone’s fee',
+  title: 'Florida closing cost calculator',
+  kicker: 'What a Florida closing costs, before anyone’s fee.',
   lede:
     'The title insurance premium is promulgated and the taxes and recording charges are ' +
     'statutory, so most of a closing statement is arithmetic anybody can check. Price it three ' +

@@ -1515,6 +1515,14 @@ legend {
   margin: 0 0 1.5rem;
 }
 
+/* The search phrase above the hook, inside the h1. It takes the eyebrow's
+   type rather than the heading's. */
+.hero__eyebrow {
+  display: block;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
 .hero__lede {
   font-size: 1.15625rem;
   line-height: 1.6;

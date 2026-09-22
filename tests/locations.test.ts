@@ -11,6 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FLORIDA_COUNTIES } from '@/lib/florida-counties';
+import { aOrAn } from '@/lib/locations';
 
 const getServiceClient = vi.fn();
 
@@ -149,5 +150,31 @@ describe('a turnaround set in a blockquote', () => {
     expect(turnaroundForQuote('Documents are recorded in the order received.')).toBe(
       'Documents are recorded in the order received.',
     );
+  });
+});
+
+describe('the article before a place name', () => {
+  it.each([
+    ['Orange County', 'an'],
+    ['Orlando', 'an'],
+    ['Alachua County', 'an'],
+    ['Escambia County', 'an'],
+    ['Indian River County', 'an'],
+    ['Okeechobee County', 'an'],
+    ['Union County', 'a'],
+    ['Broward County', 'a'],
+    ['Hollywood', 'a'],
+    ['Miami-Dade County', 'a'],
+  ])('writes %s after "%s"', (name, article) => {
+    expect(aOrAn(name)).toBe(article);
+  });
+
+  it('is right for every county the site has a page for', () => {
+    for (const county of FLORIDA_COUNTIES) {
+      const expected = /^(Alachua|Escambia|Indian River|Okaloosa|Okeechobee|Orange|Osceola)/.test(county.name)
+        ? 'an'
+        : 'a';
+      expect(aOrAn(county.name), county.name).toBe(expected);
+    }
   });
 });

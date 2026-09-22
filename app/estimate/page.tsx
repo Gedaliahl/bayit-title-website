@@ -103,7 +103,9 @@ export default async function EstimatePage() {
             ]}
           />
           <h1>{HERO.title}</h1>
-          <p className="page-hero__lede">{HERO.lede}</p>
+          <p className="page-hero__lede">
+            <strong>{HERO.kicker}</strong> {HERO.lede}
+          </p>
           <p className="page-hero__meta">
             <span>
               <span className="page-hero__dot" aria-hidden="true" />

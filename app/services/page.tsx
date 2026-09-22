@@ -15,10 +15,10 @@ import { StepBand } from '@/components/StepBand';
 import { Rail } from '@/components/Rail';
 
 export const metadata: Metadata = {
-  title: 'Services',
+  title: 'Title, escrow and closing services in Florida',
   description: metaDescription(
-    'Title search and examination, title insurance, settlement and escrow, commercial title, and ' +
-      'the closing side of a 1031 exchange, with the intermediary you choose.',
+    'Title search and examination, title insurance, escrow and settlement, commercial title, and ' +
+      'the closing side of a 1031 exchange, anywhere in Florida.',
   ),
   alternates: { canonical: '/services' },
   openGraph: { ...baseOpenGraph, url: '/services' },
@@ -129,7 +129,7 @@ export default async function ServicesIndex() {
               { name: 'Services', path: '/services' },
             ]}
           />
-          <h1>What we do</h1>
+          <h1>Title, escrow and closing services in Florida</h1>
           <p className="page-hero__lede">
             We search title, examine what the search returns, issue commitments and policies as an
             agent for {site.underwriter}, hold the escrow, and run the closing. Every file is worked
