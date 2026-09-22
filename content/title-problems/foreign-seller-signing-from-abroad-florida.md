@@ -43,7 +43,7 @@ The statute answers this directly, and the answer is no. Under [Fla. Stat. § 11
 
 The chapter contemplates the overseas signer expressly: [§ 117.201(6)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0100-0199/0117/Sections/0117.201.html) provides that for an online notarization of a principal **not located within the United States**, a passport issued by a foreign government without a US immigration stamp may be used to verify identity — which is the identification a seller abroad is most likely to hold.
 
-On document types, the only act part II carves out is solemnising the rites of matrimony (§ 117.209(1)). There is no statutory exclusion for a deed, a mortgage or a closing document.
+On document types, the only act part II carves out is solemnizing the rites of matrimony (§ 117.209(1)). There is no statutory exclusion for a deed, a mortgage or a closing document.
 
 Two practical limits apply regardless of what the statute permits. The lender has to accept a remotely notarized document, and so does the underwriter. Both positions are confirmed in writing before the signing is scheduled.
 

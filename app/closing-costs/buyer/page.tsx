@@ -239,7 +239,7 @@ export default async function BuyerClosingCostsPage() {
         </p>
 
         <QuietCta
-          text="Send us the price, the loan amount and the county and we will itemise the buyer’s side against the actual documents."
+          text="Send us the price, the loan amount and the county and we will itemize the buyer’s side against the actual documents."
           action="Request a quote"
           href="/quote"
         />

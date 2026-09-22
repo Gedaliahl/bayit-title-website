@@ -246,7 +246,7 @@ export default async function SellerClosingCostsPage() {
         </p>
 
         <QuietCta
-          text="Send us the contract and the payoff lender and we will itemise the seller’s side against the actual documents."
+          text="Send us the contract and the payoff lender and we will itemize the seller’s side against the actual documents."
           action="Request a quote"
           href="/quote"
         />
