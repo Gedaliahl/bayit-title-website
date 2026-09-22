@@ -24,14 +24,14 @@ export default function TeamPage() {
             { name: 'Our team', path: '/team' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Who works your file</h1>
+        <h1 className="after-crumbs">Who works your file</h1>
         <p className="lede">
           Four people, all in the {site.address.city} office. The same processor and the same closer
           handle a file from opening to recording, so the person you reach already knows it.
         </p>
 
         {team.map((member) => (
-          <section key={member.slug} style={{ marginTop: '2.5rem' }}>
+          <section key={member.slug} className="team-entry">
             <PersonSchema
               name={member.name}
               role={member.role}
@@ -39,17 +39,17 @@ export default function TeamPage() {
               slug={member.slug}
               linkedin={member.linkedin}
             />
-            <h2 style={{ marginTop: 0 }}>
-              <Link href={`/team/${member.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <h2 className="flush-top">
+              <Link href={`/team/${member.slug}`} className="link-quiet">
                 {member.name}
               </Link>
             </h2>
-            <p className="eyebrow" style={{ marginTop: '-0.35rem' }}>
+            <p className="eyebrow eyebrow--after-title">
               {member.role}
             </p>
             {member.bio?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             {member.publicRecord.length > 0 ? (
-              <ul className="ui muted" style={{ fontSize: '0.875rem' }}>
+              <ul className="ui muted text-small">
                 {member.publicRecord.map((entry) => (
                   <li key={entry}>{entry}</li>
                 ))}

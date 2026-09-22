@@ -55,9 +55,9 @@ export default function PrivacyPage() {
             { name: 'Privacy Policy', path: '/privacy' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Privacy Policy</h1>
+        <h1 className="after-crumbs">Privacy Policy</h1>
 
-        <p className="eyebrow" style={{ marginTop: '-0.5rem' }}>
+        <p className="eyebrow eyebrow--after-title">
           Effective {formatLongDate(PRIVACY_EFFECTIVE_DATE)}
         </p>
 

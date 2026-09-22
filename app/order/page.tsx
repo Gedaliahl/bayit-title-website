@@ -25,7 +25,7 @@ export default async function OrderPage() {
             { name: 'Open an order', path: '/order' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Open a title order</h1>
+        <h1 className="after-crumbs">Open a title order</h1>
         <p className="lede">
           Give us the address and what you know about the transaction. We open the file, order the
           search, and come back to you with the commitment and anything on it that needs clearing.

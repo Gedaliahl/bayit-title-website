@@ -844,6 +844,11 @@ main:focus {
   line-height: 1.6;
 }
 
+/* The whole-page draft notice, heavier than a banner about one section. */
+.verify-banner--draft {
+  border-width: 2px;
+}
+
 .verify-banner strong {
   display: block;
   color: var(--flag);
@@ -1128,6 +1133,13 @@ main:focus {
   border-radius: 0 var(--radius-card) var(--radius-card) 0;
   padding: 1.1rem 1.35rem;
   margin: 2rem 0;
+}
+
+.review--pull blockquote {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
 }
 
 /* ---------- byline ---------- */
@@ -4172,6 +4184,11 @@ legend {
 
 .byline--avatar p {
   margin: 0;
+}
+
+/* One person's entry on /team, spaced as its own section. */
+.team-entry {
+  margin-top: 2.5rem;
 }
 
 .team-grid {

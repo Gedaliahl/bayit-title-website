@@ -75,7 +75,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             { name: doc.title, path },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>{doc.title}</h1>
+        <h1 className="after-crumbs">{doc.title}</h1>
 
         <AnswerPanel text={doc.direct_answer} />
         {doc.status === 'draft' ? <DraftBanner /> : null}

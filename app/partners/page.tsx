@@ -41,7 +41,7 @@ export default async function PartnersPage() {
             { name: 'For realtors and mortgage brokers', path: '/partners' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>For realtors and mortgage brokers</h1>
+        <h1 className="after-crumbs">For realtors and mortgage brokers</h1>
 
         <AnswerPanel
           text={
@@ -170,7 +170,7 @@ export default async function PartnersPage() {
           and the file number the same business day. If you would rather talk it through first, call{' '}
           <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>.
         </p>
-        <p className="muted ui" style={{ fontSize: '0.875rem' }}>
+        <p className="muted ui text-small">
           Office hours are {officeHoursLine}. Signings outside those hours are arranged in advance,
           file by file.
         </p>

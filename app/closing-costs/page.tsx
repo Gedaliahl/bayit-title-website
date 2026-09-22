@@ -51,7 +51,7 @@ export default function ClosingCostsPage() {
             { name: 'Closing costs', path: '/closing-costs' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Florida closing costs</h1>
+        <h1 className="after-crumbs">Florida closing costs</h1>
         <p className="lede">
           Some lines are set by statute, the title premium is set by rule, and the rest are set by
           whoever provides them. Which side pays each line is decided by the purchase contract.

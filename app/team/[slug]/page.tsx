@@ -72,8 +72,8 @@ export default async function TeamMemberPage({ params }: { params: Promise<{ slu
             { name: member.name, path: `/team/${member.slug}` },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>{member.name}</h1>
-        <p className="eyebrow" style={{ marginTop: '-0.5rem' }}>
+        <h1 className="after-crumbs">{member.name}</h1>
+        <p className="eyebrow eyebrow--after-title">
           {member.role}
         </p>
 

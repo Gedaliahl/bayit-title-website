@@ -121,7 +121,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             { name: city.name, path: `/cities/${city.slug}` },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Title insurance and closings in {city.name}</h1>
+        <h1 className="after-crumbs">Title insurance and closings in {city.name}</h1>
 
         <AnswerPanel
           text={

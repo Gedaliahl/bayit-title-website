@@ -29,7 +29,7 @@ export default async function ReviewsPage() {
             { name: 'Reviews', path: '/reviews' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Reviews</h1>
+        <h1 className="after-crumbs">Reviews</h1>
         <p className="lede">
           These were left on our Google Business Profile. They are reproduced here in full, in the
           reviewer&rsquo;s own words, with nothing edited out.

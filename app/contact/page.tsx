@@ -25,9 +25,9 @@ export default async function ContactPage() {
             { name: 'Contact', path: '/contact' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Contact us</h1>
+        <h1 className="after-crumbs">Contact us</h1>
 
-        <h2 style={{ marginTop: '1.5rem' }}>The office</h2>
+        <h2 className="after-crumbs">The office</h2>
         <p>
           {site.address.street}
           <br />

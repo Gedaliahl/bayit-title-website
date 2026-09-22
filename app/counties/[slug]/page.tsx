@@ -127,7 +127,7 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             { name: county.name, path: `/counties/${county.slug}` },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>
+        <h1 className="after-crumbs">
           Title insurance and closings in {county.name}
         </h1>
 

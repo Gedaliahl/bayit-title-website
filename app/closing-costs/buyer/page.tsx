@@ -104,7 +104,7 @@ export default async function BuyerClosingCostsPage() {
             { name: 'Buyer closing costs', path: '/closing-costs/buyer' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Buyer closing costs in Florida</h1>
+        <h1 className="after-crumbs">Buyer closing costs in Florida</h1>
 
         <AnswerPanel
           text={

@@ -30,7 +30,7 @@ export default async function QuotePage() {
             { name: 'Request a quote', path: '/quote' },
           ]}
         />
-        <h1 style={{ marginTop: '1.5rem' }}>Request a closing cost quote</h1>
+        <h1 className="after-crumbs">Request a closing cost quote</h1>
 
         <AnswerPanel
           text={
