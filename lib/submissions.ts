@@ -244,9 +244,10 @@ export async function recordOnce<Row, T extends SubmissionTable = SubmissionTabl
   buildRow: () => InsertRow<T>,
   admit: () => Promise<boolean> = async () => true,
 ): Promise<{ row: Row; duplicate: boolean } | null> {
-  // Untyped on purpose, and only here: `submission_id` is not in the generated
-  // types until its migration is applied and the types are regenerated, and
-  // the rows themselves are still checked against the table by `buildRow`.
+  // Untyped on purpose, and only here: supabase-js cannot follow a table name
+  // that is itself a type parameter, so a query shared by leads and orders
+  // does not type-check against the generated types. The rows are still
+  // checked against their table, by `buildRow`'s return type.
   const db = requireServiceClient() as unknown as SupabaseClient;
   const lookup = (id: string) =>
     db.from(table).select(columns).eq('submission_id', id).maybeSingle<Row>();

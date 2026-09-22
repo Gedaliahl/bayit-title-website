@@ -105,6 +105,7 @@ export type Database = {
           role: string | null;
           source: Database['public']['Enums']['lead_source'];
           status: Database['public']['Enums']['lead_status'];
+          submission_id: string | null;
           transaction_type: string | null;
           updated_at: string;
           utm: Json | null;
@@ -126,6 +127,7 @@ export type Database = {
           role?: string | null;
           source?: Database['public']['Enums']['lead_source'];
           status?: Database['public']['Enums']['lead_status'];
+          submission_id?: string | null;
           transaction_type?: string | null;
           updated_at?: string;
           utm?: Json | null;
@@ -249,6 +251,7 @@ export type Database = {
           reference: string | null;
           seller_name: string | null;
           status: Database['public']['Enums']['order_status'];
+          submission_id: string | null;
           transaction_type: string | null;
           updated_at: string;
         };
@@ -275,6 +278,7 @@ export type Database = {
           reference?: string | null;
           seller_name?: string | null;
           status?: Database['public']['Enums']['order_status'];
+          submission_id?: string | null;
           transaction_type?: string | null;
           updated_at?: string;
         };

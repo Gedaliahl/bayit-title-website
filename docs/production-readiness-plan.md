@@ -74,11 +74,10 @@ answered D1–D6. What the branch now proves on every run:
 
 ### Still with whoever holds the accounts
 
-1. **Apply the migrations** in `supabase/migrations/20260922000100` through
-   `…000500`, in order, through the SQL editor. The header of the first file
-   explains why `supabase db push` refuses until the remote history is
-   reconciled. After 000200, regenerate `lib/database.types.ts` for
-   `submission_id`.
+1. ~~Apply the migrations.~~ Done 22 September 2026: 000100–000500 applied
+   to the website project and recorded in its migration history. The anon
+   insert policies are gone, and the security advisor shows only the
+   intended "RLS on, no policy" notices.
 2. **Environment variables in Vercel.** `.env.example` documents each one.
    - Required: `RESEND_API_KEY` and `NOTIFY_FROM_EMAIL`. Without them the
      office is never told about a submission, and `/api/health` answers 503.
