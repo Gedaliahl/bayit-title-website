@@ -108,19 +108,20 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (await isRateLimited('quotes', ipHash, HOURLY_LIMIT)) {
+    const recorded = await recordOnce<{ id: string }, 'leads'>(
+      'leads',
+      'id',
+      submissionId,
+      () => ({ ...lead, ip_hash: ipHash }),
+      async () => !(await isRateLimited('quotes', ipHash, HOURLY_LIMIT)),
+    );
+    if (!recorded) {
       return NextResponse.json(
         { error: `That is more requests than we can take in an hour. Call ${site.phoneDisplay}.` },
         { status: 429 },
       );
     }
-
-    const { row, duplicate } = await recordOnce<{ id: string }, 'leads'>(
-      'leads',
-      'id',
-      submissionId,
-      () => ({ ...lead, ip_hash: ipHash }),
-    );
+    const { row, duplicate } = recorded;
 
     // Minted after the lead is safely stored, never before.
     const uploads = await mintUploadTickets(row.id, readable, 'quotes');

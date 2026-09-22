@@ -221,6 +221,30 @@ describe('a retry of something already received', () => {
     expect(state.deferred).toHaveLength(0);
   });
 
+  it('finds the first order even when the hour’s limit has since been reached', async () => {
+    await load((query) => {
+      if (query.head) return { count: 99 };
+      if (query.op === 'select' && query.filters.some(([, column]) => column === 'submission_id')) {
+        return { data: { id: ORDER_ID, reference: 'WEB-202609-FIRST' } };
+      }
+      return healthy(query);
+    });
+    const { POST } = await import('@/app/api/orders/route');
+
+    const response = await POST(post('/api/orders', { ...order, submission_id: SUBMISSION_ID }));
+    expect(response.status).toBe(200);
+    expect((await response.json()).reference).toBe('WEB-202609-FIRST');
+  });
+
+  it('still refuses a new order past the hour’s limit', async () => {
+    await load((query) => (query.head ? { count: 99 } : healthy(query)));
+    const { POST } = await import('@/app/api/orders/route');
+
+    const response = await POST(post('/api/orders', { ...order, submission_id: SUBMISSION_ID }));
+    expect(response.status).toBe(429);
+    expect(inserts()).toHaveLength(0);
+  });
+
   it('still records the order when the submission_id column is not there yet', async () => {
     await load((query) => {
       if (query.op === 'select' && query.filters.some(([, column]) => column === 'submission_id')) {

@@ -194,12 +194,23 @@ interface DbError {
 
 /**
  * Whether the `submission_id` column is there. Assumed until the database says
- * otherwise, then remembered for the life of the instance: the migration that
- * adds it (supabase/migrations/20260922000200_submission_ids.sql) may not have
- * been applied yet, and until it is, a submission must still go through — it
- * simply cannot be de-duplicated.
+ * otherwise: the migration that adds it
+ * (supabase/migrations/20260922000200_submission_ids.sql) may not have been
+ * applied yet, and until it is, a submission must still go through — it simply
+ * cannot be de-duplicated. The answer is asked again after a while, so a warm
+ * instance starts de-duplicating once the migration lands rather than at its
+ * next cold start.
  */
-let hasSubmissionColumn = true;
+const RECHECK_COLUMN_MS = 10 * 60_000;
+let submissionColumnMissingAt: number | null = null;
+
+function hasSubmissionColumn(): boolean {
+  return submissionColumnMissingAt === null || Date.now() - submissionColumnMissingAt > RECHECK_COLUMN_MS;
+}
+
+function noteMissingColumn(): void {
+  submissionColumnMissingAt = Date.now();
+}
 
 /** PostgREST's "no such column in the payload", and Postgres's "no such column". */
 function isMissingColumn(error: DbError): boolean {
@@ -220,13 +231,19 @@ type InsertRow<T extends SubmissionTable> = Database['public']['Tables'][T]['Ins
  *
  * `buildRow` is called afresh on each attempt, so a caller that mints a
  * reference inside it gets a new one when a reference collides.
+ *
+ * `admit` is asked only for a submission that is not already on file, and a
+ * false answer returns null without writing anything. It is where the hourly
+ * limit goes: a retry of an order that was recorded must find that order, not
+ * be told there have been too many orders.
  */
 export async function recordOnce<Row, T extends SubmissionTable = SubmissionTable>(
   table: T,
   columns: string,
   submissionId: string | undefined,
   buildRow: () => InsertRow<T>,
-): Promise<{ row: Row; duplicate: boolean }> {
+  admit: () => Promise<boolean> = async () => true,
+): Promise<{ row: Row; duplicate: boolean } | null> {
   // Untyped on purpose, and only here: `submission_id` is not in the generated
   // types until its migration is applied and the types are regenerated, and
   // the rows themselves are still checked against the table by `buildRow`.
@@ -234,14 +251,16 @@ export async function recordOnce<Row, T extends SubmissionTable = SubmissionTabl
   const lookup = (id: string) =>
     db.from(table).select(columns).eq('submission_id', id).maybeSingle<Row>();
 
-  if (submissionId && hasSubmissionColumn) {
+  if (submissionId && hasSubmissionColumn()) {
     const { data, error } = await lookup(submissionId);
     if (data) return { row: data, duplicate: true };
-    if (error && isMissingColumn(error)) hasSubmissionColumn = false;
+    if (error && isMissingColumn(error)) noteMissingColumn();
   }
 
+  if (!(await admit())) return null;
+
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const keyed = Boolean(submissionId) && hasSubmissionColumn;
+    const keyed = Boolean(submissionId) && hasSubmissionColumn();
     const { data, error } = await db
       .from(table)
       .insert({ ...buildRow(), ...(keyed ? { submission_id: submissionId } : {}) })
@@ -252,7 +271,7 @@ export async function recordOnce<Row, T extends SubmissionTable = SubmissionTabl
     if (!error) throw new Error('the insert returned no row');
 
     if (keyed && isMissingColumn(error)) {
-      hasSubmissionColumn = false;
+      noteMissingColumn();
       continue;
     }
 

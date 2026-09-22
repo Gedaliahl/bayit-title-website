@@ -100,19 +100,20 @@ export async function POST(request: Request) {
     });
 
   try {
-    if (await isRateLimited('orders', ipHash, HOURLY_LIMIT)) {
+    const recorded = await recordOnce<{ id: string; reference: string }, 'orders'>(
+      'orders',
+      'id, reference',
+      submissionId,
+      () => ({ ...order, reference: buildReference(), ip_hash: ipHash }),
+      async () => !(await isRateLimited('orders', ipHash, HOURLY_LIMIT)),
+    );
+    if (!recorded) {
       return NextResponse.json(
         { error: `That is more orders than we can take in an hour. Call ${site.phoneDisplay}.` },
         { status: 429 },
       );
     }
-
-    const { row, duplicate } = await recordOnce<{ id: string; reference: string }, 'orders'>(
-      'orders',
-      'id, reference',
-      submissionId,
-      () => ({ ...order, reference: buildReference(), ip_hash: ipHash }),
-    );
+    const { row, duplicate } = recorded;
 
     // Minted after the order is safely stored, never before. If issuing them
     // fails the order still stands and the office still hears about it. A

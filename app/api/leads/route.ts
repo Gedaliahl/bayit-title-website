@@ -55,19 +55,20 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (await isRateLimited('leads', ipHash, HOURLY_LIMIT)) {
+    const recorded = await recordOnce<{ id: string }, 'leads'>(
+      'leads',
+      'id',
+      submissionId,
+      () => ({ ...lead, ip_hash: ipHash }),
+      async () => !(await isRateLimited('leads', ipHash, HOURLY_LIMIT)),
+    );
+    if (!recorded) {
       return NextResponse.json(
         { error: `That is more requests than we can take in an hour. Call ${site.phoneDisplay}.` },
         { status: 429 },
       );
     }
-
-    const { row, duplicate } = await recordOnce<{ id: string }, 'leads'>(
-      'leads',
-      'id',
-      submissionId,
-      () => ({ ...lead, ip_hash: ipHash }),
-    );
+    const { row, duplicate } = recorded;
 
     // Persisted first, then notified after the response: a mail failure must
     // not lose the lead, and a slow one must not make the sender send it twice.
