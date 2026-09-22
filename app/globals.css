@@ -305,6 +305,11 @@ main:focus {
   margin-top: 0;
 }
 
+/* A list of cards under the paragraph that introduces it. */
+.after-intro {
+  margin-top: 1.5rem;
+}
+
 .text-small {
   font-size: 0.875rem;
 }
@@ -1559,6 +1564,10 @@ legend {
   margin-bottom: 1.375rem;
 }
 
+.filecard__head .chip {
+  white-space: nowrap;
+}
+
 .filecard__head h2 {
   font-family: var(--font-body);
   font-size: 1.25rem;
@@ -1918,9 +1927,12 @@ legend {
 }
 
 /* The step itself, held back until the file has reached it. */
+/* A step not yet reached is dimmed, but no further than its lighter line of
+   text can go and still read at 4.5:1 on the card: 0.82 of --ink-muted. The
+   dot and the rail carry most of the sense of which steps are done. */
 @keyframes filestep-body-1 {
   0% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   3%,
   100% {
@@ -1931,7 +1943,7 @@ legend {
 @keyframes filestep-body-2 {
   0%,
   25% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   28%,
   100% {
@@ -1942,7 +1954,7 @@ legend {
 @keyframes filestep-body-3 {
   0%,
   50% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   53%,
   100% {
@@ -1953,7 +1965,7 @@ legend {
 @keyframes filestep-body-4 {
   0%,
   75% {
-    opacity: 0.45;
+    opacity: 0.82;
   }
   78%,
   100% {
@@ -1973,6 +1985,73 @@ legend {
   }
 }
 
+/* Paused where it stands, by the switch under the steps. */
+.filecard:has(.motion-toggle input:checked) .filestep__dot,
+.filecard:has(.motion-toggle input:checked) .filestep__line::after,
+.filecard:has(.motion-toggle input:checked) .filestep__body,
+.filecard:has(.motion-toggle input:checked) .filestep__disc {
+  animation-play-state: paused;
+}
+
+.filecard .filecard__toggle {
+  display: flex;
+  width: fit-content;
+  margin-top: 1rem;
+}
+
+/* ---------- pause switch ---------- */
+/* See components/MotionToggle.tsx. A checkbox laid over a small pill, so the
+   whole pill is the target and the box itself is never seen. */
+
+.motion-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.motion-toggle input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.motion-toggle:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.motion-toggle__play,
+.motion-toggle:has(input:checked) .motion-toggle__pause {
+  display: none;
+}
+
+.motion-toggle:has(input:checked) .motion-toggle__play {
+  display: inline;
+}
+
+/* Nothing moves for these readers, so there is nothing to pause. The second
+   selector matches the file card's placement rule, which would otherwise win. */
+@media (prefers-reduced-motion: reduce) {
+  .motion-toggle,
+  .filecard .filecard__toggle {
+    display: none;
+  }
+}
+
 /* ---------- services ticker ---------- */
 /* What the office closes, as a band rather than a list, because a band reads
    in passing and a list asks to be read. */
@@ -1982,7 +2061,7 @@ legend {
   overflow: hidden;
   border-block: 1px solid var(--rule);
   background: var(--paper);
-  padding-block: 1.375rem;
+  padding-block: 1.375rem 0.875rem;
 }
 
 .ticker::before,
@@ -1991,7 +2070,9 @@ legend {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 7.5rem;
+  /* At most a sixth of the screen each, or on a folded phone the two fades
+     cover the band they are fading. */
+  width: min(7.5rem, 15vw);
   z-index: 1;
   pointer-events: none;
 }
@@ -2011,6 +2092,35 @@ legend {
   align-items: center;
   white-space: nowrap;
   animation: ticker 46s linear infinite;
+}
+
+.ticker__run {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Held still by the switch, and while a pointer rests on the band, so a pill
+   can be read. Not on focus: the switch is the only thing in the band that
+   takes it, and pausing on it would leave "Play" pressed and nothing moving. */
+.ticker:has(.motion-toggle input:checked) .ticker__track {
+  animation-play-state: paused;
+}
+
+@media (hover: hover) {
+  .ticker:hover .ticker__track {
+    animation-play-state: paused;
+  }
+}
+
+/* Under the band at the frame's right edge, clear of the pills: laid over
+   them, it read as one more pill being cut off. */
+.ticker__controls {
+  position: relative;
+  /* Above the edge fades, which run the band's full height. */
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
 }
 
 /* The track holds the same run of pills twice, so -50% lands back on an
@@ -2054,6 +2164,11 @@ legend {
 @media print {
   .ticker__track {
     animation: none;
+  }
+
+  .motion-toggle,
+  .filecard .filecard__toggle {
+    display: none;
   }
 }
 
@@ -2222,6 +2337,19 @@ legend {
   transform: scale(1.25);
 }
 
+/* A dot is drawn by its fill alone, and Windows High Contrast repaints fills,
+   so without these the dots and the current one vanish. */
+@media (forced-colors: active) {
+  .quote-rotator__dot {
+    border: 1px solid ButtonText;
+  }
+
+  .quote-rotator__dot--current {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}
+
 /* The component does not rotate at all under this, so this only catches a
    reader who turns motion down while the strip is on screen, or one moving
    through the reviews with the dots. */
@@ -2280,13 +2408,13 @@ legend {
   }
 }
 
-@media (max-width: 60rem) {
+@media (max-width: 62rem) {
   .figures__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 40rem) {
   .figures__grid {
     grid-template-columns: minmax(0, 1fr);
   }

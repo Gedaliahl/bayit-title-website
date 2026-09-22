@@ -663,3 +663,40 @@ test('an order whose second upload fails is still received, and names the file',
   await expect(page.getByText('1 document attached to the file.')).toBeVisible();
   await expect(page.locator('.form-status__list li')).toHaveText(['survey.pdf — the upload failed']);
 });
+
+// ---------------------------------------------------------------------------
+// The homepage's moving parts
+
+test.describe('what moves on the homepage', () => {
+  test('the pause switches stop the ticker and the example file', async ({ page }) => {
+    await page.goto('/');
+    const tickerSwitch = page.getByRole('checkbox', { name: 'Pause the moving list of what we close' });
+    const fileSwitch = page.getByRole('checkbox', { name: 'Pause the example file' });
+
+    await tickerSwitch.check();
+    await fileSwitch.check();
+    const state = await page.evaluate(() => ({
+      ticker: getComputedStyle(document.querySelector('.ticker__track')!).animationPlayState,
+      file: getComputedStyle(document.querySelector('.filestep__disc')!).animationPlayState,
+    }));
+    expect(state).toEqual({ ticker: 'paused', file: 'paused' });
+
+    await tickerSwitch.uncheck();
+    // The click leaves the pointer on the band, which holds it still by design.
+    await page.mouse.move(0, 0);
+    await expect
+      .poll(() => page.evaluate(() => getComputedStyle(document.querySelector('.ticker__track')!).animationPlayState))
+      .toBe('running');
+  });
+
+  test('offers no pause switch to a reader who has asked for less motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    await expect(page.getByRole('checkbox', { name: 'Pause the example file' })).toBeHidden();
+  });
+
+  test('gives a screen reader the final figures, not the count', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.figure__value .visually-hidden').first()).toHaveText(String(site.floridaCounties));
+  });
+});

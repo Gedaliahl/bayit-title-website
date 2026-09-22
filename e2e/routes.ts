@@ -26,9 +26,8 @@ export function draftPath(): string | null {
 }
 
 /**
- * Every page the sitemap lists except the homepage, which is out of this
- * suite's scope, plus the two estimator modes the sitemap cannot express, an
- * address that was never a page, and a draft.
+ * Every page the sitemap lists, plus the two estimator modes the sitemap
+ * cannot express, an address that was never a page, and a draft.
  *
  * The sitemap's URLs are absolute on the canonical host whatever server
  * answered, so only their paths are kept.
@@ -38,8 +37,7 @@ export async function routes(request: APIRequestContext): Promise<Route[]> {
   if (!response.ok()) throw new Error(`/sitemap.xml answered ${response.status()}`);
   const xml = await response.text();
   const listed = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-    .map((match) => new URL(match[1]!).pathname)
-    .filter((pathname) => pathname !== '/');
+    .map((match) => new URL(match[1]!).pathname);
 
   const draft = draftPath();
   return [
