@@ -13,13 +13,12 @@ import { FeaturedQuote } from '@/components/Reviews';
 import { UnderwriterBadge } from '@/components/UnderwriterBadge';
 
 export const metadata: Metadata = {
-  title: `Florida title insurance agency in ${site.address.city}`,
+  // Absolute, because the layout's "| Bayit Title" template applies only to the
+  // segments below it; without the name here the homepage's title had none.
+  title: { absolute: `${site.name} — Florida title insurance agency in ${site.address.city}` },
   description:
-    `${site.legalName} searches title, issues policies as an agent for ${site.underwriter}, holds ` +
-    `escrow and closes residential and commercial transactions throughout Florida. Excellent ` +
-    `title work, done by four named people in Coral Springs: the search read by a person, ` +
-    `problems put in writing the week they are found, the same processor and closer on your file ` +
-    `from opening to recording.`,
+    `${site.legalName}, a Florida title insurance agency in ${site.address.city}: title search and ` +
+    'insurance, escrow, and residential and commercial closings statewide.',
   alternates: { canonical: '/' },
   openGraph: { ...baseOpenGraph, url: '/' },
 };
@@ -127,11 +126,9 @@ export default async function HomePage() {
 
       <section className="section section--band">
         <div className="frame measure">
-          <h2 style={{ marginTop: 0 }}>Why bring the file here</h2>
+          <h2 className="flush-top">Why bring the file here</h2>
           <p>
-            Because the work is excellent, and excellence in title is a set of specific, checkable
-            things rather than a claim. The search is read by a person who says out loud what the
-            exceptions mean. A problem goes to you in writing the week it is found, with what it
+            The search is read by a person who says out loud what the exceptions mean. A problem goes to you in writing the week it is found, with what it
             would take to clear, instead of surfacing at the closing table. The same processor and
             the same closer carry the file from opening through recording. The phone is answered by
             someone who already knows your file.
@@ -165,7 +162,7 @@ export default async function HomePage() {
         </div>
 
         {recent.length > 0 ? (
-          <ul className="card-grid card-grid--three" style={{ marginTop: '1.5rem' }}>
+          <ul className="card-grid card-grid--three after-intro">
             {recent.map((doc) => (
               <li key={doc.slug} className="card">
                 <span className="chip">{CLUSTER_LABELS[doc.cluster]}</span>
@@ -180,7 +177,7 @@ export default async function HomePage() {
 
       <section className="section section--band">
         <div className="frame measure">
-          <h2 style={{ marginTop: 0 }}>What we close</h2>
+          <h2 className="flush-top">What we close</h2>
           <p>
             <strong>Residential purchases, sales and refinances</strong> — the everyday file, done
             properly.
@@ -194,12 +191,11 @@ export default async function HomePage() {
             it were.
           </p>
           <p>
-            <strong>1031 exchanges.</strong> We can facilitate a like-kind exchange through{' '}
-            {site.exchangeCompany.name} — {site.exchangeCompany.relationship}, despite the shared
-            name — so the qualified intermediary and the closing are arranged together rather than
-            by two offices that have never spoken. It has to be set up before the relinquished
-            property closes: once the seller has touched the money, the exchange is over. Tell us
-            early and we will help you get the paperwork in the right order.{' '}
+            <strong>1031 exchanges.</strong> We close the transaction alongside whichever qualified
+            intermediary you choose. The exchange has to be set up before the relinquished
+            property closes: once the seller has touched the money, it is over. Tell us early and we
+            will help you get the paperwork in the right order. ({site.exchangeCompany.name},
+            despite the name, is {site.exchangeCompany.relationship} with no connection to us.){' '}
             <Link href="/services">More on all three →</Link>
           </p>
         </div>
@@ -207,12 +203,12 @@ export default async function HomePage() {
 
       <section className="frame section">
         <div className="measure">
-          <h2 style={{ marginTop: 0 }}>Where we close</h2>
+          <h2 className="flush-top">Where we close</h2>
           <p>
             We close throughout Florida. Most of our files sit in{' '}
             {site.priorityCounties.slice(0, -1).join(', ')} and {site.priorityCounties.at(-1)},
-            where who customarily pays for the owner&rsquo;s policy, what the clerk charges, and how
-            long recording takes all differ by county.
+            where who customarily pays for the owner&rsquo;s policy, which office records the deed,
+            and how long recording takes all differ by county.
           </p>
           <ul className="linklist">
             {counties
@@ -236,13 +232,13 @@ export default async function HomePage() {
 
       <section className="section section--band">
         <div className="frame measure">
-          <h2 style={{ marginTop: 0 }}>How a signing can happen</h2>
+          <h2 className="flush-top">How a signing can happen</h2>
           <ul>
             {site.closingMethods.map((method) => (
               <li key={method}>{method}</li>
             ))}
           </ul>
-          <p className="muted ui" style={{ fontSize: '0.875rem' }}>
+          <p className="muted ui text-small">
             Office hours are {officeHoursLine}. Signings outside those hours are arranged in
             advance, file by file.
           </p>

@@ -105,12 +105,14 @@ describe('page metadata', () => {
     },
   );
 
+  it('names the firm in the homepage title, which the layout’s template does not reach', () => {
+    const home = all.find((route) => route.path === '/')!;
+    expect(resolvedTitle('/', home.metadata.title)).toMatch(/^Bayit Title — /);
+  });
+
   it.each(all.map((route) => [route.path, route.metadata] as const))(
     '%s has a description a results page can show whole',
     (route, metadata) => {
-      // The homepage was left out of the production-readiness pass at the
-      // firm's request; its description, which runs long, is theirs to change.
-      if (route === '/') return;
       expect(typeof metadata.description).toBe('string');
       expect((metadata.description as string).length).toBeLessThanOrEqual(DESCRIPTION_LIMIT);
     },
