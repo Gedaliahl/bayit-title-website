@@ -411,7 +411,20 @@ async function toHtml(markdown: string): Promise<string> {
     .use(remarkGfm)
     .use(remarkHtml, { sanitize: false })
     .process(markdown);
-  return String(processed);
+  return wrapTables(String(processed));
+}
+
+/**
+ * A wide table scrolls inside its own box rather than pushing the page sideways
+ * on a phone. The box, not the table, is what scrolls: a table set to
+ * `display: block` loses its table semantics in Safari and VoiceOver. The box
+ * is focusable and named so a keyboard can scroll it and a screen reader says
+ * what it is.
+ */
+function wrapTables(html: string): string {
+  return html
+    .replace(/<table>/g, '<div class="table-scroll" role="region" tabindex="0" aria-label="Table"><table>')
+    .replace(/<\/table>/g, '</table></div>');
 }
 
 /**

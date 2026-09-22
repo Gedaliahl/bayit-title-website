@@ -445,3 +445,17 @@ describe('the common questions', () => {
     ]);
   });
 });
+
+describe('tables in the body', () => {
+  it('scroll inside a named, focusable box instead of widening the page', async () => {
+    writeDoc('with-a-table', {
+      body: '## What does it cost?\n\n| Item | Amount |\n| --- | --- |\n| Recording | $10.00 |\n',
+    });
+    const { getDoc } = await loadContentModule();
+    const doc = await getDoc('title-problems', 'with-a-table');
+    const html = doc?.sections.map((section) => section.html).join('') ?? '';
+
+    expect(html).toContain('<div class="table-scroll" role="region" tabindex="0" aria-label="Table"><table>');
+    expect(html).toContain('</table></div>');
+  });
+});
