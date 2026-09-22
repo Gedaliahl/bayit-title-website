@@ -12,13 +12,14 @@ answered D1–D6. What the branch now proves on every run:
 
 - `npm run lint`, `npm run typecheck`, `npm test` (668 tests) and
   `npm run build` pass, and `npm audit` finds 0 vulnerabilities.
-- `npm run test:e2e` passes, 138 tests in a real browser. It covers:
+- `npm run test:e2e` passes, 136 tests in a real browser. It covers:
   - every sitemap page, the homepage included, at 14 widths from 280 to
     2560px, checking for sideways scroll, console errors, one h1, heading
     order, alt text and tap targets;
   - axe, WCAG 2.2 AA, at 375 and 1280;
   - the flows: the menu, both estimator modes and every error state, the three
-    forms, both upload boxes, and the homepage's pause switches.
+    forms, both upload boxes, and the homepage holding still under reduced
+    motion.
 - `npm run lhci`, run as a phone: performance 0.93–0.96, and accessibility,
   best practices and SEO all 1.0. The pages measured are /estimate, a county
   page, a library page and /order.
@@ -108,6 +109,11 @@ answered D1–D6. What the branch now proves on every run:
   checks layout without them.
 - Next logs `NoFallbackError` for every 404 under a segment with
   `dynamicParams = false`. That is the framework's behaviour, not a failure.
+- The homepage's Pause/Play switches were taken off at the firm's request, so
+  item 5.2's WCAG 2.2.2 half is open again: the ticker and the example file
+  card loop with no way to stop them, except a pointer resting on the ticker
+  or the reader's reduced-motion setting. Running each animation once and
+  resting would close it without a button.
 
 ## How this was found
 

@@ -4,12 +4,10 @@
  * A short read of what the office handles — the headline categories, not the
  * full list. The order form's type options are finer grained than this.
  *
- * Moving content that runs on its own needs a way to stop it (WCAG 2.2.2), so
- * the band carries a pause switch and also holds still under a pointer. The switch is a real checkbox and the stylesheet does the
- * pausing, so none of it needs JavaScript.
+ * It holds still under a pointer, so a pill can be read, and does not move at
+ * all for a reader who has asked for less motion. The stylesheet does both, so
+ * none of it needs JavaScript.
  */
-
-import { MotionToggle } from './MotionToggle';
 
 const ICON = {
   width: 32,
@@ -112,9 +110,6 @@ export function ServicesTicker() {
           <Run />
           <Run />
         </span>
-      </div>
-      <div className="frame ticker__controls">
-        <MotionToggle label="Pause the moving list of what we close" />
       </div>
     </div>
   );

@@ -7,11 +7,8 @@
  * each dot as it arrives and drawing the rail gold behind it. The walk is what
  * shows progress now, which is why no single step is marked in progress. It is
  * CSS alone (see `app/globals.css`): no JavaScript, and it holds still at the
- * finished state for a reader who has asked for less motion. It loops for as
- * long as the page is open, so it carries a pause switch (WCAG 2.2.2).
+ * finished state for a reader who has asked for less motion.
  */
-
-import { MotionToggle } from './MotionToggle';
 
 const ICON = {
   width: 16,
@@ -93,8 +90,6 @@ export function FileTimeline() {
           </div>
         </div>
       ))}
-
-      <MotionToggle label="Pause the example file" className="filecard__toggle" />
     </div>
   );
 }
