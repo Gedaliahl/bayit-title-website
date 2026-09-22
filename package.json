@@ -15,6 +15,7 @@
     "check:rolls": "vitest run --config vitest.live.config.mts",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test a11y.spec.ts",
+    "lhci": "npx --yes @lhci/cli@0.15.1 autorun",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
