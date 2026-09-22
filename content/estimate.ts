@@ -498,6 +498,11 @@ export const DETAIL = {
       'county” is sixty-odd counties at once — the owner’s policy is shown to both sides and says ' +
       'so. In every case the purchase contract is what settles it, and the contract can put any of ' +
       'these lines on either party. Read the paragraph that does it rather than assuming.',
+    p4a: 'Each side’s costs, the ones no calculator can price included, are set out line by line on the ',
+    p4Buyer: 'buyer closing costs',
+    p4b: ' and ',
+    p4Seller: 'seller closing costs',
+    p4c: ' pages.',
   },
   floor: {
     title: 'Why the roll’s value, and where it goes wrong',

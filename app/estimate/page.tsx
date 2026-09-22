@@ -10,6 +10,7 @@
 // or this office for the two charges that are ours.
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 import { DETAIL, HERO, META, RAIL } from '@/content/estimate';
 import { getCounties } from '@/lib/locations';
@@ -167,6 +168,13 @@ export default async function EstimatePage() {
                 {DETAIL.sides.p2b}
               </p>
               <p>{DETAIL.sides.p3}</p>
+              <p>
+                {DETAIL.sides.p4a}
+                <Link href="/closing-costs/buyer">{DETAIL.sides.p4Buyer}</Link>
+                {DETAIL.sides.p4b}
+                <Link href="/closing-costs/seller">{DETAIL.sides.p4Seller}</Link>
+                {DETAIL.sides.p4c}
+              </p>
             </div>
           </section>
 
