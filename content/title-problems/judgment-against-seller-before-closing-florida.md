@@ -10,9 +10,7 @@ related:
   - "open-permits-before-closing-florida"
   - "litigation-against-seller-flip-florida"
 pending_confirmation:
-  - "JG-V1 (Bayit Title): The verdict label shown on the index card (\"Stops the closing? Rarely\"), the four verdict-card rows, and the five steps — drafted from this page, not yet reviewed"
-  - "JG-01 (Bayit Title): Answered in part from the statute — § 701.04(3) gives the creditor 60 days from payment to record the satisfaction. Still open: how long a payoff and release actually takes on our files, and whether the drafted three-to-ten business days for the written payoff itself is right"
-  - "JG-05 (Bayit Title): The supporting detail we assemble as standard on an identity affidavit, and our practice of obtaining the underwriter's written sign-off before closing"
+  - "Tenancy by the entireties (attorney): the one item left on this page, and the reason it is still a draft. Whether a money judgment against one spouse attaches to property held by both as tenants by the entireties turns on Florida case law rather than on a statute, so it needs a Florida real estate attorney's statement rather than a summary assembled from public sources. The VERIFY flag in the body carries the question"
 verdict:
   headline: "Rarely — if it is found early."
   short: "Rarely"
@@ -86,11 +84,11 @@ Sixty days is the limit the statute allows, not a closing timetable. Where a jud
 
 Where the judgment does not belong to this seller, the route is different: an affidavit establishing that the debtor is a different person, in a form the underwriter will accept.
 
-The instrument is an affidavit of identity — often called a same-name or not-the-same-person affidavit — sworn by the seller, stating that they are not the person named in the judgment and setting out the facts that show it. What makes it acceptable is the supporting detail rather than the denial: full legal name and any former names, date of birth, the last four digits of the social security number, residence history covering the period of the judgment, and a comparison against whatever identifying information the judgment and its underlying case file contain.
+The instrument is an affidavit of identity — often called a same-name or not-the-same-person affidavit — sworn by the seller, stating that they are not the person named in the judgment and setting out the facts that show it. What makes it acceptable is the supporting detail rather than the denial: full legal name and any former names, date of birth, the last four digits of the social security number, residence history covering the period of the judgment, and a comparison against whatever identifying information the judgment and its underlying case file contain. That is what we assemble as standard.
 
 Where the match is close, or the judgment is large, the underwriter may also want a search of the debtor's identifiers, a credit report, or a written statement from the judgment creditor's counsel that the seller is not their debtor.
 
-The form and the supporting documentation are First American's call, and we obtain their written sign-off on the affidavit before closing rather than relying on it afterwards.
+The form and the supporting documentation are First American's call. We obtain their written sign-off on the affidavit before closing, on every file, rather than relying on it afterwards.
 
 ## How Bayit Title handles this
 

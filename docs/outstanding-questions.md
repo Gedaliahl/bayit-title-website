@@ -1,5 +1,86 @@
 # What still needs someone outside the office
 
+> **22 September 2026 — the team's answers came back.** The pre-launch question
+> set was answered by Ged and the four pages it unblocked are now published.
+> This section is the current state; everything below it is the 20 September
+> record and is left as written.
+>
+> **Published 22 September 2026** (`status: reviewed`, `author: shevy`, all
+> `pending_confirmation` cleared): `open-permits-before-closing-florida`,
+> `no-legal-access-landlocked-property-florida`,
+> `buying-property-bankruptcy-estate-florida`,
+> `foreign-seller-signing-from-abroad-florida`. With the two pages already
+> live, production now serves six of the nine.
+>
+> **Still draft, and why:**
+>
+> - `judgment-against-seller-before-closing-florida` — the tenancy-by-the-
+>   entireties question. JG-V1, JG-01 and JG-05 are answered and folded in; the
+>   `[VERIFY]` flag is the only thing left, and it needs a Florida real estate
+>   attorney's statement. This remains the one outward-facing blocker on the
+>   project.
+> - `litigation-against-seller-flip-florida` — LT-05. LT-V1, LT-01, LT-04,
+>   LT-06 and LT-08 are answered and folded in, and the "How Bayit Title
+>   handles this" placeholder is gone. The "What the finished page needs"
+>   section is still placeholder text drawn from no file. Per the team's own
+>   instruction: if the underlying file does not come back, drop the page
+>   rather than publish it. LT-09 stays open for counsel either way.
+> - `mobile-and-remote-signings` — SG-04. SG-01, SG-02, SG-03, SG-05 and SG-08
+>   are answered and folded in, including the fee practice (passed through,
+>   shown as a notary line) and the three-business-day reach anywhere in the
+>   United States. The online-notary registration still has to be read by hand
+>   from `online-notary.sunbiz.org` for Jennifer Eileen Simon (HH 795313) and
+>   Chaya Brooks (HH 817398). It is a licensing claim on a licensed agency's
+>   site and cannot be filled in from anything else.
+>
+> **Still worth counsel's eye, none of it blocking:** LT-09 (the fair nexus
+> citations), the FIRPTA settlement-agent sentence on the foreign-seller page,
+> the bankruptcy page as a whole, and whether the FAR/BAR paraphrase on the
+> open-permits page is within what the copyright allows. All four are now on
+> published or near-published pages, so they are read-and-sign questions rather
+> than research.
+>
+> **Two checks that were run rather than asked, 22 September 2026:**
+>
+> - **HA-05 — the condominium transfer-fee cap.** The 2026 statute at
+>   § 718.112(2)(k) still reads **$150 per applicant**, and still directs the
+>   Department of Business and Professional Regulation to adjust every five
+>   years and publish the result. The Department's own condominium fees page
+>   publishes no adjusted transfer-fee figure — only the $4.00 per-unit annual
+>   fee under § 718.501(2)(a). No change was needed on the live HOA page. Worth
+>   re-checking when the Department does publish one.
+> - **AC-03 — the access exception wording.** Resolved from the published ALTA
+>   exceptions manual rather than from a file, which is what the team asked for.
+>   The standard exception is `ACCX01`, "Complete Lack of a Right of Access",
+>   and reads in full: "Lack of a right of access to and from the Land." It is
+>   used where the examination does not show a right of access or where access
+>   has been released, granted away or waived. The page now quotes it as the
+>   published form wording and still says that the commitment in front of the
+>   reader governs.
+>
+> **Answers that changed a drafted fact rather than confirming one**, worth
+> knowing about because the drafted version read as sourced and was not:
+>
+> - The access page said four to eight weeks to resolve an access exception by
+>   recorded easement. The office's answer is **three days** with a cooperating
+>   neighbour. The page now says that, with what lengthens it.
+> - The bankruptcy page said the extra docket work can add cost. The office's
+>   answer to BK-02 is **no** — no additional search or examination charge.
+> - The bankruptcy page listed a document set for a closed prior bankruptcy in
+>   the chain. BK-05's answer is **the final order**, so that is what the page
+>   now names, with more of the docket pulled only where the order does not
+>   resolve it.
+> - The signings page had a three-counties/five-days-elsewhere split and a
+>   "vetted signing service". SG-03's answer is **anywhere in the United States
+>   with three business days' notice**, and SG-01 adds that a signing can be
+>   accommodated up to the last day. The unconfirmed signing-service claim is
+>   out.
+> - The foreign-seller page carried per-route lead times and a $60–$150 courier
+>   range. FS-02's answer is **withhold**, so the figures are gone and the page
+>   says it prices the actual route on the file. The consular $50 under
+>   22 CFR 22.1 stays; it was sourced, and the temporary amendment at
+>   91 FR 34772 does not touch item 41.
+
 > **20 September 2026, later the same day:** the go-live question was put and
 > answered in [`go-live-status.md`](./go-live-status.md), which settles from
 > primary sources several of the items below (OP-04, LT-09/LT-10, FS-02,
