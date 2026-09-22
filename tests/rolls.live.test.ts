@@ -111,14 +111,21 @@ describe.each(COUNTY_ROLLS.map((roll) => [roll.countyName, roll] as const))(
         }),
       ]);
 
+      // One of each address: a layer of address points lists a building once
+      // per unit, and six samples of one building are one sample.
       const known = [...head.slice(0, 4), ...ones.slice(0, 4)]
         .map((row) => (row.attributes ? readRow(roll, row.attributes) : null))
         .filter((row) => row !== null && /^\d/.test(row.address))
+        .filter((row, index, rows) => rows.findIndex((other) => other!.address === row!.address) === index)
         .slice(0, 6);
 
       if (known.length === 0) return;
 
       let priced = 0;
+      // A building of condominiums asked about without a unit is declined so
+      // the reader can say which unit, which is the check working on a
+      // building rather than a property, so it is not counted either way.
+      let buildings = 0;
 
       for (const row of known) {
         const suggestions = await queryRoll(roll, parseTypedAddress(row!.address), row!.address);
@@ -139,6 +146,7 @@ describe.each(COUNTY_ROLLS.map((roll) => [roll.countyName, roll] as const))(
           suggestion.parcelId,
         );
         if (result.status === 'found') priced += 1;
+        if (result.status === 'declined' && result.reason === 'which-unit') buildings += 1;
       }
 
       // Not all of them: a lookup that declines is the check working, and an
@@ -146,10 +154,11 @@ describe.each(COUNTY_ROLLS.map((roll) => [roll.countyName, roll] as const))(
       // up with, will decline. Half is the bar. Below that a county is worse
       // than useless — it offers a property and then cannot price it — and
       // belongs out of the registry until it publishes something better.
+      const properties = known.length - buildings;
       expect(
         priced,
-        `only ${priced} of ${known.length} sampled addresses produced a figure`,
-      ).toBeGreaterThanOrEqual(Math.ceil(known.length / 2));
+        `only ${priced} of ${properties} sampled properties produced a figure`,
+      ).toBeGreaterThanOrEqual(Math.ceil(properties / 2));
     });
   },
 );

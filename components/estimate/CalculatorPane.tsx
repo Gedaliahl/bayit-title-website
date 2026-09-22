@@ -24,7 +24,7 @@ import {
   writeNumbers,
   type Refusal,
 } from '@/lib/estimate-input';
-import type { ParcelValue, PropertySuggestion } from '@/lib/property-lookup';
+import type { OfferedSuggestion, ParcelValue, PropertySuggestion } from '@/lib/property-lookup';
 import { discretionarySurtax, formatCents, formatMoney } from '@/lib/statutory-rates';
 import { FigureCard } from './FigureCard';
 import { TotalBar } from './TotalBar';
@@ -50,11 +50,29 @@ const MIN_QUERY_LENGTH = 5;
 /** Long enough that somebody has stopped typing, short enough not to feel like waiting. */
 const DEBOUNCE_MS = 300;
 
-/** Where the figure in the assessed value box came from. */
+/**
+ * Longer than the parcel route can take on its worst day — two tries at the
+ * statewide roll behind a geocode — so a lookup that is going to land is not
+ * cut off, and one that is not does not leave "Reading the parcel…" up.
+ */
+const VALUE_TIMEOUT_MS = 40_000;
+
+/** Where the figure in the value box came from. */
 type ValueOrigin = 'typed' | 'assessed' | 'just';
 
 /** Long enough to be a pause in typing, so the address bar is not rewritten on every key. */
 const QUERY_WRITE_MS = 400;
+
+/** What the dropdown's last answer was, beyond the rows in it. */
+type SearchStatus = 'ok' | 'rate-limited' | 'unavailable' | 'outside-florida';
+
+/**
+ * Why a picked property came back without a figure, each of which the page
+ * says differently: the roll would not confirm it; it is one of several units
+ * and none was picked; the roll did not answer; we are asking too often; or
+ * the dropdown it came from is old enough that its lookup has expired.
+ */
+type ValueMiss = 'declined' | 'which-unit' | 'unavailable' | 'rate-limited' | 'expired';
 
 /** Where the figures go on paste when the page cannot write to the clipboard itself. */
 function copyByHand(text: string): boolean {
@@ -306,29 +324,45 @@ export function CalculatorPane({
   // The address search. What came back is kept with the query it came back
   // for, so a stale answer can never be shown against a newer box.
   const [address, setAddress] = useState('');
-  const [answer, setAnswer] = useState<{ query: string; items: PropertySuggestion[] } | null>(null);
+  const [answer, setAnswer] = useState<{
+    query: string;
+    items: OfferedSuggestion[];
+    status: SearchStatus;
+  } | null>(null);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [searching, setSearching] = useState(false);
+  /** The query a search is out for. Compared with the box, so it cannot outlive its query. */
+  const [searchingFor, setSearchingFor] = useState<string | null>(null);
+  /** Bumped by "Try again", which asks the same question a second time. */
+  const [searchRun, setSearchRun] = useState(0);
   /** The suggestion the figures are standing on, if any. */
-  const [parcel, setParcel] = useState<PropertySuggestion | null>(null);
+  const [parcel, setParcel] = useState<OfferedSuggestion | null>(null);
   /** Where the figure in the box came from, once it is the appraiser's. */
   const [record, setRecord] = useState<ParcelValue | null>(null);
   const [valueOrigin, setValueOrigin] = useState<ValueOrigin>('typed');
   /** Counties that publish addresses but not values need a second request. */
   const [lookingUp, setLookingUp] = useState(false);
-  /** 'declined' — the roll says that is not the parcel; 'unavailable' — it did not answer. */
-  const [valueMissed, setValueMissed] = useState<'declined' | 'unavailable' | null>(null);
+  const [valueMissed, setValueMissed] = useState<ValueMiss | null>(null);
 
   // Taking a suggestion rewrites the box, which would otherwise look exactly
   // like typing and send the rewritten address straight back to the server.
   const skipNextSearch = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  /**
+   * The value lookup in flight. Its id only ever goes up, and an answer is
+   * applied only while its id is still the current one: a Volusia lookup that
+   * lands after the reader has moved on to a Broward address must not put
+   * Volusia's figure under it.
+   */
+  const lookup = useRef<{ id: number; controller: AbortController } | null>(null);
+  const lookupCount = useRef(0);
   const listId = useId();
 
   const query = address.trim();
   const searchable = query.length >= MIN_QUERY_LENGTH && /\d/.test(query);
-  const suggestions = answer?.query === query ? answer.items : [];
-  const foundNothing = answer?.query === query && answer.items.length === 0;
+  const searching = searchable && searchingFor === query;
+  const answered = answer?.query === query ? answer : null;
+  const suggestions = answered?.items ?? [];
   const listOpen = isAddress && open && suggestions.length > 0;
 
   useEffect(() => {
@@ -340,7 +374,7 @@ export function CalculatorPane({
 
     const controller = new AbortController();
     const timer = setTimeout(async () => {
-      setSearching(true);
+      setSearchingFor(query);
       try {
         // A POST, so the address never sits in a request line or a log.
         const response = await fetch('/api/property-search', {
@@ -349,16 +383,28 @@ export function CalculatorPane({
           body: JSON.stringify({ q: query }),
           signal: controller.signal,
         });
-        const payload = response.ok ? await response.json() : { suggestions: [] };
-        setAnswer({ query, items: Array.isArray(payload.suggestions) ? payload.suggestions : [] });
+        const payload = await response.json().catch(() => null);
+        const status: SearchStatus =
+          response.status === 429
+            ? 'rate-limited'
+            : response.ok && payload
+              ? (payload.status ?? 'ok')
+              : 'unavailable';
+        setAnswer({
+          query,
+          items: response.ok && Array.isArray(payload?.suggestions) ? payload.suggestions : [],
+          status,
+        });
         setActiveIndex(-1);
-        setOpen(true);
+        // Only for a reader still in the box. An answer that lands after they
+        // have tabbed away would otherwise open the list over the next field.
+        if (document.activeElement === inputRef.current) setOpen(true);
       } catch {
         // Usually the next keystroke aborting this one. A request that truly
-        // failed leaves the box as usable as it was before any of this existed.
-        if (!controller.signal.aborted) setAnswer({ query, items: [] });
+        // failed is said to have failed, rather than to have found nothing.
+        if (!controller.signal.aborted) setAnswer({ query, items: [], status: 'unavailable' });
       } finally {
-        if (!controller.signal.aborted) setSearching(false);
+        if (!controller.signal.aborted) setSearchingFor(null);
       }
     }, DEBOUNCE_MS);
 
@@ -366,28 +412,55 @@ export function CalculatorPane({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, searchable]);
+  }, [query, searchable, searchRun]);
+
+  // The option the arrow keys are on stays in sight in a list that scrolls.
+  useEffect(() => {
+    if (!listOpen || activeIndex < 0) return;
+    document.getElementById(`${listId}-option-${activeIndex}`)?.scrollIntoView({ block: 'nearest' });
+  }, [listOpen, activeIndex, listId]);
 
   function countyInList(slug: string | null): string {
     return slug && counties.some((entry) => entry.slug === slug) ? slug : ELSEWHERE;
   }
 
-  /** Puts a roll figure in the box and remembers whose it is. */
+  /** Stops a value lookup, so that nothing it finds lands on whatever the reader did next. */
+  function cancelLookup() {
+    lookup.current?.controller.abort();
+    lookup.current = null;
+    setLookingUp(false);
+  }
+
+  /**
+   * Puts a roll figure in the box and remembers whose it is. The just value
+   * where the roll has one: it is the appraiser's estimate of market value,
+   * where the assessed value on a long-held homestead can be half of it. The
+   * assessed value is offered beside it.
+   */
   function applyValue(value: ParcelValue) {
     setRecord(value);
-    if (value.assessedValue) {
-      setAssessed(value.assessedValue);
-      setValueOrigin('assessed');
-    } else if (value.justValue) {
+    if (value.justValue) {
       setAssessed(value.justValue);
       setValueOrigin('just');
+    } else if (value.assessedValue) {
+      setAssessed(value.assessedValue);
+      setValueOrigin('assessed');
     } else {
       setValueOrigin('typed');
     }
   }
 
-  async function lookUpValue(suggestion: PropertySuggestion) {
+  async function lookUpValue(suggestion: OfferedSuggestion) {
+    cancelLookup();
+    lookupCount.current += 1;
+    const id = lookupCount.current;
+    const controller = new AbortController();
+    lookup.current = { id, controller };
+    const isCurrent = () => lookup.current?.id === id;
+    const timer = setTimeout(() => controller.abort(), VALUE_TIMEOUT_MS);
+
     setLookingUp(true);
+    setValueMissed(null);
     try {
       const response = await fetch('/api/parcel-value', {
         method: 'POST',
@@ -397,11 +470,14 @@ export function CalculatorPane({
           countyName: suggestion.countyName,
           parcelId: suggestion.parcelId,
           lookup: suggestion.valueLookup,
+          token: suggestion.lookupToken,
         }),
+        signal: controller.signal,
       });
-      const payload = response.ok ? await response.json() : { value: null, unavailable: true };
+      const payload = await response.json().catch(() => null);
+      if (!isCurrent()) return;
 
-      if (payload.value) {
+      if (payload?.status === 'found' && payload.value) {
         const value = payload.value as ParcelValue;
         // A statewide geocoder's suggestion has no county until the roll names one.
         if (value.countySlug && value.countySlug !== suggestion.countySlug) {
@@ -409,21 +485,41 @@ export function CalculatorPane({
         }
         applyValue(value);
       } else {
-        setValueMissed(payload.unavailable ? 'unavailable' : 'declined');
+        setValueMissed(
+          response.status === 429
+            ? 'rate-limited'
+            : payload?.status === 'expired'
+              ? 'expired'
+              : payload?.status === 'declined'
+                ? payload.reason === 'which-unit'
+                  ? 'which-unit'
+                  : 'declined'
+                : 'unavailable',
+        );
       }
     } catch {
-      setValueMissed('unavailable');
+      // Aborted by the reader moving on, which says nothing, or by the
+      // timeout, which is the roll not answering.
+      if (isCurrent()) setValueMissed('unavailable');
     } finally {
-      setLookingUp(false);
+      clearTimeout(timer);
+      if (isCurrent()) {
+        lookup.current = null;
+        setLookingUp(false);
+      }
     }
   }
 
-  function takeSuggestion(suggestion: PropertySuggestion) {
-    skipNextSearch.current = true;
-    setAddress(suggestionLine(suggestion));
+  function takeSuggestion(suggestion: OfferedSuggestion) {
+    cancelLookup();
+    const line = suggestionLine(suggestion);
+    // Only where the box actually changes: an unchanged box runs no search to
+    // skip, and the flag would swallow the next one typed.
+    if (line !== address) skipNextSearch.current = true;
+    setAddress(line);
     setOpen(false);
     setActiveIndex(-1);
-    setSearching(false);
+    setSearchingFor(null);
     setParcel(suggestion);
     setValueMissed(null);
     setChosenCounty(countyInList(suggestion.countySlug));
@@ -437,6 +533,8 @@ export function CalculatorPane({
         assessedValue: suggestion.assessedValue,
         justValue: suggestion.justValue,
         rollYear: suggestion.rollYear,
+        homestead: suggestion.homestead,
+        lastSale: suggestion.lastSale,
         sourceName: suggestion.sourceName,
         sourceUrl: suggestion.sourceUrl,
       });
@@ -448,7 +546,22 @@ export function CalculatorPane({
     if (suggestion.valueLookup) void lookUpValue(suggestion);
   }
 
+  /** "Try again" on the dropdown: the same question, asked again. */
+  function searchAgain() {
+    skipNextSearch.current = false;
+    inputRef.current?.focus();
+    setSearchRun((run) => run + 1);
+  }
+
+  /** "Try again" under the value: the same lookup, or a fresh list where the old one has expired. */
+  function lookUpAgain() {
+    if (valueMissed === 'expired' || !parcel?.valueLookup) searchAgain();
+    else void lookUpValue(parcel);
+  }
+
   function onAddressKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    // Enter and the arrows belong to an input method while it is composing.
+    if (event.nativeEvent.isComposing) return;
     if (!listOpen) {
       if (event.key === 'ArrowDown' && suggestions.length > 0) {
         setOpen(true);
@@ -462,6 +575,10 @@ export function CalculatorPane({
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
       setActiveIndex((index) => (index <= 0 ? suggestions.length - 1 : index - 1));
+    } else if ((event.key === 'Home' || event.key === 'End') && activeIndex >= 0) {
+      // Only once the arrows are in the list; before that they move the caret.
+      event.preventDefault();
+      setActiveIndex(event.key === 'Home' ? 0 : suggestions.length - 1);
     } else if (event.key === 'Enter' && activeIndex >= 0) {
       event.preventDefault();
       takeSuggestion(suggestions[activeIndex]);
@@ -646,23 +763,40 @@ export function CalculatorPane({
       {addressKey(record.address) !== addressKey(parcel?.address ?? record.address)
         ? FORM.assessed.onRoll.filedAs(record.address)
         : ''}
-    </>
-  ) : county?.propertyAppraiserUrl ? (
-    <>
-      {valueMissed === 'unavailable'
-        ? FORM.assessed.unavailable
-        : valueMissed === 'declined'
-          ? FORM.assessed.declined
-          : valueCounty
-            ? FORM.assessed.pickOr
-            : FORM.assessed.lookUp}
-      <a href={county.propertyAppraiserUrl} rel="nofollow noopener" target="_blank">
-        {FORM.assessed.appraiser(county.name)}
-      </a>
-      {FORM.assessed.copyAcross}
+      {/* Only what the roll says: a homestead flag where it keeps one, and a
+          sale where it records one at a real price. */}
+      {record.homestead ? FORM.assessed.onRoll.homestead : ''}
+      {record.lastSale
+        ? FORM.assessed.onRoll.sale(formatMoney(record.lastSale.price), record.lastSale.year)
+        : ''}
     </>
   ) : (
-    FORM.assessed.anyCounty
+    <>
+      {/* Why the box is empty comes first, wherever the property is; then
+          the errand — the link where the county has one, the general advice
+          where it does not — and last, where asking again could help, the
+          button that does. */}
+      {valueMissed ? `${FORM.assessed.missed[valueMissed]} ` : null}
+      {county?.propertyAppraiserUrl ? (
+        <>
+          {valueCounty && !valueMissed ? FORM.assessed.pickOr : FORM.assessed.lookUp}
+          <a href={county.propertyAppraiserUrl} rel="nofollow noopener" target="_blank">
+            {FORM.assessed.appraiser(county.name)}
+          </a>
+          {FORM.assessed.copyAcross}
+        </>
+      ) : (
+        FORM.assessed.anyCounty
+      )}
+      {valueMissed === 'unavailable' || valueMissed === 'rate-limited' || valueMissed === 'expired' ? (
+        <>
+          {' '}
+          <button type="button" className="linkish" onClick={lookUpAgain}>
+            {FORM.assessed.tryAgain}
+          </button>
+        </>
+      ) : null}
+    </>
   );
 
   const showAltValue =
@@ -738,6 +872,27 @@ export function CalculatorPane({
 
   const formId = `${listId}-form`;
 
+  // What the line under the address box says. The count is announced when
+  // the list opens, so a screen reader hears that there is something to
+  // arrow through; the rest say why there is not.
+  const searchStatusText = searching
+    ? FORM.address.looking
+    : !answered
+      ? ''
+      : answered.status === 'outside-florida'
+        ? FORM.address.floridaOnly
+        : answered.status === 'rate-limited'
+          ? FORM.address.rateLimited
+          : answered.status === 'unavailable'
+            ? FORM.address.unavailable
+            : suggestions.length === 0
+              ? FORM.address.nothing
+              : listOpen
+                ? FORM.address.found(suggestions.length)
+                : '';
+  const canSearchAgain =
+    !searching && (answered?.status === 'rate-limited' || answered?.status === 'unavailable');
+
   return (
     <div className="calc-grid" hidden={hidden}>
       <form
@@ -753,70 +908,111 @@ export function CalculatorPane({
             <span className="field__hint" id="address-hint">
               {FORM.address.hint}
             </span>
-            <input
-              id="address"
-              autoComplete="off"
-              role="combobox"
-              aria-expanded={listOpen}
-              aria-controls={listId}
-              aria-autocomplete="list"
-              aria-describedby="address-hint"
-              aria-activedescendant={activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined}
-              placeholder={FORM.address.placeholder}
-              value={address}
-              onChange={(event) => {
-                setAddress(event.target.value);
-                // A new address means the figure below is no longer this
-                // property's. The number stays; it stops claiming to be the roll's.
-                if (parcel || record) {
-                  setParcel(null);
-                  setRecord(null);
-                  setValueOrigin('typed');
-                  setValueMissed(null);
-                }
-              }}
-              onKeyDown={onAddressKeyDown}
-              onFocus={() => suggestions.length > 0 && setOpen(true)}
-              onBlur={() => setOpen(false)}
-            />
+            <div className="combo__anchor">
+              <input
+                ref={inputRef}
+                id="address"
+                autoComplete="off"
+                maxLength={160}
+                role="combobox"
+                aria-expanded={listOpen}
+                aria-controls={listId}
+                aria-autocomplete="list"
+                aria-describedby="address-hint"
+                aria-activedescendant={activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined}
+                placeholder={FORM.address.placeholder}
+                value={address}
+                onChange={(event) => {
+                  setAddress(event.target.value);
+                  cancelLookup();
+                  // A new address means the figure below is no longer this
+                  // property's. The number stays; it stops claiming to be the roll's.
+                  if (parcel || record || valueMissed) {
+                    setParcel(null);
+                    setRecord(null);
+                    setValueOrigin('typed');
+                    setValueMissed(null);
+                  }
+                }}
+                onKeyDown={onAddressKeyDown}
+                onFocus={(event) => {
+                  if (suggestions.length > 0) setOpen(true);
+                  // On a phone the keyboard takes half the screen, so the box is
+                  // brought to the top of what is left, with room under it for
+                  // the list.
+                  if (window.matchMedia('(max-width: 40rem)').matches) {
+                    const field = event.currentTarget.closest('.combo') ?? event.currentTarget;
+                    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    requestAnimationFrame(() =>
+                      field.scrollIntoView({ block: 'start', behavior: still ? 'auto' : 'smooth' }),
+                    );
+                  }
+                }}
+                onBlur={() => setOpen(false)}
+              />
 
-            {listOpen ? (
-              <ul className="combo__list" id={listId} role="listbox" aria-label={FORM.address.listLabel}>
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    key={suggestion.id}
-                    id={`${listId}-option-${index}`}
-                    role="option"
-                    aria-selected={index === activeIndex}
-                    className={`combo__option${index === activeIndex ? ' combo__option--active' : ''}`}
-                    // Mouse down rather than click: the input blurs first, and
-                    // a closed list has nothing left to click on.
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                      takeSuggestion(suggestion);
-                    }}
-                    onMouseEnter={() => setActiveIndex(index)}
-                  >
-                    <span className="combo__address">{suggestion.address}</span>
-                    <span className="combo__value">
-                      {suggestion.assessedValue
-                        ? `Assessed ${formatMoney(suggestion.assessedValue)}`
-                        : suggestion.justValue
-                          ? `Just value ${formatMoney(suggestion.justValue)}`
-                          : suggestion.valueLookup
-                            ? FORM.address.valueOnPick
-                            : FORM.address.noRoll}
-                    </span>
-                    <span className="combo__meta">
-                      {[suggestion.city, suggestion.zip, suggestion.countyName].filter(Boolean).join(' · ')}
-                    </span>
-                  </li>
-                ))}
+              {/* Always in the page, so aria-controls always names something;
+                  hidden, and empty, while it is closed. Mouse down anywhere on it
+                  — an option, the gap between two, its scrollbar — is kept from
+                  taking focus off the input and closing it. */}
+              <ul
+                className="combo__list"
+                id={listId}
+                role="listbox"
+                aria-label={FORM.address.listLabel}
+                hidden={!listOpen}
+                onMouseDown={(event) => event.preventDefault()}
+              >
+                {listOpen
+                  ? suggestions.map((suggestion, index) => (
+                    <li
+                      key={suggestion.id}
+                      id={`${listId}-option-${index}`}
+                      role="option"
+                      aria-selected={index === activeIndex}
+                      className={`combo__option${index === activeIndex ? ' combo__option--active' : ''}`}
+                      // Mouse down rather than click: the input blurs first, and
+                      // a closed list has nothing left to click on.
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        takeSuggestion(suggestion);
+                      }}
+                      // Move rather than enter: the list scrolling under a
+                      // still pointer fires enter, and would take the
+                      // highlight away from the arrow keys.
+                      onMouseMove={() => {
+                        if (index !== activeIndex) setActiveIndex(index);
+                      }}
+                    >
+                      <span className="combo__address">{suggestion.address}</span>
+                      <span className="combo__value">
+                        {suggestion.justValue
+                          ? FORM.address.justValue(formatMoney(suggestion.justValue))
+                          : suggestion.assessedValue
+                            ? FORM.address.assessedValue(formatMoney(suggestion.assessedValue))
+                            : suggestion.valueLookup
+                              ? FORM.address.valueOnPick
+                              : FORM.address.noRoll}
+                      </span>
+                      <span className="combo__meta">
+                        {[suggestion.city, suggestion.zip, suggestion.countyName].filter(Boolean).join(' · ')}
+                      </span>
+                    </li>
+                  ))
+                  : null}
               </ul>
-            ) : null}
+            </div>
 
-            <span className="field__hint combo__status" aria-live="polite">
-              {searching ? FORM.address.looking : foundNothing ? FORM.address.nothing : ''}
+            <span className="field__hint combo__status">
+              <span aria-live="polite">{searchStatusText}</span>
+              {canSearchAgain ? (
+                <>
+                  {' '}
+                  <button type="button" className="linkish" onClick={searchAgain}>
+                    {FORM.address.tryAgain}
+                  </button>
+                </>
+              ) : null}
             </span>
           </div>
         ) : null}
@@ -865,7 +1061,11 @@ export function CalculatorPane({
             id={`${listId}-county`}
             aria-describedby={`${listId}-county-hint`}
             value={countySlug}
-            onChange={(event) => setChosenCounty(event.target.value)}
+            onChange={(event) => {
+              // A lookup still out would otherwise land and put its own county back.
+              cancelLookup();
+              setChosenCounty(event.target.value);
+            }}
           >
             {counties.map((entry) => (
               <option key={entry.slug} value={entry.slug}>
@@ -883,6 +1083,7 @@ export function CalculatorPane({
             hint={assessedHint}
             value={assessed}
             onChange={(value) => {
+              cancelLookup();
               setAssessed(value);
               setValueOrigin('typed');
             }}

@@ -2522,7 +2522,15 @@ legend {
    fields below it must not jump every time another keystroke changes how many
    properties match. */
 
+/* Where a phone scrolls the field to when the box takes focus: the top of
+   the screen, with the label still in sight. */
 .combo {
+  scroll-margin-top: 0.75rem;
+}
+
+/* The input and the list, and nothing else, so the list hangs from the
+   bottom of the input however many lines the label and hint wrap to. */
+.combo__anchor {
   position: relative;
 }
 
@@ -2531,12 +2539,12 @@ legend {
   z-index: 20;
   left: 0;
   right: 0;
-  /* Under the input, which is the third thing in the field. */
-  top: calc(100% - 1.6em);
+  top: 100%;
   margin: 0.375rem 0 0;
   padding: 0.375rem;
   list-style: none;
-  max-height: 22rem;
+  /* Short enough on a phone to leave the box and the keyboard both in view. */
+  max-height: min(22rem, 45dvh);
   overflow-y: auto;
   background: var(--paper);
   border: 1px solid var(--rule-card);
@@ -2576,6 +2584,18 @@ legend {
   grid-column: 1 / -1;
   font-size: 0.8125rem;
   color: var(--ink-muted);
+}
+
+/* On a phone the figure goes under the address rather than beside it, which
+   otherwise squeezed the street to one word a line. */
+@media (max-width: 30rem) {
+  .combo__option {
+    grid-template-columns: 1fr;
+  }
+
+  .combo__value {
+    text-align: left;
+  }
 }
 
 /* Holds its line so the fields below do not shift when "Looking…" appears. */
