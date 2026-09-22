@@ -31,28 +31,32 @@ bayit-website/
 │   ├── layout.tsx              header, footer, fonts, Organization schema
 │   ├── globals.css             design tokens
 │   ├── page.tsx                homepage
-│   ├── robots.ts               AI crawlers explicitly allowed
-│   ├── sitemap.ts
-│   ├── reviews/page.tsx
-│   ├── title-problems/
-│   │   ├── page.tsx            index, grouped by cluster
-│   │   └── [slug]/page.tsx     THE library page template
-│   └── services/[slug]/page.tsx
-├── components/
-│   ├── Schema.tsx              Organization, Person, Article, FAQ, Breadcrumb JSON-LD
-│   └── Reviews.tsx             review display
+│   ├── about/, team/, partners/, contact/, reviews/, privacy/
+│   ├── title-problems/         index, grouped by cluster, and [slug] — THE library page template
+│   ├── services/               index and [slug]
+│   ├── counties/, cities/      /counties index, a page per county and per city
+│   ├── closing-costs/          index, buyer and seller
+│   ├── estimate/, quote/, order/
+│   ├── api/                    orders, leads, contract-quote, parcel-value, property-search
+│   ├── llms.txt/, robots.ts, sitemap.ts
+├── components/                 page parts: Schema, Reviews, Faq, Verdict, Rail, Prose, …
 ├── lib/
 │   ├── site.ts                 CANONICAL FACTS — single source of truth
 │   ├── supabase.ts             service-role client, server only
 │   ├── reviews.ts              build-time review fetch, fails soft
-│   └── content.ts              front-matter parsing
+│   ├── locations.ts            build-time county fetch; see "Counties at build time" below
+│   ├── content.ts              front-matter parsing and the publishing gate
+│   ├── promulgated-premium.ts, statutory-rates.ts, closing-estimate.ts
 ├── content/
-│   ├── title-problems/         8 draft pages
-│   └── services/               1 draft page
-└── public/llms.txt
+│   ├── title-problems/         8 pages: 7 reviewed and published, 1 draft
+│   └── services/               1 page, reviewed and published
+├── supabase/                   migrations and seeds (applied by hand, never from here)
+└── tests/                      vitest; `npm test`
 ```
 
-Builds clean. `npm run typecheck` passes. Nine content pages generate as static routes.
+`npm run lint`, `npm run typecheck`, `npm test` and `npm run build` pass. Eight of the nine content pages are reviewed and have a route in production; the draft has a route only on a preview build.
+
+**Counties at build time.** Without Supabase, `lib/locations.ts` falls back to the six priority counties, so a build without credentials still runs — and ships six county pages instead of 67, with the other 61 returning 404. A production deployment (`VERCEL_ENV=production`) fails the build instead, as does any build with `REQUIRE_LOCATIONS=1`; set that in CI. The same applies when the query errors, returns no rows (usually the anon key in place of the service-role key) or returns fewer than 67 counties.
 
 ---
 
@@ -68,7 +72,7 @@ All verified against public records (FL DFS licensee search, FL Dept. of State n
 - Office: 3301 N University Drive, Suite 100, Coral Springs, FL 33065
 - Phone 754.253.2270 · Email shevy@bayittitle.com
 - Coordinates 26.2719844, −80.2496001 · Google Place ID `ChIJk9WlCCUF2YgRgJbY8DFTw_A`
-- Hours: Mon–Thu 9:00–5:00, Fri 9:00–12:00, closed weekends
+- Hours: Mon–Fri 9:00–5:00, closed weekends (`site.hours`; pages print `officeHoursLine`)
 - Team of four, all English-only:
   - Shevy Lowenstein — Founder, licensed title agent
   - Gedaliah Lowenstein — COO
@@ -85,7 +89,7 @@ Nine tables in `public`, all with RLS enabled:
 
 | Table | Purpose |
 |---|---|
-| `locations` | counties/cities; 3 priority counties seeded |
+| `locations` | all 67 counties seeded, six of them priority; cities are in `lib/florida-cities.ts` |
 | `rate_tables` | **empty.** Superseded for rendering: the promulgated premium is in `lib/promulgated-premium.ts` (OIR rule 69O-186.003) and doc stamps and recording charges in `lib/statutory-rates.ts` |
 | `google_reviews` | **92 reviews loaded**, full text, topic-tagged |
 | `review_snapshot` | 5.0 / 92 for the homepage |
@@ -139,18 +143,20 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 
 **8 library pages** in `content/title-problems/`:
 
-1. `open-permits-before-closing-florida` — municipal lien search vs title search
-2. `judgment-against-seller-before-closing-florida` — why "don't worry" isn't a status report
-3. `litigation-against-seller-flip-florida` — **incomplete**, story lacked the title mechanics
+1. `open-permits-before-closing-florida` — municipal lien search vs title search — **reviewed and published** 2026-09-22
+2. `judgment-against-seller-before-closing-florida` — why "don't worry" isn't a status report — **reviewed and published** 2026-09-22
+3. `litigation-against-seller-flip-florida` — **draft**; two facts pending confirmation in its front-matter (the file details, and the lis pendens discharge standard for counsel)
 4. `hoa-approval-delay-closing-florida` — **reviewed and published** 2026-09-20; a quoted 30 days done in 2 on an emergency
-5. `foreign-seller-signing-from-abroad-florida` — highest search potential
-6. `no-legal-access-landlocked-property-florida` — legal vs physical access; the Schedule B-II discovery
+5. `foreign-seller-signing-from-abroad-florida` — **reviewed and published** 2026-09-22
+6. `no-legal-access-landlocked-property-florida` — legal vs physical access — **reviewed and published** 2026-09-22
 7. `non-standard-purchase-contract-florida-closing` — **reviewed and published** 2026-09-20, without a worked example; the changed terms would still strengthen it
-8. `buying-property-bankruptcy-estate-florida` — the court's sale order is a title document
+8. `buying-property-bankruptcy-estate-florida` — the court's sale order is a title document — **reviewed and published** 2026-09-22
 
-**1 service page** in `content/services/`: `mobile-and-remote-signings`
+**1 service page** in `content/services/`: `mobile-and-remote-signings` — **reviewed and published** 2026-09-22
 
-**Every page carries `[VERIFY]` flags** where I refused to state something unconfirmed — statutes, coverage positions, timelines. These are visible in the rendered page on purpose. They must be resolved by a licensed person before publishing. Do not let Claude Code fill them in from general knowledge; that is exactly the failure mode this project is designed to avoid.
+Every reviewed page is scheduled for re-review twelve months after it was reviewed, which is what the library index says.
+
+**`[VERIFY]` flags** mark anything a draft states that nobody has confirmed — statutes, coverage positions, timelines — and are visible in the rendered page on purpose. A drafted fact that reads as finished goes in the page's `pending_confirmation` list instead. The build refuses a `reviewed` page with either left, so no published page carries one. Do not let Claude Code fill them in from general knowledge; that is exactly the failure mode this project is designed to avoid.
 
 ---
 
@@ -181,8 +187,7 @@ Body order: H1 → direct answer (rendered from front-matter, 40–60 words, mus
 ## Known blockers
 
 - `rate_tables` empty, but nothing is waiting on it: the calculator and the county pages read the rule and the statutes from `lib/`
-- Six pages make First American coverage statements that are unverified
-- Timeline data is placeholder on every library page except the two published 2026-09-20
+- The draft litigation page still needs the file details and counsel's answer listed in its `pending_confirmation`
 - Team bios need 2–3 sentences each from Gedaliah, Jennifer, Chaya
 - No usable photography — nothing in the Instagram feed works at hero size
 - Google Business Profile API rejected; reapply from a bayittitle.com address
