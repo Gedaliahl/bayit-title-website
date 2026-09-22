@@ -316,8 +316,11 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             <h2>Cities in {county.name} we have written about</h2>
             <p>
               The premium, the taxes and the recording office are the county&rsquo;s, so the
-              figures on these pages are the ones above. What each page adds is the place: how a
-              signing happens there and what a municipal lien search has to cover.
+              figures on these pages are the ones above. What each page adds is what the city
+              itself knows about a property and the county&rsquo;s records do not show: who hears
+              a code enforcement case there, how a code lien is released or reduced, where permit
+              status is searched, who answers the municipal lien search and who bills the water,
+              each in the city&rsquo;s own published words.
             </p>
             <ul className="linklist">
               {cities.map((city) => (

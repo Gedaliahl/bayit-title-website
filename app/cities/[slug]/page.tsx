@@ -1,18 +1,48 @@
-// A city page: the county's figures, addressed to the place the reader typed.
+// A city page: the county's figures, addressed to the place the reader typed,
+// and the one thing a county page cannot say — what the city itself knows
+// about a property.
 //
-// Nothing here is a fact about the city that the county page does not already
-// stand behind. The premium is the state's, the deed stamps and recording are
-// the county's, and who customarily pays is the county's custom. What the city
-// page adds is the place — how a signing happens there, and what a municipal
-// lien search has to cover — and it withholds, visibly, the one thing that is
-// the municipality's own: where its building department publishes permit and
-// code records. That is filled in when the team supplies and checks it.
+// A title search reads the county's official records. A code enforcement
+// case, an expired permit and an unpaid water bill live with the city, and
+// they are found by a municipal lien search directed at the city. This page
+// says how that works here: which office hears a code case, what turns a fine
+// into a lien, how the lien is released, where permit status is searched and
+// who answers the lien search. The statewide part is Chapter 162 of the
+// statutes, quoted from lib/code-enforcement.ts. The local part is the city's
+// own words, quoted from lib/municipal-records.ts with the URL each was read
+// from. Where the city publishes nothing on a point the page says so at the
+// top rather than filling it in.
+//
+// The closing figures — premium, deed stamps, recording, who customarily pays
+// — are the county's, read off the same libraries the county page reads.
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { FLORIDA_CITIES, cityBySlug, cityPageTitle, citiesInCounty } from '@/lib/florida-cities';
+import {
+  FLORIDA_CITIES,
+  POPULATION_SOURCE,
+  cityBySlug,
+  cityPageTitle,
+  citiesInCounty,
+  populationRank,
+} from '@/lib/florida-cities';
+import { municipalRecord, withheldMunicipalFacts, type CityQuote } from '@/lib/municipal-records';
+import {
+  ASSESSMENT_PRIORITY,
+  CHECKED_ON as CODE_CHECKED_ON,
+  CITY_MAY_RELEASE,
+  CODE_FINE_LIMITS,
+  FINE_ACCRUES,
+  FINE_FACTORS,
+  LIEN_ATTACHES,
+  ORDER_BINDS_PURCHASERS,
+  RELEASE_COSTS,
+  SPECIAL_MAGISTRATE,
+  UTILITY_LIEN_LIMIT,
+  type StatuteQuote,
+} from '@/lib/code-enforcement';
 import { getCounties, getLocation } from '@/lib/locations';
 import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
@@ -71,11 +101,56 @@ export async function generateMetadata({
     description:
       `${site.legalName} is a Florida title company closing in ${city.name}` +
       (county ? `, ${county.name}` : '') +
-      `. Title insurance, escrow and closings for residential and commercial property, ` +
+      `. What a municipal lien search finds in ${city.name} — code enforcement liens, open permits, ` +
+      'utility balances — and how each is cleared before closing, ' +
       (payer ? `who customarily pays for the owner’s policy (the ${payer}), ` : '') +
       'the deed stamp rate, where the deed is recorded, and what a policy costs at every price.',
     alternates: { canonical: `/cities/${city.slug}` },
   };
+}
+
+/** A city's own words, with the page they were read from. */
+function CityWords({ quote }: { quote: CityQuote }) {
+  return (
+    <blockquote>
+      {quote.text}
+      <footer>
+        <a href={quote.sourceUrl} rel="nofollow">
+          Read from the city&rsquo;s own page
+        </a>{' '}
+        on {formatLongDate(quote.checkedOn)}
+      </footer>
+    </blockquote>
+  );
+}
+
+/** The statute's words, cited to the section. */
+function StatuteWords({ quote }: { quote: StatuteQuote }) {
+  return (
+    <blockquote>
+      {quote.text}
+      <footer>
+        <a href={quote.sourceUrl} rel="nofollow">
+          {quote.cite}
+        </a>
+      </footer>
+    </blockquote>
+  );
+}
+
+function ordinal(n: number): string {
+  const rest = n % 100;
+  if (rest >= 11 && rest <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1:
+      return `${n}st`;
+    case 2:
+      return `${n}nd`;
+    case 3:
+      return `${n}rd`;
+    default:
+      return `${n}th`;
+  }
 }
 
 export default async function CityPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -93,6 +168,11 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   const localReviews = reviews.filter((review) => review.countySlug === county.slug).slice(0, 3);
   const neighbours = citiesInCounty(county.slug).filter((other) => other.slug !== city.slug);
 
+  const record = municipalRecord(city.slug);
+  // "City of Miami" as the city names itself; `the` in front where a sentence needs it.
+  const government = record?.government ?? `City of ${city.name}`;
+  const rank = populationRank(city);
+
   const payer = county.customaryOwnerPolicyPayer;
   const deedStamps = deedStampTax(county.slug);
   const surtax = discretionarySurtax(county.slug);
@@ -100,9 +180,15 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
   const recorder = county.clerkName ?? `${county.name} Clerk of Court`;
 
   const openItems = [
-    `Where the ${city.name} building department publishes permit and code enforcement records`,
+    ...withheldMunicipalFacts(city.name, record),
     ...(payer ? [] : [`Who customarily pays for the owner’s policy in ${county.name}`]),
   ];
+
+  const building = record?.building ?? null;
+  const code = record?.codeEnforcement ?? null;
+  const lienSearch = record?.lienSearch ?? null;
+  const utility = record?.utility ?? null;
+  const other = record?.other ?? [];
 
   return (
     <div className="frame section">
@@ -116,6 +202,14 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           ]}
         />
         <h1 style={{ marginTop: '1.5rem' }}>Title insurance and closings in {city.name}</h1>
+        <p className="muted">
+          {city.name} is Florida&rsquo;s {ordinal(rank)} most populous city, at{' '}
+          {city.population.toLocaleString('en-US')} residents on{' '}
+          <a href={POPULATION_SOURCE.url} rel="nofollow">
+            the Census Bureau&rsquo;s {POPULATION_SOURCE.vintage} estimate
+          </a>
+          , and it is in {county.name}.
+        </p>
 
         <AnswerPanel
           text={
@@ -124,9 +218,11 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               ? `, where our office is: ${site.address.street}. `
               : `, from our office in ${site.address.city}. `) +
             'We search and examine title, issue the policy, hold the escrow and run the closing ' +
-            'for residential and commercial property, with signings ' +
-            (isHome ? 'here in the office' : 'in our office') +
-            `, wherever the signer is in ${city.name}, or by remote online notarization. ` +
+            'for residential and commercial property. On every file we also order a municipal lien ' +
+            `search from the ${government}, because a code enforcement lien, an open permit or an ` +
+            'unpaid utility balance is the city’s record, not the county’s, and the title search ' +
+            'does not show it. What comes back goes to both sides in writing with what clearing it ' +
+            'would take. ' +
             (payer
               ? `In ${county.name} the owner’s policy is customarily paid for by the ${payer}, ` +
                 'though the contract controls. '
@@ -137,6 +233,275 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         />
 
         <VerifyBanner flags={openItems} variant="withheld" />
+
+        <h2>What does a municipal lien search find in {city.name}?</h2>
+        <p>
+          The title search reads {county.name}&rsquo;s official records: deeds, mortgages, recorded
+          judgments and recorded liens. It does not read the {government}&rsquo;s files. Four things
+          live there and can attach to the property or hold up the closing: a code enforcement
+          case and the fine it has become; a building permit that was opened and never closed, or
+          work that was never permitted; a water, sewer or solid-waste balance; and a special
+          assessment the city levied. A municipal lien search is the request to the city for all
+          four, and we order one on every {city.name} file alongside the title search rather than
+          waiting to see whether one is needed.
+        </p>
+        <p>
+          A code enforcement order that has been recorded does show up in the county&rsquo;s
+          records, and a title search finds it. The case behind it, the fine still running, and
+          every case that has not been recorded yet do not. That is why the search goes to the
+          city as well.
+        </p>
+
+        <h2>Who hears a code enforcement case in {city.name}?</h2>
+        <p>
+          Florida&rsquo;s Local Government Code Enforcement Boards Act, Chapter 162 of the
+          statutes, is the framework every city here enforces its code under. A city may hear its
+          cases before a code enforcement board or before a special magistrate, and the statute
+          treats the two alike:
+        </p>
+        <StatuteWords quote={SPECIAL_MAGISTRATE} />
+        {code ? (
+          <>
+            <p>
+              In {city.name} the office is{' '}
+              <a href={code.office.url} rel="nofollow">
+                {code.office.name}
+              </a>
+              .{' '}
+              {code.hearingBody
+                ? 'On who hears the case, the city publishes this:'
+                : 'Which body hears the case is not stated on the pages we read, so it is listed above as withheld.'}
+            </p>
+            {code.hearingBody ? <CityWords quote={code.hearingBody} /> : null}
+          </>
+        ) : (
+          <p>
+            Which {city.name} office runs code enforcement, and before whom, is not published on
+            this page until it has been read from the city&rsquo;s own site. It is listed above as
+            withheld.
+          </p>
+        )}
+        <p>
+          The fines the hearing body may impose are capped by the statute, and the same caps apply
+          in every city:
+        </p>
+        <CitedFigures figures={CODE_FINE_LIMITS} />
+
+        <h2>How does a {city.name} code violation become a lien?</h2>
+        <p>
+          A violation is not a lien. A fine is not a lien either, until the city records the order
+          that imposed it. What the statute says is this:
+        </p>
+        <StatuteWords quote={LIEN_ATTACHES} />
+        <p>
+          Two things in that sentence matter on a purchase. The lien is against the land where the
+          violation is, so it follows the property to a buyer. And it is also against every other
+          property the violator owns, so a seller&rsquo;s code lien on a different address can turn
+          up against the one being sold. The recorded order itself binds a buyer, whether or not
+          the fine has been recorded:
+        </p>
+        <StatuteWords quote={ORDER_BINDS_PURCHASERS} />
+        {code?.liens ? (
+          <>
+            <p>The {government} puts it this way:</p>
+            <CityWords quote={code.liens} />
+          </>
+        ) : null}
+
+        <h2>How is a {city.name} code enforcement lien cleared before closing?</h2>
+        <p>
+          In the order the statute sets, and it is the order we work a file in. First the
+          violation is corrected, because until it is the fine is still growing:
+        </p>
+        <StatuteWords quote={FINE_ACCRUES} />
+        <p>
+          Once the property complies, the hearing body issues an order acknowledging compliance,
+          which is recorded like the original order was. Then the fine is dealt with. Only the city
+          can release its own lien, and it may release it in full or accept less than the accrued
+          amount:
+        </p>
+        <StatuteWords quote={CITY_MAY_RELEASE} />
+        <p>
+          A request to reduce the fine speaks to the same factors the statute told the hearing body
+          to weigh when it set the fine, and a reduction is the city&rsquo;s decision, not a right:
+        </p>
+        <StatuteWords quote={FINE_FACTORS} />
+        <p>The city may add its recording and release costs to whatever is paid:</p>
+        <StatuteWords quote={RELEASE_COSTS} />
+        {code?.release ? (
+          <>
+            <p>The {government} publishes this about releasing or reducing a lien:</p>
+            <CityWords quote={code.release} />
+          </>
+        ) : (
+          <p>
+            Whether the {government} has a published route for reducing or settling a lien, and what it
+            asks for, is not stated here until it has been read from the city&rsquo;s own site. It
+            is listed above as withheld.
+          </p>
+        )}
+        <p>
+          On a file, what that looks like is a written payoff or release figure from the city,
+          paid at closing by whichever side the contract puts it on, and a release of lien recorded
+          with the deed. A lien that cannot be released by the closing date is a conversation
+          between the parties, in writing, before the date rather than at the table. One limit
+          worth knowing: the statute forbids foreclosing a code lien on a homestead, but the lien
+          still exists, still has to be cleared to insure the title, and still follows the property
+          to a buyer who is not the homestead owner.
+        </p>
+
+        <h2>Open and expired permits in {city.name}</h2>
+        <p>
+          A permit that was issued and never received its final inspection stays open in the
+          city&rsquo;s system, and after the period the building code allows it expires. Neither is
+          a lien. Both are the city&rsquo;s record that the work was never signed off, and a lender,
+          an insurer or the next buyer can ask about them at any time.{' '}
+          {building ? (
+            <>
+              In {city.name} permits are the business of{' '}
+              <a href={building.office.url} rel="nofollow">
+                {building.office.name}
+              </a>
+              {building.portal ? (
+                <>
+                  , and a permit&rsquo;s status and history are searched in{' '}
+                  <a href={building.portal.url} rel="nofollow">
+                    {building.portal.name}
+                  </a>
+                </>
+              ) : null}
+              .
+            </>
+          ) : null}
+        </p>
+        {building?.expiredPermits ? (
+          <>
+            <p>On an expired permit, the city publishes this:</p>
+            <CityWords quote={building.expiredPermits} />
+          </>
+        ) : null}
+        <p>
+          A close-out happens in one of a few ways, and which one depends on what the permit was
+          for, how old it is and what the city still has outstanding: the seller or the contractor
+          completes the inspections that were never called; the city closes the permit on the
+          documentation already in its file; the work is permitted after the fact, with plans, fees
+          and inspection following; something is corrected and then inspected; or, where the
+          underwriter and the contract allow it, the closing proceeds with an escrow and the permit
+          is closed afterwards. What any of that costs is not one number, and the permit type,
+          the status of the work and the inspections outstanding are established before anyone is
+          given an estimate.
+        </p>
+
+        <h2>Water, sewer and other city charges in {city.name}</h2>
+        {utility ? (
+          <p>
+            Water and sewer inside {city.name} are billed by{' '}
+            <a href={utility.provider.url} rel="nofollow">
+              {utility.provider.name}
+            </a>
+            . The lien search asks for the balance on the account, and the final bill is settled at
+            closing so the buyer starts service on a clean account.
+          </p>
+        ) : (
+          <p>
+            Who bills water and sewer inside {city.name} is not stated on this page until it has
+            been read from the utility&rsquo;s own site; it is listed above as withheld. Whoever it
+            is, the lien search asks for the balance on the account and the final bill is settled at
+            closing.
+          </p>
+        )}
+        {utility?.statement ? <CityWords quote={utility.statement} /> : null}
+        <p>
+          A former tenant&rsquo;s unpaid balance has a limit the statute puts on it, which matters
+          on an investment property:
+        </p>
+        <StatuteWords quote={UTILITY_LIEN_LIMIT} />
+        <p>
+          A special assessment the city levied for an improvement is a different thing. It ranks
+          with the tax lien, ahead of a mortgage, and the search asks for it by name:
+        </p>
+        <StatuteWords quote={ASSESSMENT_PRIORITY} />
+
+        <h2>How is the lien search ordered from the {government}?</h2>
+        {lienSearch?.answeredBy === 'self-service' ? (
+          <>
+            <p>
+              The {government} publishes no lien-search or estoppel service of its own. What it
+              publishes is self-service: its own lookups for permits and code cases, and a request
+              to{' '}
+              <a href={lienSearch.office.url} rel="nofollow">
+                {lienSearch.office.name}
+              </a>{' '}
+              for the status of a specific permit. So the search here is assembled from those
+              lookups, from the utility&rsquo;s account balance and from the county&rsquo;s records,
+              rather than answered in one letter from the city.
+            </p>
+            {lienSearch.how ? (
+              <>
+                <p>On what the city offers a title search, it publishes this:</p>
+                <CityWords quote={lienSearch.how} />
+              </>
+            ) : null}
+          </>
+        ) : lienSearch ? (
+          <>
+            <p>
+              The search is answered by{' '}
+              <a href={lienSearch.office.url} rel="nofollow">
+                {lienSearch.office.name}
+              </a>
+              {lienSearch.answeredBy === 'county'
+                ? ', which is a county office rather than the city itself'
+                : lienSearch.answeredBy === 'vendor'
+                  ? ', a vendor the city contracts to answer them'
+                  : ''}
+              .{' '}
+              {lienSearch.how ? 'On how it is requested, the city publishes this:' : ''}
+            </p>
+            {lienSearch.how ? <CityWords quote={lienSearch.how} /> : null}
+            {lienSearch.fee ? (
+              <>
+                <p>On the fee:</p>
+                <CityWords quote={lienSearch.fee} />
+              </>
+            ) : null}
+            {lienSearch.turnaround ? (
+              <>
+                <p>On how long it takes, which is the city&rsquo;s statement rather than a time we can promise:</p>
+                <CityWords quote={lienSearch.turnaround} />
+              </>
+            ) : (
+              <p>
+                The city does not publish how long a search takes, so we do not print a number. It
+                is ordered the day the file opens, which is the one part of the timing that is
+                ours.
+              </p>
+            )}
+          </>
+        ) : (
+          <p>
+            Which office answers a lien search for {city.name}, what it charges and how long it
+            says it takes are not stated here until they have been read from the city&rsquo;s own
+            site. They are listed above as withheld. The search is ordered the day the file opens
+            whichever office answers it.
+          </p>
+        )}
+
+        {other.length > 0 ? (
+          <>
+            <h2>Other {city.name} rules a closing touches</h2>
+            {other.map((item) => (
+              <div key={item.label}>
+                <p>
+                  <strong>{item.label}.</strong>
+                </p>
+                <CityWords quote={item.quote} />
+              </div>
+            ))}
+          </>
+        ) : null}
+
+        {record?.notes ? <p className="muted">{record.notes}</p> : null}
 
         <h2>What title insurance costs on a {city.name} purchase</h2>
         <p>
@@ -206,8 +571,8 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           ) : (
             recorder
           )}
-          , not with the city. Recording is charged by the page at a rate the statute sets for every
-          clerk in Florida:
+          , not with the city. A release of a city lien is recorded there too. Recording is charged
+          by the page at a rate the statute sets for every clerk in Florida:
         </p>
 
         <CitedFigures figures={RECORDING_CHARGES} />
@@ -238,15 +603,6 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           </p>
         )}
 
-        <h2>The municipal lien search in {city.name}</h2>
-        <p>
-          A title search reads the county&rsquo;s official records. It does not show what the City
-          of {city.name} knows about the property: open or expired permits, code enforcement cases,
-          unpaid utility balances and special assessments. Those are found by a separate municipal
-          lien search directed to the city itself, and we order one on every file. What it turns up
-          goes to you in writing, with what clearing it would take, as soon as it comes back.
-        </p>
-
         <h2>How a signing happens in {city.name}</h2>
         <p>
           {isHome
@@ -258,10 +614,14 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
         </p>
 
         <p className="muted">
-          Premium read from {PREMIUM_RULE.cite} on {formatLongDate(PREMIUM_CHECKED_ON)}. Taxes and
-          recording charges read from the statutes on {formatLongDate(CHECKED_ON)} and linked line
-          by line above. Tell us if a figure here does not match what you are quoted and we will
-          check it against the source again.
+          Chapter 162 and the other statutes quoted above were read from Online Sunshine on{' '}
+          {formatLongDate(CODE_CHECKED_ON)}; each quotation links to its section. Statements
+          attributed to the {government} are its own published words, each linked to the page it was
+          read from with the date. Premium read from {PREMIUM_RULE.cite} on{' '}
+          {formatLongDate(PREMIUM_CHECKED_ON)}. Taxes and recording charges read from the statutes
+          on {formatLongDate(CHECKED_ON)} and linked line by line above. Cities change their pages
+          without notice; tell us if something here does not match what the city tells you and we
+          will read it again.
         </p>
 
         {localDocs.length > 0 ? (
@@ -291,7 +651,16 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
               </li>
             </ul>
           </section>
-        ) : null}
+        ) : (
+          <section>
+            <h2>The county page</h2>
+            <ul className="linklist">
+              <li>
+                <Link href={`/counties/${county.slug}`}>The {county.name} page</Link>
+              </li>
+            </ul>
+          </section>
+        )}
 
         {localReviews.length > 0 ? (
           <section>

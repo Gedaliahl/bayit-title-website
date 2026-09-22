@@ -38,6 +38,9 @@ const ROUTES = new Set([
   '/', '/about', '/team', '/services', '/counties', '/title-problems',
   '/reviews', '/contact', '/order', '/quote', '/calculator', '/estimate',
   '/partners', '/privacy', '/icon.svg',
+  // A county page, generated from the locations table; the row is seeded in
+  // supabase/seed/locations_priority_counties.sql and in lib/site.ts's fallback.
+  '/counties/palm-beach-county',
 ]);
 
 describe('pages live on Wix today', () => {
@@ -89,6 +92,22 @@ describe('Pennsylvania', () => {
 
       expect(entry).toBeDefined();
       expect(entry!.destination).toBe('/');
+    },
+  );
+});
+
+describe('the two withdrawn city pages', () => {
+  // Published under /cities, then withdrawn when the list became the sixteen
+  // most populous cities. Each carried only Palm Beach County's figures, so the
+  // county page is the same answer at a URL that still exists.
+  it.each(['/cities/boca-raton', '/cities/west-palm-beach'])(
+    'sends %s to the Palm Beach County page, permanently',
+    async (source) => {
+      const entry = find(await redirects(), source);
+
+      expect(entry).toBeDefined();
+      expect(entry!.destination).toBe('/counties/palm-beach-county');
+      expect(entry!.permanent).toBe(true);
     },
   );
 });

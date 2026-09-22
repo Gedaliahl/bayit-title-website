@@ -132,6 +132,14 @@ const nextConfig = {
       // not render in production, so review it before the cutover.
       { source: '/privacy-policy', destination: '/privacy', permanent: true },
 
+      // Two city pages that were published and then withdrawn when the city
+      // list became the sixteen most populous municipalities in the state.
+      // Neither Boca Raton nor West Palm Beach is among them. Every figure on
+      // those pages was Palm Beach County's, so the county page is where the
+      // same answer now lives.
+      { source: '/cities/boca-raton', destination: '/counties/palm-beach-county', permanent: true },
+      { source: '/cities/west-palm-beach', destination: '/counties/palm-beach-county', permanent: true },
+
       // The icon is app/icon.svg, linked from the document head. Agents that
       // still guess at /favicon.ico get sent there rather than a 404.
       { source: '/favicon.ico', destination: '/icon.svg', permanent: false },

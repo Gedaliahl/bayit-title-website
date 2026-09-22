@@ -20,7 +20,7 @@ A county either publishes a turnaround statement or it does not. Where it does,
 the statement is quoted verbatim with its URL. Where it does not, the entry says
 so and lists the pages that were checked. **No county's timing was inferred from
 a neighbouring county, from a vendor's marketing page, or from how long recording
-"usually" takes.** 42 of the 67 counties publish nothing, and that is recorded as
+"usually" takes.** 41 of the 67 counties publish nothing, and that is recorded as
 a finding, not filled in.
 
 Note the further limit: these are the offices' **published statements**, not
@@ -59,8 +59,8 @@ an instrument numbered later.
 
 | Counties | What they publish |
 |---|---|
-| **25** | A turnaround statement of some kind (quoted below) |
-| **42** | Nothing about timing on the pages checked |
+| **26** | A turnaround statement of some kind (quoted below) |
+| **41** | Nothing about timing on the pages checked |
 
 Only seven of the 25 put a number on how long recording itself takes for an
 ordinary deed or mortgage: Lake, Lee and Pinellas (two business days),
@@ -82,7 +82,8 @@ walking the document in is the way to get it.
 ## The three priority counties
 
 Broward is in this section because it is a priority county, not because it
-publishes a turnaround — it does not, and it is counted among the 42 below.
+publishes a turnaround — it does not, and it is counted among the 41 below.
+
 
 ### Miami-Dade County — Clerk of the Court and Comptroller
 
@@ -145,6 +146,21 @@ County Courts", which is the wrong office for a recording question.
 
 Alphabetical. Twenty-three counties, which with Miami-Dade and Palm Beach makes
 the 25.
+
+### Alachua County — Clerk of the Court & Comptroller
+
+> "Please be aware, e-recorded documents are not recorded into the Official
+> Record instantaneously. E-Recorded documents are continuously processed
+> throughout the day, however, due to volume, an e-recorded document submitted
+> late in the day may not be recorded into the Official Record until the
+> following business day. If you have a time sensitive document, we recommend
+> recording your document in person at the Clerk's Recording Department during
+> normal business hours."
+
+Read 20 September 2026, not 14 September: the county was listed among those
+publishing nothing on the earlier date. A same-day-not-guaranteed statement of
+the Collier kind, not a number. Source:
+[alachuacounty.us — Recording Information](https://www.alachuacounty.us/Depts/Clerk/Pages/Recording.aspx)
 
 ### Charlotte County — Clerk of the Circuit Court
 
@@ -422,11 +438,15 @@ which matters on a deadline.
 
 ## Counties that publish nothing about timing
 
-42 counties. Their recording and e-recording pages were read on 14 September 2026
+41 counties. Their recording and e-recording pages were read on 14 September 2026
 and say nothing about how long recording takes. For these the county page should
 keep the open item rather than carry a number.
 
-Alachua, Baker, Bay, Bradford, Brevard, **Broward**, Calhoun, Clay, Columbia,
+(Alachua was listed here on 14 September. On 20 September 2026 its Recording
+Information page carried a statement about e-recording timing, quoted in its
+entry above, so it has moved to the 26.)
+
+Baker, Bay, Bradford, Brevard, **Broward**, Calhoun, Clay, Columbia,
 DeSoto, Dixie, Escambia, Franklin, Gadsden, Gilchrist, Glades, Gulf, Hamilton,
 Hardee, Hendry, Hernando, Holmes, Indian River, Jackson, Jefferson, Lafayette,
 Levy, Liberty, Madison, Marion, Martin, Monroe, Nassau, Pasco, Polk, St. Johns,
@@ -494,7 +514,7 @@ third for 25 counties. Suggested shape, using the recorder's words:
 > all persons, when the clerk affixes the official register number — priority
 > runs from that number, not from when the image appears in the index.
 
-For the 42 counties with nothing published, leave
+For the 41 counties with nothing published, leave
 `'Typical recording turnaround at this clerk'` in the open-items list.
 
 Nothing in this document should reach a published page until a licensed reviewer

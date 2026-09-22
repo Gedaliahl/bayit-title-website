@@ -22,7 +22,7 @@ export interface Location {
   /**
    * What this county's recording office publishes about how long recording
    * takes, in its own words. Null where the office publishes nothing — which is
-   * 42 of the 67 counties. Never fill this from an industry average or a
+   * 41 of the 67 counties. Never fill this from an industry average or a
    * recorder-directory site; see docs/county-recording-turnaround.md.
    */
   recordingTurnaround: string | null;
@@ -128,6 +128,9 @@ export const COUNTY_REGIONS: Record<string, string> = {
   'lee-county': 'Southwest Florida',
   'collier-county': 'Southwest Florida',
   'sarasota-county': 'Southwest Florida',
+  'st-lucie-county': 'Treasure Coast',
+  'leon-county': 'North Florida',
+  'alachua-county': 'North Central Florida',
 };
 
 /**
@@ -152,6 +155,9 @@ export const COUNTY_MARKETS: Record<string, string> = {
   'lee-county': 'Fort Myers and Cape Coral',
   'collier-county': 'Naples',
   'sarasota-county': 'Sarasota',
+  'st-lucie-county': 'Port St. Lucie',
+  'leon-county': 'Tallahassee',
+  'alachua-county': 'Gainesville',
 };
 
 /** "Title company in Hillsborough County, FL: Tampa closings" — the page title's shape. */

@@ -208,7 +208,8 @@ export default async function CountiesPage() {
             <div className="section__head">
               <h2>Cities</h2>
               <span className="caption">
-                Each city page carries its county’s figures and adds the place.
+                Florida’s sixteen most populous cities. Each page carries its county’s figures
+                and adds the city’s own code enforcement, permit and lien-search rules.
               </span>
             </div>
             <ul className="linklist">

@@ -87,9 +87,19 @@ statutory taxes and recording charges, the recording office, and the office's
 own words on turnaround. Local custom on who pays for the owner's policy is
 printed only where `customary_owner_policy_payer` has been set by the team.
 
-City pages (`/cities/[slug]`) come from `lib/florida-cities.ts`. A city owns one
-fact — which county it is in — and renders that county's figures. A city whose
-county has no row does not render, so seed the county first.
+City pages (`/cities/[slug]`) come from `lib/florida-cities.ts`: the sixteen most
+populous cities in the state, by the Census Bureau's Vintage 2024 estimates, in
+that order. A city's closing figures are its county's, so a city whose county has
+no row does not render — seed the county first. What a city page adds is the
+city's own record, from `lib/municipal-records.data.ts`: who hears a code
+enforcement case there, what the city says about liens and how it releases or
+reduces one, where permit status is searched and what it says about expired
+permits, who answers the municipal lien search and on what terms, and who bills
+the water. Every entry is the city's own words, quoted, with the URL and the date
+it was read; a point the city does not publish is null and the page lists it as
+withheld. The statewide framework — Chapter 162's fine caps, what makes a fine a
+lien, how long it lasts, who may release it — is quoted from the statute in
+`lib/code-enforcement.ts`. Each county page links the cities in it.
 
 `/closing-costs/buyer` and `/closing-costs/seller` are built from the same rate
 libraries. What no rule sets (our fees, the contract's default allocations) is

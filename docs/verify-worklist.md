@@ -1,5 +1,41 @@
 # VERIFY worklist
 
+> ## Update, 22 September 2026 — the sixteen city pages carry the city's own rules
+>
+> The city list is now the sixteen most populous municipalities in Florida by
+> the Census Bureau's Vintage 2024 estimates (`lib/florida-cities.ts`): Boca
+> Raton and West Palm Beach came off (both redirect to the Palm Beach County
+> page), and Port St. Lucie, Hialeah, Cape Coral, Tallahassee, Pembroke Pines,
+> Gainesville, Miramar and Palm Bay came on. Alachua County's row was completed
+> from the clerk's and appraiser's own sites
+> (`supabase/seed/locations_city_counties.sql`); St. Lucie's and Leon's were
+> already there.
+>
+> Every city page now has sections on code enforcement, how a code lien is
+> cleared, open and expired permits, utility and assessment charges and how the
+> municipal lien search is ordered. The statewide part is Chapter 162, quoted
+> from Online Sunshine (`lib/code-enforcement.ts`). The city part
+> (`lib/municipal-records.data.ts`) is each city's own words, quoted from its
+> site with the URL and the date read. **Nothing on these pages is a fact the
+> team has stated**; it is what the statute and the city publish. What the team
+> should check:
+>
+> - **Is the description of how we clear a code lien right?** The pages say the
+>   violation is corrected first, a written payoff or release figure is taken
+>   from the city, it is paid at closing by the side the contract puts it on and
+>   the release is recorded with the deed; and that a lien that cannot be
+>   released by the closing date is put to the parties in writing before the
+>   date. If the office does it differently, the sentence is in
+>   `app/cities/[slug]/page.tsx` under "How is a … code enforcement lien
+>   cleared".
+> - **The withheld banner on each city** lists what its site does not publish
+>   (or refused to serve — Port St. Lucie's and Orlando's portals, among others,
+>   block automated reading). Anything the team knows from its own files can be
+>   added to the city's record, sourced to a page or to "as stated by the
+>   office".
+> - **Quotations move.** Cities change these pages without notice; each quote
+>   carries its `checkedOn`. Re-read them before a review sign-off.
+
 > ## Update, 20 September 2026 — county and city pages, and two cost pages
 >
 > Six county pages were added (Pinellas, Lee, Collier, Sarasota, Polk,
