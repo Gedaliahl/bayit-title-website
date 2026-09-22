@@ -169,9 +169,10 @@ export default async function BuyerClosingCostsPage() {
 
         <p>
           An owner&rsquo;s policy on a {formatMoney(EXAMPLE_PRICE)} purchase is{' '}
-          <strong>{formatMoney(ownerPremium)}</strong>. A lender&rsquo;s policy issued at the same
-          time on the same land is <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong> for
-          coverage up to the owner&rsquo;s amount. {LENDER_POLICY_BESIDE_RULE}{' '}
+          <strong>{formatMoney(ownerPremium)}</strong>. For a lender&rsquo;s policy issued at the same
+          time on the same land, the rule sets <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong>{' '}
+          as the least it can be for coverage up to the owner&rsquo;s amount.{' '}
+          {LENDER_POLICY_BESIDE_RULE}{' '}
           <Link href="/estimate?mode=numbers">The estimate page</Link> works both out for any price
           and loan.
         </p>

@@ -153,9 +153,10 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           , so the premium on a {city.name} policy is the same figure it would be anywhere in the
           state. On a {formatMoney(EXAMPLE_PRICE)} purchase the owner&rsquo;s policy is{' '}
           <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong>; where the reissue
-          conditions in the rule are met it is {formatMoney(reissuePremium(EXAMPLE_PRICE))}; and a
-          lender&rsquo;s policy issued at the same time for the same or a lesser amount is{' '}
-          {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}. {LENDER_POLICY_BESIDE_RULE}
+          conditions in the rule are met it is {formatMoney(reissuePremium(EXAMPLE_PRICE))}; and the
+          rule sets {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} as the least a lender&rsquo;s policy
+          issued at the same time for the same or a lesser amount can be.{' '}
+          {LENDER_POLICY_BESIDE_RULE}
         </p>
         <p>
           <Link href={`/counties/${county.slug}`}>The {county.name} page</Link> prints the whole

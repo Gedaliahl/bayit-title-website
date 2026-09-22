@@ -529,11 +529,13 @@ export const DETAIL = {
     original: 'Original rates · (1)(a)',
     reissue: 'Reissue rates · (2)(a)',
     simultaneous:
-      'Under (5)(a) the risk premium on a lender’s policy issued alongside the owner’s on the same ' +
-      'land is $25 up to the owner’s amount, and the excess is rated at the original schedule. ' +
-      'The estimator prints $125 on that line, because that is what this office charges to issue ' +
-      'the policy — the $25 is the promulgated premium inside it, not the whole of it. The line ' +
-      'cites us rather than the rule for exactly that reason.',
+      'Under (5)(a) a lender’s policy issued alongside the owner’s on the same land can be no ' +
+      'less than $25 up to the owner’s amount. That is a minimum, not a price, and the estimator ' +
+      'prints $125 on the line because that is what this office charges to issue the policy; the ' +
+      'line cites us rather than the rule for that reason. Where the loan is larger than the ' +
+      'owner’s amount, the coverage above it is rated at the original schedule layered on the ' +
+      'owner’s amount: the original rate at the loan amount, less the original rate at the ' +
+      'owner’s amount.',
   },
   reissue: {
     title: 'When does the reissue rate apply?',

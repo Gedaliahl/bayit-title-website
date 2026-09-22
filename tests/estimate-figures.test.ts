@@ -139,20 +139,28 @@ describe('a whole estimate', () => {
 });
 
 /**
- * Pinned as it stands, not as settled. D1 (whether $125 is right on a line
- * the rule prices at $25) and D2 (how a loan above the owner's amount is
- * rated) are with the underwriter; when either is answered these change on
- * purpose, and this is where the change will show.
+ * The lender's policy, as the agency confirmed it on 22 September 2026: the
+ * rule's $25 is a minimum, the office charges $125 to issue the policy, and
+ * coverage above the owner's amount is layered on it — the original rate at
+ * the loan amount less the original rate at the owner's amount.
  */
-describe('current behaviour pending D1 and D2', () => {
-  it('charges $125 for the lender’s policy up to the owner’s amount (D1)', () => {
+describe('the lender’s policy issued alongside the owner’s', () => {
+  it('is the office’s $125 up to the owner’s amount', () => {
     expect(LENDER_POLICY_CHARGE).toBe(125);
     expect(lenderPolicyCharge(400_000, 500_000)).toBe(125);
+    expect(lenderPolicyCharge(500_000, 500_000)).toBe(125);
   });
 
-  it('rates the loan excess from the first bracket of the original schedule (D2)', () => {
-    // $500,000 of excess: 575 + 400 × 5.00 = 2,575, plus the 125.
-    expect(lenderPolicyCharge(1_500_000, 1_000_000)).toBe(2_700);
+  it('adds the excess in the brackets it actually falls in, not from the first', () => {
+    // The original rate is 575 + 4,500 + 1,250 = 6,325 at $1.5M and
+    // 575 + 4,500 = 5,075 at $1M, so the excess is 1,250 — where rating it
+    // from the first bracket would have made it 2,575.
+    expect(lenderPolicyCharge(1_500_000, 1_000_000)).toBe(125 + (6_325 - 5_075));
+    // $600,000 over $500,000: 3,075 − 2,575, all of it in the $5.00 bracket.
+    expect(lenderPolicyCharge(600_000, 500_000)).toBe(125 + 500);
+    // Straddling a bracket: $1,100,000 over $900,000 is $100,000 at $5.00 and
+    // $100,000 at $2.50.
+    expect(lenderPolicyCharge(1_100_000, 900_000)).toBe(125 + 500 + 250);
   });
 });
 

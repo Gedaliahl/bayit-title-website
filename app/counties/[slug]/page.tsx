@@ -215,10 +215,9 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
           </li>
           <li>
             <strong>Simultaneous issue.</strong> Where a lender&rsquo;s policy is issued at the same
-            time as the owner&rsquo;s policy on the same land, the lender&rsquo;s policy is{' '}
-            {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} for coverage up to the owner&rsquo;s amount.
-            Anything above that amount is charged at the regular rate.{' '}
-            {LENDER_POLICY_BESIDE_RULE}
+            time as the owner&rsquo;s policy on the same land, the rule sets{' '}
+            {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} as the least it can be for coverage up to the
+            owner&rsquo;s amount. {LENDER_POLICY_BESIDE_RULE}
           </li>
           <li>
             <strong>The new home purchase discount</strong>, on the first sale of a newly built one-

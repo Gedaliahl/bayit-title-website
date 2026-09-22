@@ -253,7 +253,7 @@ export function estimateFromAssessedValue(input: AssessedInput): AssessedEstimat
             cite: SET_BY,
             note:
               loan > coverage
-                ? `${LENDER_POLICY_NOTE} The loan is above the appraiser’s value, but the owner’s policy will be written at the price, so no excess coverage is rated here. If the loan is larger than the price, the part above it is rated at the original schedule on top.`
+                ? `${LENDER_POLICY_NOTE} The loan is above the appraiser’s value, but the owner’s policy will be written at the price, so no excess coverage is rated here. If the loan is larger than the price, the part above it is added on top: the original rate at the loan amount less the original rate at the price.`
                 : LENDER_POLICY_NOTE,
           },
           BORROWER_ONLY,

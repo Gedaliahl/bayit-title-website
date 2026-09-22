@@ -266,7 +266,7 @@ export function estimate(input: EstimateInput): Estimate {
             cite: SET_BY,
             note:
               loan > price
-                ? `${LENDER_POLICY_NOTE} The loan is larger than the owner’s policy, so the excess coverage is rated at the original schedule on top of the charge.`
+                ? `${LENDER_POLICY_NOTE} The loan is larger than the owner’s policy, so the coverage above it is added on top of the charge: the original rate at the loan amount less the original rate at the owner’s amount.`
                 : LENDER_POLICY_NOTE,
           },
           BORROWER_ONLY,
