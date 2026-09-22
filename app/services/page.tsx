@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: 'Services',
   description: metaDescription(
     'Title search and examination, title insurance, settlement and escrow, commercial title, and ' +
-      '1031 exchanges facilitated through Bayit Exchange Company.',
+      'the closing side of a 1031 exchange, with the intermediary you choose.',
   ),
   alternates: { canonical: '/services' },
   openGraph: { ...baseOpenGraph, url: '/services' },
@@ -208,7 +208,7 @@ export default async function ServicesIndex() {
           </section>
 
           <section id="exchange">
-            <h2>1031 exchanges, through {site.exchangeCompany.name}</h2>
+            <h2>1031 exchanges</h2>
             <div className="prose prose--detail">
               <p>
                 A like-kind exchange under section 1031 lets an investor defer gain on the sale of
@@ -218,22 +218,20 @@ export default async function ServicesIndex() {
                 proceeds, there is no exchange left to structure.
               </p>
               <p>
-                We can facilitate that exchange through {site.exchangeCompany.name}. It is{' '}
-                {site.exchangeCompany.relationship} — the name is shared, the ownership is not, and
-                that is worth stating rather than leaving the name to imply otherwise.
+                We coordinate the closing with whichever qualified intermediary you choose: the
+                exchange documents are ready before the settlement statement is cut, the proceeds
+                go where they are supposed to go, and the 45-day identification and 180-day
+                acquisition clocks are watched by the people holding the closing file.
               </p>
               <p>
-                What the arrangement gets you is coordination rather than two offices working the
-                same deadline separately: the exchange documents are ready before the settlement
-                statement is cut, the proceeds go where they are supposed to go, and the 45-day
-                identification and 180-day acquisition clocks are watched by people who are also
-                holding the closing file.
+                {site.exchangeCompany.name} is {site.exchangeCompany.relationship}, with no
+                connection to us. The name is shared and nothing else is, which is worth stating
+                rather than leaving the name to imply otherwise.
               </p>
               <p>
-                You are free to use any qualified intermediary you choose, and nothing about closing
-                here requires that one. What we ask is only that you tell us early. We are not tax
-                advisers — the decision to exchange, and whether the property qualifies, belongs
-                with your CPA or tax counsel.
+                Nothing about closing here depends on which intermediary you use. What we ask is
+                only that you tell us early. We are not tax advisers — the decision to exchange,
+                and whether the property qualifies, belongs with your CPA or tax counsel.
               </p>
             </div>
           </section>

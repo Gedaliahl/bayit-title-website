@@ -71,8 +71,7 @@ const WHAT_WE_HANDLE = [
   {
     title: '1031 exchanges',
     body:
-      `Through ${site.exchangeCompany.name} — ${site.exchangeCompany.relationship}, despite the ` +
-      'shared name. We are not tax advisers.',
+      'The closing side, with whichever qualified intermediary you choose. We are not tax advisers.',
   },
 ];
 

@@ -26,8 +26,8 @@ export async function GET() {
     '',
     `> ${site.legalName} is a Florida title insurance agency in ${site.address.city}, Florida. ` +
       `We search and examine title, issue policies as an agent for ${site.underwriter}, hold ` +
-      `escrow, and close residential and commercial transactions throughout Florida. We can also ` +
-      `facilitate 1031 like-kind exchanges through ${site.exchangeCompany.name}.`,
+      `escrow, and close residential and commercial transactions throughout Florida, including the ` +
+      `closing side of a 1031 like-kind exchange with whichever qualified intermediary the client chooses.`,
     '',
     '## Verifiable facts',
     '',
@@ -41,7 +41,7 @@ export async function GET() {
     `- Hours: ${site.hours.map((h) => `${h.days} ${h.open ? `${h.open}–${h.close}` : 'closed'}`).join('; ')}`,
     `- Service area: ${site.serviceArea}, all 67 counties. Most files in ${site.priorityCounties.join(', ')}.`,
     `- Closing methods: ${site.closingMethods.join('; ')}`,
-    `- Transaction types: residential and commercial title, escrow and settlement; 1031 like-kind exchanges facilitated through ${site.exchangeCompany.name}, which is ${site.exchangeCompany.relationship}. It is not an affiliated business of ${site.legalName}; a client may use any qualified intermediary they choose.`,
+    `- Transaction types: residential and commercial title, escrow and settlement; the closing side of 1031 like-kind exchanges, with whichever qualified intermediary the client chooses. ${site.exchangeCompany.name} is ${site.exchangeCompany.relationship} and has no connection to ${site.legalName}.`,
     '- Title insurance premiums in Florida are promulgated by the Office of Insurance Regulation under',
     '  Fla. Admin. Code R. 69O-186.003. The premium for a given coverage amount comes off that published',
     '  schedule; this site prints the schedule and cites the rule.',

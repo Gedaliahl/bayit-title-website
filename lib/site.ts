@@ -92,10 +92,12 @@ export const site = {
   // be the taxpayer's agent for the sale. So it is a separate company, named
   // here rather than blurred into "we handle 1031s".
   //
-  // It shares the Bayit name and does not share the ownership, which a reader
-  // would not guess and is therefore said out loud wherever it comes up. It is
-  // not an affiliated business arrangement: there is no common ownership to
-  // disclose, and the site must not describe one.
+  // It shares the Bayit name and nothing else — the firm confirmed on 22
+  // September 2026 that it has no connection to the agency — which a reader
+  // would not guess and is therefore said out loud wherever it comes up. The
+  // site never says we facilitate an exchange "through" it or describe any
+  // arrangement with it: we close with whichever intermediary a client
+  // chooses.
   exchangeCompany: {
     name: 'Bayit Exchange Company',
     relationship: 'a separate company under different ownership',
