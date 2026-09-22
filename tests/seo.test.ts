@@ -11,6 +11,8 @@ import {
   formatLongDate,
   formatReviewDate,
   indexingAllowed,
+  CANONICAL_HOST,
+  OWN_HOSTS,
   siteVerification,
   teamPageHasContent,
 } from '@/lib/seo';
@@ -156,6 +158,64 @@ describe('which deployment crawlers are invited into', () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost.toUpperCase());
     expect(indexingAllowed()).toBe(true);
+  });
+
+  // Vercel reports the shortest production domain, which is the apex whenever
+  // the apex is attached, whichever host is primary. The gate once demanded www
+  // exactly, and the live site went out closed to every crawler because of it.
+  it.each(['bayittitle.com', 'www.bayittitle.com'])('says yes when production reports %s', (host) => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', host);
+    expect(indexingAllowed()).toBe(true);
+  });
+
+  it('says no for a host that merely contains the domain', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', 'bayittitle.com.example.net');
+    expect(indexingAllowed()).toBe(false);
+  });
+
+  it('lists both of the domain\'s hosts, the canonical one among them', () => {
+    expect(OWN_HOSTS).toContain(canonicalHost);
+    expect(OWN_HOSTS).toContain(CANONICAL_HOST);
+    expect(new Set(OWN_HOSTS.map((host) => host.replace(/^www\./, ''))).size).toBe(1);
+  });
+});
+
+/**
+ * The canonical is the URL that answers 200. At the cutover Vercel was set to
+ * serve the apex and redirect www to it, while every canonical, sitemap entry
+ * and JSON-LD id still named www: a crawler following any of them landed on a
+ * redirect. A NEXT_PUBLIC_SITE_URL copied from the old .env.example would
+ * bring that back, so the code, not the variable, picks between our two hosts.
+ */
+describe('the base for canonical URLs', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  async function freshSiteUrl() {
+    vi.resetModules();
+    return (await import('@/lib/seo')).SITE_URL;
+  }
+
+  it('is the canonical host when nothing overrides it', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '');
+    expect(await freshSiteUrl()).toBe(site.url);
+  });
+
+  it('ignores a variable naming our other host', async () => {
+    const other = OWN_HOSTS.find((host) => host !== CANONICAL_HOST)!;
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', `https://${other}`);
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(await freshSiteUrl()).toBe(site.url);
+  });
+
+  it('still honours a variable naming somewhere else entirely', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://staging.example.com');
+    expect(await freshSiteUrl()).toBe('https://staging.example.com');
   });
 });
 

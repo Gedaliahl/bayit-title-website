@@ -86,6 +86,37 @@ function contentSecurityPolicy() {
   return isDev ? policy : `${policy}; upgrade-insecure-requests`;
 }
 
+/**
+ * The canonical origin, which lib/site.ts states with its reason. It is
+ * repeated here only because this file cannot import TypeScript;
+ * tests/redirects.test.ts fails if the two ever disagree.
+ */
+export const CANONICAL_ORIGIN = 'https://bayittitle.com';
+
+/**
+ * A production deployment answers on the firm's domain and also on its
+ * *.vercel.app aliases. Once the build is open to crawlers (lib/seo.ts), each
+ * alias is a complete indexable copy of the site, so in production every one of
+ * them is sent to the real domain. A preview is a different build with
+ * VERCEL_ENV=preview, so this never reaches one, and previews stay where they
+ * are, closed to crawlers.
+ *
+ * `/api/` is left alone. Vercel calls the purge cron on the deployment itself,
+ * and a redirect would turn that call into a 308 that nothing follows.
+ */
+function productionAliasRedirects() {
+  if (process.env.VERCEL_ENV !== 'production') return [];
+
+  return [
+    {
+      source: '/:path((?!api/).*)',
+      has: [{ type: 'host', value: '(?<alias>.+)\\.vercel\\.app' }],
+      destination: `${CANONICAL_ORIGIN}/:path`,
+      permanent: true,
+    },
+  ];
+}
+
 const nextConfig = {
   reactStrictMode: true,
 
@@ -111,6 +142,8 @@ const nextConfig = {
    */
   async redirects() {
     return [
+      ...productionAliasRedirects(),
+
       // Live on Wix today, verified 200.
       { source: '/home', destination: '/', permanent: true },
       { source: '/contact-us', destination: '/contact', permanent: true },

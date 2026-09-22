@@ -5,11 +5,14 @@
 export const site = {
   name: 'Bayit Title',
   legalName: 'Bayit Title LLC',
-  // www, not the apex. The Wix site is canonical on www and 301s the apex to
-  // it, so every indexed URL and inbound link already points there. Moving the
-  // canonical host at cutover would put a needless redirect hop in front of the
-  // whole existing index. Vercel must have www set as the primary domain.
-  url: 'https://www.bayittitle.com',
+  // The apex, because that is the host Vercel serves: at the cutover the apex
+  // was made the primary domain and www 308s to it. The canonical has to be the
+  // URL that answers 200. A canonical naming www sent every crawler to a
+  // redirect, and the indexing gate, which compared the production host with
+  // www, kept the whole live site behind `Disallow: /` and `noindex`. If the
+  // primary domain in Vercel is ever switched to www, change this with it —
+  // `npm run check:live` fails the day the two disagree.
+  url: 'https://bayittitle.com',
 
   agencyLicense: 'W806540',
   agencyNpn: '20152864',

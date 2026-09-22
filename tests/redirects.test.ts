@@ -11,7 +11,7 @@
  * replaced was a first pass at naming conventions, and seven of its nine
  * entries pointed at paths that had never existed.
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { site } from '@/lib/site';
 
@@ -19,6 +19,7 @@ interface Redirect {
   source: string;
   destination: string;
   permanent: boolean;
+  has?: { type: string; value?: string }[];
 }
 
 async function redirects(): Promise<Redirect[]> {
@@ -141,10 +142,57 @@ describe('the map as a whole', () => {
 });
 
 describe('the canonical host', () => {
-  it('stays on www, where the existing index already points', async () => {
-    // The Wix site 301s the apex to www, so every indexed URL and inbound link
-    // is a www URL. Moving to the apex would put a redirect hop in front of the
-    // entire existing index for no gain.
-    expect(site.url).toBe('https://www.bayittitle.com');
+  it('is the apex, the host Vercel serves', () => {
+    // At the cutover the apex was made the primary domain in Vercel and www
+    // 308s to it. The canonical has to be the URL that answers 200, so it is
+    // the apex. If the primary is ever switched to www, this changes with it,
+    // and `npm run check:live` fails on the day the two disagree.
+    expect(site.url).toBe('https://bayittitle.com');
+  });
+
+  it('is written the same way in next.config.mjs, which cannot import it', async () => {
+    const { CANONICAL_ORIGIN } = await import('../next.config.mjs');
+    expect(CANONICAL_ORIGIN).toBe(site.url);
+  });
+});
+
+/**
+ * Once production is open to crawlers, the production deployment's
+ * *.vercel.app aliases are complete indexable copies of the site. They go to
+ * the real domain; previews are separate builds and are never touched.
+ */
+describe('the production deployment\'s vercel.app aliases', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  function aliasRule(all: Redirect[]) {
+    return all.find((entry) => entry.has?.some((condition) => condition.type === 'host'));
+  }
+
+  it('are sent to the canonical domain in production', async () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    const rule = aliasRule(await redirects());
+
+    expect(rule).toBeDefined();
+    expect(rule!.permanent).toBe(true);
+    expect(rule!.destination.startsWith(`${site.url}/`)).toBe(true);
+    expect(new RegExp(`^${rule!.has![0].value}$`).test('bayit-title-website.vercel.app')).toBe(true);
+    expect(new RegExp(`^${rule!.has![0].value}$`).test('bayittitle.com')).toBe(false);
+  });
+
+  it('leave the API alone, where Vercel calls the cron on the deployment itself', async () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    const rule = aliasRule(await redirects())!;
+    const source = new RegExp(`^/${rule.source.replace('/:path', '').replace(/^\(/, '(')}$`);
+
+    expect(source.test('/api/cron/purge')).toBe(false);
+    expect(source.test('/counties/broward-county')).toBe(true);
+    expect(source.test('/')).toBe(true);
+  });
+
+  it('are not redirected on a preview, which is a different build', async () => {
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    expect(aliasRule(await redirects())).toBeUndefined();
   });
 });

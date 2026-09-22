@@ -4,7 +4,7 @@
  * changed on every deploy, and crawlers learn to ignore the field. And a page
  * the site marks noindex is not a page to ask them for.
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import sitemap from '@/app/sitemap';
 import robots from '@/app/robots';
@@ -32,7 +32,34 @@ describe('the sitemap', () => {
 });
 
 describe('robots.txt', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it('names no host, which only Yandex ever read', () => {
     expect(robots()).not.toHaveProperty('host');
+  });
+
+  // The live site's exact environment on the day it went out closed: the apex
+  // attached, and Vercel reporting it as the production domain.
+  it('opens every page to every crawler on the real domain', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', 'bayittitle.com');
+    const result = robots();
+    const rules = Array.isArray(result.rules) ? result.rules : [result.rules];
+
+    for (const rule of rules) {
+      expect(rule.allow).toBe('/');
+      // The form endpoints are the only thing held back, and they are not pages.
+      expect(rule.disallow).toEqual(['/api/']);
+    }
+    expect(rules.some((rule) => rule.userAgent === '*')).toBe(true);
+    expect(result.sitemap).toBe(absoluteUrl('/sitemap.xml'));
+  });
+
+  it('stays closed on a preview', () => {
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', 'bayittitle.com');
+    expect(robots()).toEqual({ rules: [{ userAgent: '*', disallow: '/' }] });
   });
 });

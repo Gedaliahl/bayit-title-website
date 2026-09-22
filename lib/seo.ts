@@ -24,10 +24,11 @@ function resolveSiteUrl(): string {
 
   const candidate = explicit || previewUrl || site.url;
 
+  let parsed: URL;
   try {
     // Parsing validates and normalises; a bare host or a typo throws here
     // rather than at first render.
-    return new URL(candidate).toString().replace(/\/$/, '');
+    parsed = new URL(candidate);
   } catch {
     console.warn(
       `[seo] NEXT_PUBLIC_SITE_URL is not a valid absolute URL (${JSON.stringify(candidate)}). ` +
@@ -35,6 +36,37 @@ function resolveSiteUrl(): string {
     );
     return site.url;
   }
+
+  // Which of our own two hosts is canonical is decided in lib/site.ts, next to
+  // the reason, and nowhere else. An environment variable left over from before
+  // the cutover naming the other one would otherwise put every canonical, the
+  // sitemap and the JSON-LD on a host that redirects.
+  if (isOwnHost(parsed.host) && parsed.host !== CANONICAL_HOST) {
+    console.warn(
+      `[seo] NEXT_PUBLIC_SITE_URL names ${parsed.host}, but the canonical host is ${CANONICAL_HOST}. ` +
+        `Using ${site.url}.`,
+    );
+    return site.url;
+  }
+
+  return parsed.toString().replace(/\/$/, '');
+}
+
+/** The host every canonical, sitemap entry and JSON-LD id is written on. */
+export const CANONICAL_HOST = new URL(site.url).host;
+
+/** The registrable domain, without any www. */
+const DOMAIN = CANONICAL_HOST.replace(/^www\./, '');
+
+/**
+ * Both hosts the firm's domain answers on: the apex and www. One of them is
+ * canonical and the other redirects to it, but both are the real site rather
+ * than a copy of it, which is the distinction the indexing gate has to draw.
+ */
+export const OWN_HOSTS = [DOMAIN, `www.${DOMAIN}`] as const;
+
+function isOwnHost(host: string): boolean {
+  return (OWN_HOSTS as readonly string[]).includes(host.toLowerCase());
 }
 
 export const SITE_URL = resolveSiteUrl();
@@ -42,12 +74,11 @@ export const SITE_URL = resolveSiteUrl();
 /**
  * Whether this deployment is the one the public is meant to find.
  *
- * The domain has not cut over. Until it does, this codebase answers on a
- * *.vercel.app hostname while the old site still serves www.bayittitle.com, and
- * a second fully crawlable copy of every page is a duplicate of the site it is
- * meant to replace — competing with it for its own search terms and splitting
- * the signals between the two. So only the deployment actually answering for
- * the canonical host invites crawlers; every other one is closed to them.
+ * A preview, or a production build that answers only on a *.vercel.app
+ * hostname, is a second fully crawlable copy of every page: a duplicate of the
+ * real site, competing with it for its own search terms and splitting the
+ * signals between the two. So only the deployment actually answering for the
+ * firm's domain invites crawlers; every other one is closed to them.
  *
  * `VERCEL_PROJECT_PRODUCTION_URL` is the host Vercel serves this project's
  * production deployment on, and it becomes the real domain the moment that
@@ -58,6 +89,12 @@ export const SITE_URL = resolveSiteUrl();
  *
  * Off Vercel — a local build, a CI build — nothing is being served to the
  * public, so the answer is no.
+ *
+ * Either of the domain's two hosts counts. Vercel reports the *shortest*
+ * production domain here, which is the apex whenever the apex is attached,
+ * whichever of the two is primary. This used to demand www exactly, so the
+ * day the domain was attached the gate stayed shut: the real site went out
+ * with `Disallow: /` and `noindex` on every page.
  */
 export function indexingAllowed(): boolean {
   if (process.env.VERCEL_ENV !== 'production') return false;
@@ -65,11 +102,7 @@ export function indexingAllowed(): boolean {
   const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
   if (!productionHost) return false;
 
-  try {
-    return productionHost.toLowerCase() === new URL(site.url).host.toLowerCase();
-  } catch {
-    return false;
-  }
+  return isOwnHost(productionHost);
 }
 
 /**
