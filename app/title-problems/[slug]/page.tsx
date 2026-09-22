@@ -58,7 +58,7 @@ export async function generateMetadata({
   const path = `/title-problems/${doc.slug}`;
 
   return {
-    title: fittedTitle(doc.title),
+    title: fittedTitle(doc.seo_title ?? doc.title),
     description,
     alternates: { canonical: path },
     // A draft is only ever reachable on a preview build, and must never be indexed.

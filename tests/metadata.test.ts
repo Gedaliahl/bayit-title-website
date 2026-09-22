@@ -21,23 +21,6 @@ import { TITLE_TEMPLATE, TITLE_LIMIT } from '@/lib/seo';
 const TITLE_CEILING = TITLE_LIMIT + 5;
 const DESCRIPTION_LIMIT = 155;
 
-/**
- * Library articles whose title is the reader's whole question, and too long
- * for a results page even without the site name. Each needs a shorter SEO title
- * of its own in the front matter; the headline on the page stays the question.
- * Listed rather than skipped, and checked below to still be too long, so the
- * list cannot quietly outlive the fix.
- */
-const AWAITING_SEO_TITLE = new Set([
-  '/title-problems/buying-property-bankruptcy-estate-florida',
-  '/title-problems/hoa-approval-delay-closing-florida',
-  '/title-problems/judgment-against-seller-before-closing-florida',
-  '/title-problems/litigation-against-seller-flip-florida',
-  '/title-problems/no-legal-access-landlocked-property-florida',
-  '/title-problems/non-standard-purchase-contract-florida-closing',
-  '/title-problems/open-permits-before-closing-florida',
-]);
-
 interface PageModule {
   metadata?: Metadata;
   generateMetadata?: (props: { params: Promise<Record<string, string>> }) => Promise<Metadata>;
@@ -121,12 +104,7 @@ describe('page metadata', () => {
   it.each(all.map((route) => [route.path, route.metadata] as const))(
     '%s has a title a results page can show whole',
     (route, metadata) => {
-      const length = resolvedTitle(route, metadata.title).length;
-      if (AWAITING_SEO_TITLE.has(route)) {
-        expect(length, 'fixed: take it off AWAITING_SEO_TITLE').toBeGreaterThan(TITLE_CEILING);
-        return;
-      }
-      expect(length).toBeLessThanOrEqual(TITLE_CEILING);
+      expect(resolvedTitle(route, metadata.title).length).toBeLessThanOrEqual(TITLE_CEILING);
     },
   );
 

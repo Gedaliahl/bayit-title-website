@@ -1,6 +1,7 @@
 ---
 status: reviewed
 title: "The HOA says approval takes 30 days and we close in two weeks. Now what?"
+seo_title: "HOA approval takes 30 days and we close in two weeks"
 slug: "hoa-approval-delay-closing-florida"
 cluster: "property-type"
 direct_answer: "Association approval is a contract condition, not a title defect, but it can stop a closing just as effectively. The stated turnaround is usually a maximum the association is entitled to take, not the time it needs. Most of the delay is the application sitting incomplete, so the fix is getting a complete package in on day one."

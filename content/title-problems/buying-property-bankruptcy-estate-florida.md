@@ -1,6 +1,7 @@
 ---
 status: reviewed
 title: "We're buying from a bankruptcy estate. What does the title work need?"
+seo_title: "Buying from a bankruptcy estate in Florida: the title work"
 slug: "buying-property-bankruptcy-estate-florida"
 cluster: "distressed"
 direct_answer: "In a bankruptcy sale the court's order authorizing the sale is a title document. The trustee's authority, the terms the order approves, whether liens are stripped or ride through, and whether the appeal period has run all come from that order — so it is read as carefully as the deed, and the closing is scheduled around it."

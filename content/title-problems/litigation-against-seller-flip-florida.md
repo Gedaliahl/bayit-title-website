@@ -1,6 +1,7 @@
 ---
 status: draft
 title: "The seller is being sued and it's a flip. Does that stop the sale?"
+seo_title: "Seller being sued on a flip: does that stop the sale?"
 slug: "litigation-against-seller-flip-florida"
 cluster: "distressed"
 direct_answer: "A lawsuit against a seller only affects title if it reaches the property — most directly through a recorded lis pendens, which puts the world on notice that the outcome could affect the parcel. A short hold since the seller acquired the property does not itself create a title defect, but it does change what the search has to look at."

@@ -131,7 +131,13 @@ export type SectionKind = 'prose' | 'practice' | 'faq';
 
 export interface DocFrontMatter {
   status: DocStatus;
+  /** The reader's question, as the page's headline and the social card's title. */
   title: string;
+  /**
+   * A shorter title for search results, where the question is cut off. It says
+   * the same thing in fewer words and adds nothing the page does not.
+   */
+  seo_title?: string;
   slug: string;
   cluster: Cluster;
   direct_answer: string;
