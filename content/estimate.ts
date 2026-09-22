@@ -9,7 +9,10 @@
 // The figures the copy sits beside come from lib/ — the promulgated schedule,
 // the statutory rates and the two estimators — and are never restated here.
 
+import { MAX_PAGES } from '@/lib/closing-estimate';
+import { MAX_AMOUNT } from '@/lib/estimate-input';
 import { site } from '@/lib/site';
+import { formatMoney } from '@/lib/statutory-rates';
 
 export type EstimateMode = 'address' | 'numbers' | 'upload';
 
@@ -27,8 +30,8 @@ export const META = {
   description:
     'Price a Florida closing three ways: from an address alone, off the county’s own record; ' +
     'from the contract numbers; or send us the contract and we reply with the exact figure. ' +
-    'The premium is promulgated and the taxes are statutory, so every line is cited to the ' +
-    'rule or the statute.',
+    'The premium is promulgated and the taxes are statutory, and every line is cited to whoever ' +
+    'sets it.',
 };
 
 export const HERO = {
@@ -41,8 +44,8 @@ export const HERO = {
     'you have them; or send us the contract and we reply with the exact figure, our fees ' +
     'included.',
   proof: [
-    'Every figure cited to the rule or the statute',
-    'The two estimators run in your browser — nothing stored, nothing sent to us',
+    'Every figure cited to whoever sets it',
+    'Nothing stored; an address is only used to look up the county record',
   ],
 };
 
@@ -56,7 +59,7 @@ export const ROUTER = {
     },
     numbers: {
       label: 'Yes — enter the numbers',
-      sub: 'Price, loan, county, reissue. Every figure set by rule or statute.',
+      sub: 'Price, loan, county, reissue. Every figure cited to whoever sets it.',
     },
     upload: {
       label: 'Yes — send us the contract',
@@ -73,9 +76,11 @@ export const BAND = {
   selected: 'Selected',
 };
 
-export const TABS: Record<EstimateMode, { eyebrow: string; title: string; body: string }> = {
+/** `short` is all a phone has room for, and is what the tab is called there. */
+export const TABS: Record<EstimateMode, { eyebrow: string; short: string; title: string; body: string }> = {
   address: {
     eyebrow: 'Option 1 · From an address',
+    short: 'Address',
     title: 'Approximate, off the county record',
     body:
       'Type the address and pick the property. The county and the assessed value come off the ' +
@@ -83,13 +88,15 @@ export const TABS: Record<EstimateMode, { eyebrow: string; title: string; body: 
   },
   numbers: {
     eyebrow: 'Option 2 · From the numbers',
-    title: 'Exact, from the contract',
+    short: 'Numbers',
+    title: 'Close, from the contract numbers',
     body:
       'Price, loan, county, whether the reissue rate applies and how long the documents run. ' +
-      'Every figure is set by the rule or the statute it cites.',
+      'Every figure is cited to whoever sets it — the rule, the statute, or us.',
   },
   upload: {
     eyebrow: 'Option 3 · From the contract',
+    short: 'Contract',
     title: 'Exact, from us',
     body:
       'Upload the signed contract. We read the price, the parties and the dates off it and reply ' +
@@ -98,6 +105,11 @@ export const TABS: Record<EstimateMode, { eyebrow: string; title: string; body: 
 };
 
 export const FORM = {
+  /** Said under a money box that has just refused what was typed into it. */
+  money: {
+    characters: 'Whole dollars only — digits, and commas if you like.',
+    tooLarge: `The calculator stops at ${formatMoney(MAX_AMOUNT)}.`,
+  },
   address: {
     label: 'Property address',
     hint: 'Start typing and pick the property. Where the roll can be read, the assessed value comes with it.',
@@ -190,6 +202,9 @@ export const FORM = {
       'the documents.',
     deed: 'Pages in the deed',
     mortgage: 'Pages in the mortgage',
+    characters: 'A whole number of pages.',
+    tooMany: `Up to ${MAX_PAGES} pages here.`,
+    atLeastOne: 'A document has a first page, so this is priced as one.',
   },
 };
 
@@ -212,13 +227,34 @@ export const RESULT = {
   totalNote:
     'Set by the rule, the statute or the clerk, except the lender’s policy and the e-recording ' +
     'fee, which are ours and say so on the line. Which side pays each of them is the contract’s.',
-  /** "The seller carries about $3,500 of the same closing." */
-  otherParty: (other: 'buyer' | 'seller', amount: string) =>
-    `The ${other} carries about ${amount} of the same closing, on the lines above that are theirs.`,
-  alternate: (otherRate: string, alternate: string, premium: string) =>
+  /**
+   * "The seller carries about $3,500 of the same closing." An owner's policy
+   * shown to both sides is in this side's total already, so it is named
+   * rather than counted a second time in the other's.
+   */
+  otherParty: (other: 'buyer' | 'seller', amount: string, ownerPolicyUnassigned: boolean) =>
+    `The ${other} carries about ${amount} of the same closing, on the lines that are theirs` +
+    (ownerPolicyUnassigned ? ', plus the owner’s policy if the contract puts it on them.' : '.'),
+  /**
+   * With no previous policy amount entered, the reissue figure is the whole
+   * liability at the reissue schedule — the most it can save, and less if the
+   * old policy insured less than this one would.
+   */
+  alternate: (otherRate: string, alternate: string, premium: string, upTo: boolean) =>
     `At the ${otherRate} the same coverage is ${alternate} in premium against ${premium}. ` +
-    'The difference is what it is worth finding the old policy for.',
+    (upTo
+      ? 'Finding the old policy is worth up to the difference — less if it insured less than this would.'
+      : 'The difference is what it is worth finding the old policy for.'),
   notInIt: 'Not in it:',
+  /**
+   * A seller's list is not a buyer's: no lender, no endorsements, and the
+   * costs that are theirs alone — the ones /closing-costs/seller describes.
+   */
+  unknownsSeller:
+    'Our settlement fee, where the contract puts one on the seller; the mortgage payoff and the ' +
+    'recording of its satisfaction; association balances and estoppel charges; municipal claims, ' +
+    'judgments and liens; prorations and the commission. Which side pays each line above is the ' +
+    'contract’s to settle.',
   unknowns: {
     address:
       'The policy is written at the purchase price, not the assessed value — on most Florida ' +
@@ -235,10 +271,25 @@ export const RESULT = {
   empty: {
     addressPurchase: 'Pick the property above, or enter the assessed value, and the figures appear here.',
     addressRefinance: 'Enter the loan amount and the figures appear here.',
-    numbers: 'Enter a price or a loan amount and the figures appear here.',
-    // A seller's side has no loan on it, so a loan amount alone will not fill it.
-    sellerNeedsPrice: 'Enter a price — a loan amount alone puts nothing on the seller’s side.',
+    // A loan without a price is not a purchase yet, on either side of it.
+    numbersPurchase: 'Enter the price and the figures appear here.',
+    numbersRefinance: 'Enter the loan amount and the figures appear here.',
   },
+  /** Read out a moment after the figures settle: "The buyer’s side: $5,152.00". */
+  announce: (label: string, total: string) => `${label}: ${total}`,
+  /** On a phone, pinned to the foot of the screen while the form is in view. */
+  seeBreakdown: 'See breakdown',
+};
+
+export const ACTIONS = {
+  label: 'Keep these figures',
+  reset: 'Start again',
+  copy: 'Copy the figures',
+  copied: 'Copied. Paste them wherever you need them.',
+  copyFailed: 'That browser would not copy. Select the figures and copy them by hand.',
+  print: 'Print',
+  /** The first line of the copied text. */
+  summaryTitle: `Closing cost estimate from ${site.name}`,
 };
 
 export const UPLOAD = {

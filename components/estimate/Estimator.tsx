@@ -3,11 +3,18 @@
 import { BAND, ESTIMATE_MODES, TABS } from '@/content/estimate';
 import { CalculatorPane, type EstimatorCounty } from './CalculatorPane';
 import { UploadPane } from './UploadPane';
-import { useEstimateMode } from './EstimateMode';
+import { panelHeadingId, useEstimateMode } from './EstimateMode';
 
 /**
- * The band under the hero: the three ways in as tabs, and whichever one is
- * open under them.
+ * The band under the hero: the three ways in, and whichever one is open under
+ * them.
+ *
+ * The three are a group of pressed/unpressed buttons rather than ARIA tabs.
+ * Tabs need a panel of their own for each tab, and two of these share one: the
+ * address and numbers options are the same form with different boxes in it,
+ * which is what keeps a county or a loan typed under one there under the
+ * other. A button group says exactly what the control does — pick one of
+ * three — without promising a structure the page does not have.
  *
  * Both panes stay mounted and the closed one is hidden rather than unmounted,
  * which is what keeps a price typed under option 2 there when the reader comes
@@ -22,6 +29,7 @@ export function Estimator({
   valueCountySlugs: string[];
 }) {
   const { mode, setMode } = useEstimateMode();
+  const figuresMode = mode === 'upload' ? 'address' : mode;
 
   return (
     <section id="estimator" className="band estimator">
@@ -31,20 +39,24 @@ export function Estimator({
           <span className="band__caption">{BAND.caption}</span>
         </div>
 
-        <div className="mode-tabs" role="tablist" aria-label={BAND.tablist}>
+        <div className="mode-tabs" role="group" aria-label={BAND.tablist}>
           {ESTIMATE_MODES.map((candidate) => (
             <button
               key={candidate}
               type="button"
-              role="tab"
               className="mode-tab"
-              aria-selected={mode === candidate}
-              aria-controls={`estimator-${candidate === 'upload' ? 'upload' : 'figures'}`}
+              aria-pressed={mode === candidate}
               onClick={() => setMode(candidate)}
             >
+              <span className="mode-tab__short">{TABS[candidate].short}</span>
               <span className="mode-tab__head">
                 <span className="mode-tab__eyebrow">{TABS[candidate].eyebrow}</span>
-                {mode === candidate ? <span className="mode-tab__tag">{BAND.selected}</span> : null}
+                {/* aria-pressed already says it; this is for the eye. */}
+                {mode === candidate ? (
+                  <span className="mode-tab__tag" aria-hidden="true">
+                    {BAND.selected}
+                  </span>
+                ) : null}
               </span>
               <span className="mode-tab__title">{TABS[candidate].title}</span>
               <span className="mode-tab__body">{TABS[candidate].body}</span>
@@ -52,17 +64,31 @@ export function Estimator({
           ))}
         </div>
 
-        <div id="estimator-figures" role="tabpanel">
+        <section
+          id="estimator-figures"
+          aria-labelledby={panelHeadingId(figuresMode)}
+          hidden={mode === 'upload'}
+        >
+          <h3 id={panelHeadingId(figuresMode)} className="visually-hidden" tabIndex={-1}>
+            {TABS[figuresMode].title}
+          </h3>
           <CalculatorPane
-            mode={mode === 'upload' ? 'address' : mode}
+            mode={figuresMode}
             hidden={mode === 'upload'}
             counties={counties}
             valueCountySlugs={valueCountySlugs}
           />
-        </div>
-        <div id="estimator-upload" role="tabpanel">
+        </section>
+        <section
+          id="estimator-upload"
+          aria-labelledby={panelHeadingId('upload')}
+          hidden={mode !== 'upload'}
+        >
+          <h3 id={panelHeadingId('upload')} className="visually-hidden" tabIndex={-1}>
+            {TABS.upload.title}
+          </h3>
           <UploadPane hidden={mode !== 'upload'} />
-        </div>
+        </section>
       </div>
     </section>
   );

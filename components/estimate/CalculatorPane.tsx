@@ -1,15 +1,33 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import { FORM, RESULT, type EstimateMode } from '@/content/estimate';
+import { ACTIONS, FORM, RESULT, type EstimateMode } from '@/content/estimate';
 import { estimateFromAssessedValue, otherRateLabel, type Purpose } from '@/lib/assessed-estimate';
-import { DEFAULTS as CLOSING_DEFAULTS, estimate, type EstimateGroup } from '@/lib/closing-estimate';
+import {
+  DEFAULTS as CLOSING_DEFAULTS,
+  estimate,
+  pagesToPrice,
+  type EstimateGroup,
+} from '@/lib/closing-estimate';
 import { PARTIES, type Party } from '@/lib/cost-allocation';
 import { addressKey } from '@/lib/address-format';
+import {
+  caretAfterFormat,
+  clearNumbers,
+  formatAmount,
+  formatDraft,
+  parseMoney,
+  parsePageCount,
+  readNumbers,
+  summaryText,
+  writeNumbers,
+  type Refusal,
+} from '@/lib/estimate-input';
 import type { ParcelValue, PropertySuggestion } from '@/lib/property-lookup';
-import { discretionarySurtax, formatMoney } from '@/lib/statutory-rates';
+import { discretionarySurtax, formatCents, formatMoney } from '@/lib/statutory-rates';
 import { FigureCard } from './FigureCard';
+import { TotalBar } from './TotalBar';
 
 export interface EstimatorCounty {
   slug: string;
@@ -35,17 +53,25 @@ const DEBOUNCE_MS = 300;
 /** Where the figure in the assessed value box came from. */
 type ValueOrigin = 'typed' | 'assessed' | 'just';
 
-function parseAmount(raw: string): number {
-  const digits = raw.replace(/[^\d]/g, '');
-  return digits === '' ? 0 : Number(digits);
-}
+/** Long enough to be a pause in typing, so the address bar is not rewritten on every key. */
+const QUERY_WRITE_MS = 400;
 
-function displayAmount(value: number): string {
-  return value === 0 ? '' : value.toLocaleString('en-US');
-}
-
-function parsePages(raw: string): number {
-  return Math.min(500, parseAmount(raw));
+/** Where the figures go on paste when the page cannot write to the clipboard itself. */
+function copyByHand(text: string): boolean {
+  const area = document.createElement('textarea');
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.opacity = '0';
+  document.body.appendChild(area);
+  area.select();
+  try {
+    return document.execCommand('copy');
+  } catch {
+    return false;
+  } finally {
+    area.remove();
+  }
 }
 
 /** "1409 NW 48th St, Boca Raton 33431" — what the box says once a suggestion is taken. */
@@ -60,7 +86,32 @@ function premiumSubtotal(groups: EstimateGroup[]): number | null {
   return premium ? premium.subtotal : null;
 }
 
-/** A labelled box with a `$` in front, formatted with thousands separators as it is typed. */
+/**
+ * Keeps the caret where the reader left it when a box reformats itself. Set
+ * during the change, applied once React has written the new text.
+ */
+function useCaret() {
+  const input = useRef<HTMLInputElement>(null);
+  const pending = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (pending.current === null || !input.current) return;
+    if (document.activeElement === input.current) {
+      input.current.setSelectionRange(pending.current, pending.current);
+    }
+    pending.current = null;
+  });
+
+  return { input, placeAt: (position: number) => (pending.current = position) };
+}
+
+/**
+ * A labelled box with a `$` in front, formatted with thousands separators as it
+ * is typed. What it holds is whole dollars: a point typed into it is kept on
+ * screen while the reader is in the box, and its cents are dropped rather than
+ * read as more dollars. Anything it refuses leaves the last good figure in
+ * place and says why underneath.
+ */
 function MoneyField({
   id,
   label,
@@ -76,6 +127,13 @@ function MoneyField({
   onChange: (value: number) => void;
   children?: React.ReactNode;
 }) {
+  // Null whenever the reader is not in the box, which then shows the figure itself.
+  const [draft, setDraft] = useState<string | null>(null);
+  const [refusal, setRefusal] = useState<Refusal | null>(null);
+  const { input, placeAt } = useCaret();
+  const shown = draft ?? formatAmount(value);
+  const describedBy = [hint ? `${id}-hint` : null, `${id}-error`].filter(Boolean).join(' ');
+
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
@@ -89,15 +147,123 @@ function MoneyField({
           $
         </span>
         <input
+          ref={input}
           id={id}
-          inputMode="numeric"
+          inputMode="decimal"
           autoComplete="off"
-          aria-describedby={hint ? `${id}-hint` : undefined}
-          value={displayAmount(value)}
-          onChange={(event) => onChange(parseAmount(event.target.value))}
+          aria-describedby={describedBy}
+          value={shown}
+          onFocus={() => setDraft(formatAmount(value))}
+          onBlur={() => setDraft(null)}
+          onChange={(event) => {
+            const raw = event.target.value;
+            const caret = event.target.selectionStart ?? raw.length;
+            const parsed = parseMoney(raw);
+            if (!parsed.ok) {
+              setRefusal(parsed.reason);
+              placeAt(Math.max(0, caret - (raw.length - shown.length)));
+              return;
+            }
+            const next = formatDraft(raw);
+            setRefusal(null);
+            setDraft(next);
+            placeAt(caretAfterFormat(raw, caret, next));
+            onChange(parsed.value);
+          }}
         />
       </div>
+      <span className="field__error" id={`${id}-error`} aria-live="polite">
+        {refusal === 'too-large' ? FORM.money.tooLarge : refusal ? FORM.money.characters : ''}
+      </span>
       {children}
+    </div>
+  );
+}
+
+/**
+ * A page count. An empty box is priced as one page, and says so, rather than
+ * quietly dropping the recording line; leaving the box puts the 1 in it.
+ */
+function PagesField({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const [refusal, setRefusal] = useState<Refusal | null>(null);
+  const message =
+    refusal === 'too-large'
+      ? FORM.pages.tooMany
+      : refusal
+        ? FORM.pages.characters
+        : value < 1
+          ? FORM.pages.atLeastOne
+          : '';
+
+  return (
+    <div className="field">
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        inputMode="numeric"
+        autoComplete="off"
+        aria-describedby={`${id}-error`}
+        value={value === 0 ? '' : String(value)}
+        onChange={(event) => {
+          const parsed = parsePageCount(event.target.value);
+          setRefusal(parsed.ok ? null : parsed.reason);
+          if (parsed.ok) onChange(parsed.value);
+        }}
+        onBlur={() => {
+          if (value < 1) onChange(pagesToPrice(value));
+        }}
+      />
+      <span className="field__error" id={`${id}-error`} aria-live="polite">
+        {message}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Two or three choices, one of which is always chosen: native radios, so the
+ * arrow keys, the group's name and the checked state all come from the
+ * browser, drawn as the segmented control.
+ */
+function Segmented<T extends string>({
+  name,
+  labelledBy,
+  describedBy,
+  options,
+  value,
+  onChange,
+}: {
+  name: string;
+  labelledBy: string;
+  describedBy?: string;
+  options: [T, string][];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="seg" role="radiogroup" aria-labelledby={labelledBy} aria-describedby={describedBy}>
+      {options.map(([option, label]) => (
+        <label key={option} className="seg__option">
+          <input
+            type="radio"
+            name={name}
+            value={option}
+            checked={value === option}
+            onChange={() => onChange(option)}
+          />
+          <span>{label}</span>
+        </label>
+      ))}
     </div>
   );
 }
@@ -312,6 +478,70 @@ export function CalculatorPane({
   const county = counties.find((entry) => entry.slug === countySlug) ?? null;
   const countyName = county?.name ?? RESULT.outsideDade;
 
+  // The numbers option lives in the address bar as well as the boxes, so a
+  // refresh keeps it and a link to it opens on the same figures. Read once on
+  // arrival; anything in the query that is not a figure this form could have
+  // produced is ignored and the default stays.
+  useEffect(() => {
+    const apply = () => {
+      const read = readNumbers(new URLSearchParams(window.location.search), [
+        ...counties.map((entry) => entry.slug),
+        ELSEWHERE,
+      ]);
+      if (read.purpose) setPurpose(read.purpose);
+      if (read.party) setParty(read.party);
+      if (read.county) setChosenCounty(read.county);
+      if (read.price !== undefined) setPrice(read.price);
+      if (read.loan !== undefined) setNumbersLoan(read.loan);
+      if (read.reissue !== undefined) setReissue(read.reissue);
+      if (read.prior !== undefined) setPrior(read.prior);
+      if (read.singleFamily !== undefined) setSingleFamily(read.singleFamily);
+      if (read.deedPages !== undefined) setDeedPages(read.deedPages);
+      if (read.mortgagePages !== undefined) setMortgagePages(read.mortgagePages);
+    };
+    apply();
+    // `counties` is the server's list and never changes, so this runs on
+    // arrival only: after that the boxes are the source and the query follows.
+  }, [counties]);
+
+  const numbersShowing = !isAddress && !hidden;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const url = new URL(window.location.href);
+      const params = numbersShowing
+        ? writeNumbers(url.searchParams, {
+            purpose,
+            party,
+            county: countySlug,
+            price,
+            loan: numbersLoan,
+            reissue,
+            prior,
+            singleFamily,
+            deedPages,
+            mortgagePages,
+          })
+        : clearNumbers(url.searchParams);
+      url.search = params.toString();
+      // Replaced, not pushed, for the same reason the mode is: Back leaves the page.
+      window.history.replaceState(window.history.state, '', url);
+    }, QUERY_WRITE_MS);
+    return () => clearTimeout(timer);
+  }, [
+    numbersShowing,
+    purpose,
+    party,
+    countySlug,
+    price,
+    numbersLoan,
+    reissue,
+    prior,
+    singleFamily,
+    deedPages,
+    mortgagePages,
+  ]);
+
   const isPurchase = purpose === 'purchase';
   const loan = isAddress ? addressLoan : numbersLoan;
   // A refinance has a borrower and nobody else, so the toggle is put away and
@@ -346,6 +576,7 @@ export function CalculatorPane({
         premiumTotal: assessedResult.premiumTotal,
         alternate: assessedResult.alternateRateTotal,
         otherPartyTotal: assessedResult.otherPartyTotal,
+        ownerPolicyUnassigned: assessedResult.ownerPolicyUnassigned,
       };
     }
 
@@ -360,8 +591,8 @@ export function CalculatorPane({
       reissue,
       priorPolicyAmount: prior,
       singleFamilyResidence: singleFamily,
-      deedPages,
-      mortgagePages,
+      deedPages: pagesToPrice(deedPages),
+      mortgagePages: pagesToPrice(mortgagePages),
     };
     const priced = estimate(input);
     const premiumTotal = premiumSubtotal(priced.groups);
@@ -374,6 +605,7 @@ export function CalculatorPane({
       premiumTotal: premiumTotal ?? 0,
       alternate: premiumTotal === null ? null : other,
       otherPartyTotal: priced.otherPartyTotal,
+      ownerPolicyUnassigned: priced.ownerPolicyUnassigned,
     };
   }, [
     isAddress,
@@ -442,19 +674,74 @@ export function CalculatorPane({
 
   const alternateText =
     hasResult && result.alternate !== null && result.alternate !== result.premiumTotal
-      ? RESULT.alternate(otherRateLabel(reissue), formatMoney(result.alternate), formatMoney(result.premiumTotal))
+      ? RESULT.alternate(
+          otherRateLabel(reissue),
+          formatCents(result.alternate),
+          formatCents(result.premiumTotal),
+          // No previous policy amount, so the reissue side of the comparison is
+          // rated on the whole liability: the most the old policy can save.
+          prior <= 0,
+        )
       : null;
 
   // Said only where there is another side and it is carrying something, so a
   // cash purchase does not tell a seller the buyer is paying nothing.
   const otherPartyText =
     isPurchase && result.otherPartyTotal > 0
-      ? RESULT.otherParty(otherSide, formatMoney(result.otherPartyTotal))
+      ? RESULT.otherParty(otherSide, formatCents(result.otherPartyTotal), result.ownerPolicyUnassigned)
       : null;
+
+  const totalText = hasResult ? formatCents(result.total) : '—';
+  const totalLabel = RESULT.totalLabel(isPurchase, side);
+  const sub = hasResult
+    ? RESULT.sub(isPurchase, countyName, isAddress && showingRoll ? (record?.rollYear ?? null) : null)
+    : RESULT.nothingYet;
+  const unknownsText = isPurchase && side === 'seller' ? RESULT.unknownsSeller : RESULT.unknowns[mode];
+
+  const [copyStatus, setCopyStatus] = useState<'copied' | 'failed' | null>(null);
+
+  async function copySummary() {
+    const text = summaryText({
+      title: ACTIONS.summaryTitle,
+      sub: `${RESULT.eyebrow[mode]}. ${sub}`,
+      totalLabel,
+      total: result.total,
+      groups: result.groups,
+      foot: [alternateText, otherPartyText, `${RESULT.notInIt} ${unknownsText}`].filter(
+        (line): line is string => Boolean(line),
+      ),
+      url: window.location.href,
+    });
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    } catch {
+      copied = copyByHand(text);
+    }
+    setCopyStatus(copied ? 'copied' : 'failed');
+  }
+
+  function resetNumbers() {
+    setPurpose('purchase');
+    setParty('buyer');
+    setChosenCounty(null);
+    setPrice(CLOSING_DEFAULTS.price);
+    setNumbersLoan(CLOSING_DEFAULTS.loanAmount);
+    setReissue(false);
+    setPrior(0);
+    setSingleFamily(true);
+    setDeedPages(CLOSING_DEFAULTS.deedPages);
+    setMortgagePages(CLOSING_DEFAULTS.mortgagePages);
+    setCopyStatus(null);
+  }
+
+  const formId = `${listId}-form`;
 
   return (
     <div className="calc-grid" hidden={hidden}>
       <form
+        id={formId}
         className="form-card"
         // Nothing is submitted and nothing is stored. The address is used to
         // ask a county roll about a parcel and is gone when the answer comes.
@@ -538,24 +825,16 @@ export function CalculatorPane({
           <span className="field__label" id={`${listId}-transaction`}>
             {FORM.transaction.label}
           </span>
-          <div className="seg" role="radiogroup" aria-labelledby={`${listId}-transaction`}>
-            {(
-              [
-                ['purchase', FORM.transaction.purchase],
-                ['refinance', FORM.transaction.refinance],
-              ] as [Purpose, string][]
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                role="radio"
-                aria-checked={purpose === value}
-                onClick={() => setPurpose(value)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <Segmented<Purpose>
+            name={`${listId}-transaction`}
+            labelledBy={`${listId}-transaction`}
+            options={[
+              ['purchase', FORM.transaction.purchase],
+              ['refinance', FORM.transaction.refinance],
+            ]}
+            value={purpose}
+            onChange={setPurpose}
+          />
         </div>
 
         <div className="field">
@@ -566,24 +845,14 @@ export function CalculatorPane({
             {isPurchase ? FORM.party.hint : FORM.party.refinanceHint}
           </span>
           {isPurchase ? (
-            <div
-              className="seg"
-              role="radiogroup"
-              aria-labelledby={`${listId}-party`}
-              aria-describedby={`${listId}-party-hint`}
-            >
-              {PARTIES.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  role="radio"
-                  aria-checked={party === value}
-                  onClick={() => setParty(value)}
-                >
-                  {FORM.party[value]}
-                </button>
-              ))}
-            </div>
+            <Segmented<Party>
+              name={`${listId}-party`}
+              labelledBy={`${listId}-party`}
+              describedBy={`${listId}-party-hint`}
+              options={PARTIES.map((value) => [value, FORM.party[value]])}
+              value={party}
+              onChange={setParty}
+            />
           ) : null}
         </div>
 
@@ -708,25 +977,19 @@ export function CalculatorPane({
                 <span className="field__hint">{FORM.pages.hint}</span>
                 <div className="two-up">
                   {isPurchase ? (
-                    <div className="field">
-                      <label htmlFor="deed-pages">{FORM.pages.deed}</label>
-                      <input
-                        id="deed-pages"
-                        inputMode="numeric"
-                        value={deedPages === 0 ? '' : String(deedPages)}
-                        onChange={(event) => setDeedPages(parsePages(event.target.value))}
-                      />
-                    </div>
-                  ) : null}
-                  <div className="field">
-                    <label htmlFor="mortgage-pages">{FORM.pages.mortgage}</label>
-                    <input
-                      id="mortgage-pages"
-                      inputMode="numeric"
-                      value={mortgagePages === 0 ? '' : String(mortgagePages)}
-                      onChange={(event) => setMortgagePages(parsePages(event.target.value))}
+                    <PagesField
+                      id="deed-pages"
+                      label={FORM.pages.deed}
+                      value={deedPages}
+                      onChange={setDeedPages}
                     />
-                  </div>
+                  ) : null}
+                  <PagesField
+                    id="mortgage-pages"
+                    label={FORM.pages.mortgage}
+                    value={mortgagePages}
+                    onChange={setMortgagePages}
+                  />
                 </div>
               </div>
             ) : null}
@@ -736,29 +999,47 @@ export function CalculatorPane({
 
       <FigureCard
         eyebrow={RESULT.eyebrow[mode]}
-        total={hasResult ? formatMoney(result.total) : '—'}
-        sub={
-          hasResult
-            ? RESULT.sub(isPurchase, countyName, isAddress && showingRoll ? (record?.rollYear ?? null) : null)
-            : RESULT.nothingYet
-        }
+        total={totalText}
+        sub={sub}
         groups={result.groups}
-        totalLabel={RESULT.totalLabel(isPurchase, side)}
+        totalLabel={totalLabel}
         alternateText={alternateText}
         otherPartyText={otherPartyText}
-        unknownsText={RESULT.unknowns[mode]}
+        unknownsText={unknownsText}
         emptyText={
-          // A seller's side is empty until there is a price: a loan amount puts
-          // nothing on it, so the usual prompt would send them the wrong way.
-          side === 'seller'
-            ? RESULT.empty.sellerNeedsPrice
-            : isAddress
-              ? isPurchase
-                ? RESULT.empty.addressPurchase
-                : RESULT.empty.addressRefinance
-              : RESULT.empty.numbers
+          isAddress
+            ? isPurchase
+              ? RESULT.empty.addressPurchase
+              : RESULT.empty.addressRefinance
+            : isPurchase
+              ? RESULT.empty.numbersPurchase
+              : RESULT.empty.numbersRefinance
+        }
+        actions={
+          <div className="figure-card__actions" role="group" aria-label={ACTIONS.label}>
+            {hasResult ? (
+              <>
+                <button type="button" onClick={() => void copySummary()}>
+                  {ACTIONS.copy}
+                </button>
+                <button type="button" onClick={() => window.print()}>
+                  {ACTIONS.print}
+                </button>
+              </>
+            ) : null}
+            {!isAddress ? (
+              <button type="button" onClick={resetNumbers}>
+                {ACTIONS.reset}
+              </button>
+            ) : null}
+            <span className="figure-card__status" aria-live="polite">
+              {copyStatus === 'copied' ? ACTIONS.copied : copyStatus === 'failed' ? ACTIONS.copyFailed : ''}
+            </span>
+          </div>
         }
       />
+
+      <TotalBar formId={formId} label={totalLabel} total={totalText} active={hasResult && !hidden} />
     </div>
   );
 }

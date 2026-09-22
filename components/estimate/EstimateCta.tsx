@@ -13,7 +13,7 @@ export function EstimateCta() {
   const { setMode } = useEstimateMode();
 
   return (
-    <aside className="cta cta--band">
+    <aside className="cta cta--band estimate-cta">
       <div className="frame cta__inner">
         <p>{CTA.text}</p>
         <div className="cta__actions">
@@ -22,8 +22,7 @@ export function EstimateCta() {
             className="btn btn--primary"
             onClick={(event) => {
               event.preventDefault();
-              setMode('upload');
-              document.getElementById('estimator')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              setMode('upload', { reveal: true });
             }}
           >
             {CTA.action}
