@@ -341,13 +341,35 @@ describe('splitting a body into sections', () => {
 
   it('numbers a second heading that slugifies the same way', async () => {
     writeDoc('twice-asked', {
-      body: '## What now?\n\nOne.\n\n## What now?\n\nTwo.\n',
+      body: '## What now?\n\nOne.\n\n## What, now?\n\nTwo.\n',
     });
 
     const { getDoc } = await loadContentModule();
     const doc = await getDoc('title-problems', 'twice-asked');
 
     expect(doc?.sections.map((section) => section.id)).toEqual(['what-now', 'what-now-2']);
+  });
+
+  it('refuses a heading with nothing under it', async () => {
+    writeDoc('empty-section', {
+      body: '## Does Florida cap it?\n\n## What shortens it?\n\nA complete package.\n',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'empty-section')).rejects.toThrow(
+      /"Does Florida cap it\?" has no body/,
+    );
+  });
+
+  it('refuses the same question asked twice on one page', async () => {
+    writeDoc('pasted-twice', {
+      body: '## Does Florida cap it?\n\nNo.\n\n## Does Florida cap it?\n\nIt does not.\n',
+    });
+
+    const { getDoc } = await loadContentModule();
+    await expect(getDoc('title-problems', 'pasted-twice')).rejects.toThrow(
+      /"Does Florida cap it\?" appears twice/,
+    );
   });
 
   it('slugifies a quoted heading without collapsing it to hyphens', async () => {
