@@ -20,7 +20,7 @@ quick_facts:
   - term: "Where it shows up"
     detail: "The purchase contract and the association's governing documents, not the title search."
   - term: "Typical timeline"
-    detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. The fastest turnaround we have documented is two days, and that was an emergency we pushed."
+    detail: "Seven to twenty-one days from a genuinely complete application in most communities, against a quoted window that is usually 30 days. Where an interview or a board meeting is required, the meeting calendar sets the date rather than the review itself. We have seen it done in two days, on an emergency we pushed."
   - term: "Cost impact"
     detail: "A condominium transfer fee is capped at $150 per applicant by [Fla. Stat. § 718.112(2)(k)](https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0718/Sections/0718.112.html), with spouses and a parent and dependent child counted as one applicant. Chapter 720 sets no equivalent cap for HOAs, so an HOA screening fee is governed by the documents and a reasonableness standard. Estoppel certificates are capped at $299, plus up to $119 for delivery within three business days and up to $179 where amounts are delinquent — the statute prints $250, $100 and $150 and directs the Department of Business and Professional Regulation to adjust them for inflation every five years, which it last did on 1 July 2022."
 ---
