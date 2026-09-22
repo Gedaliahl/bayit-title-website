@@ -56,7 +56,7 @@ bayit-website/
 
 `npm run lint`, `npm run typecheck`, `npm test` and `npm run build` pass. Eight of the nine content pages are reviewed and have a route in production; the draft has a route only on a preview build.
 
-**Counties at build time.** Without Supabase, `lib/locations.ts` falls back to the six priority counties, so a build without credentials still runs — and ships six county pages instead of 67, with the other 61 returning 404. A production deployment (`VERCEL_ENV=production`) fails the build instead, as does any build with `REQUIRE_LOCATIONS=1`; set that in CI. The same applies when the query errors, returns no rows (usually the anon key in place of the service-role key) or returns fewer than 67 counties.
+**Counties at build time.** Without Supabase, `lib/locations.ts` falls back to the six priority counties, so a build without credentials still runs — and ships six county pages instead of 67, with the other 61 returning 404. A production deployment (`VERCEL_ENV=production`) fails the build instead, as does any build with `REQUIRE_LOCATIONS=1`. Set that in any CI job that has the service-role key; the repository's own CI builds without credentials on purpose, to prove the fallback renders, so it does not. The same applies when the query errors, returns no rows (usually the anon key in place of the service-role key) or returns fewer than 67 counties.
 
 ---
 
