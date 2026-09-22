@@ -54,15 +54,13 @@ export type AddressShape =
  *              which is what the Census geocoder's interpolated point does not.
  * 'centroid' — a parcel layer whose service can hand back a centroid with the
  *              search. A parcel's centroid is inside the parcel.
- * 'feature'  — the same, for services too old to return a centroid: the
- *              geometry of the one picked row is fetched when it is picked.
  *
  * The last two are the reason a county can be added knowing only which column
  * holds the address. Their figures are the Department of Revenue's, cited as
  * such, and the state roll lags a county's own by up to a year — so 'row' wins
  * wherever the county publishes values worth trusting.
  */
-export type FigureSource = 'row' | 'point' | 'centroid' | 'feature';
+export type FigureSource = 'row' | 'point' | 'centroid';
 
 export interface CountyRoll {
   countySlug: string;
@@ -104,14 +102,13 @@ export interface CountyRoll {
    */
   centroidOnSearch?: boolean;
   /**
-   * The county writes its parcel number the way the Department of Revenue
-   * does, so a figure can be read straight off the state roll with it. Set
-   * only where that has been checked: Lee County's STRAP and the state's
-   * number for the same parcel share no digits at all.
+   * Whether the roll counts the parcel as a homestead: a Y/N flag, or the
+   * homestead exemption's amount, which is more than nothing on one.
    */
-  parcelIsStatewide?: boolean;
-  /** Added to every query against this roll. */
-  filter?: string;
+  homesteadField?: string;
+  /** The most recent sale the roll records, as a date and a price. */
+  saleDateField?: string;
+  salePriceField?: string;
 }
 
 /**
@@ -161,7 +158,7 @@ const BROWARD_CITY_CODES: Record<string, string> = {
 };
 
 /** The date every entry below was last checked against its live service. */
-export const ROLLS_CHECKED_ON = '2026-09-16';
+export const ROLLS_CHECKED_ON = '2026-09-22';
 
 
 /**
@@ -236,6 +233,9 @@ export const COUNTY_ROLLS: CountyRoll[] = [
     cityField: 'SITUS_CITY',
     cityCodes: BROWARD_CITY_CODES,
     zipField: 'SITUS_ZIP_CODE',
+    homesteadField: 'HOMESTEAD_FLAG',
+    // The roll's sale columns carry a stamp amount rather than a price, and
+    // working a price back out of one is a guess, so no sale is read off it.
   },
   {
     countySlug: 'palm-beach-county',
@@ -255,6 +255,13 @@ export const COUNTY_ROLLS: CountyRoll[] = [
     // situs city is read off MUNICIPALITY instead.
     cityField: 'MUNICIPALITY',
     useField: 'PROPERTY_USE',
+    // A subdivision's shared ground — the roads, the pond, the clubhouse lot —
+    // is filed at a street address with a value of nothing, and is not a
+    // property anybody buys a policy on.
+    excludeUse: ['RESIDENTIAL COMMON AREA/ELEMENT'],
+    homesteadField: 'HMSTD_FLG',
+    saleDateField: 'SALE_DATE',
+    salePriceField: 'PRICE',
   },
   {
     countySlug: 'miami-dade-county',
@@ -276,6 +283,8 @@ export const COUNTY_ROLLS: CountyRoll[] = [
     // A reference folio is the roll's placeholder for a condominium's parent
     // parcel: an address, no value and nothing anybody buys.
     excludeUse: ['REFERENCE FOLIO'],
+    saleDateField: 'DOS_1',
+    salePriceField: 'PRICE_1',
   },
   {
     countySlug: 'hillsborough-county',
@@ -291,6 +300,8 @@ export const COUNTY_ROLLS: CountyRoll[] = [
     parcelField: 'FOLIO',
     cityField: 'SITE_CITY',
     zipField: 'SITE_ZIP',
+    saleDateField: 'S_DATE',
+    salePriceField: 'S_AMT',
   },
 
   // ---------------------------------------------------------------------
@@ -366,6 +377,9 @@ export const COUNTY_ROLLS: CountyRoll[] = [
     parcelField: 'STRAP',
     cityField: 'SITECITY',
     zipField: 'SITEZIP',
+    homesteadField: 'HSTDAMOUNT',
+    saleDateField: 'S_1DATE',
+    salePriceField: 'S_1AMOUNT',
   },
   {
     countySlug: 'leon-county',
