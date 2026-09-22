@@ -96,7 +96,7 @@ const COST_ROUTES = [
   },
   {
     eyebrow: 'Everything else',
-    title: 'Ask for an itemised quote',
+    title: 'Ask for an itemized quote',
     body: 'Our fee, the search, endorsements — everything that is not promulgated, line by line.',
     href: '/quote',
   },
@@ -273,7 +273,7 @@ export default async function ServicesIndex() {
               <li className="flat-card">
                 <p className="flat-card__title">Mobile signing</p>
                 <p className="flat-card__body">
-                  A closer comes to the signer. Arranged file by file, including outside office
+                  We send a notary to the signer. Arranged file by file, including outside office
                   hours.
                 </p>
               </li>
@@ -291,8 +291,8 @@ export default async function ServicesIndex() {
             <h2>Working out the cost</h2>
             <div className="prose prose--detail">
               <p>
-                Three ways, none of which asks you for anything. The premium is promulgated — set by
-                the Florida Office of Insurance Regulation — so there is nothing to trade for it.
+                Three ways. The premium is promulgated — set by the Florida Office of Insurance
+                Regulation — so there is nothing to trade for it.
               </p>
             </div>
             <ul className="card-grid card-grid--narrow">
