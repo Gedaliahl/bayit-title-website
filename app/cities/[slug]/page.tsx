@@ -18,6 +18,7 @@ import { getAllDocs, isPublishable } from '@/lib/content';
 import { getReviews } from '@/lib/reviews';
 import { formatLongDate } from '@/lib/seo';
 import { site } from '@/lib/site';
+import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
 import {
   CHECKED_ON,
   EXAMPLE_LOAN,
@@ -151,7 +152,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
           <strong>{formatMoney(originalPremium(EXAMPLE_PRICE))}</strong>; where the reissue
           conditions in the rule are met it is {formatMoney(reissuePremium(EXAMPLE_PRICE))}; and a
           lender&rsquo;s policy issued at the same time for the same or a lesser amount is{' '}
-          {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}.
+          {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}. {LENDER_POLICY_BESIDE_RULE}
         </p>
         <p>
           <Link href={`/counties/${county.slug}`}>The {county.name} page</Link> prints the whole

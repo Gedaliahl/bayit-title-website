@@ -32,6 +32,7 @@ import {
   mortgageStampTaxDue,
   recordingChargeDue,
 } from '@/lib/statutory-rates';
+import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   MINIMUM_PREMIUM,
@@ -214,7 +215,8 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
             <strong>Simultaneous issue.</strong> Where a lender&rsquo;s policy is issued at the same
             time as the owner&rsquo;s policy on the same land, the lender&rsquo;s policy is{' '}
             {formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} for coverage up to the owner&rsquo;s amount.
-            Anything above that amount is charged at the regular rate.
+            Anything above that amount is charged at the regular rate.{' '}
+            {LENDER_POLICY_BESIDE_RULE}
           </li>
           <li>
             <strong>The new home purchase discount</strong>, on the first sale of a newly built one-

@@ -14,8 +14,9 @@
 // out would make the total read low by a known amount, which is the one kind of
 // wrong this page exists to avoid.
 
-import { excessLoanPremium } from './promulgated-premium';
+import { SIMULTANEOUS_LOAN_PREMIUM, excessLoanPremium } from './promulgated-premium';
 import { site } from './site';
+import { formatMoney } from './statutory-rates';
 
 /** Printed where the other lines print a statute or a rule, so the difference shows. */
 export const SET_BY = site.name;
@@ -41,6 +42,22 @@ export const LENDER_POLICY_NOTE =
 export const E_RECORDING_NOTE =
   '$5.50 a document, passed through at cost — on top of the clerk’s per-page charge under ' +
   's. 28.24(13), not instead of it.';
+
+/**
+ * Said wherever a page cites the rule's $25 for a simultaneous lender's policy.
+ *
+ * The county, city and buyer pages are describing R. 69O-186.003(5)(a), so the
+ * $25 they print is right and stays. What would be wrong is leaving a reader to
+ * carry that figure to the estimate page and find $125 there with nothing to
+ * account for the gap. The sentence lives here rather than in each of those
+ * pages so that the three cannot drift from each other or from the charge.
+ */
+export const LENDER_POLICY_BESIDE_RULE =
+  `That ${formatMoney(SIMULTANEOUS_LOAN_PREMIUM)} is the risk premium the rule sets, which is not ` +
+  `the same thing as what the policy is issued for: ${site.name} charges ` +
+  `${formatMoney(LENDER_POLICY_CHARGE)} to issue it alongside the owner’s, and that is the figure ` +
+  'the estimate prints. Coverage above the owner’s amount is rated at the original schedule on ' +
+  'top of it either way.';
 
 const toCents = (value: number) => Math.round(value * 100) / 100;
 

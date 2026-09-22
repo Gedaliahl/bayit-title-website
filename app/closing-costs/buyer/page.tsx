@@ -25,6 +25,7 @@ import {
   mortgageStampTaxDue,
   recordingChargeDue,
 } from '@/lib/statutory-rates';
+import { LENDER_POLICY_BESIDE_RULE } from '@/lib/agency-charges';
 import {
   CHECKED_ON as PREMIUM_CHECKED_ON,
   ORIGINAL_SCHEDULE,
@@ -164,7 +165,7 @@ export default async function BuyerClosingCostsPage() {
           <strong>{formatMoney(ownerPremium)}</strong>. A lender&rsquo;s policy issued at the same
           time on the same land is <strong>{formatMoney(SIMULTANEOUS_LOAN_PREMIUM)}</strong> for
           coverage up to the owner&rsquo;s amount — {formatMoney(loanPremium)} on a{' '}
-          {formatMoney(EXAMPLE_LOAN)} loan.{' '}
+          {formatMoney(EXAMPLE_LOAN)} loan. {LENDER_POLICY_BESIDE_RULE}{' '}
           <Link href="/estimate?mode=numbers">The estimate page</Link> works both out for any price
           and loan.
         </p>
