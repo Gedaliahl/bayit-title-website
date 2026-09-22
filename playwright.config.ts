@@ -38,6 +38,9 @@ export default defineConfig({
     // step of its own, so a build failure is reported as one, and says so
     // with E2E_PREBUILT.
     command: `${process.env.E2E_PREBUILT ? '' : 'npm run build && '}npm run start -- -p ${PORT}`,
+    // Served over http, so the build must leave out upgrade-insecure-requests
+    // (see next.config.mjs). CI sets the same on its separate build step.
+    env: { E2E_PLAIN_HTTP: '1' },
     url: baseURL,
     reuseExistingServer: !ci,
     timeout: 300_000,

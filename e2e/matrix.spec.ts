@@ -166,6 +166,10 @@ async function walk(page: Page, origin: string, list: Route[]): Promise<Finding[
     findings.push({ check: 'console', path: current, detail: message.text().slice(0, 300) });
   });
   page.on('pageerror', (error) => {
+    // WebKit's word for the same cancelled prefetch (see requestfailed below):
+    // it rejects the fetch with an access-control error, for this origin's own
+    // RSC payload, when the walk navigates away mid-request.
+    if (/due to access control checks/.test(error.message) && error.message.includes(`${new URL(origin).host}/`) && error.message.includes('_rsc=')) return;
     findings.push({ check: 'console', path: current, detail: `uncaught: ${error.message.slice(0, 300)}` });
   });
   page.on('requestfailed', (request) => {
