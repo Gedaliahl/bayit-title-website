@@ -509,12 +509,10 @@ export function isWithinConfirmWindow(createdAt: string): boolean {
   return Number.isFinite(created) && Date.now() - created < CONFIRM_WINDOW_MS;
 }
 
-/** How many days a contract sent for pricing is kept: the env may shorten the promise, never lengthen it. */
+/** How many days the purge leaves a contract sent for pricing: the environment's figure, or the default. */
 export function quoteRetentionDays(): number {
   const configured = Number(process.env.QUOTE_RETENTION_DAYS);
-  return Number.isInteger(configured) && configured > 0
-    ? Math.min(configured, QUOTE_RETENTION_DAYS)
-    : QUOTE_RETENTION_DAYS;
+  return Number.isInteger(configured) && configured > 0 ? configured : QUOTE_RETENTION_DAYS;
 }
 
 /** Every object under a prefix, a page at a time. Folders come back with a null id. */
@@ -558,8 +556,8 @@ export interface PurgeReport {
 async function purgeQuotePages(now: Date): Promise<number> {
   const supabase = requireServiceClient();
 
-  // A day early, because the run is daily: the pages promise "no longer than",
-  // so nothing may be found older than the limit between one run and the next.
+  // A day early, because the run is daily, so nothing is found older than the
+  // limit between one run and the next.
   const cutoff = new Date(now.getTime() - (quoteRetentionDays() - 1) * DAY_MS);
   const paths: string[] = [];
   for (const folder of await listAll('quotes')) {
@@ -637,13 +635,16 @@ async function purgeAbandonedUploads(now: Date): Promise<number> {
  * - A contract sent for pricing is deleted before it is older than
  *   `quoteRetentionDays()`. The lead itself, a name and an email, is kept like
  *   any other enquiry.
+ *
+ * Nothing the site says depends on this running. It runs only once CRON_SECRET
+ * is set, which is the firm's decision to make.
  * - An order document is deleted, object and row, on its `purge_after` date.
  * - An order upload that was never confirmed — the tab closed, or it was
  *   refused and the delete failed — is deleted once the confirm window has
  *   shut, because no row and no email will ever point at it.
  *
  * Each runs whether or not the others finished: a storage error on the order
- * side must not keep a contract past the 30 days the page promised.
+ * side is no reason to keep contracts past the age the firm chose.
  */
 export async function purgeExpiredDocuments(now = new Date()): Promise<PurgeReport> {
   const report: PurgeReport = { quotePages: 0, orderDocuments: 0, abandonedUploads: 0, failed: [] };

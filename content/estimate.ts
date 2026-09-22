@@ -10,7 +10,6 @@
 // the statutory rates and the two estimators — and are never restated here.
 
 import { MAX_PAGES } from '@/lib/closing-estimate';
-import { QUOTE_RETENTION_DAYS } from '@/lib/documents';
 import { MAX_AMOUNT } from '@/lib/estimate-input';
 import { site } from '@/lib/site';
 import { formatMoney } from '@/lib/statutory-rates';
@@ -44,7 +43,7 @@ export const HERO = {
     'included.',
   proof: [
     'Every figure cited to whoever sets it',
-    'Nothing stored; an address is only used to look up the county record',
+    'An address is only used to look up the county record',
   ],
 };
 
@@ -412,9 +411,8 @@ export const UPLOAD = {
     file: {
       title: 'What we do with the file',
       body:
-        'It goes to the office over an encrypted connection and is read by a person, not sold, ' +
-        `and kept on this site for no longer than ${QUOTE_RETENTION_DAYS} days. No obligation ` +
-        'either way.',
+        'It goes to the office over an encrypted connection, is read by a person, and is not sold. ' +
+        'No obligation either way.',
       more: 'More',
     },
   },
@@ -572,10 +570,9 @@ export const DETAIL = {
       'address, so it does not end up in a server log the way a search in a URL would. This site ' +
       'then asks about it: the county and city services that publish property records, the U.S. ' +
       'Census Bureau’s geocoder and, where it is switched on, Esri’s. Those requests carry the ' +
-      'address in their URLs, so it reaches those services and their logs. Here nothing is written ' +
-      'down: nothing is emailed to the office, no cookie is set, and an answer is held in the ' +
-      'server’s memory for at most an hour so the same search is not sent twice. Turn the page ' +
-      'and there is no record you were here.',
+      'address in their URLs, so it reaches those services and their logs. Nothing about it is ' +
+      'emailed to the office and no cookie is set; answers are held in the server’s memory for up ' +
+      'to an hour so the same search is not sent twice.',
     p2:
       'The two estimators ask for nothing else because the premium is the rule’s, not ours, so ' +
       'there is nothing to trade for it. If you would rather send nothing at all, use the second ' +
@@ -584,8 +581,7 @@ export const DETAIL = {
     p3:
       'The third option is different, and says so: a contract you upload goes to the office over ' +
       'an encrypted connection with your name and email, so we can read it and write back. It is ' +
-      `opened by a person, kept on this site for no longer than ${QUOTE_RETENTION_DAYS} days, ` +
-      'and never sold.',
+      'opened by a person and never sold.',
     /** "Premium read from {rule} on {date}; the rule was last amended {date}. Taxes … on {date}." */
     note: (rule: string, premiumRead: string, amended: string, statutesRead: string) =>
       `Premium read from ${rule} on ${premiumRead}; the rule was last amended ${amended}. Taxes ` +

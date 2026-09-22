@@ -15,13 +15,12 @@
  * 1. Whether the agency needs a separate Gramm-Leach-Bliley notice for the
  *    closing side. A title agency is a financial institution under GLBA, and
  *    this page is scoped to the website.
- * 2. Retention. Section 7 states two limits because the code enforces them —
- *    uploaded contracts and order documents are deleted from the website's
- *    storage by a daily purge — and otherwise describes the practice honestly:
- *    kept as long as needed and as long as the law requires, because no
- *    schedule has ever been set. The 90 days on order documents came from the
- *    original schema, whose own comment asks for counsel and First American to
- *    confirm it; that confirmation is still outstanding.
+ * 2. Retention. Section 7 describes the practice — kept as long as needed and
+ *    as long as the law requires — and states no schedule and no promise to
+ *    delete, on the firm's instruction of 22 September 2026. The website's
+ *    storage has a purge (app/api/cron/purge) that runs only once CRON_SECRET
+ *    is set; whether to switch it on, and at what ages, is the firm's and its
+ *    counsel's call, and nothing on the site depends on it.
  *
  * The SMS section is compliance text, not copy. Carriers require terms of that
  * shape to be publicly posted for an A2P messaging registration, and the old

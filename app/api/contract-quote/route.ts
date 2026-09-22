@@ -10,10 +10,10 @@
 // server, keeps a 25 MB contract clear of the request-body limit, and means a
 // closed tab costs the office a page rather than the whole request.
 //
-// The page promises that what arrives here is read by a person, not sold, and
-// not kept past the quote. The daily purge (app/api/cron/purge) keeps the last
-// part: the pages are deleted from the bucket once they are older than
-// quoteRetentionDays(), and the office's email says so.
+// The page says that what arrives here is read by a person and not sold. It
+// makes no promise about how long the pages are kept; the purge in
+// app/api/cron/purge deletes them after quoteRetentionDays() only if the firm
+// switches it on.
 import { after, NextResponse } from 'next/server';
 
 import { HONEYPOT_FIELD, contractQuoteSchema, fieldErrors } from '@/lib/schemas';

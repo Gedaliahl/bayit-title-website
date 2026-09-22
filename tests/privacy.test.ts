@@ -96,12 +96,10 @@ describe('claims about the website that the code has to keep true', () => {
     expect(submissions).not.toMatch(/ip:\s*ip\b/);
   });
 
-  it('states the two retention limits the purge enforces, from the same constants', () => {
-    // The numbers are rendered from lib/documents.ts, so the page cannot drift
-    // from what app/api/cron/purge actually deletes.
-    expect(page).toContain('{QUOTE_RETENTION_DAYS}');
-    expect(page).toContain('{RETENTION_DAYS}');
-    expect(page).toMatch(/contract sent for pricing/i);
+  it('promises no deletion schedule, which the firm has decided not to make', () => {
+    // The purge can be switched on or off without the policy becoming untrue.
+    expect(page).not.toMatch(/RETENTION_DAYS/);
+    expect(page).not.toMatch(/no longer than|are deleted|is not stored/i);
   });
 
   it('scopes the three required fields to the order form', () => {

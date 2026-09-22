@@ -40,8 +40,9 @@ export const ACCEPT_ATTRIBUTE = Object.keys(ACCEPTED).join(',');
 export const ACCEPTED_LABEL = 'PDF, JPG, PNG, HEIC or Word (.docx)';
 
 /**
- * Stamped on each row as `purge_after`, and acted on: the daily purge
- * (app/api/cron/purge) deletes the object and its row once the date passes.
+ * Stamped on each row as `purge_after`, and acted on when the daily purge
+ * (app/api/cron/purge) is switched on: it deletes the object and its row once
+ * the date passes.
  * The same 90 days is what the table's own trigger stamps when a row arrives
  * without one, so the code and the schema agree on a single number.
  *
@@ -54,10 +55,9 @@ export const ACCEPTED_LABEL = 'PDF, JPG, PNG, HEIC or Word (.docx)';
 export const RETENTION_DAYS = 90;
 
 /**
- * How long a contract sent for pricing from /estimate stays in storage. The
- * pages promise it is not kept past the quote, and this is the ceiling that
- * promise is written against: QUOTE_RETENTION_DAYS can shorten it, never
- * lengthen it past what the copy says.
+ * How long the purge leaves a contract sent for pricing from /estimate in
+ * storage, when the purge is switched on. The pages make no promise about it;
+ * the environment's QUOTE_RETENTION_DAYS can set any other number.
  */
 export const QUOTE_RETENTION_DAYS = 30;
 

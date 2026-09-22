@@ -216,17 +216,17 @@ describe('the office’s download links', () => {
 });
 
 describe('how long a contract is kept', () => {
-  it('defaults to the 30 days the page promises', async () => {
+  it('defaults to 30 days', async () => {
     const { storage } = await setUp([]);
     expect(storage.quoteRetentionDays()).toBe(30);
   });
 
-  it('may be shortened, and never lengthened past the promise', async () => {
+  it('takes the environment’s figure, and ignores one that is not a whole number of days', async () => {
     const { storage } = await setUp([]);
     vi.stubEnv('QUOTE_RETENTION_DAYS', '14');
     expect(storage.quoteRetentionDays()).toBe(14);
     vi.stubEnv('QUOTE_RETENTION_DAYS', '365');
-    expect(storage.quoteRetentionDays()).toBe(30);
+    expect(storage.quoteRetentionDays()).toBe(365);
     vi.stubEnv('QUOTE_RETENTION_DAYS', 'soon');
     expect(storage.quoteRetentionDays()).toBe(30);
   });
