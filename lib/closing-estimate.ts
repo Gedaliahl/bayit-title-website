@@ -50,6 +50,7 @@ import {
   deedStampTaxDue,
   discretionarySurtax,
   discretionarySurtaxDue,
+  RENEWAL_NOTES,
   intangibleTaxDue,
   mortgageStampTaxDue,
   recordingChargeDue,
@@ -117,9 +118,40 @@ export interface EstimateGroup {
 export interface Estimate {
   groups: EstimateGroup[];
   total: number;
-  /** What the other side of the same closing carries, so neither reads alone. */
+  /**
+   * What the other side of the same closing carries, so neither reads alone.
+   * A line shown to both sides is left out of it: it is already in this side's
+   * total, and counting it on both would add one policy to the closing twice.
+   */
   otherPartyTotal: number;
+  /** An owner's policy is on both statements, so otherPartyTotal leaves it out and says so. */
+  ownerPolicyUnassigned: boolean;
 }
+
+/**
+ * The page counts to start a reader on, and the ones a worked example anywhere
+ * on the site should use, so two pages never price the same deed differently.
+ * A deed runs to three pages and a mortgage to twenty-five often enough that
+ * these are the figures to begin with; the boxes are the reader's to change
+ * once they have the documents in front of them.
+ */
+export const EXAMPLE_PAGE_COUNTS = { deed: 3, mortgage: 25 } as const;
+
+/** Recording is per page, so the box stops somewhere a real document never reaches. */
+export const MIN_PAGES = 1;
+export const MAX_PAGES = 500;
+
+/**
+ * A document always has a first page, so an empty box is priced as one page
+ * rather than dropping the recording line and reading low without saying so.
+ */
+export function pagesToPrice(pages: number): number {
+  if (!Number.isFinite(pages)) return MIN_PAGES;
+  return Math.min(MAX_PAGES, Math.max(MIN_PAGES, Math.floor(pages)));
+}
+
+/** A negative, NaN or infinite figure is no figure, never a credit. */
+const dollars = (value: number) => (Number.isFinite(value) ? Math.max(0, value) : 0);
 
 export const DEFAULTS: EstimateInput = {
   transaction: 'purchase',
@@ -132,11 +164,8 @@ export const DEFAULTS: EstimateInput = {
   reissue: false,
   priorPolicyAmount: 0,
   singleFamilyResidence: true,
-  // A deed runs to three pages and a mortgage to twenty-five often enough that
-  // these are the figures to start a reader on; both boxes are theirs to change
-  // once they have the documents in front of them.
-  deedPages: 3,
-  mortgagePages: 25,
+  deedPages: EXAMPLE_PAGE_COUNTS.deed,
+  mortgagePages: EXAMPLE_PAGE_COUNTS.mortgage,
 };
 
 /**
@@ -187,13 +216,22 @@ export function estimate(input: EstimateInput): Estimate {
     reissue,
     priorPolicyAmount,
     singleFamilyResidence,
-    deedPages,
-    mortgagePages,
   } = input;
 
   const isPurchase = transaction === 'purchase';
-  const price = isPurchase ? Math.max(0, input.price) : 0;
-  const loan = Math.max(0, input.loanAmount);
+  const price = isPurchase ? dollars(input.price) : 0;
+  const loan = dollars(input.loanAmount);
+  const priorPolicy = dollars(priorPolicyAmount);
+  const deedPages = pagesToPrice(input.deedPages);
+  const mortgagePages = pagesToPrice(input.mortgagePages);
+
+  // A purchase without a price is not yet a purchase. Pricing the loan alone
+  // would print a total with the mortgage taxes in it and no lender's policy,
+  // which is a closing that cannot happen, so it waits for the price.
+  if (isPurchase && price <= 0) {
+    return { groups: [], total: 0, otherPartyTotal: 0, ownerPolicyUnassigned: false };
+  }
+
   // A refinance has one party. Whoever the toggle was left on, the borrower is
   // the only person on that statement, so nothing is filtered away from them.
   const party: Party = isPurchase ? input.party : 'buyer';
@@ -203,16 +241,16 @@ export function estimate(input: EstimateInput): Estimate {
   const schedule = reissue ? REISSUE_SCHEDULE : ORIGINAL_SCHEDULE;
   const scheduleCite = schedule[0].cite;
 
-  if (isPurchase && price > 0) {
+  if (isPurchase) {
     premiumLines.push(
       allocate(
         {
           label: `Owner’s policy, ${reissue ? 'reissue rate' : 'original rate'}`,
-          value: reissue ? reissuePremium(price, priorPolicyAmount) : originalPremium(price),
+          value: reissue ? reissuePremium(price, priorPolicy) : originalPremium(price),
           cite: scheduleCite,
           sourceUrl: PREMIUM_RULE.url,
           note: reissue
-            ? `Written for the full insurable value of the property. ${reissueExcessNote(price, priorPolicyAmount)}`
+            ? `Written for the full insurable value of the property. ${reissueExcessNote(price, priorPolicy)}`
             : 'Written for the full insurable value of the property.',
         },
         ownerPolicy,
@@ -242,11 +280,11 @@ export function estimate(input: EstimateInput): Estimate {
       allocate(
         {
           label: `Lender’s policy, ${reissue ? 'reissue rate' : 'original rate'}`,
-          value: reissue ? reissuePremium(loan, priorPolicyAmount) : originalPremium(loan),
+          value: reissue ? reissuePremium(loan, priorPolicy) : originalPremium(loan),
           cite: scheduleCite,
           sourceUrl: PREMIUM_RULE.url,
           note: reissue
-            ? `A refinance has no owner’s policy to issue alongside, so it is rated on the schedule rather than charged as an addition to one. ${reissueExcessNote(loan, priorPolicyAmount)}`
+            ? `A refinance has no owner’s policy to issue alongside, so it is rated on the schedule rather than charged as an addition to one. ${reissueExcessNote(loan, priorPolicy)}`
             : 'A refinance has no owner’s policy to issue alongside, so it is rated on the schedule rather than charged as an addition to one.',
         },
         BORROWER_ONLY,
@@ -256,7 +294,7 @@ export function estimate(input: EstimateInput): Estimate {
 
   const taxLines: EstimateLine[] = [];
 
-  if (isPurchase && price > 0) {
+  if (isPurchase) {
     const deed = deedStampTax(countySlug);
     taxLines.push(
       allocate(
@@ -295,6 +333,7 @@ export function estimate(input: EstimateInput): Estimate {
           value: mortgageStampTaxDue(loan),
           cite: 'Fla. Stat. § 201.08(1)(b)',
           sourceUrl: DOR_DOC_STAMP_GUIDANCE,
+          note: isPurchase ? undefined : RENEWAL_NOTES.mortgageStamps,
         },
         BORROWER_ONLY,
       ),
@@ -306,6 +345,7 @@ export function estimate(input: EstimateInput): Estimate {
           value: intangibleTaxDue(loan),
           cite: 'Fla. Stat. § 199.133(1)',
           sourceUrl: DOR_DOC_STAMP_GUIDANCE,
+          note: isPurchase ? undefined : RENEWAL_NOTES.intangible,
         },
         BORROWER_ONLY,
       ),
@@ -321,7 +361,7 @@ export function estimate(input: EstimateInput): Estimate {
   // e-recording fee for sending it. They are kept beside each other and
   // allocated together, because a document does not get recorded by one side
   // and e-recorded by the other.
-  if (isPurchase && price > 0 && deedPages > 0) {
+  if (isPurchase) {
     recordingLines.push(
       allocate(
         {
@@ -344,7 +384,7 @@ export function estimate(input: EstimateInput): Estimate {
     );
   }
 
-  if (loan > 0 && mortgagePages > 0) {
+  if (loan > 0) {
     recordingLines.push(
       allocate(
         {
@@ -369,7 +409,8 @@ export function estimate(input: EstimateInput): Estimate {
 
   const all = [
     { title: 'Title insurance premium', lines: premiumLines },
-    { title: 'Tax on the transfer', lines: taxLines },
+    // A refinance transfers nothing; its taxes are on the loan.
+    { title: isPurchase ? 'Tax on the transfer' : 'Taxes', lines: taxLines },
     { title: 'Recording', lines: recordingLines },
   ];
 
@@ -381,12 +422,12 @@ export function estimate(input: EstimateInput): Estimate {
     .filter((group) => group.lines.length > 0);
 
   const other: Party = party === 'buyer' ? 'seller' : 'buyer';
+  const lines = all.flatMap((group) => group.lines);
 
   return {
     groups,
     total: Math.round(groups.reduce((running, group) => running + group.subtotal, 0) * 100) / 100,
-    otherPartyTotal: isPurchase
-      ? sum(all.flatMap(({ lines }) => lines.filter((line) => payableBy(line.payer, other))))
-      : 0,
+    otherPartyTotal: isPurchase ? sum(lines.filter((line) => line.payer === other)) : 0,
+    ownerPolicyUnassigned: isPurchase && lines.some((line) => line.payer === 'either'),
   };
 }
