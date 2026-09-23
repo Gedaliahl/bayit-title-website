@@ -446,8 +446,11 @@ The firm or a licensed reviewer must sign these off, per the project's
 
 Also:
 - Remove the dead `overrides` entry for `@sveltejs/vite-plugin-svelte`.
-- Drop the unused Caslon italic and 700 weights. Four fonts (91KB) are
-  preloaded on every page.
+- ~~Drop the unused Caslon italic and 700 weights. Four fonts (91KB) are
+  preloaded on every page.~~ Done 23 September 2026: Caslon is one upright
+  400, and no font is preloaded any more. Chrome held the first paint for the
+  preloads, which cost the homepage its mobile PageSpeed score (91, Speed
+  Index 4.0s); see `app/layout.tsx`.
 - Add DM Sans italic, or remove the italics that are currently faked.
 
 ---
