@@ -80,9 +80,10 @@ regardless, make that function return `true`. The recommendation is not to.
    panel. Submit `https://bayittitle.com/sitemap.xml`. Use URL Inspection →
    Request indexing on the homepage, the title insurance calculator, who pays,
    and the Broward, Palm Beach and Miami-Dade county pages.
-5. **Bing Webmaster Tools.** Import the property from Search Console. Then run
-   the Live SEO workflow once by hand with **submit all** ticked, which sends
-   every URL through IndexNow.
+5. **Bing Webmaster Tools.** Import the property from Search Console. Every
+   sitemap URL already went to IndexNow with the first production deploy on
+   23 September 2026 (72 URLs, accepted); to send them all again, run the
+   **IndexNow** workflow by hand with **submit all** ticked.
 6. **Vercel Firewall.** Check that Bot Protection is not challenging verified
    bots and that the "AI bots" managed ruleset is off: the site wants to be
    quoted by assistants (`app/robots.ts`). The MCP token could not read the
@@ -213,7 +214,8 @@ The second needs a privacy-policy change before it ships.
 - Indexing gate and canonical host: `lib/seo.ts`, `lib/site.ts`,
   `next.config.mjs` (`CANONICAL_ORIGIN`, `productionAliasRedirects`)
 - Live check and IndexNow: `scripts/check-live-seo.mjs`, `scripts/indexnow.mjs`,
-  `.github/workflows/live-seo.yml`, `public/<key>.txt`
+  `.github/workflows/live-seo.yml`, `.github/workflows/indexnow.yml`,
+  `public/<key>.txt`
 - County gate: `countyHasLocalFacts` in `lib/locations.ts`
 - New pages: `app/closing-costs/{title-insurance-calculator,doc-stamp-calculator,who-pays-title-insurance}`
 - Call tracking: `components/ContactClickTracking.tsx`; the call bar in

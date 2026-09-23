@@ -1,0 +1,68 @@
+# Tells IndexNow (Bing, and the engines that share it) which pages are new or
+# re-dated, once a production deploy has passed the Live SEO check.
+#
+# This is a workflow of its own rather than a job in live-seo.yml because of
+# the cache. scripts/indexnow.mjs keeps the sitemap it last submitted in the
+# Actions cache, so each run submits only what changed, and the cache refuses
+# a run started by `deployment_status`: that event is tied to no branch. A
+# `workflow_run` is tied to the default branch, so the cache works here. Run
+# from the Live SEO job, the first submission on 23 September 2026 sent all 72
+# URLs and could not save what it had sent.
+name: IndexNow
+
+on:
+  workflow_run:
+    workflows: [Live SEO]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      submit_all:
+        description: Submit every sitemap URL, not only the new and re-dated ones
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    name: Submit new and changed pages to IndexNow
+    # Only a Live SEO run that a production deploy started, and that passed. A
+    # preview's run skips its check and concludes "skipped"; the daily run is a
+    # schedule, and a deploy is what changes the pages.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'deployment_status' &&
+       github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # The sitemap as the last run saw it, so this run submits only the
+      # difference. A miss submits everything once, which the protocol expects
+      # of a first run.
+      - uses: actions/cache/restore@v5
+        with:
+          path: .indexnow
+          key: indexnow-${{ github.run_id }}
+          restore-keys: indexnow-
+
+      - name: Submit
+        run: npm run indexnow
+        env:
+          INDEXNOW_ALL: ${{ inputs.submit_all && '1' || '' }}
+
+      - uses: actions/cache/save@v5
+        with:
+          path: .indexnow
+          key: indexnow-${{ github.run_id }}

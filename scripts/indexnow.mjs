@@ -6,10 +6,11 @@
 //   npm run indexnow                 new and re-dated URLs since the last run
 //   INDEXNOW_ALL=1 npm run indexnow  every URL in the sitemap
 //
-// Run by .github/workflows/live-seo.yml after each production deploy. The
-// sitemap it saw is kept in INDEXNOW_STATE between runs, so each run submits
-// only what changed: a URL that is new, or whose <lastmod> moved. The protocol
-// asks for exactly that, and a first run with no saved state submits all.
+// Run by .github/workflows/indexnow.yml after each production deploy passes
+// the Live SEO check. The sitemap it saw is kept in INDEXNOW_STATE between
+// runs, so each run submits only what changed: a URL that is new, or whose
+// <lastmod> moved. The protocol asks for exactly that, and a first run with no
+// saved state submits all.
 //
 // The key is public by design. The engines prove the submitter controls the
 // host by fetching it from /<key>.txt, which is public/<key>.txt here.
