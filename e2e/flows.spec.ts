@@ -197,7 +197,9 @@ test.describe('the estimator from the numbers', () => {
     const shown = expectedTotal({ price: 612_500, loanAmount: 490_000, party: 'seller' });
     await expect(total(page)).toHaveText(shown);
 
-    // The query is written a moment after the last change.
+    // The query is written a moment after the last change, so wait for that
+    // last change itself: the price is in the address bar well before the side.
+    await expect(page).toHaveURL(/side=seller/);
     await expect(page).toHaveURL(/612500/);
     await page.reload();
 

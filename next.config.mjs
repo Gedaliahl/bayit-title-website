@@ -2,6 +2,12 @@
 
 const isDev = process.env.NODE_ENV === 'development';
 
+// The browser suite serves the production build over plain http on localhost.
+// Chromium and Firefox leave localhost alone under upgrade-insecure-requests;
+// WebKit upgrades it, and every script and stylesheet then fails its TLS
+// handshake. Set only by the browser suite, never on a deployment.
+const plainHttp = process.env.E2E_PLAIN_HTTP === '1';
+
 /**
  * The browser talks to Supabase Storage directly — and only there.
  *
@@ -82,8 +88,9 @@ function contentSecurityPolicy() {
     .map(([name, values]) => `${name} ${values.filter(Boolean).join(' ')}`)
     .join('; ');
 
-  // No mixed content, and nothing to upgrade over http in development.
-  return isDev ? policy : `${policy}; upgrade-insecure-requests`;
+  // No mixed content, and nothing to upgrade over http in development or in
+  // the browser suite.
+  return isDev || plainHttp ? policy : `${policy}; upgrade-insecure-requests`;
 }
 
 /**
