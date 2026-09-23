@@ -6,22 +6,23 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getAllDocs } from '@/lib/content';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
 import { Verdict } from '@/components/Verdict';
 import { StepBand } from '@/components/StepBand';
 import { Rail } from '@/components/Rail';
+import { ServiceSchema } from '@/components/Schema';
 
 export const metadata: Metadata = {
-  title: 'Services',
+  title: 'Title, escrow and closing services in Florida',
   description: metaDescription(
-    'Title search and examination, title insurance, settlement and escrow, commercial title, and ' +
-      'the closing side of a 1031 exchange, with the intermediary you choose.',
+    'Title search and examination, title insurance, escrow and settlement, commercial title, and ' +
+      'the closing side of a 1031 exchange, anywhere in Florida.',
   ),
   alternates: { canonical: '/services' },
-  openGraph: { ...baseOpenGraph, url: '/services' },
+  openGraph: { ...siteOpenGraph, url: '/services' },
 };
 
 /** The RON card links here when the page exists, and says nothing when it does not. */
@@ -121,6 +122,12 @@ export default async function ServicesIndex() {
 
   return (
     <div>
+      <ServiceSchema
+        name="Title, escrow and closing services in Florida"
+        description="Title search and examination, title insurance, escrow and settlement, residential and commercial closings, and the closing side of 1031 exchanges, throughout Florida."
+        path="/services"
+        areaServed={{ '@type': 'State', name: 'Florida' }}
+      />
       <section className="frame page-hero">
         <div className="page-hero__copy">
           <Breadcrumbs
@@ -129,7 +136,7 @@ export default async function ServicesIndex() {
               { name: 'Services', path: '/services' },
             ]}
           />
-          <h1>What we do</h1>
+          <h1>Title, escrow and closing services in Florida</h1>
           <p className="page-hero__lede">
             We search title, examine what the search returns, issue commitments and policies as an
             agent for {site.underwriter}, hold the escrow, and run the closing. Every file is worked

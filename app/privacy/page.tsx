@@ -5,7 +5,7 @@ import { site } from '@/lib/site';
 import { PRIVACY_EFFECTIVE_DATE } from '@/lib/privacy';
 import { DOWNLOAD_LINK_HOURS } from '@/lib/document-storage';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 
 /**
  * The website's privacy policy.
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: metaDescription(`How ${site.legalName} collects, uses and protects information submitted through this website.`),
   alternates: { canonical: '/privacy' },
-  openGraph: { ...baseOpenGraph, url: '/privacy' },
+  openGraph: { ...siteOpenGraph, url: '/privacy' },
 };
 
 /** Read at build time, like the CSP: the page and the policy header agree. */
@@ -212,8 +212,9 @@ export default function PrivacyPage() {
           )}
           <li>
             We measure page views and page speed using tools served from our own domain. They set no
-            cookie and build no profile of you. They tell us which pages are read and how quickly
-            they load.
+            cookie and build no profile of you. They tell us which pages are read, how quickly
+            they load, and on which page a form was sent or a phone number or email address was
+            tapped — never what was typed into a form.
           </li>
         </ul>
         <p>

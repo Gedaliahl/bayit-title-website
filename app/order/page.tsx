@@ -4,13 +4,13 @@ import { getCounties } from '@/lib/locations';
 import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { OrderForm } from '@/components/OrderForm';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Open a title order',
+  title: 'Open a Florida title order online',
   description: metaDescription(`Open a Florida title order with ${site.legalName}. Send the property address and the contract terms and we will open the file and order the search.`),
   alternates: { canonical: '/order' },
-  openGraph: { ...baseOpenGraph, url: '/order' },
+  openGraph: { ...siteOpenGraph, url: '/order' },
 };
 
 export default async function OrderPage() {

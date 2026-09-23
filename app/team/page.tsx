@@ -5,13 +5,17 @@ import { team } from '@/lib/team';
 import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PersonSchema } from '@/components/Schema';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { QuietCta } from '@/components/QuietCta';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Our team',
-  description: metaDescription(`The four people who work every file at ${site.legalName}, with their Florida license and commission numbers.`),
+  title: 'Our team: Florida-licensed title agent and notaries',
+  description: metaDescription(
+    `The four people who work every file at ${site.legalName} in ${site.address.city}, with ` +
+      'their Florida title agent license and notary commission numbers.',
+  ),
   alternates: { canonical: '/team' },
-  openGraph: { ...baseOpenGraph, url: '/team' },
+  openGraph: { ...siteOpenGraph, url: '/team' },
 };
 
 export default function TeamPage() {
@@ -57,6 +61,8 @@ export default function TeamPage() {
             ) : null}
           </section>
         ))}
+
+        <QuietCta text="Send us the address and the contract date and one of the four of us will tell you what the search shows." />
       </div>
     </div>
   );

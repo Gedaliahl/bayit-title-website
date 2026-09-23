@@ -7,6 +7,7 @@ import 'server-only';
 import { cache } from 'react';
 import { getServiceClient } from './supabase';
 import { site } from './site';
+import { citiesInCounty } from './florida-cities';
 
 export interface Location {
   slug: string;
@@ -320,6 +321,45 @@ export function turnaroundForQuote(text: string): string {
   const parts = text.trim().match(/"[^"]*"/g);
   if (!parts || parts.join('').replace(/\s/g, '') !== text.replace(/\s/g, '')) return text.trim();
   return parts.map((part) => part.slice(1, -1).trim()).join(' ');
+}
+
+/**
+ * Whether a county page says something about its own county that the other 66
+ * do not: who customarily pays there, the recording office's own page, that
+ * office's words on turnaround, or a city of its own with a page.
+ *
+ * Thirty-five of the 67 had none of these on 22 September 2026, which made
+ * each of them the template with a different name in it. Google's spam
+ * policies call a set of pages like that doorways, and its 2026 updates
+ * demoted whole sites for them, the pages that bring in the leads included. So
+ * a county page without a local fact is still built, linked and crawlable, but
+ * asks not to be indexed and is left out of the sitemap — the rule the team
+ * pages already follow. It indexes itself the build after the team adds one.
+ */
+export function countyHasLocalFacts(
+  county: Pick<
+    Location,
+    'slug' | 'customaryOwnerPolicyPayer' | 'customaryOwnerPolicyDetail' | 'clerkUrl' | 'recordingTurnaround'
+  >,
+): boolean {
+  return Boolean(
+    county.customaryOwnerPolicyPayer ||
+      county.customaryOwnerPolicyDetail ||
+      county.clerkUrl ||
+      county.recordingTurnaround ||
+      citiesInCounty(county.slug).length > 0,
+  );
+}
+
+/**
+ * "a" or "an" before a place name, by how the name is said: an Orange County
+ * file, an Orlando sale, a Union County deed. The templates wrote "a" before
+ * every name, which put "a Orange County sale" into a heading on eight county
+ * and city pages.
+ */
+export function aOrAn(name: string): 'a' | 'an' {
+  if (/^u(ni|s[aeiou]|ti)/i.test(name)) return 'a';
+  return /^[aeiou]/i.test(name) ? 'an' : 'a';
 }
 
 export function recorderName(county: Pick<Location, 'name' | 'clerkName'>): string {

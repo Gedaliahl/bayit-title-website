@@ -33,7 +33,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${site.name} — Florida title insurance agency in ${site.address.city}`,
+    default: `${site.name} — Florida title company in ${site.address.city}`,
     template: TITLE_TEMPLATE,
   },
   description:

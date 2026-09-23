@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 
 import { getCounties } from '@/lib/locations';
-import { site } from '@/lib/site';
+import { officeHoursLine, site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LeadForm } from '@/components/LeadForm';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Contact',
-  description: metaDescription(`Reach ${site.legalName} in ${site.address.city}, Florida: ${site.phoneDisplay}, ${site.email}.`),
+  title: { absolute: `Contact ${site.name} — ${site.address.city}, FL title company` },
+  description: metaDescription(
+    `Call ${site.phoneDisplay} or email ${site.email}. ${site.address.street}, ` +
+      `${site.address.city}, FL ${site.address.postalCode}. ${officeHoursLine}.`,
+  ),
   alternates: { canonical: '/contact' },
-  openGraph: { ...baseOpenGraph, url: '/contact' },
+  openGraph: { ...siteOpenGraph, url: '/contact' },
 };
 
 export default async function ContactPage() {
@@ -25,7 +28,7 @@ export default async function ContactPage() {
             { name: 'Contact', path: '/contact' },
           ]}
         />
-        <h1 className="after-crumbs">Contact us</h1>
+        <h1 className="after-crumbs">Contact {site.name}</h1>
 
         <h2 className="after-crumbs">The office</h2>
         <p>

@@ -1,6 +1,8 @@
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
+import { ContactClickTracking } from './ContactClickTracking';
+
 /**
  * Traffic measurement, production only.
  *
@@ -26,6 +28,7 @@ export function Analytics() {
     <>
       <VercelAnalytics />
       <SpeedInsights />
+      <ContactClickTracking />
     </>
   );
 }

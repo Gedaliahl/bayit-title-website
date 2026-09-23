@@ -24,7 +24,7 @@ import {
 import { REISSUE_CONDITIONS } from '@/lib/closing-estimate';
 import { CHECKED_ON as STATUTE_CHECKED_ON } from '@/lib/statutory-rates';
 import type { CitedFigure } from '@/lib/cited-figures';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Rail } from '@/components/Rail';
 import { EstimateModeProvider } from '@/components/estimate/EstimateMode';
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   title: META.title,
   description: metaDescription(META.description),
   alternates: { canonical: '/estimate' },
-  openGraph: { ...baseOpenGraph, url: '/estimate' },
+  openGraph: { ...siteOpenGraph, url: '/estimate' },
 };
 
 /** "Broward, Palm Beach, Miami-Dade and Hillsborough". */
@@ -103,7 +103,9 @@ export default async function EstimatePage() {
             ]}
           />
           <h1>{HERO.title}</h1>
-          <p className="page-hero__lede">{HERO.lede}</p>
+          <p className="page-hero__lede">
+            <strong>{HERO.kicker}</strong> {HERO.lede}
+          </p>
           <p className="page-hero__meta">
             <span>
               <span className="page-hero__dot" aria-hidden="true" />
@@ -206,6 +208,12 @@ export default async function EstimatePage() {
               <ScheduleCard title={DETAIL.schedule.reissue} figures={REISSUE_SCHEDULE} />
             </div>
             <p className="schedule__note">{DETAIL.schedule.simultaneous}</p>
+            <p className="schedule__note">
+              The premium at common prices is on the{' '}
+              <Link href="/closing-costs/title-insurance-calculator">title insurance calculator</Link>,
+              and the deed and mortgage stamps at common prices on the{' '}
+              <Link href="/closing-costs/doc-stamp-calculator">doc stamp calculator</Link>.
+            </p>
           </section>
 
           <section id="reissue">

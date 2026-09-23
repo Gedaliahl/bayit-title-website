@@ -36,6 +36,7 @@ export function FigureCard({
   unknownsText,
   emptyText,
   actions,
+  totalNote = RESULT.totalNote,
 }: {
   eyebrow: string;
   total: string;
@@ -49,6 +50,8 @@ export function FigureCard({
   emptyText: string;
   /** Copy, print and reset, under the foot. */
   actions?: React.ReactNode;
+  /** Who sets the lines in the total. The estimate's own, unless a card carries different lines. */
+  totalNote?: string;
 }) {
   const hasResult = groups.length > 0;
   const message = hasResult ? RESULT.announce(totalLabel, total) : RESULT.nothingYet;
@@ -119,7 +122,7 @@ export function FigureCard({
             <div className="figure-total">
               <div>
                 <strong>{totalLabel}</strong>
-                <span className="figure-line__note">{RESULT.totalNote}</span>
+                <span className="figure-line__note">{totalNote}</span>
               </div>
               <div className="figure-line__amount">{total}</div>
             </div>

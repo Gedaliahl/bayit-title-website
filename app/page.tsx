@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getAllDocs, CLUSTER_LABELS } from '@/lib/content';
 import { getBestReviews, getReviewSnapshot } from '@/lib/reviews';
 import { getCounties } from '@/lib/locations';
+import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { officeHoursLine, site } from '@/lib/site';
 import { baseOpenGraph } from '@/lib/seo';
 import { CountUp } from '@/components/CountUp';
@@ -11,14 +12,15 @@ import { ServicesTicker } from '@/components/ServicesTicker';
 import { FileTimeline } from '@/components/FileTimeline';
 import { FeaturedQuote } from '@/components/Reviews';
 import { UnderwriterBadge } from '@/components/UnderwriterBadge';
+import { WebSiteSchema } from '@/components/Schema';
 
 export const metadata: Metadata = {
   // Absolute, because the layout's "| Bayit Title" template applies only to the
   // segments below it; without the name here the homepage's title had none.
-  title: { absolute: `${site.name} — Florida title insurance agency in ${site.address.city}` },
+  title: { absolute: `${site.name} — Florida title company in ${site.address.city}` },
   description:
-    `${site.legalName}, a Florida title insurance agency in ${site.address.city}: title search and ` +
-    'insurance, escrow, and residential and commercial closings statewide.',
+    `${site.legalName}, a Florida title company in ${site.address.city}: title search and ` +
+    'insurance, escrow, and residential and commercial closings in all 67 counties.',
   alternates: { canonical: '/' },
   openGraph: { ...baseOpenGraph, url: '/' },
 };
@@ -45,10 +47,19 @@ export default async function HomePage() {
 
   return (
     <>
+      <WebSiteSchema />
       <section className="section hero">
         <div className="frame hero__inner">
           <div>
-            <h1>Got a Florida deal to close? We make the title and closing simple.</h1>
+            {/* The line above the hook is what the page is searched for by. It is
+                inside the heading, so the h1 says "Florida title company" as
+                well as the question a reader arrives with. */}
+            <h1>
+              <span className="eyebrow hero__eyebrow">
+                Florida title company in {site.address.city}
+              </span>
+              Got a Florida deal to close? We make the title and closing simple.
+            </h1>
             <p className="hero__lede">
               We search title, examine what comes back, issue policies, hold the escrow and run
               the closing — anywhere in Florida. When something turns up on a file, we tell you
@@ -85,6 +96,14 @@ export default async function HomePage() {
                   <path d="M13 6l6 6-6 6" />
                 </svg>
               </Link>
+              {/* The two other things a visitor with a live deal wants: an exact
+                  figure from a person, or the person. */}
+              <Link href="/quote" className="btn btn--quiet btn--caps">
+                Get a quote
+              </Link>
+            </p>
+            <p className="hero__call">
+              Or call <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>, {officeHoursLine}.
             </p>
           </div>
 
@@ -135,6 +154,9 @@ export default async function HomePage() {
             <p>Four things that happen on every file here, and that you can check.</p>
             <p className="split__link">
               <Link href="/partners">How we work with realtors and mortgage brokers →</Link>
+            </p>
+            <p className="split__link">
+              <Link href="/about">More about {site.name} →</Link>
             </p>
           </div>
 
@@ -249,23 +271,44 @@ export default async function HomePage() {
             </p>
             <p className="split__link">
               Want a number before you call?{' '}
-              <Link href="/estimate">Estimate from a property address</Link> or{' '}
-              <Link href="/estimate?mode=numbers">work it out from a price</Link>.
+              <Link href="/estimate">Estimate from a property address</Link>,{' '}
+              <Link href="/closing-costs/title-insurance-calculator">
+                work the premium out from a price
+              </Link>
+              , or see{' '}
+              <Link href="/closing-costs/who-pays-title-insurance">who pays for title insurance</Link>{' '}
+              in your county.
             </p>
           </div>
 
-          <ul className="linklist linklist--columns split__body">
-            {counties
-              .filter((county) => county.isPriority)
-              .map((county) => (
-                <li key={county.slug}>
-                  <Link href={`/counties/${county.slug}`}>{county.name}</Link>
-                </li>
-              ))}
-            <li>
-              <Link href="/counties">All {site.floridaCounties} counties →</Link>
-            </li>
-          </ul>
+          <div className="split__body">
+            <ul className="linklist linklist--columns">
+              {counties
+                .filter((county) => county.isPriority)
+                .map((county) => (
+                  <li key={county.slug}>
+                    <Link href={`/counties/${county.slug}`}>{county.name}</Link>
+                  </li>
+                ))}
+              <li>
+                <Link href="/counties">All {site.floridaCounties} counties →</Link>
+              </li>
+            </ul>
+            {/* The cities are what most readers type — "title company Fort
+                Lauderdale", not "Broward County" — and this is the one page
+                every visit can reach them from. Only cities whose county has a
+                page. */}
+            <h3>Cities</h3>
+            <ul className="linklist linklist--columns">
+              {FLORIDA_CITIES.filter((city) => counties.some((county) => county.slug === city.countySlug)).map(
+                (city) => (
+                  <li key={city.slug}>
+                    <Link href={`/cities/${city.slug}`}>{city.name}</Link>
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
         </div>
       </section>
 

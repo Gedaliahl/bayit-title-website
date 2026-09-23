@@ -5,6 +5,7 @@
       "startServerReadyPattern": "Ready",
       "url": [
         "http://localhost:3207/estimate",
+        "http://localhost:3207/closing-costs/title-insurance-calculator",
         "http://localhost:3207/counties/broward-county",
         "http://localhost:3207/title-problems/open-permits-before-closing-florida",
         "http://localhost:3207/order"

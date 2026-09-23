@@ -1,7 +1,8 @@
 ---
 status: reviewed
 title: "The survey shows a driveway, but the title work says no legal access. What's the difference?"
-seo_title: "A driveway on the survey but no legal access in the title"
+summary: "A Florida parcel can have a paved driveway and still no legal access: no recorded easement. That is a title problem, and it shows on Schedule B-II."
+seo_title: "Landlocked property in Florida: legal vs physical access"
 slug: "no-legal-access-landlocked-property-florida"
 cluster: "survey"
 direct_answer: "Physical access is a road you can drive on. Legal access is a recorded right to use it. A parcel can have a paved driveway to a public street and still have no recorded easement supporting it, which is a title problem rather than a survey problem — and it usually surfaces as an exception on Schedule B-II of the commitment."

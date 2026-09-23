@@ -9,7 +9,7 @@ import { PersonSchema } from '@/components/Schema';
 import { ReviewList } from '@/components/Reviews';
 import { QuietCta } from '@/components/QuietCta';
 import {
-  baseOpenGraph,
+  siteOpenGraph,
   fittedTitle,
   indexingAllowed,
   metaDescription,
@@ -41,7 +41,7 @@ export async function generateMetadata({
       `${member.name} is ${member.role} at ${site.legalName} in ${site.address.city}, Florida.`,
     ),
     alternates: { canonical: `/team/${member.slug}` },
-    openGraph: { ...baseOpenGraph, url: `/team/${member.slug}` },
+    openGraph: { ...siteOpenGraph, url: `/team/${member.slug}` },
     // Its links are still followed where the site is open to crawlers at all.
     ...(hasContent ? {} : { robots: { index: false, follow: indexingAllowed() } }),
   };

@@ -70,6 +70,32 @@ export function SiteFooter() {
             </ul>
           </nav>
 
+          <nav aria-labelledby="footer-costs">
+            <h2 id="footer-costs">Closing costs</h2>
+            <ul>
+              <li>
+                <Link href="/estimate">Closing cost calculator</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs/title-insurance-calculator">Title insurance calculator</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs/doc-stamp-calculator">Doc stamp calculator</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs/who-pays-title-insurance">Who pays title insurance</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs/buyer">Buyer closing costs</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs/seller">Seller closing costs</Link>
+              </li>
+              <li>
+                <Link href="/closing-costs">All closing costs</Link>
+              </li>
+            </ul>
+          </nav>
           <nav aria-labelledby="footer-start">
             <h2 id="footer-start">Get started</h2>
             <ul>
@@ -80,16 +106,7 @@ export function SiteFooter() {
                 <Link href="/quote">Request a quote</Link>
               </li>
               <li>
-                <Link href="/estimate">Estimate from an address</Link>
-              </li>
-              <li>
-                <Link href="/estimate?mode=numbers">Premium calculator</Link>
-              </li>
-              <li>
-                <Link href="/closing-costs/buyer">Buyer closing costs</Link>
-              </li>
-              <li>
-                <Link href="/closing-costs/seller">Seller closing costs</Link>
+                <a href={`tel:${site.phone}`}>Call {site.phoneDisplay}</a>
               </li>
               <li>
                 <Link href="/contact">Contact us</Link>

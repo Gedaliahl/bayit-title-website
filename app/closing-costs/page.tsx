@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { QuietCta } from '@/components/QuietCta';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: 'Florida closing costs, buyer and seller',
@@ -19,8 +19,29 @@ export const metadata: Metadata = {
       'promulgated title premium, and the fees no rule sets, each cited.',
   ),
   alternates: { canonical: '/closing-costs' },
-  openGraph: { ...baseOpenGraph, url: '/closing-costs' },
+  openGraph: { ...siteOpenGraph, url: '/closing-costs' },
 };
+
+const TOOLS = [
+  {
+    href: '/closing-costs/title-insurance-calculator',
+    eyebrow: 'Calculator',
+    title: 'Florida title insurance calculator',
+    body: 'The promulgated owner’s and lender’s premium for a price and a loan, with the reissue rate.',
+  },
+  {
+    href: '/closing-costs/doc-stamp-calculator',
+    eyebrow: 'Calculator',
+    title: 'Florida doc stamp tax calculator',
+    body: 'Deed and mortgage stamps, the Miami-Dade surtax and the intangible tax, cited to the statute.',
+  },
+  {
+    href: '/closing-costs/who-pays-title-insurance',
+    eyebrow: 'By county',
+    title: 'Who pays for title insurance in Florida',
+    body: 'Who customarily pays for the owner’s policy in each county, where it has been confirmed.',
+  },
+];
 
 const SIDES = [
   {
@@ -59,12 +80,12 @@ export default function ClosingCostsPage() {
 
         <p>
           For a specific property, <Link href="/estimate">estimate from the address</Link> or{' '}
-          <Link href="/estimate?mode=numbers">from the price and loan</Link>. For the lines no rule
-          sets, <Link href="/quote">request a quote</Link>.
+          <Link href="/estimate?mode=numbers">from the price and loan</Link> with the Florida closing
+          cost calculator. For the lines no rule sets, <Link href="/quote">request a quote</Link>.
         </p>
 
         <ul className="card-grid card-grid--fit">
-          {SIDES.map((side) => (
+          {[...TOOLS, ...SIDES].map((side) => (
             <li key={side.href}>
               <Link href={side.href} className="card-link">
                 <span className="card-link__eyebrow">{side.eyebrow}</span>

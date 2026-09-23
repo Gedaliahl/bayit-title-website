@@ -12,7 +12,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getCounties } from '@/lib/locations';
-import { baseOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, formatLongDate, metaDescription } from '@/lib/seo';
 import { site } from '@/lib/site';
 import {
   CHECKED_ON,
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       'promulgated premium and the fees no rule sets, each cited.',
   ),
   alternates: { canonical: '/closing-costs/buyer' },
-  openGraph: { ...baseOpenGraph, url: '/closing-costs/buyer' },
+  openGraph: { ...siteOpenGraph, url: '/closing-costs/buyer' },
 };
 
 const MORTGAGE_PAGES = EXAMPLE_PAGE_COUNTS.mortgage;

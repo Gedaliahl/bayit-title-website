@@ -11,6 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FLORIDA_COUNTIES } from '@/lib/florida-counties';
+import { aOrAn, countyHasLocalFacts } from '@/lib/locations';
 
 const getServiceClient = vi.fn();
 
@@ -149,5 +150,60 @@ describe('a turnaround set in a blockquote', () => {
     expect(turnaroundForQuote('Documents are recorded in the order received.')).toBe(
       'Documents are recorded in the order received.',
     );
+  });
+});
+
+describe('the article before a place name', () => {
+  it.each([
+    ['Orange County', 'an'],
+    ['Orlando', 'an'],
+    ['Alachua County', 'an'],
+    ['Escambia County', 'an'],
+    ['Indian River County', 'an'],
+    ['Okeechobee County', 'an'],
+    ['Union County', 'a'],
+    ['Broward County', 'a'],
+    ['Hollywood', 'a'],
+    ['Miami-Dade County', 'a'],
+  ])('writes %s after "%s"', (name, article) => {
+    expect(aOrAn(name)).toBe(article);
+  });
+
+  it('is right for every county the site has a page for', () => {
+    for (const county of FLORIDA_COUNTIES) {
+      const expected = /^(Alachua|Escambia|Indian River|Okaloosa|Okeechobee|Orange|Osceola)/.test(county.name)
+        ? 'an'
+        : 'a';
+      expect(aOrAn(county.name), county.name).toBe(expected);
+    }
+  });
+});
+
+describe('a county page worth indexing', () => {
+  const bare = {
+    slug: 'liberty-county',
+    customaryOwnerPolicyPayer: null,
+    customaryOwnerPolicyDetail: null,
+    clerkUrl: null,
+    recordingTurnaround: null,
+  };
+
+  // Thirty-five counties were exactly this on 22 September 2026: the template
+  // with a different name in it, which is what a doorway page is.
+  it('is not one that says nothing the other counties do not', () => {
+    expect(countyHasLocalFacts(bare)).toBe(false);
+  });
+
+  it.each([
+    ['who customarily pays', { customaryOwnerPolicyPayer: 'seller' }],
+    ['why the custom varies', { customaryOwnerPolicyDetail: 'It depends on where in the Keys.' }],
+    ['the recording office’s own page', { clerkUrl: 'https://example.gov/recording' }],
+    ['the office’s words on turnaround', { recordingTurnaround: '"Same day."' }],
+  ])('is one that states %s', (_, fact) => {
+    expect(countyHasLocalFacts({ ...bare, ...fact })).toBe(true);
+  });
+
+  it('is one with a city page of its own', () => {
+    expect(countyHasLocalFacts({ ...bare, slug: 'pinellas-county' })).toBe(true);
   });
 });

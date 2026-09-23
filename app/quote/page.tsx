@@ -6,16 +6,16 @@ import { site } from '@/lib/site';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LeadForm } from '@/components/LeadForm';
 import { AnswerPanel } from '@/components/Prose';
-import { baseOpenGraph, metaDescription } from '@/lib/seo';
+import { siteOpenGraph, metaDescription } from '@/lib/seo';
 
 export const metadata: Metadata = {
-  title: 'Request a closing cost quote',
+  title: 'Request a Florida title and closing cost quote',
   description: metaDescription(
     'Request an itemized Florida closing cost quote. The title premium is promulgated by the ' +
       'Office of Insurance Regulation; the quote itemizes everything else.',
   ),
   alternates: { canonical: '/quote' },
-  openGraph: { ...baseOpenGraph, url: '/quote' },
+  openGraph: { ...siteOpenGraph, url: '/quote' },
 };
 
 export default async function QuotePage() {

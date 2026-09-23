@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { SiteNav, type NavItem } from '@/components/SiteNav';
+import { officeHoursLine, site } from '@/lib/site';
 
 /**
  * Five links and one call to action. Deliberately not a link to every page: a
@@ -33,6 +34,32 @@ const ACTION: NavItem = { href: '/order', label: 'Open an order' };
 export function SiteHeader() {
   return (
     <header className="masthead">
+      {/* The phone number on every page, above the fold, on a phone as much as
+          anywhere: most files start with a call. It is a bar of its own rather
+          than a seventh item in the row below, which is measured to fit on one
+          line down to 928px and would lose a landscape tablet to the Menu
+          button for the sake of it. */}
+      <div className="topbar">
+        <div className="frame topbar__inner">
+          <p className="topbar__hours">Office hours: {officeHoursLine}</p>
+          <a className="topbar__phone" href={`tel:${site.phone}`}>
+            <svg
+              className="topbar__icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.75}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+            </svg>
+            Call {site.phoneDisplay}
+          </a>
+        </div>
+      </div>
       <div className="frame masthead__inner">
         <Link href="/" className="wordmark">
           <Image

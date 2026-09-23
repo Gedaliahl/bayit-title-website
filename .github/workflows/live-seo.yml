@@ -1,0 +1,91 @@
+# Whether search engines can get into the live site, checked from outside.
+#
+# On 22 September 2026 the real domain went out with `Disallow: /` and
+# `noindex` on every page while CI was green, because no test runs against the
+# host Vercel actually serves. This does. It runs after every production deploy
+# and once a day, and a red run means crawlers are being turned away from the
+# live site right now.
+#
+# After a production deploy that passes, the pages that are new or re-dated
+# since the last run go to IndexNow (scripts/indexnow.mjs).
+name: Live SEO
+
+on:
+  deployment_status:
+  schedule:
+    # Daily at 12:30 UTC, 8:30 in the morning in Florida.
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+    inputs:
+      submit_all:
+        description: Submit every sitemap URL to IndexNow, not only the changed ones
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-seo
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check the live site is indexable
+    # Vercel posts a deployment status for every preview too; only a finished
+    # production deploy changes what the live site serves.
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # The deployment reports ready a moment before the domain is moved onto it.
+      - name: Let the domain settle
+        if: github.event_name == 'deployment_status'
+        run: sleep 45
+
+      # No npm ci: the script imports nothing but next.config.mjs and Node itself.
+      - name: Check
+        run: npm run check:live
+
+  indexnow:
+    name: Submit new and changed pages to IndexNow
+    needs: check
+    if: github.event_name == 'deployment_status' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # The sitemap as the last run saw it, so this run submits only the
+      # difference. A cache miss submits everything once, which is what the
+      # protocol expects of a first run.
+      - uses: actions/cache/restore@v5
+        with:
+          path: .indexnow
+          key: indexnow-${{ github.run_id }}
+          restore-keys: indexnow-
+
+      - name: Submit
+        run: npm run indexnow
+        env:
+          INDEXNOW_ALL: ${{ inputs.submit_all && '1' || '' }}
+
+      - uses: actions/cache/save@v5
+        with:
+          path: .indexnow
+          key: indexnow-${{ github.run_id }}

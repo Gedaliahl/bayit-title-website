@@ -32,7 +32,7 @@ jobs:
     env:
       # The real site URL is not a secret, and pinning it keeps the canonical
       # tags and JSON-LD in a CI build identical to production.
-      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+      NEXT_PUBLIC_SITE_URL: https://bayittitle.com
       # Supabase credentials are deliberately absent. The site is built to
       # render without them, so CI proves that path stays working — it
       # exercises the canonical fallback in lib/locations.ts.
@@ -92,7 +92,7 @@ jobs:
     timeout-minutes: 30
 
     env:
-      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+      NEXT_PUBLIC_SITE_URL: https://bayittitle.com
       # Served over http on localhost; see next.config.mjs.
       E2E_PLAIN_HTTP: '1'
 
@@ -146,7 +146,7 @@ jobs:
     timeout-minutes: 20
 
     env:
-      NEXT_PUBLIC_SITE_URL: https://www.bayittitle.com
+      NEXT_PUBLIC_SITE_URL: https://bayittitle.com
 
     steps:
       - uses: actions/checkout@v7

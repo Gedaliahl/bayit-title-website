@@ -93,6 +93,15 @@ keeps `npm audit` at zero.
 
 `.github/workflows/rolls.yml` runs `npm run check:rolls` every Monday.
 
+`.github/workflows/live-seo.yml` runs `npm run check:live` after every
+production deploy and every morning. It asks the live domain what a crawler
+gets: robots.txt open and naming the sitemap, `www` redirecting to the apex,
+and every sitemap URL answering 200 with no `noindex` and its own canonical. A
+red run means search engines are being turned away from the live site today.
+After a passing production deploy, `npm run indexnow` sends the new and
+re-dated sitemap URLs to IndexNow (Bing and the engines that share it); the
+key is `public/<key>.txt`, public by design.
+
 ## The one rule that matters most
 
 This is a licensed title agency's website. A wrong statute, a wrong coverage
@@ -303,20 +312,22 @@ count a pageview and a future CSP has no outside host to name.
 
 ### Which deployment search engines are allowed into
 
-**Only the one serving www.bayittitle.com.** Every other deployment — a preview,
-and the production deployment for as long as it answers on a `*.vercel.app`
+**Only the production deployment serving bayittitle.com.** Every other
+deployment — a preview, or a production build answering only on a `*.vercel.app`
 host — returns `Disallow: /` for everything and a `noindex, nofollow` meta tag,
-and names no sitemap.
+and names no sitemap. In production the `*.vercel.app` aliases 308 to the real
+domain (everything but `/api/`), so there is one crawlable copy of the site.
 
 The reason is the cutover. Until the domain moves, the old site is the one
 ranking for these terms, and a fully crawlable second copy of every page is a
 duplicate competing with it and splitting the signals between the two.
 
-`lib/seo.ts` derives this from `VERCEL_PROJECT_PRODUCTION_URL`, the host Vercel
-serves this project's production deployment on. **Attaching the domain to the
-Vercel project is what turns indexing on**, on the next deploy, with nothing to
-remember on the day — which is the point of deriving it rather than reading a
-flag, since a flag nobody remembers leaves the real site invisible.
+`lib/seo.ts` derives this from `VERCEL_PROJECT_PRODUCTION_URL`, which Vercel
+sets to the project's *shortest* production domain. Either of the domain's two
+hosts, apex or www, opens the gate. It once demanded www exactly, and because
+the apex is shorter the real site went out on 22 September 2026 with
+`Disallow: /` and `noindex` on every page. `npm run check:live` now checks the
+live site for exactly that, daily and after every production deploy.
 
 ### Search Console and Bing
 
@@ -552,19 +563,21 @@ of the premium subtotal.
 
 ## The Wix cutover
 
-`bayittitle.com` runs on Wix today. Every source in the redirect map in
+`bayittitle.com` ran on Wix until 22 September 2026. Every source in the redirect map in
 `next.config.mjs` was checked against the live site rather than guessed at; the
 list it replaced was a first pass at Wix naming conventions, and seven of its
 nine entries redirected paths that had never existed while six real pages had no
 redirect and would have 404ed. `tests/redirects.test.ts` pins the map, because a
 dropped entry is invisible until the traffic is already gone.
 
-**The canonical host is www.** The Wix site 301s the apex to `www`, so every
-indexed URL and inbound link already points there; moving to the apex would put
-a redirect hop in front of the whole existing index for nothing. **Vercel must
-have `www.bayittitle.com` set as the primary domain**, with the apex attached
-and redirecting to it — that is where the host redirect belongs, not duplicated
-in `next.config.mjs`.
+**The canonical host is the apex, `bayittitle.com`.** At the cutover Vercel was
+set up with the apex as the primary domain and `www` redirecting to it, and a
+canonical has to name the URL that answers 200, not one that redirects. The
+old Wix-era `www` URLs keep their signal through that 308. `lib/site.ts` holds
+the choice; `lib/seo.ts` ignores a `NEXT_PUBLIC_SITE_URL` that names the other
+of our two hosts, so a variable left over from the Wix days cannot split the
+canonical from the domain. If the primary domain is ever switched to `www`,
+change `site.url` (and `CANONICAL_ORIGIN` in `next.config.mjs`) with it.
 
 Next serves `permanent: true` as a 308 rather than a 301. Google treats the two
 the same for passing ranking signal.
@@ -674,14 +687,16 @@ Carried forward from `docs/HANDOFF.md`, still open:
   address. Reviews are seeded manually and work fine — the sync is an
   optimisation, not a blocker.
 
-**Launch mechanics, none started**
+**Launch mechanics, still open after the 22 September 2026 cutover**
 
-- Domain cutover, with `www.bayittitle.com` set as the primary domain in Vercel
-- `RESEND_API_KEY` unset, so form notifications silently no-op; plus SPF/DKIM for
-  the sending domain
-- Supabase environment variables confirmed in Vercel before cutover, not after
-- Search Console and Bing properties created on the real domain, and the redirect
-  map re-checked against Search Console's Pages report for stale indexed URLs
+- `RESEND_API_KEY` is unset in production (`/api/health` reports `resend`
+  unconfigured), so every form submission is saved and **nobody is notified**.
+  Set it and `NOTIFY_FROM_EMAIL`, and add Resend's SPF/DKIM records in the Wix
+  DNS panel, which still hosts the zone.
+- Search Console and Bing properties on the real domain (a Domain property,
+  verified by a DNS TXT record), the sitemap submitted, and the redirect map
+  re-checked against the Pages report for stale indexed URLs. See
+  `docs/seo-plan.md`.
 
 ## Docs
 

@@ -93,6 +93,37 @@ function contentSecurityPolicy() {
   return isDev || plainHttp ? policy : `${policy}; upgrade-insecure-requests`;
 }
 
+/**
+ * The canonical origin, which lib/site.ts states with its reason. It is
+ * repeated here only because this file cannot import TypeScript;
+ * tests/redirects.test.ts fails if the two ever disagree.
+ */
+export const CANONICAL_ORIGIN = 'https://bayittitle.com';
+
+/**
+ * A production deployment answers on the firm's domain and also on its
+ * *.vercel.app aliases. Once the build is open to crawlers (lib/seo.ts), each
+ * alias is a complete indexable copy of the site, so in production every one of
+ * them is sent to the real domain. A preview is a different build with
+ * VERCEL_ENV=preview, so this never reaches one, and previews stay where they
+ * are, closed to crawlers.
+ *
+ * `/api/` is left alone. Vercel calls the purge cron on the deployment itself,
+ * and a redirect would turn that call into a 308 that nothing follows.
+ */
+function productionAliasRedirects() {
+  if (process.env.VERCEL_ENV !== 'production') return [];
+
+  return [
+    {
+      source: '/:path((?!api/).*)',
+      has: [{ type: 'host', value: '(?<alias>.+)\\.vercel\\.app' }],
+      destination: `${CANONICAL_ORIGIN}/:path`,
+      permanent: true,
+    },
+  ];
+}
+
 const nextConfig = {
   reactStrictMode: true,
 
@@ -118,23 +149,25 @@ const nextConfig = {
    */
   async redirects() {
     return [
+      ...productionAliasRedirects(),
+
       // Live on Wix today, verified 200.
       { source: '/home', destination: '/', permanent: true },
       { source: '/contact-us', destination: '/contact', permanent: true },
       { source: '/order-title', destination: '/order', permanent: true },
       { source: '/process', destination: '/services', permanent: true },
       { source: '/titleinsurance', destination: '/services', permanent: true },
-      // /rates asked what a closing costs. The estimate page's second option
-      // is now the page that answers it — the promulgated premium schedule,
-      // the transfer taxes and recording, each cited to the rule or statute —
-      // so the redirect follows the topic rather than the form it used to
-      // land on.
-      { source: '/rates', destination: '/estimate?mode=numbers', permanent: true },
+      // /rates was the Wix page for the title insurance rates. The title
+      // insurance calculator is the page that answers it now — the promulgated
+      // schedule in full, the premium at common prices and the calculator
+      // itself, each cited to the rule — so the redirect follows the topic
+      // rather than the form it used to land on.
+      { source: '/rates', destination: '/closing-costs/title-insurance-calculator', permanent: true },
 
-      // The premium calculator had its own page here until the estimate page
-      // took in all three ways of pricing a closing. Its links live on in the
+      // The premium calculator had its own page here, then lived inside the
+      // estimate page, and has its own page again. Its links live on in the
       // index and in other people's pages, and land on the same tool.
-      { source: '/calculator', destination: '/estimate?mode=numbers', permanent: true },
+      { source: '/calculator', destination: '/closing-costs/title-insurance-calculator', permanent: true },
 
       // 404 on Wix today, so they are already gone. Kept because the handoff
       // records that the old site carried Pennsylvania pages, which means they

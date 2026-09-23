@@ -13,3 +13,6 @@ next-env.d.ts
 
 # Lighthouse CI writes its runs here (npm run lhci).
 .lighthouseci/
+
+# IndexNow: the sitemap as the last submission saw it (scripts/indexnow.mjs).
+.indexnow/

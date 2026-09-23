@@ -1,6 +1,7 @@
 ---
 status: reviewed
 title: "What happens if there's an open permit on the property before closing?"
+summary: "An open permit is a building permit the municipality never closed. A municipal lien search finds it, not a title search. The contract says who clears it."
 seo_title: "An open permit before closing in Florida: what happens"
 slug: "open-permits-before-closing-florida"
 cluster: "liens"

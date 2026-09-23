@@ -11,11 +11,13 @@ import {
   formatLongDate,
   formatReviewDate,
   indexingAllowed,
+  CANONICAL_HOST,
+  OWN_HOSTS,
   siteVerification,
   teamPageHasContent,
 } from '@/lib/seo';
 import { site } from '@/lib/site';
-import { openingHoursSpecification } from '@/components/Schema';
+import { OrganizationSchema, openingHoursSpecification } from '@/components/Schema';
 
 describe('meta descriptions', () => {
   it('leaves a short answer alone', () => {
@@ -157,6 +159,64 @@ describe('which deployment crawlers are invited into', () => {
     vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', canonicalHost.toUpperCase());
     expect(indexingAllowed()).toBe(true);
   });
+
+  // Vercel reports the shortest production domain, which is the apex whenever
+  // the apex is attached, whichever host is primary. The gate once demanded www
+  // exactly, and the live site went out closed to every crawler because of it.
+  it.each(['bayittitle.com', 'www.bayittitle.com'])('says yes when production reports %s', (host) => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', host);
+    expect(indexingAllowed()).toBe(true);
+  });
+
+  it('says no for a host that merely contains the domain', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    vi.stubEnv('VERCEL_PROJECT_PRODUCTION_URL', 'bayittitle.com.example.net');
+    expect(indexingAllowed()).toBe(false);
+  });
+
+  it('lists both of the domain\'s hosts, the canonical one among them', () => {
+    expect(OWN_HOSTS).toContain(canonicalHost);
+    expect(OWN_HOSTS).toContain(CANONICAL_HOST);
+    expect(new Set(OWN_HOSTS.map((host) => host.replace(/^www\./, ''))).size).toBe(1);
+  });
+});
+
+/**
+ * The canonical is the URL that answers 200. At the cutover Vercel was set to
+ * serve the apex and redirect www to it, while every canonical, sitemap entry
+ * and JSON-LD id still named www: a crawler following any of them landed on a
+ * redirect. A NEXT_PUBLIC_SITE_URL copied from the old .env.example would
+ * bring that back, so the code, not the variable, picks between our two hosts.
+ */
+describe('the base for canonical URLs', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  async function freshSiteUrl() {
+    vi.resetModules();
+    return (await import('@/lib/seo')).SITE_URL;
+  }
+
+  it('is the canonical host when nothing overrides it', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '');
+    expect(await freshSiteUrl()).toBe(site.url);
+  });
+
+  it('ignores a variable naming our other host', async () => {
+    const other = OWN_HOSTS.find((host) => host !== CANONICAL_HOST)!;
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', `https://${other}`);
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(await freshSiteUrl()).toBe(site.url);
+  });
+
+  it('still honours a variable naming somewhere else entirely', async () => {
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://staging.example.com');
+    expect(await freshSiteUrl()).toBe('https://staging.example.com');
+  });
 });
 
 describe('fitting a title', () => {
@@ -243,5 +303,29 @@ describe('opening hours in the markup', () => {
   it('leaves the closed days out rather than publishing them with no times', () => {
     const days = openingHoursSpecification().flatMap((entry) => entry.dayOfWeek);
     expect(days).toEqual(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+  });
+});
+
+describe('the organization every page describes', () => {
+  // Rendered on every page. It once said the agency facilitates 1031 exchanges
+  // "through" the similarly named exchange company, which has no connection to
+  // it — the one thing lib/site.ts says the site must never say.
+  it('never routes a 1031 exchange through the similarly named company', () => {
+    const element = OrganizationSchema() as { props: { data: { description: string } } };
+    const { description } = element.props.data;
+
+    expect(description).not.toMatch(new RegExp(site.exchangeCompany.name));
+    expect(description).toMatch(/whichever qualified intermediary/);
+  });
+
+  it('is a local business Google can draw a knowledge panel from', () => {
+    const { data } = (OrganizationSchema() as { props: { data: Record<string, unknown> } }).props;
+
+    expect(data['@type']).toEqual(expect.arrayContaining(['InsuranceAgency']));
+    // Google wants a logo of at least 112px each side; the route draws 512.
+    expect(data.logo).toMatchObject({ url: expect.stringMatching(/\/logo\.png$/), width: 512, height: 512 });
+    // The agent is named where she is referenced, not left as a bare id.
+    expect(data.employee).toMatchObject({ '@type': 'Person', name: site.agentInCharge.displayName });
+    expect((data.makesOffer as unknown[]).length).toBeGreaterThan(3);
   });
 });
