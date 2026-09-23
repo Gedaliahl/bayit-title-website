@@ -6,8 +6,8 @@
 # and once a day, and a red run means crawlers are being turned away from the
 # live site right now.
 #
-# After a production deploy that passes, the pages that are new or re-dated
-# since the last run go to IndexNow (scripts/indexnow.mjs).
+# A production deploy that passes this starts .github/workflows/indexnow.yml,
+# which sends the pages that are new or re-dated to IndexNow.
 name: Live SEO
 
 on:
@@ -16,11 +16,6 @@ on:
     # Daily at 12:30 UTC, 8:30 in the morning in Florida.
     - cron: '30 12 * * *'
   workflow_dispatch:
-    inputs:
-      submit_all:
-        description: Submit every sitemap URL to IndexNow, not only the changed ones
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -57,35 +52,3 @@ jobs:
       - name: Check
         run: npm run check:live
 
-  indexnow:
-    name: Submit new and changed pages to IndexNow
-    needs: check
-    if: github.event_name == 'deployment_status' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-
-      # The sitemap as the last run saw it, so this run submits only the
-      # difference. A cache miss submits everything once, which is what the
-      # protocol expects of a first run.
-      - uses: actions/cache/restore@v5
-        with:
-          path: .indexnow
-          key: indexnow-${{ github.run_id }}
-          restore-keys: indexnow-
-
-      - name: Submit
-        run: npm run indexnow
-        env:
-          INDEXNOW_ALL: ${{ inputs.submit_all && '1' || '' }}
-
-      - uses: actions/cache/save@v5
-        with:
-          path: .indexnow
-          key: indexnow-${{ github.run_id }}

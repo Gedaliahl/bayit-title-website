@@ -98,9 +98,11 @@ production deploy and every morning. It asks the live domain what a crawler
 gets: robots.txt open and naming the sitemap, `www` redirecting to the apex,
 and every sitemap URL answering 200 with no `noindex` and its own canonical. A
 red run means search engines are being turned away from the live site today.
-After a passing production deploy, `npm run indexnow` sends the new and
-re-dated sitemap URLs to IndexNow (Bing and the engines that share it); the
-key is `public/<key>.txt`, public by design.
+A passing production run starts `.github/workflows/indexnow.yml`, where
+`npm run indexnow` sends the new and re-dated sitemap URLs to IndexNow (Bing
+and the engines that share it); the key is `public/<key>.txt`, public by
+design. It is a workflow of its own because the Actions cache, which holds what
+was last submitted, refuses a run started by a deployment.
 
 ## The one rule that matters most
 
