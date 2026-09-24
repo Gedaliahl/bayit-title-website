@@ -1,9 +1,21 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
+
 import { BAND, ESTIMATE_MODES, TABS } from '@/content/estimate';
 import { CalculatorPane, type EstimatorCounty } from './CalculatorPane';
-import { UploadPane } from './UploadPane';
 import { panelHeadingId, useEstimateMode } from './EstimateMode';
+
+/**
+ * The contract form is not part of the page's first download. It opens hidden,
+ * most visits never show it, and it is the heaviest form on the page: sent
+ * with the page, a phone had to download, parse and lay it out before the
+ * first paint. It is fetched once the page is idle, so it is in hand before
+ * anyone can click, and mounted the first time its option opens.
+ */
+const loadUploadPane = () => import('./UploadPane');
+const UploadPane = dynamic(() => loadUploadPane().then((module) => module.UploadPane));
 
 /**
  * The band under the hero: the three ways in, and whichever one is open under
@@ -19,7 +31,8 @@ import { panelHeadingId, useEstimateMode } from './EstimateMode';
  * Both panes stay mounted and the closed one is hidden rather than unmounted,
  * which is what keeps a price typed under option 2 there when the reader comes
  * back from option 3 — the page promises that changing the mode keeps every
- * field.
+ * field. The contract pane is only mounted the first time option 3 opens (see
+ * `UploadPane` above); before that it has nothing typed in it to keep.
  */
 export function Estimator({
   counties,
@@ -30,6 +43,21 @@ export function Estimator({
 }) {
   const { mode, setMode } = useEstimateMode();
   const figuresMode = mode === 'upload' ? 'address' : mode;
+
+  // Once opened it stays mounted, hidden like the other pane, so what was typed
+  // into it is still there when the reader comes back to it.
+  const [uploadOpened, setUploadOpened] = useState(false);
+  if (mode === 'upload' && !uploadOpened) setUploadOpened(true);
+
+  useEffect(() => {
+    const prefetch = () => void loadUploadPane().catch(() => {});
+    if ('requestIdleCallback' in window) {
+      const handle = requestIdleCallback(prefetch, { timeout: 5000 });
+      return () => cancelIdleCallback(handle);
+    }
+    const handle = setTimeout(prefetch, 2000);
+    return () => clearTimeout(handle);
+  }, []);
 
   return (
     <section id="estimator" className="band estimator">
@@ -87,7 +115,7 @@ export function Estimator({
           <h3 id={panelHeadingId('upload')} className="visually-hidden" tabIndex={-1}>
             {TABS.upload.title}
           </h3>
-          <UploadPane hidden={mode !== 'upload'} />
+          {uploadOpened ? <UploadPane hidden={mode !== 'upload'} /> : null}
         </section>
       </div>
     </section>
