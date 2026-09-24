@@ -4,11 +4,10 @@
 // "who pays title insurance in Florida" is asked so often and answered so
 // badly: charts that disagree with each other, and with the surveys they cite.
 // This page prints the custom only where the locations table carries it — set
-// by the team from its own files, or published by a title underwriter
-// (supabase/seed/locations_payer_customs.sql) — and says "not confirmed"
-// everywhere else. It is generated from the table, so a county the
-// team confirms tomorrow is on this page at the next build, and the county
-// pages and this one can never disagree.
+// by the team from its own files (supabase/seed/locations_payer_customs.sql) —
+// and says "not confirmed" everywhere else. It is generated from the table, so
+// a county the team confirms tomorrow is on this page at the next build, and
+// the county pages and this one can never disagree.
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -126,10 +125,9 @@ export default async function WhoPaysTitleInsurancePage() {
 
         <h2>County by county</h2>
         <p>
-          The custom is printed where it has been confirmed: by our own team from its files, or by
-          a title underwriter&rsquo;s published survey of its members. Where neither has confirmed
-          it we say so rather than repeat a chart, because the published charts disagree with each
-          other.
+          The custom is printed where our own team has confirmed it from its files. Where it has
+          not, we say so rather than repeat a chart, because the published charts disagree with
+          each other.
         </p>
 
         <div className="table-scroll" role="region" tabIndex={0} aria-label="Who pays for the owner’s policy, by county">

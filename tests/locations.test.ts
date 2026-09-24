@@ -221,10 +221,10 @@ describe('whose custom a page says it is', () => {
     expect(
       payerCredit({
         ...none,
-        customaryOwnerPolicyPayerSourceName: 'The Fund',
+        customaryOwnerPolicyPayerSourceName: 'the Office of Insurance Regulation',
         customaryOwnerPolicyPayerCheckedOn: '2026-09-20',
       }),
-    ).toEqual({ kind: 'published', name: 'The Fund', url: null, checkedOn: '2026-09-20' });
+    ).toEqual({ kind: 'published', name: 'the Office of Insurance Regulation', url: null, checkedOn: '2026-09-20' });
   });
 
   it('is the team’s own where no publisher is named and the team dated it', () => {
@@ -243,7 +243,7 @@ describe('whose custom a page says it is', () => {
       payerCredit({
         ...none,
         customaryOwnerPolicyPayer: null,
-        customaryOwnerPolicyPayerSourceName: 'The Fund',
+        customaryOwnerPolicyPayerSourceName: 'the Office of Insurance Regulation',
       }),
     ).toBeNull();
   });
@@ -254,8 +254,8 @@ describe('whose custom a page says it is', () => {
         ...none,
         customaryOwnerPolicyPayer: null,
         customaryOwnerPolicyDetail: 'It depends on where in the Keys.',
-        customaryOwnerPolicyPayerSourceName: 'The Fund',
+        customaryOwnerPolicyPayerSourceName: 'the Office of Insurance Regulation',
       }),
-    ).toMatchObject({ kind: 'published', name: 'The Fund' });
+    ).toMatchObject({ kind: 'published', name: 'the Office of Insurance Regulation' });
   });
 });

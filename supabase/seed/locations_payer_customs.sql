@@ -2,26 +2,23 @@
 -- whose statement it is and the date stored beside the value so the page can
 -- say so.
 --
--- Only a government office, a title underwriter or our own team is ever named
--- as the source (decided 24 September 2026). Another title agency, a law firm
--- or a lender is never named or linked on a page, even where its page was read
--- as evidence. The evidence for every county, including the ones left null, is
--- in docs/county-payer-custom.md. In short:
+-- Only a government office, First American (our underwriter) or our own team
+-- is ever named as the source (decided 24 September 2026). Another title
+-- agency, another underwriter, a law firm or a lender is never named or linked
+-- on a page, even where its page was read as evidence. The evidence for every
+-- county, including the ones left null, is in docs/county-payer-custom.md. In
+-- short:
 --
 -- - Broward, Miami-Dade and Palm Beach were already set by the team and are
 --   not touched here.
--- - Twelve counties are the team's own, confirmed from its files on
---   2026-09-24: no source name, and the date it confirmed them.
--- - Lee and Charlotte are credited to The Fund's survey, which calls both
---   traditional seller-pay counties.
--- - Monroe is left null with a `customary_owner_policy_detail` sentence: The
---   Fund's survey reports the custom varies by where in the Keys the property
---   is, which one word cannot say.
+-- - Fifteen counties are the team's own, confirmed from its files on
+--   2026-09-24: no source name, and the date it confirmed them. Monroe is one
+--   of them, with a `customary_owner_policy_detail` sentence in place of a
+--   value, because the custom varies by where in the Keys the property is.
 -- - Martin is left null: the published sources disagree.
 -- - The remaining 48 counties are left null until the team confirms them.
 --
--- The Fund's survey sits behind a members' login, so it is named and not
--- linked. Safe to re-run.
+-- Safe to re-run.
 
 update public.locations set
   customary_owner_policy_payer = 'buyer',
@@ -73,9 +70,9 @@ where slug = 'pinellas-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'The Fund (Attorneys’ Title Fund Services), “And the Survey Says: Who Pays for Title Insurance by County?”, by Connie Clark, Fund Senior Underwriting Counsel',
+  customary_owner_policy_payer_source_name = null,
   customary_owner_policy_payer_source_url = null,
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'lee-county';
 
@@ -103,9 +100,9 @@ where slug = 'osceola-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'The Fund (Attorneys’ Title Fund Services), “And the Survey Says: Who Pays for Title Insurance by County?”, by Connie Clark, Fund Senior Underwriting Counsel',
+  customary_owner_policy_payer_source_name = null,
   customary_owner_policy_payer_source_url = null,
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'charlotte-county';
 
@@ -149,10 +146,10 @@ where slug = 'marion-county';
 
 update public.locations set
   customary_owner_policy_payer = null,
-  customary_owner_policy_detail = 'In Monroe County who pays for the owner’s policy depends on where in the Keys the property is. The Fund’s survey of its members reports that Islamorada and the Upper Keys follow the buyer-pay custom of the counties to the north, Marathon and the Middle Keys are a seller-pay area, and Key West and the Lower Keys are a mix of the two.',
-  customary_owner_policy_payer_source_name = 'The Fund (Attorneys’ Title Fund Services), “And the Survey Says: Who Pays for Title Insurance by County?”, by Connie Clark, Fund Senior Underwriting Counsel',
+  customary_owner_policy_detail = 'In Monroe County who pays for the owner’s policy depends on where in the Keys the property is. Islamorada and the Upper Keys follow the buyer-pay custom of the counties to the north, Marathon and the Middle Keys are a seller-pay area, and Key West and the Lower Keys are a mix of the two.',
+  customary_owner_policy_payer_source_name = null,
   customary_owner_policy_payer_source_url = null,
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'monroe-county';
 

@@ -8,21 +8,19 @@ whose statement it is repeating.
 
 ## Who a page may name, decided 24 September 2026
 
-A page names only a government office, a title underwriter or our own team as
-the source of a custom. Another title agency, a law firm or a lender is never
-named or linked on a page, even where its statement was read below as
-evidence. So:
+A page names only a government office, First American (our underwriter) or
+our own team as the source of a custom. Another title agency, another
+underwriter — The Fund included — a law firm or a lender is never named or
+linked on a page, even where its statement was read below as evidence. So all
+fourteen counties written on 20 September, and Monroe, were confirmed by the
+team against its own files on 24 September 2026 and carry no source name and
+that date:
 
-- The twelve counties that rested on title agency, law firm and lender pages —
-  Sarasota and Collier (buyer), and Hillsborough, Orange, Duval, Pinellas,
-  Manatee, Osceola, Brevard, St. Lucie, Pasco and Marion (seller) — were
-  confirmed by the team against its own files on 24 September 2026. They carry
-  no source name and that date.
-- Lee and Charlotte are credited to The Fund's survey alone, which calls both
-  traditional seller-pay counties.
-- Monroe is credited to The Fund's survey, named and not linked: the survey
-  sits behind a members' login, and the copy read here is a lender's
-  reproduction of it.
+- Buyer: Sarasota and Collier.
+- Seller: Hillsborough, Orange, Duval, Pinellas, Lee, Manatee, Osceola,
+  Charlotte, Brevard, St. Lucie, Pasco and Marion.
+- Monroe: the Keys split below, as a sentence in
+  `customary_owner_policy_detail` that no longer names The Fund.
 
 The sources below are kept as the record of what was read on 20 September.
 They are evidence, not credits.
@@ -121,9 +119,10 @@ Left null, with a reason recorded:
 ## Using this on a page
 
 The page prints the value as "Custom in X County is that the seller pays…", then
-a muted line (`components/PayerSource.tsx`). Where a source is named: "That is
-the custom as published by {source}, read on {date}." Where the team confirmed
-it: "That is the custom as we see it on our own files, confirmed on {date}."
+a muted line (`components/PayerSource.tsx`). Where the team confirmed it, which
+is every county today: "That is the custom as we see it on our own files,
+confirmed on {date}." Where a government office or First American is named:
+"That is the custom as published by {source}, read on {date}."
 Either way it ends "It is a report of what is usual, not a rule, and not a
 promise about your contract." Where the value is null the page keeps its "not
 confirmed" paragraph and the withheld banner.

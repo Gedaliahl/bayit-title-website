@@ -25,8 +25,9 @@ export interface Location {
    * Whose published statement the custom is. Custom is not law and, unless
    * the team stated it from its own files, not this office's observation, so
    * the page says whose it is and when it was read. Only a government office
-   * or an underwriter is ever named here — never another title agency, a law
-   * firm or a lender. Null where the team set the payer directly.
+   * or First American, our underwriter, is ever named here — never another
+   * title agency, another underwriter, a law firm or a lender. Null where the
+   * team set the payer directly.
    */
   customaryOwnerPolicyPayerSourceName: string | null;
   customaryOwnerPolicyPayerSourceUrl: string | null;
@@ -356,7 +357,7 @@ export function countyHasLocalFacts(
 /**
  * Whose statement the custom on a page is, for the line printed under it.
  *
- * A named source is `published`: a government office or the underwriter. No
+ * A named source is `published`: a government office, or First American. No
  * named source means the team set the custom from its own files, and where it
  * recorded the date it did, that is `team`. The counties the team set before a
  * date was kept carry neither and print no line, as they always have.

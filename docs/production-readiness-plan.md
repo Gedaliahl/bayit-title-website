@@ -383,7 +383,7 @@ The firm or a licensed reviewer must sign these off, per the project's
   - **P2:** "Every county has a page" is false in a build without Supabase.
   - **P2:** ~~the "who pays" source names and links competitor title firms and a
     2021 chart; the firm should decide.~~ Decided 24 September 2026: a page
-    names only a government office, an underwriter or the team.
+    names only a government office, First American or the team.
   - **P2:** check dates are printed raw ("2026-09-14").
   - **P2:** a null source URL leaves an `href`-less anchor.
   - **P2:** quote marks are doubled inside blockquotes.
