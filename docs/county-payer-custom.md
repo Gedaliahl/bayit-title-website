@@ -6,6 +6,25 @@ county and city pages print under "Who pays for the owner's policy". **Read on
 date beside it (`customary_owner_policy_payer_source_*`), and the page says
 whose statement it is repeating.
 
+## Who a page may name, decided 24 September 2026
+
+A page names only a government office, First American (our underwriter) or
+our own team as the source of a custom. Another title agency, another
+underwriter — The Fund included — a law firm or a lender is never named or
+linked on a page, even where its statement was read below as evidence. So all
+fourteen counties written on 20 September, and Monroe, were confirmed by the
+team against its own files on 24 September 2026 and carry no source name and
+that date:
+
+- Buyer: Sarasota and Collier.
+- Seller: Hillsborough, Orange, Duval, Pinellas, Lee, Manatee, Osceola,
+  Charlotte, Brevard, St. Lucie, Pasco and Marion.
+- Monroe: the Keys split below, as a sentence in
+  `customary_owner_policy_detail` that no longer names The Fund.
+
+The sources below are kept as the record of what was read on 20 September.
+They are evidence, not credits.
+
 ## What this is and is not
 
 Who pays for the owner's title policy in a Florida residential sale is **custom,
@@ -100,7 +119,10 @@ Left null, with a reason recorded:
 ## Using this on a page
 
 The page prints the value as "Custom in X County is that the seller pays…", then
-a muted line: "That is the custom as published by {source}, read on {date}. It
-is a report of what is usual, not a rule, and not a promise about your
-contract." Where the value is null the page keeps its "not confirmed" paragraph
-and the withheld banner.
+a muted line (`components/PayerSource.tsx`). Where the team confirmed it, which
+is every county today: "That is the custom as we see it on our own files,
+confirmed on {date}." Where a government office or First American is named:
+"That is the custom as published by {source}, read on {date}."
+Either way it ends "It is a report of what is usual, not a rule, and not a
+promise about your contract." Where the value is null the page keeps its "not
+confirmed" paragraph and the withheld banner.

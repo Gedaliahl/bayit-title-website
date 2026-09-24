@@ -1,5 +1,16 @@
 # VERIFY worklist
 
+> ## Update, 24 September 2026 — no other title agency or underwriter is named as a source
+>
+> A page now names only a government office, First American or our own team
+> as the source of a payer custom. The fourteen counties written from
+> published sources, and Monroe, were confirmed by the team against its own
+> files and are credited to it; The Fund is no longer named. The 17 counties
+> with a value, and the 48 without, are unchanged. See
+> `docs/county-payer-custom.md`.
+
+---
+
 > ## Correction, 20 September 2026 (night) — an inherited e-recording claim
 >
 > `e_recording_available` defaulted to `true`, so the 61 counties seeded today
