@@ -9,6 +9,14 @@ import { Analytics } from '@/components/Analytics';
 import { site } from '@/lib/site';
 import { SITE_URL, TITLE_TEMPLATE, baseOpenGraph, indexingAllowed, siteVerification } from '@/lib/seo';
 
+// Neither face is preloaded. Chrome treats a preloaded font as render-blocking,
+// whatever font-display says, so the three preloads (94KB) kept a phone on a
+// blank screen while they downloaded: PageSpeed on mobile scored the homepage
+// 91, with LCP at 3.2s and Speed Index at 4.0s. Without them the page paints
+// as soon as the HTML and stylesheet are in, in the size-matched fallback
+// next/font generates, and each face swaps in as it lands. The same page with
+// only the preloads removed measured 100 in Lighthouse's mobile run, CLS 0.
+//
 // Libre Caslon Text carries the headings and quoted reviews. Every Caslon
 // selector is set at 400 and upright, so the bold and italic files were
 // downloads nothing drew with.
@@ -17,6 +25,7 @@ const libreCaslon = Libre_Caslon_Text({
   display: 'swap',
   variable: '--font-libre-caslon',
   weight: '400',
+  preload: false,
 });
 
 // DM Sans for body copy, nav, labels and figures. It is a variable font, so one
@@ -28,6 +37,7 @@ const dmSans = DM_Sans({
   display: 'swap',
   variable: '--font-dm-sans',
   style: ['normal', 'italic'],
+  preload: false,
 });
 
 export const metadata: Metadata = {

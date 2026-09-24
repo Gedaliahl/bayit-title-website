@@ -639,6 +639,21 @@ for (const box of UPLOADS) {
   });
 }
 
+// The contract form's schema is fetched when the pane opens rather than with
+// the page, so this is the check that it still arrives and still runs.
+test('the contract form checks its fields before anything is sent', async ({ page }) => {
+  const sent: Request[] = [];
+  await page.route('/api/contract-quote', (route) => {
+    sent.push(route.request());
+    return json(route, 201, { lead_id: 'lead-1', uploads: [] });
+  });
+  await page.goto('/estimate?mode=upload');
+  await page.getByRole('button', { name: UPLOAD.submit, exact: true }).click();
+  await expect(page.locator('#estimator-upload input[type="file"]')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#estimator-upload')).toContainText('Add the contract first');
+  expect(sent).toHaveLength(0);
+});
+
 test('an order whose second upload fails is still received, and names the file', async ({ page }) => {
   await page.goto('/order');
   await FORMS[2]!.fill(page);

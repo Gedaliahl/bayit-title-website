@@ -25,6 +25,7 @@ import {
 
 import { FLORIDA_COUNTIES } from './florida-counties';
 import { MAX_FILES } from './documents';
+import { HONEYPOT_FIELD } from './honeypot';
 
 // Zod compiles object schemas with `new Function` when it can, and finds out
 // whether it can by trying. The site's Content-Security-Policy forbids eval,
@@ -132,11 +133,9 @@ const optionalPhone = blankToNull(
  * as though it succeeded. Rejecting it here instead would name the trap in the
  * error response and tell the bot exactly what to omit next time.
  *
- * The name means nothing to autofill. It used to be `company`, which browsers
- * and password managers fill in on their own — and every real order they
- * touched was answered "received" and thrown away.
+ * The field's name, and why it is that name, is in ./honeypot.
  */
-export const HONEYPOT_FIELD = 'ref_note';
+export { HONEYPOT_FIELD };
 const honeypot = string().optional();
 
 /**
