@@ -142,7 +142,10 @@ a card on `/counties`; the rest are linked from the full list there. A county
 page states only what the repository can cite: the promulgated premium, the
 statutory taxes and recording charges, the recording office, and the office's
 own words on turnaround. Local custom on who pays for the owner's policy is
-printed only where `customary_owner_policy_payer` has been set by the team.
+printed only where `customary_owner_policy_payer` has been set, by the team
+from its own files or from a title underwriter's survey. A page names only a
+government office, an underwriter or the team as a source — never another
+title agency, a law firm or a lender (`docs/county-payer-custom.md`).
 
 City pages (`/cities/[slug]`) come from `lib/florida-cities.ts`. A city owns one
 fact — which county it is in — and renders that county's figures. A city whose

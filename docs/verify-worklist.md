@@ -1,5 +1,16 @@
 # VERIFY worklist
 
+> ## Update, 24 September 2026 — no other title agency is named as a source
+>
+> A page now names only a government office, a title underwriter or our own
+> team as the source of a payer custom. The twelve counties that rested on
+> title agency, law firm and lender pages were confirmed by the team against
+> its own files and are credited to it; Lee, Charlotte and Monroe are credited
+> to The Fund's survey. The 17 counties with a value, and the 48 without, are
+> unchanged. See `docs/county-payer-custom.md`.
+
+---
+
 > ## Correction, 20 September 2026 (night) — an inherited e-recording claim
 >
 > `e_recording_available` defaulted to `true`, so the 61 counties seeded today

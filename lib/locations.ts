@@ -24,11 +24,13 @@ export interface Location {
   /**
    * Whose published statement the custom is. Custom is not law and, unless
    * the team stated it from its own files, not this office's observation, so
-   * the page says whose it is and when it was read. Null where the team set
-   * the payer directly.
+   * the page says whose it is and when it was read. Only a government office
+   * or an underwriter is ever named here — never another title agency, a law
+   * firm or a lender. Null where the team set the payer directly.
    */
   customaryOwnerPolicyPayerSourceName: string | null;
   customaryOwnerPolicyPayerSourceUrl: string | null;
+  /** When the source was read, or when the team confirmed the custom. */
   customaryOwnerPolicyPayerCheckedOn: string | null;
   /**
    * A sentence where one word will not do. Monroe: the custom depends on
@@ -349,6 +351,38 @@ export function countyHasLocalFacts(
       county.recordingTurnaround ||
       citiesInCounty(county.slug).length > 0,
   );
+}
+
+/**
+ * Whose statement the custom on a page is, for the line printed under it.
+ *
+ * A named source is `published`: a government office or the underwriter. No
+ * named source means the team set the custom from its own files, and where it
+ * recorded the date it did, that is `team`. The counties the team set before a
+ * date was kept carry neither and print no line, as they always have.
+ */
+export type PayerCredit =
+  | { kind: 'published'; name: string; url: string | null; checkedOn: string | null }
+  | { kind: 'team'; checkedOn: string };
+
+export function payerCredit(
+  county: Pick<
+    Location,
+    | 'customaryOwnerPolicyPayer'
+    | 'customaryOwnerPolicyDetail'
+    | 'customaryOwnerPolicyPayerSourceName'
+    | 'customaryOwnerPolicyPayerSourceUrl'
+    | 'customaryOwnerPolicyPayerCheckedOn'
+  >,
+): PayerCredit | null {
+  if (!county.customaryOwnerPolicyPayer && !county.customaryOwnerPolicyDetail) return null;
+
+  const name = county.customaryOwnerPolicyPayerSourceName;
+  const checkedOn = county.customaryOwnerPolicyPayerCheckedOn;
+  if (name) {
+    return { kind: 'published', name, url: county.customaryOwnerPolicyPayerSourceUrl, checkedOn };
+  }
+  return checkedOn ? { kind: 'team', checkedOn } : null;
 }
 
 /**

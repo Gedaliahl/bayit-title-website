@@ -11,7 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FLORIDA_COUNTIES } from '@/lib/florida-counties';
-import { aOrAn, countyHasLocalFacts } from '@/lib/locations';
+import { aOrAn, countyHasLocalFacts, payerCredit } from '@/lib/locations';
 
 const getServiceClient = vi.fn();
 
@@ -205,5 +205,57 @@ describe('a county page worth indexing', () => {
 
   it('is one with a city page of its own', () => {
     expect(countyHasLocalFacts({ ...bare, slug: 'pinellas-county' })).toBe(true);
+  });
+});
+
+describe('whose custom a page says it is', () => {
+  const none = {
+    customaryOwnerPolicyPayer: 'seller',
+    customaryOwnerPolicyDetail: null,
+    customaryOwnerPolicyPayerSourceName: null,
+    customaryOwnerPolicyPayerSourceUrl: null,
+    customaryOwnerPolicyPayerCheckedOn: null,
+  };
+
+  it('is the publisher it names, with the date it was read', () => {
+    expect(
+      payerCredit({
+        ...none,
+        customaryOwnerPolicyPayerSourceName: 'The Fund',
+        customaryOwnerPolicyPayerCheckedOn: '2026-09-20',
+      }),
+    ).toEqual({ kind: 'published', name: 'The Fund', url: null, checkedOn: '2026-09-20' });
+  });
+
+  it('is the team’s own where no publisher is named and the team dated it', () => {
+    expect(payerCredit({ ...none, customaryOwnerPolicyPayerCheckedOn: '2026-09-24' })).toEqual({
+      kind: 'team',
+      checkedOn: '2026-09-24',
+    });
+  });
+
+  it('is not stated for a custom the team set before it kept a date', () => {
+    expect(payerCredit(none)).toBeNull();
+  });
+
+  it('is not stated where there is no custom to credit', () => {
+    expect(
+      payerCredit({
+        ...none,
+        customaryOwnerPolicyPayer: null,
+        customaryOwnerPolicyPayerSourceName: 'The Fund',
+      }),
+    ).toBeNull();
+  });
+
+  it('is stated for a custom that varies within the county', () => {
+    expect(
+      payerCredit({
+        ...none,
+        customaryOwnerPolicyPayer: null,
+        customaryOwnerPolicyDetail: 'It depends on where in the Keys.',
+        customaryOwnerPolicyPayerSourceName: 'The Fund',
+      }),
+    ).toMatchObject({ kind: 'published', name: 'The Fund' });
   });
 });

@@ -1,79 +1,80 @@
--- Who customarily pays for the owner's title policy, county by county, from
--- published sources, with the source and the date it was read stored beside
--- the value so the page can say whose statement it is repeating.
+-- Who customarily pays for the owner's title policy, county by county, with
+-- whose statement it is and the date stored beside the value so the page can
+-- say so.
 --
--- The rule this file follows: a custom is written only where at least two
--- independent publishers state it for that county by name. The evidence for
--- every county, including the ones left null, is in
--- docs/county-payer-custom.md. In short:
+-- Only a government office, a title underwriter or our own team is ever named
+-- as the source (decided 24 September 2026). Another title agency, a law firm
+-- or a lender is never named or linked on a page, even where its page was read
+-- as evidence. The evidence for every county, including the ones left null, is
+-- in docs/county-payer-custom.md. In short:
 --
 -- - Broward, Miami-Dade and Palm Beach were already set by the team and are
---   not touched here; the sources agree with all three.
--- - Fourteen counties are set below on two or more agreeing sources.
--- - Martin is left null: Weston Title says buyer, the 2021 chart says seller.
+--   not touched here.
+-- - Twelve counties are the team's own, confirmed from its files on
+--   2026-09-24: no source name, and the date it confirmed them.
+-- - Lee and Charlotte are credited to The Fund's survey, which calls both
+--   traditional seller-pay counties.
 -- - Monroe is left null with a `customary_owner_policy_detail` sentence: The
 --   Fund's survey reports the custom varies by where in the Keys the property
 --   is, which one word cannot say.
--- - The remaining 48 counties are left null. The only county-by-county source
---   for them is one lender's 2021 chart, which shows four buyer-pay counties
---   statewide, while The Fund's own survey text counts 22. The Fund's county
---   map is behind a members' login. One chart that disagrees with the survey
---   it cites is not enough to publish.
+-- - Martin is left null: the published sources disagree.
+-- - The remaining 48 counties are left null until the team confirms them.
 --
--- Read on 2026-09-20. Safe to re-run.
+-- The Fund's survey sits behind a members' login, so it is named and not
+-- linked. Safe to re-run.
 
 update public.locations set
   customary_owner_policy_payer = 'buyer',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; Marina Title; Kelley, Grant & Tanis; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-sarasota-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'sarasota-county';
 
 update public.locations set
   customary_owner_policy_payer = 'buyer',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; Marina Title; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-collier-county/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'collier-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; Kelley, Grant & Tanis; Marina Title; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-hillsborough-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'hillsborough-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; Kelley, Grant & Tanis; Marina Title; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-orange-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'orange-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; Kelley, Grant & Tanis; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-duval-county-florida/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'duval-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-pinellas-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'pinellas-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-lee-county-fl/',
+  customary_owner_policy_payer_source_name = 'The Fund (Attorneys’ Title Fund Services), “And the Survey Says: Who Pays for Title Insurance by County?”, by Connie Clark, Fund Senior Underwriting Counsel',
+  customary_owner_policy_payer_source_url = null,
   customary_owner_policy_payer_checked_on = '2026-09-20',
   updated_at = now()
 where slug = 'lee-county';
@@ -86,24 +87,24 @@ where slug = 'lee-county'
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Barnes Walker; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-manatee-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'manatee-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; Marina Title; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-osceola-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'osceola-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Barnes Walker; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://barneswalker.com/who-pays-for-title-insurance-in-florida/',
+  customary_owner_policy_payer_source_name = 'The Fund (Attorneys’ Title Fund Services), “And the Survey Says: Who Pays for Title Insurance by County?”, by Connie Clark, Fund Senior Underwriting Counsel',
+  customary_owner_policy_payer_source_url = null,
   customary_owner_policy_payer_checked_on = '2026-09-20',
   updated_at = now()
 where slug = 'charlotte-county';
@@ -116,33 +117,33 @@ where slug = 'charlotte-county'
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-brevard-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'brevard-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-st-lucie-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'st-lucie-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-pasco-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'pasco-county';
 
 update public.locations set
   customary_owner_policy_payer = 'seller',
-  customary_owner_policy_payer_source_name = 'Weston Title & Escrow; a 2021 county chart by TAG Lending Group, attributed to a survey by The Fund',
-  customary_owner_policy_payer_source_url = 'https://westontitle.com/who-pays-for-title-insurance-in-marion-county-fl/',
-  customary_owner_policy_payer_checked_on = '2026-09-20',
+  customary_owner_policy_payer_source_name = null,
+  customary_owner_policy_payer_source_url = null,
+  customary_owner_policy_payer_checked_on = '2026-09-24',
   updated_at = now()
 where slug = 'marion-county';
 
@@ -150,7 +151,7 @@ update public.locations set
   customary_owner_policy_payer = null,
   customary_owner_policy_detail = 'In Monroe County who pays for the owner’s policy depends on where in the Keys the property is. The Fund’s survey of its members reports that Islamorada and the Upper Keys follow the buyer-pay custom of the counties to the north, Marathon and the Middle Keys are a seller-pay area, and Key West and the Lower Keys are a mix of the two.',
   customary_owner_policy_payer_source_name = 'The Fund (Attorneys’ Title Fund Services), “And the Survey Says: Who Pays for Title Insurance by County?”, by Connie Clark, Fund Senior Underwriting Counsel',
-  customary_owner_policy_payer_source_url = 'https://f.hubspotusercontent30.net/hubfs/2683382/Cheat%20Sheet%20-%20STANDARDS%20FOR%20WHO%20PAYS%20FOR%20TITLE%20INSURANCE%20BY%20COUNTY.pdf',
+  customary_owner_policy_payer_source_url = null,
   customary_owner_policy_payer_checked_on = '2026-09-20',
   updated_at = now()
 where slug = 'monroe-county';

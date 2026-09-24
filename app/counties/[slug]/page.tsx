@@ -12,7 +12,6 @@ import {
   getLocation,
   recorderName,
   turnaroundForQuote,
-  type Location,
 } from '@/lib/locations';
 import { citiesInCounty } from '@/lib/florida-cities';
 import { getAllDocs, isPublishable } from '@/lib/content';
@@ -48,6 +47,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel, VerifyBanner } from '@/components/Prose';
 import { CitedFigures } from '@/components/CitedFigures';
 import { QuietCta } from '@/components/QuietCta';
+import { PayerSource } from '@/components/PayerSource';
 import { ReviewList } from '@/components/Reviews';
 import { ServiceSchema } from '@/components/Schema';
 
@@ -405,41 +405,5 @@ export default async function CountyPage({ params }: { params: Promise<{ slug: s
         />
       </div>
     </div>
-  );
-}
-
-/**
- * Whose statement the custom is. A county custom is not law and, unless the
- * team stated it from its own files, not this office's observation either, so
- * the page names the publisher it is repeating and the date it was read.
- */
-function PayerSource({
-  county,
-}: {
-  county: Pick<
-    Location,
-    | 'customaryOwnerPolicyPayerSourceName'
-    | 'customaryOwnerPolicyPayerSourceUrl'
-    | 'customaryOwnerPolicyPayerCheckedOn'
-  >;
-}) {
-  const name = county.customaryOwnerPolicyPayerSourceName;
-  if (!name) return null;
-
-  return (
-    <p className="muted">
-      That is the custom as published by{' '}
-      {county.customaryOwnerPolicyPayerSourceUrl ? (
-        <a href={county.customaryOwnerPolicyPayerSourceUrl} rel="nofollow">
-          {name}
-        </a>
-      ) : (
-        name
-      )}
-      {county.customaryOwnerPolicyPayerCheckedOn
-        ? `, read on ${formatLongDate(county.customaryOwnerPolicyPayerCheckedOn)}`
-        : ''}
-      . It is a report of what is usual, not a rule, and not a promise about your contract.
-    </p>
   );
 }

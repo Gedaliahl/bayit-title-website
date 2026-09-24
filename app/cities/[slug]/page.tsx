@@ -42,6 +42,7 @@ import {
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { AnswerPanel, VerifyBanner } from '@/components/Prose';
 import { CitedFigures } from '@/components/CitedFigures';
+import { PayerSource } from '@/components/PayerSource';
 import { QuietCta } from '@/components/QuietCta';
 import { ReviewList } from '@/components/Reviews';
 import { ServiceSchema } from '@/components/Schema';
@@ -199,22 +200,7 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
             event. Ask us on a specific file and we will tell you what we are seeing.
           </p>
         )}
-        {county.customaryOwnerPolicyPayerSourceName ? (
-          <p className="muted">
-            That is the custom as published by{' '}
-            {county.customaryOwnerPolicyPayerSourceUrl ? (
-              <a href={county.customaryOwnerPolicyPayerSourceUrl} rel="nofollow">
-                {county.customaryOwnerPolicyPayerSourceName}
-              </a>
-            ) : (
-              county.customaryOwnerPolicyPayerSourceName
-            )}
-            {county.customaryOwnerPolicyPayerCheckedOn
-              ? `, read on ${formatLongDate(county.customaryOwnerPolicyPayerCheckedOn)}`
-              : ''}
-            . It is a report of what is usual, not a rule, and not a promise about your contract.
-          </p>
-        ) : null}
+        <PayerSource county={county} />
 
         <h2>Documentary stamp tax on {aOrAn(city.name)} {city.name} sale</h2>
         <p>
