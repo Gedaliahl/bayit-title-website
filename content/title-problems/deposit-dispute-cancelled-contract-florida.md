@@ -65,7 +65,7 @@ If the seller does not object, the answer is usually quick. The seller signs a r
 
 ## Isn't there a state procedure for escrow disputes?
 
-There is, but it is for real estate brokers, not title agencies. Under [Fla. Stat. § 475.25(1)(d)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0400-0499/0475/Sections/0475.25.html), a broker holding a deposit who faces conflicting demands must promptly notify the Florida Real Estate Commission and promptly choose one of four routes: an escrow disbursement order from the commission, arbitration or mediation with everyone's consent, or a court case, by interpleader or otherwise.
+There is, but it is for real estate brokers, not title agencies. Under [Fla. Stat. § 475.25(1)(d)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0400-0499/0475/Sections/0475.25.html), a broker holding a deposit who faces conflicting demands must promptly notify the Florida Real Estate Commission and promptly choose one of four routes: an escrow disbursement order from the commission, arbitration, mediation (both only with everyone's consent), or a court case, by interpleader or otherwise.
 
 When the broker is holding the deposit, that procedure applies. When the title agency is holding it, the contract's escrow clause and the courts apply, and there is no commission order to ask for. Parties often assume otherwise, so our notice says which applies.
 
