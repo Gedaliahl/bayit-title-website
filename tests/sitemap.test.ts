@@ -16,7 +16,7 @@ const entries = await sitemap();
 describe('the sitemap', () => {
   it('dates only the pages that carry a review date', () => {
     for (const entry of entries) {
-      const isReviewedArticle = /\/(title-problems|services)\/[^/]+$/.test(entry.url);
+      const isReviewedArticle = /\/(title-problems|services|communities)\/[^/]+(\/[^/]+)?$/.test(entry.url);
       if (isReviewedArticle) expect(entry.lastModified).toBeInstanceOf(Date);
       else expect(entry.lastModified).toBeUndefined();
     }

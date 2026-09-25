@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { getAllDocs } from '@/lib/content';
+import { getAllCommunityPages } from '@/lib/communities';
 import { countyHasLocalFacts, getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { team } from '@/lib/team';
@@ -9,16 +10,18 @@ import { absoluteUrl, teamPageHasContent } from '@/lib/seo';
 import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [allProblems, allServices, counties, reviews] = await Promise.all([
+  const [allProblems, allServices, counties, reviews, allCommunities] = await Promise.all([
     getAllDocs('title-problems'),
     getAllDocs('services'),
     getCounties(),
     getReviews(),
+    getAllCommunityPages(),
   ]);
 
   // Drafts can be readable on a preview build, but never listed for crawlers.
   const problems = allProblems.filter((doc) => doc.status === 'reviewed');
   const services = allServices.filter((doc) => doc.status === 'reviewed');
+  const communities = allCommunities.filter((page) => page.status === 'reviewed');
 
   // Only the reviewed articles carry a date that means anything. The other
   // pages have no record of when their content last changed, and stamping
@@ -43,6 +46,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl('/closing-costs/doc-stamp-calculator'), changeFrequency: 'yearly', priority: 0.8 },
     { url: absoluteUrl('/closing-costs/who-pays-title-insurance'), changeFrequency: 'monthly', priority: 0.8 },
     { url: absoluteUrl('/partners'), changeFrequency: 'monthly', priority: 0.7 },
+    // The index answers 404 until a community page is publishable, so it is
+    // listed only once a reviewed one exists.
+    ...(communities.some((page) => page.kind === 'master')
+      ? [{ url: absoluteUrl('/communities'), changeFrequency: 'monthly' as const, priority: 0.6 }]
+      : []),
     // Same rule as a draft content page: nothing unreviewed is listed for crawlers.
     ...(PRIVACY_PUBLISHED
       ? [
@@ -69,6 +77,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...services.map((doc) => ({
       url: absoluteUrl(`/services/${doc.slug}`),
       lastModified: new Date(`${doc.reviewed_on!}T00:00:00Z`),
+      changeFrequency: 'yearly' as const,
+      priority: 0.7,
+    })),
+    ...communities.map((page) => ({
+      url: absoluteUrl(page.path),
+      lastModified: new Date(`${page.reviewed_on!}T00:00:00Z`),
       changeFrequency: 'yearly' as const,
       priority: 0.7,
     })),
