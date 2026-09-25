@@ -381,8 +381,9 @@ The firm or a licensed reviewer must sign these off, per the project's
   - **P1:** the index says "the clerk's fee", but the county pages say
     recording is statutory.
   - **P2:** "Every county has a page" is false in a build without Supabase.
-  - **P2:** the "who pays" source names and links competitor title firms and a
-    2021 chart; the firm should decide.
+  - **P2:** ~~the "who pays" source names and links competitor title firms and a
+    2021 chart; the firm should decide.~~ Decided 24 September 2026: a page
+    names only a government office, First American or the team.
   - **P2:** check dates are printed raw ("2026-09-14").
   - **P2:** a null source URL leaves an `href`-less anchor.
   - **P2:** quote marks are doubled inside blockquotes.
@@ -446,8 +447,11 @@ The firm or a licensed reviewer must sign these off, per the project's
 
 Also:
 - Remove the dead `overrides` entry for `@sveltejs/vite-plugin-svelte`.
-- Drop the unused Caslon italic and 700 weights. Four fonts (91KB) are
-  preloaded on every page.
+- ~~Drop the unused Caslon italic and 700 weights. Four fonts (91KB) are
+  preloaded on every page.~~ Done 23 September 2026: Caslon is one upright
+  400, and no font is preloaded any more. Chrome held the first paint for the
+  preloads, which cost the homepage its mobile PageSpeed score (91, Speed
+  Index 4.0s); see `app/layout.tsx`.
 - Add DM Sans italic, or remove the italics that are currently faked.
 
 ---

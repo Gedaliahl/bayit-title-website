@@ -14,7 +14,7 @@ import {
   screenFiles,
   type Rejection,
 } from '@/lib/documents';
-import { contractQuoteSchema, fieldErrors, HONEYPOT_FIELD } from '@/lib/schemas';
+import { HONEYPOT_FIELD } from '@/lib/honeypot';
 import {
   BOT_CHECK_BLOCKED,
   BotCheck,
@@ -49,6 +49,15 @@ const SCREEN_RULES = {
 };
 
 /**
+ * The schema is fetched when the pane is first opened, not with the page. It
+ * brings zod, 36KB compressed, and most visits to /estimate never open this
+ * pane; loaded with the page it was the largest thing the estimate page sent
+ * a phone before its first paint. Opening the pane starts the download, so it
+ * is in hand well before anyone can fill the form in and press send.
+ */
+const loadSchemas = () => import('@/lib/schemas');
+
+/**
  * The third way in: the contract itself, sent to the office for the exact
  * figure. The form asks for the least it can — the file, a name, an address to
  * write back to — and says at every step what will happen to what is sent.
@@ -72,6 +81,8 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
   const successRef = useRef<HTMLHeadingElement>(null);
   const picker = useRef<HTMLInputElement>(null);
   const fileList = useRef<HTMLUListElement>(null);
+  /** Waiting on the schema: `busy` is not set yet, and a second press must not send twice. */
+  const checking = useRef(false);
 
   const busy = status.kind === 'sending' || status.kind === 'uploading';
   useLeaveWarning(status.kind === 'uploading');
@@ -79,6 +90,11 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
   useEffect(() => {
     if (status.kind === 'sent') successRef.current?.focus();
   }, [status.kind]);
+
+  useEffect(() => {
+    // A failed fetch is retried on send, and failing there too is covered.
+    if (!hidden) loadSchemas().catch(() => {});
+  }, [hidden]);
 
   /** Every page that is not added is named, with the reason. */
   function addFiles(list: FileList | File[] | null) {
@@ -122,7 +138,7 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
+    if (busy || checking.current) return;
 
     const honeypot = (new FormData(event.currentTarget).get(HONEYPOT_FIELD) as string | null) ?? '';
     const payload = {
@@ -137,9 +153,14 @@ export function UploadPane({ hidden }: { hidden: boolean }) {
     };
 
     // The same schema the server runs; its messages are the page's own. The
-    // file comes first because it is the first thing on the form.
-    const checked = contractQuoteSchema.safeParse(payload);
-    if (!checked.success) return fail(fieldErrors(checked.error), 'invalid');
+    // file comes first because it is the first thing on the form. If the
+    // schema could not be fetched, the request goes without the early check:
+    // the server runs the same one and answers 422 with the same messages.
+    checking.current = true;
+    const schemas = await loadSchemas().catch(() => null);
+    checking.current = false;
+    const checked = schemas?.contractQuoteSchema.safeParse(payload);
+    if (schemas && checked && !checked.success) return fail(schemas.fieldErrors(checked.error), 'invalid');
     if (botCheck.enabled && !botCheck.token) {
       return fail({ form: botCheck.unavailable ? BOT_CHECK_BLOCKED : UPLOAD.errors.botCheck }, 'bot_check');
     }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 
 import { formatBytes, uploadWithProgress, type Rejection } from '@/lib/documents';
-import { HONEYPOT_FIELD } from '@/lib/schemas';
+import { HONEYPOT_FIELD } from '@/lib/honeypot';
 import { site } from '@/lib/site';
 
 interface BaseProps {
