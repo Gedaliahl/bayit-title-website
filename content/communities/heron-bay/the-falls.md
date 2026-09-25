@@ -28,7 +28,7 @@ pending_confirmation:
   - "Statutes cited are the ones the master page cites, with its links; a licensed agent to confirm they apply here as stated."
 ---
 
-The Falls at Heron Bay is a neighborhood of large detached single-family homes on Blocks A and B of the Heron Bay Two plat (Plat Book 159, Page 39) in Coral Springs, lots the master declaration itself committed in 1995. It has its own association, The Falls at Heron Bay Association, Inc., which maintains the neighborhood's waterfall parcel, buffer walls and private road. The declaration gives no lot count; the master declaration's Exhibit A lists Lots 1–36 in Block A and 1–18 in Block B, 54 lots (copy at Instr 120504878, p. 73).
+The Falls at Heron Bay is a neighborhood of large detached single-family homes on Blocks A and B of the Heron Bay Two plat (Plat Book 159, Page 39) in Coral Springs, among the lots the master declaration itself committed in 1995. It has its own association, The Falls at Heron Bay Association, Inc., which maintains the neighborhood's waterfall parcel, buffer walls and private road. The declaration gives no lot count; the master declaration's Exhibit A lists Lots 1–36 in Block A and 1–18 in Block B, 54 lots (copy at Instr 120504878, p. 73).
 
 This page covers the five Falls documents we hold: the Declaration of Neighborhood Covenants for The Falls at Heron Bay, made by WCI Communities Limited Partnership and recorded 14 December 1995 (OR 24258/220, Instr 95550976; "Declaration" below), three amendments, and a preservation notice recorded **22 October 2025**, the newest. Every lot is also bound by the master declaration, so read the [Heron Bay master page](/communities/heron-bay) with this one. Nothing here replaces the association's estoppel certificate.
 
