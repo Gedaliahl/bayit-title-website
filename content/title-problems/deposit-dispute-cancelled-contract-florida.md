@@ -49,7 +49,7 @@ quick_facts:
 
 Not the title agency. The deposit belongs to whichever party the contract says is entitled to it, and deciding that is a question about the contract: whether the cancellation was timely, whether a condition failed, whether someone defaulted. Those are legal questions, and the answer comes from the parties themselves or from a court.
 
-The title agency's job is narrower and stricter. [Fla. Stat. § 626.8473](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0626/Sections/0626.8473.html) makes funds a title agency receives in escrow **trust funds, held in a fiduciary capacity**, the property of the persons entitled to them. It also says they may be used **only in accordance with the escrow, settlement or closing instructions under which they were accepted**. [VERIFY: ch. 626 is not on the project source list. The text of § 626.8473(2) and (4) was read on Online Sunshine on 2026-09-25; confirm and add the chapter.] When buyer and seller give conflicting instructions, there is no instruction the agency can follow. So it follows neither.
+The title agency's job is narrower and stricter. [Fla. Stat. § 626.8473](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0600-0699/0626/Sections/0626.8473.html) makes funds a title agency receives in escrow **trust funds, held in a fiduciary capacity**, the property of the persons entitled to them. It also says they may be used **only in accordance with the escrow, settlement or closing instructions under which they were accepted**. When buyer and seller give conflicting instructions, there is no instruction the agency can follow. So it follows neither.
 
 ## What does the contract say about it?
 
@@ -65,7 +65,7 @@ If the seller does not object, the answer is usually quick. The seller signs a r
 
 ## Isn't there a state procedure for escrow disputes?
 
-There is, but it is for real estate brokers, not title agencies. Under [Fla. Stat. § 475.25(1)(d)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0400-0499/0475/Sections/0475.25.html), a broker holding a deposit who faces conflicting demands must promptly notify the Florida Real Estate Commission and promptly choose one of four routes: an escrow disbursement order from the commission, arbitration or mediation with everyone's consent, or a court case, by interpleader or otherwise. [VERIFY: ch. 475 is not on the project source list. The subsection was read on Online Sunshine on 2026-09-25; the specific day counts for notice and election are set by commission rule, not the statute, so confirm before quoting any.]
+There is, but it is for real estate brokers, not title agencies. Under [Fla. Stat. § 475.25(1)(d)](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0400-0499/0475/Sections/0475.25.html), a broker holding a deposit who faces conflicting demands must promptly notify the Florida Real Estate Commission and promptly choose one of four routes: an escrow disbursement order from the commission, arbitration or mediation with everyone's consent, or a court case, by interpleader or otherwise.
 
 When the broker is holding the deposit, that procedure applies. When the title agency is holding it, the contract's escrow clause and the courts apply, and there is no commission order to ask for. Parties often assume otherwise, so our notice says which applies.
 
@@ -99,7 +99,7 @@ Only if both sides sign a release that says so. We do not propose or negotiate a
 
 ### How long will you hold it?
 
-Until a signed release, a court order, or an interpleader moves it. Money nobody ever claims eventually has to be reported to the state as unclaimed property. [VERIFY: ch. 717 dormancy period for title agency escrow funds; ch. 717 is not on the source list]
+Until a signed release, a court order, or an interpleader moves it. Money nobody ever claims eventually has to be reported to the state. Under [Fla. Stat. § 717.112](https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0717/Sections/0717.112.html), property held in a fiduciary capacity is presumed abandoned if the owner has shown no interest in it for 5 years after it became payable or distributable. When a disputed deposit becomes payable is itself a legal question.
 
 ### Does the title agency keep any of the deposit?
 
