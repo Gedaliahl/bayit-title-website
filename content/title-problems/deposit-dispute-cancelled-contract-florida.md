@@ -71,7 +71,9 @@ When the broker is holding the deposit, that procedure applies. When the title a
 
 ## What is interpleader?
 
-A court case the escrow agent brings when it holds money it has no right to and cannot safely pay to anyone. The agent deposits the funds into the court registry, names both claimants, and asks to be discharged. The buyer and seller then argue their claims against each other, not against the agent. [VERIFY: citation for interpleader in Florida state court, Fla. R. Civ. P. 1.240, which is not on the source list]
+A court case that makes the claimants argue with each other rather than with the escrow agent. [Rule 1.240 of the Florida Rules of Civil Procedure](https://www.floridabar.org/rules/ctproc/) lets a party facing claims that could expose it to double liability join the competing claimants as defendants and require them to interplead. For a deposit, that means buyer and seller both claim the same money, and the agency asks the court to decide which of them gets it.
+
+The contract usually covers the practical side. Under the standard forms, the escrow agent may deposit the funds with the clerk of the circuit court, and it recovers its fees and costs. [VERIFY: current FAR/BAR escrow-agent paragraph wording]
 
 It is the route when the parties will not sign anything and neither sues. It costs the parties money, because the agent's fees come off the top, and that is often what gets a release signed first.
 
