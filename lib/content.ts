@@ -408,11 +408,11 @@ function assertSteps(value: unknown, file: string): Step[] {
   });
 }
 
-function countWords(text: string): number {
+export function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-async function toHtml(markdown: string): Promise<string> {
+export async function toHtml(markdown: string): Promise<string> {
   const processed = await remark()
     .use(remarkGfm)
     .use(remarkHtml, { sanitize: false })
@@ -446,7 +446,7 @@ async function toInlineHtml(markdown: string): Promise<string> {
 }
 
 /** Renders the Markdown in every key/value line the page shows. */
-async function renderFacts(facts: KeyFact[]): Promise<KeyFact[]> {
+export async function renderFacts(facts: KeyFact[]): Promise<KeyFact[]> {
   return Promise.all(
     facts.map(async (fact) => ({ ...fact, html: await toInlineHtml(fact.detail) })),
   );
@@ -496,7 +496,7 @@ const PRACTICE_HEADING = /\bhandles this\b/i;
  * rendered as an empty section and the rail listed the question twice, and
  * neither is something a reader can be shown while the page claims a review.
  */
-async function splitSections(markdown: string, file: string): Promise<DocSection[]> {
+export async function splitSections(markdown: string, file: string): Promise<DocSection[]> {
   const lines = markdown.split('\n');
   const parts: { title: string; body: string[] }[] = [];
   let fenced = false;
@@ -551,7 +551,7 @@ async function splitSections(markdown: string, file: string): Promise<DocSection
   );
 }
 
-async function renderFaq(markdown: string): Promise<FaqItem[]> {
+export async function renderFaq(markdown: string): Promise<FaqItem[]> {
   return Promise.all(
     faqEntries(markdown).map(async (entry) => ({
       question: entry.question,

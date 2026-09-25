@@ -2,6 +2,7 @@
 // content the site renders, so it cannot drift out of date.
 
 import { getAllDocs } from '@/lib/content';
+import { getAllCommunityPages } from '@/lib/communities';
 import { countyHasLocalFacts, getCounties } from '@/lib/locations';
 import { FLORIDA_CITIES } from '@/lib/florida-cities';
 import { absoluteUrl } from '@/lib/seo';
@@ -11,15 +12,17 @@ import { PRIVACY_PUBLISHED } from '@/lib/privacy';
 export const dynamic = 'force-static';
 
 export async function GET() {
-  const [allProblems, allServices, counties] = await Promise.all([
+  const [allProblems, allServices, counties, allCommunities] = await Promise.all([
     getAllDocs('title-problems'),
     getAllDocs('services'),
     getCounties(),
+    getAllCommunityPages(),
   ]);
 
   // Only reviewed pages are advertised to assistants.
   const problems = allProblems.filter((doc) => doc.status === 'reviewed');
   const services = allServices.filter((doc) => doc.status === 'reviewed');
+  const communities = allCommunities.filter((page) => page.status === 'reviewed');
 
   const lines = [
     `# ${site.name}`,
@@ -64,6 +67,18 @@ export async function GET() {
     '',
     ...services.map((doc) => `- [${doc.title}](${absoluteUrl(`/services/${doc.slug}`)}): ${doc.direct_answer}`),
     '',
+    ...(communities.length > 0
+      ? [
+          '## Community associations',
+          '',
+          'What a community association’s recorded documents say about a resale: estoppels, fees paid',
+          'at closing, leasing and approval rules, and title points. Each page cites the recorded',
+          'instruments and gives the recording date of the newest one it was written from.',
+          '',
+          ...communities.map((page) => `- [${page.name}](${absoluteUrl(page.path)}): ${page.direct_answer}`),
+          '',
+        ]
+      : []),
     '## Counties',
     '',
     'Each county page states who customarily pays for the owner’s policy where that custom has been',
